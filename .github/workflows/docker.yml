@@ -1,0 +1,21 @@
+name: docker
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+    - name: docker publish
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: blockexchange/blockexchange
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tag_names: true
+        cache: true
