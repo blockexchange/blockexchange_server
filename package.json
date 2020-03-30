@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jshint .",
+    "test": "jshint src",
     "migrate": "db-migrate up",
     "start": "node src/index.js",
     "watch": "nodemon -w src/ src/index.js"
