@@ -1,6 +1,6 @@
 const bodyParser = require('body-parser');
 const zlib = require('zlib');
-const jsonParser = bodyParser.json();
+const jsonParser = bodyParser.json({limit: '20mb'});
 
 const app = require("../app");
 const pool = require("../pool");
