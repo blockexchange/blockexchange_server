@@ -9,7 +9,7 @@ docker run --name blockexchange_pg --rm \
  --network host \
  postgres &
 
-sleep 2
+sleep 10
 
 docker run --name blockexchange_server --rm \
  -e PGUSER=postgres \
@@ -28,7 +28,7 @@ function cleanup {
 
 trap cleanup EXIT
 
-sleep 2
+sleep 10
 
 # test
 json='{
