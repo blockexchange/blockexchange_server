@@ -9,7 +9,7 @@ docker run --name blockexchange_pg --rm \
  --network host \
  postgres &
 
-sleep 20
+bash -c 'while !</dev/tcp/localhost/5432; do sleep 1; done;'
 
 docker run --name blockexchange_server --rm \
  -e PGUSER=postgres \
@@ -28,11 +28,12 @@ function cleanup {
 
 trap cleanup EXIT
 
-sleep 10
+bash -c 'while !</dev/tcp/localhost/8080; do sleep 1; done;'
 
 # test
 json='{
 	"description":"my schema",
+	"tags": ["test", "stuff"],
 	"size_x": 20,
 	"size_y": 10,
 	"size_z": 10,
@@ -66,7 +67,12 @@ json="{
 
 json=$(curl -X POST "http://127.0.0.1:8080/api/schemapart" --data "$json" -H "Content-Type: application/json")
 
-json="{}"
+json='{
+	"modname_count": {
+		"default": 2000,
+		"air": 50000
+	}
+}'
 json=$(curl -X POST "http://127.0.0.1:8080/api/schema/${schema_id}/complete" --data "$json" -H "Content-Type: application/json")
 
 
