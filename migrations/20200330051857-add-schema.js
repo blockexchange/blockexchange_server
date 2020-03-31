@@ -16,6 +16,7 @@ exports.up = function(db) {
       }
     },
     */
+		description: { type: "text", notNull: true },
     complete: { type: 'boolean', notNull: true },
     size_x: { type: 'int', notNull: true },
     size_y: { type: 'int', notNull: true },

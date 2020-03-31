@@ -11,13 +11,14 @@ app.post('/api/schema', jsonParser, function(req, res){
 
   const query = `
     insert into
-    schema(complete, size_x, size_y, size_z, part_length, total_size, total_parts, created)
-    values($1, $2, $3, $4, $5, $6, $7, now())
+    schema(complete, description, size_x, size_y, size_z, part_length, total_size, total_parts, created)
+    values($1, $2, $3, $4, $5, $6, $7, $8, now())
     returning *
   `;
 
   const values = [
     false,
+		req.body.description || "",
     req.body.size_x,
     req.body.size_y,
     req.body.size_z,
@@ -43,8 +44,8 @@ app.post('/api/schema', jsonParser, function(req, res){
 });
 
 // curl -X POST 127.0.0.1:8080/api/schema/1/complete
-app.post('/api/schema/:id/complete', function(req, res){
-  console.log("POST /api/schema/id/complete", req.params.id);
+app.post('/api/schema/:id/complete', jsonParser, function(req, res){
+  console.log("POST /api/schema/id/complete", req.params.id, req.body);
 
   const query = `
     update schema s
