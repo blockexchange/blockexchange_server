@@ -1,5 +1,6 @@
 const app = require("./app");
 
+require("./api/info");
 require("./api/schema");
 require("./api/schemapart");
 
