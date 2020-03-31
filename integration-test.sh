@@ -68,8 +68,8 @@ json="{
 json=$(curl -X POST "http://127.0.0.1:8080/api/schemapart" --data "$json" -H "Content-Type: application/json")
 
 json='{
-	"modname_count": {
-		"default": 2000,
+	"node_count": {
+		"default:stone": 2000,
 		"air": 50000
 	}
 }'

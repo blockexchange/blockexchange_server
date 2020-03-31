@@ -49,7 +49,7 @@ app.post('/api/schema', jsonParser, function(req, res){
 app.post('/api/schema/:id/complete', jsonParser, function(req, res){
   console.log("POST /api/schema/id/complete", req.params.id, req.body);
 
-	// TODO: insert req.body.modname_count
+	// TODO: parse req.body.node_count
 
   const query = `
     update schema s
