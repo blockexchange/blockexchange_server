@@ -10,25 +10,27 @@ const pool = require("../pool");
 app.post('/api/schemapart', jsonParser, function(req, res){
   console.log("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
 
-  const query = `
-    insert into
-    schemapart(schema_id, offset_x, offset_y, offset_z, data)
-    values($1, $2, $3, $4, $5)
-    returning id
-  `;
-
-  const compressed = zlib.gzipSync(req.body.data);
-
-  const values = [
-    req.body.schema_id,
-    req.body.offset_x,
-    req.body.offset_y,
-    req.body.offset_z,
-    compressed
-  ];
-
   pool.connect()
   .then(client => {
+		//TODO: check if schema is not completed
+
+		const query = `
+	    insert into
+	    schemapart(schema_id, offset_x, offset_y, offset_z, data)
+	    values($1, $2, $3, $4, $5)
+	    returning id
+	  `;
+
+	  const compressed = zlib.gzipSync(req.body.data);
+
+	  const values = [
+	    req.body.schema_id,
+	    req.body.offset_x,
+	    req.body.offset_y,
+	    req.body.offset_z,
+	    compressed
+	  ];
+
     client.query(query, values)
     .then(sql_res => {
 			res.json(sql_res.rows[0]);
