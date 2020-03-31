@@ -9,6 +9,8 @@ const pool = require("../pool");
 app.post('/api/schema', jsonParser, function(req, res){
   console.log("POST /api/schema", req.body);
 
+	//TODO: insert req.body.tags
+
   const query = `
     insert into
     schema(complete, description, size_x, size_y, size_z, part_length, total_size, total_parts, created)
@@ -46,6 +48,8 @@ app.post('/api/schema', jsonParser, function(req, res){
 // curl -X POST 127.0.0.1:8080/api/schema/1/complete
 app.post('/api/schema/:id/complete', jsonParser, function(req, res){
   console.log("POST /api/schema/id/complete", req.params.id, req.body);
+
+	// TODO: insert req.body.mod_names
 
   const query = `
     update schema s
