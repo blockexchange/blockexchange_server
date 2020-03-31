@@ -9,7 +9,7 @@ docker run --name blockexchange_pg --rm \
  --network host \
  postgres &
 
-sleep 10
+sleep 20
 
 docker run --name blockexchange_server --rm \
  -e PGUSER=postgres \
