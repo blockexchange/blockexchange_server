@@ -6,5 +6,4 @@ export PGHOST=127.0.0.1
 export PGDATABASE=postgres
 export PGPORT=5432
 
-npm run migrate
 npm run watch

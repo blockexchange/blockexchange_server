@@ -20,7 +20,10 @@ exports.up = function(db) {
     size_x: { type: 'int', notNull: true },
     size_y: { type: 'int', notNull: true },
     size_z: { type: 'int', notNull: true },
+		created: { type: 'datetime', notNull: true },
     part_length: { type: 'int', notNull: true },
+		total_size: { type: 'int', notNull: true },
+		total_parts: { type: 'int', notNull: true }
   });
 };
 
