@@ -51,7 +51,8 @@ app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', function(req
           param1: data.param1,
           param2: data.param2,
           metadata: data.metadata,
-          size: data.size
+          size: data.size,
+					node_mapping: data.node_mapping
         }
       });
     } else
