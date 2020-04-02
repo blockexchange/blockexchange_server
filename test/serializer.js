@@ -46,9 +46,6 @@ describe('serializer', function() {
 			const out_data = serializer.deserialize(schemapart);
 
 			assert.equal(data.size.x, out_data.size.x);
-
-
-      assert.equal([1, 2, 3].indexOf(4), -1);
     });
   });
 });
