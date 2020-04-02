@@ -1,49 +1,24 @@
 const bodyParser = require('body-parser');
-const zlib = require('zlib');
 const jsonParser = bodyParser.json({limit: '20mb'});
 
 const app = require("../app");
-const pool = require("../pool");
+const schemapart_dao = require("../dao/schemapart");
 
 // data='{"schema_id": 1, "offset_x": 0, "offset_y": 0, "offset_z": 0, "data": "return {}"}'
 // curl -X POST 127.0.0.1:8080/api/schemapart --data "${data}" -H "Content-Type: application/json"
 app.post('/api/schemapart', jsonParser, function(req, res){
   console.log("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
-	console.log("Data: ", req.body);//DEBUG
+	//console.log("Data: ", req.body);//DEBUG
 
-  pool.connect()
-  .then(client => {
-		//TODO: check if schema is not completed
-
-		const query = `
-	    insert into
-	    schemapart(schema_id, offset_x, offset_y, offset_z, data)
-	    values($1, $2, $3, $4, $5)
-	    returning id
-	  `;
-
-	  const compressed = zlib.gzipSync(req.body.data);
-
-	  const values = [
-	    req.body.schema_id,
-	    req.body.offset_x,
-	    req.body.offset_y,
-	    req.body.offset_z,
-	    compressed
-	  ];
-
-    client.query(query, values)
-    .then(sql_res => {
-			res.json(sql_res.rows[0]);
-			client.release();
-		})
-    .catch(e => {
-			client.release();
-      console.error(e.stack);
-      res.status(500).end();
-    });
-  });
-
+  schemapart_dao.create({
+    schema_id: req.body.schema_id,
+    offset_x: req.body.offset_x,
+    offset_y: req.body.offset_y,
+    offset_z: req.body.offset_z,
+    data: req.body.data
+  })
+  .then(id_obj => res.json(id_obj))
+  .catch(() => res.status(500).end());
 });
 
 
@@ -51,40 +26,17 @@ app.post('/api/schemapart', jsonParser, function(req, res){
 app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', function(req, res){
   console.log("GET /api/schemapart", req.params);
 
-  const query = `
-    select *
-    from schemapart
-    where schema_id = $1
-    and offset_x = $2
-    and offset_y = $3
-    and offset_z = $4
-  `;
-
-  const values = [
+  schemapart_dao.get_by_id_and_offset(
     req.params.schema_id,
     req.params.offset_x,
     req.params.offset_y,
     req.params.offset_z
-  ];
-
-  pool.connect()
-  .then(client => {
-    client.query(query, values)
-    .then(sql_res => {
-      if (sql_res.rowCount == 0){
-        res.status(404).end();
-      } else {
-        const row = sql_res.rows[0];
-        const part = Object.assign({}, row);
-        part.data = zlib.gunzipSync(row.data).toString("utf-8");
-        res.json(part);
-      }
-			client.release();
-    })
-    .catch(e => {
-			client.release();
-      console.error(e.stack);
-      res.status(500).end();
-    });
-  });
+  )
+  .then(schemapart => {
+    if (schemapart)
+      res.json(schemapart);
+    else
+      res.status(404).end();
+  })
+  .catch(() => res.status(500).end());
 });
