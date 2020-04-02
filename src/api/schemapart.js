@@ -3,19 +3,24 @@ const jsonParser = bodyParser.json({limit: '20mb'});
 
 const app = require("../app");
 const schemapart_dao = require("../dao/schemapart");
+const serializer = require("../util/serializer");
 
 // data='{"schema_id": 1, "offset_x": 0, "offset_y": 0, "offset_z": 0, "data": "return {}"}'
 // curl -X POST 127.0.0.1:8080/api/schemapart --data "${data}" -H "Content-Type: application/json"
 app.post('/api/schemapart', jsonParser, function(req, res){
   console.log("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
 	//console.log("Data: ", req.body);//DEBUG
+  //TODO: check if schema is not completed
+
+  const serilized_data = serializer.serialize(req.body.data);
 
   schemapart_dao.create({
     schema_id: req.body.schema_id,
     offset_x: req.body.offset_x,
     offset_y: req.body.offset_y,
     offset_z: req.body.offset_z,
-    data: req.body.data
+    data: serilized_data.data,
+    metadata: serilized_data.metadata
   })
   .then(id_obj => res.json(id_obj))
   .catch(() => res.status(500).end());
@@ -25,6 +30,11 @@ app.post('/api/schemapart', jsonParser, function(req, res){
 // curl 127.0.0.1:8080/api/schemapart/1/0/0/0
 app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', function(req, res){
   console.log("GET /api/schemapart", req.params);
+  /*
+  const row = sql_res.rows[0];
+  const part = Object.assign({}, row);
+  part.data = zlib.gunzipSync(row.data).toString("utf-8");
+  */
 
   schemapart_dao.get_by_id_and_offset(
     req.params.schema_id,

@@ -1,26 +1,24 @@
 const pool = require("../pool");
-const zlib = require('zlib');
 
 module.exports.create = function(schemapart) {
   const query = `
     insert into
-    schemapart(schema_id, offset_x, offset_y, offset_z, data)
-    values($1, $2, $3, $4, $5)
+    schemapart(schema_id, offset_x, offset_y, offset_z, data, metadata)
+    values($1, $2, $3, $4, $5, $6)
     returning id
   `;
 
   return new Promise(function(resolve, reject){
     pool.connect()
     .then(client => {
-  		//TODO: check if schema is not completed
-  	  const compressed = zlib.gzipSync(schemapart.data);
 
   	  const values = [
   	    schemapart.schema_id,
   	    schemapart.offset_x,
   	    schemapart.offset_y,
   	    schemapart.offset_z,
-  	    compressed
+  	    schemapart.data,
+        schemapart.metadata
   	  ];
 
       client.query(query, values)
@@ -57,10 +55,7 @@ module.exports.get_by_id_and_offset = function(schema_id, x, y, z) {
         if (sql_res.rowCount == 0){
           resolve();
         } else {
-          const row = sql_res.rows[0];
-          const part = Object.assign({}, row);
-          part.data = zlib.gunzipSync(row.data).toString("utf-8");
-          resolve(part);
+          resolve(sql_res.rows[0]);
         }
   			client.release();
       })

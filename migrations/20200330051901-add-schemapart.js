@@ -18,6 +18,7 @@ exports.up = function(db) {
     offset_y: { type: 'int', notNull: true },
     offset_z: { type: 'int', notNull: true },
     data: { type: 'blob', notNull: true },
+    metadata: { type: 'blob', notNull: true }
   });
 };
 
