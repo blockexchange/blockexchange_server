@@ -9,6 +9,7 @@ const pool = require("../pool");
 // curl -X POST 127.0.0.1:8080/api/schemapart --data "${data}" -H "Content-Type: application/json"
 app.post('/api/schemapart', jsonParser, function(req, res){
   console.log("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
+	console.log("Data: ", req.body);//DEBUG
 
   pool.connect()
   .then(client => {
