@@ -1,9 +1,10 @@
 const assert = require('assert');
 const serializer = require("../src/util/serializer");
+const fs = require("fs");
 
 describe('serializer', function() {
   describe('serialize', function() {
-    it('matches in/output', function() {
+    it('matches simple in/output', function() {
 
 			const data = {
 			  node_ids: [
@@ -42,10 +43,19 @@ describe('serializer', function() {
 			};
 
 			const schemapart = serializer.serialize(data);
-
 			const out_data = serializer.deserialize(schemapart);
 
 			assert.equal(data.size.x, out_data.size.x);
     });
+
+
+		it('matches real-life in/output', function() {
+			const data_str = fs.readFileSync("./test/schemapart.json");
+			const data = JSON.parse(data_str);
+			const schemapart = serializer.serialize(data);
+			const out_data = serializer.deserialize(schemapart);
+
+			assert.equal(data.size.x, out_data.size.x);
+		});
   });
 });
