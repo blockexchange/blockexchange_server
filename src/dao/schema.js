@@ -40,7 +40,7 @@ module.exports.finalize = function(schema_id) {
   const query = `
     update schema s
     set complete = true,
-		total_size = (select sum(length(data)) from schemapart sp where sp.schema_id = s.id),
+		total_size = (select sum(length(data)) + sum(length(metadata)) from schemapart sp where sp.schema_id = s.id),
 		total_parts = (select count(*) from schemapart sp where sp.schema_id = s.id)
     where id = $1
   `;

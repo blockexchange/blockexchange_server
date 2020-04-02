@@ -46,12 +46,12 @@ module.exports.serialize = function(data) {
   }
 
   for (let i=0; i<data.param1.length; i++){
-    data_buffer.writeInt8(data.param1[i], offset);
+    data_buffer.writeInt8(data.param1[i] - 128, offset);
     offset++;
   }
 
   for (let i=0; i<data.param2.length; i++){
-    data_buffer.writeInt8(data.param2[i], offset);
+    data_buffer.writeInt8(data.param2[i] - 128, offset);
     offset++;
   }
 
@@ -99,13 +99,13 @@ module.exports.deserialize = function(data) {
 
   result.param1 = [];
   for (let i=0; i<param_length; i++){
-    result.param1.push(data_buffer.readInt8(offset));
+    result.param1.push(data_buffer.readInt8(offset) + 128);
     offset++;
   }
 
   result.param2 = [];
   for (let i=0; i<param_length; i++){
-    result.param2.push(data_buffer.readInt8(offset));
+    result.param2.push(data_buffer.readInt8(offset) + 128);
     offset++;
   }
 
