@@ -57,5 +57,8 @@ app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', function(req
     } else
       res.status(404).end();
   })
-  .catch(() => res.status(500).end());
+  .catch(e => {
+		console.error(e);
+		res.status(500).end();
+	});
 });
