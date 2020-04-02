@@ -66,3 +66,48 @@ module.exports.serialize = function(data) {
     data: zlib.gzipSync(data_buffer)
   };
 };
+
+
+/*
+Input: {
+ metadata: Buffer(),
+ data: Buffer()
+}
+
+Output: {
+ .. same as above input ..
+}
+
+*/
+module.exports.deserialize = function(data) {
+  const metadata_json = zlib.gunzipSync(data.metadata);
+  const result = JSON.parse(metadata_json);
+  const param_length = result.size.x * result.size.y * result.size.z;
+  const buffer_length = (param_length * 2) + param_length + param_length;
+
+  const data_buffer = zlib.gunzipSync(data.data);
+  if (buffer_length != data_buffer.length) {
+    throw new Error("Unexpected size: " + data_buffer.length + " should be: " + buffer_length);
+  }
+
+  result.node_ids = [];
+  let offset = 0;
+  for (let i=0; i<param_length; i++){
+    result.node_ids.push(data_buffer.readInt16LE(offset));
+    offset += 2;
+  }
+
+  result.param1 = [];
+  for (let i=0; i<param_length; i++){
+    result.param1.push(data_buffer.readInt8(offset));
+    offset++;
+  }
+
+  result.param2 = [];
+  for (let i=0; i<param_length; i++){
+    result.param2.push(data_buffer.readInt8(offset));
+    offset++;
+  }
+
+  return result;
+};

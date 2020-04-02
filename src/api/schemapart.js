@@ -12,15 +12,15 @@ app.post('/api/schemapart', jsonParser, function(req, res){
 	//console.log("Data: ", req.body);//DEBUG
   //TODO: check if schema is not completed
 
-  const serilized_data = serializer.serialize(req.body.data);
+  const serialized_data = serializer.serialize(req.body.data);
 
   schemapart_dao.create({
     schema_id: req.body.schema_id,
     offset_x: req.body.offset_x,
     offset_y: req.body.offset_y,
     offset_z: req.body.offset_z,
-    data: serilized_data.data,
-    metadata: serilized_data.metadata
+    data: serialized_data.data,
+    metadata: serialized_data.metadata
   })
   .then(id_obj => res.json(id_obj))
   .catch(() => res.status(500).end());
@@ -30,11 +30,6 @@ app.post('/api/schemapart', jsonParser, function(req, res){
 // curl 127.0.0.1:8080/api/schemapart/1/0/0/0
 app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', function(req, res){
   console.log("GET /api/schemapart", req.params);
-  /*
-  const row = sql_res.rows[0];
-  const part = Object.assign({}, row);
-  part.data = zlib.gunzipSync(row.data).toString("utf-8");
-  */
 
   schemapart_dao.get_by_id_and_offset(
     req.params.schema_id,
@@ -43,9 +38,23 @@ app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', function(req
     req.params.offset_z
   )
   .then(schemapart => {
-    if (schemapart)
-      res.json(schemapart);
-    else
+    if (schemapart) {
+      const data = serializer.deserialize(schemapart);
+
+      res.json({
+        schema_id: req.params.schema_id,
+        offset_x: req.params.offset_x,
+        offset_y: req.params.offset_y,
+        offset_z: req.params.offset_z,
+        data: {
+          node_ids: data.node_ids,
+          param1: data.param1,
+          param2: data.param2,
+          metadata: data.metadata,
+          size: data.size
+        }
+      });
+    } else
       res.status(404).end();
   })
   .catch(() => res.status(500).end());
