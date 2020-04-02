@@ -48,15 +48,13 @@ describe('serializer', function() {
 			assert.equal(data.size.x, out_data.size.x);
     });
 
-		/*
 		it('matches real-life in/output', function() {
-			const data_str = fs.readFileSync("./test/schemapart.json");
+			const data_str = fs.readFileSync("./test/schemapart_2_(16,0,0).json");
 			const data = JSON.parse(data_str);
 			const schemapart = serializer.serialize(data);
 			const out_data = serializer.deserialize(schemapart);
 
 			assert.equal(data.size.x, out_data.size.x);
 		});
-		*/
   });
 });
