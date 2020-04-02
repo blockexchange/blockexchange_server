@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jshint src",
+    "jshint": "jshint src",
+    "test": "mocha",
     "start": "db-migrate up && node src/index.js",
     "watch": "db-migrate up && nodemon -w src/ src/index.js"
   },
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "jshint": "^2.11.0",
+    "mocha": "^7.1.1",
     "nodemon": "^2.0.2"
   }
 }

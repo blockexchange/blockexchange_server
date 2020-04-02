@@ -1,4 +1,4 @@
-name: jshint
+name: test
 
 on: [push, pull_request]
 
@@ -16,5 +16,5 @@ jobs:
     - name: npm install
       run: npm i
 
-    - name: npm run jshint
-      run: npm run jshint
+    - name: npm test
+      run: npm test

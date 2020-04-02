@@ -86,8 +86,8 @@ module.exports.deserialize = function(data) {
   const buffer_length = (param_length * 2) + param_length + param_length;
 
   const data_buffer = zlib.gunzipSync(data.data);
-  if (buffer_length > data_buffer.length) {
-    throw new Error("Unexpected size: " + data_buffer.length + " should be at least: " + buffer_length + " metadata: " + metadata_json);
+  if (buffer_length != data_buffer.length) {
+    throw new Error("Unexpected size: " + data_buffer.length + " should be: " + buffer_length + " metadata: " + metadata_json);
   }
 
   result.node_ids = [];
