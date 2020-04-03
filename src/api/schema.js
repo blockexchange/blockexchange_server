@@ -40,7 +40,7 @@ app.post('/api/schema/:id/complete', jsonParser, function(req, res){
 app.get('/api/schema/:id', function(req, res){
   console.log("GET /api/schema", req.params.id);
 
-  schema_dao.get_by_id(req.params.id)
+  schema_dao.get_by_uid(req.params.id)
   .then(schema => res.json(schema))
   .catch(() => res.status(500).end());
 });
