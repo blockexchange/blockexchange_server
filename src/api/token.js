@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
 const bcrypt = require('bcrypt');
+var jwt = require('jsonwebtoken');
 
 const app = require("../app");
 const user_dao = require("../dao/user");
@@ -24,7 +25,12 @@ app.post('/api/token', jsonParser, function(req, res){
         res.status(401).end();
       }
 
-      res.send("Token");
+      const payload = {
+        username: user.name,
+        userid: user.id
+      };
+      const token = jwt.sign(payload, process.env.BLOCKEXCHANGE_KEY);
+      res.send(token);
     });
   })
   .catch((e) => {
