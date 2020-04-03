@@ -14,9 +14,9 @@ exports.up = function(db) {
         }
       }
     },
-    offset_x: { type: 'int', notNull: true },
-    offset_y: { type: 'int', notNull: true },
-    offset_z: { type: 'int', notNull: true },
+    offset_x: { type: 'smallint', notNull: true },
+    offset_y: { type: 'smallint', notNull: true },
+    offset_z: { type: 'smallint', notNull: true },
     data: { type: 'blob', notNull: true },
     metadata: { type: 'blob', notNull: true }
   });

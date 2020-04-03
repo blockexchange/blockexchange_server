@@ -8,13 +8,14 @@
 ## schema
 
 * **id** bigint
+* **uid** varchar(5)
 * **description** text
 * **complete** boolean
-* **size_x** int
-* **size_y** int
-* **size_z** int
-* **created** datetime
-* **part_length** int
+* **size_x** smallint
+* **size_y** smallint
+* **size_z** smallint
+* **created** bigint
+* **part_length** smallint
 * **total_size** int
 * **total_parts** int
 
@@ -22,19 +23,20 @@
 
 * **id** bigint
 * **schema_id** bigint (schema.id)
-* **offset_x** int
-* **offset_y** int
-* **offset_z** int
+* **offset_x** smallint
+* **offset_y** smallint
+* **offset_z** smallint
 * **data** blob
+* **metadata** blob
 
 ## schemamod
 
 * **id** bigint
 * **schema_id** bigint (schema.id)
-* **mod_name** varchar
+* **mod_name** varchar(32)
 
 ## schematag
 
 * **id** bigint
 * **schema_id** bigint (schema.id)
-* **tag_name** varchar
+* **tag_name** varchar(32)

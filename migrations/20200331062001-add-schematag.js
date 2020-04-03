@@ -2,7 +2,7 @@
 exports.up = function(db) {
   return db.createTable('schematag', {
 		id: { type: 'bigint', primaryKey: true, autoIncrement: true },
-		tag_name: { type: "string", notNull: true },
+		tag_name: { type: "string", length: 32, notNull: true },
 		schema_id: {
       type: "bigint",
       notNull: true,

@@ -3,20 +3,23 @@ const pool = require("../pool");
 module.exports.create = function(data) {
   const query = `
     insert into
-    schema(complete, description, size_x, size_y, size_z, part_length, total_size, total_parts, created)
-    values($1, $2, $3, $4, $5, $6, $7, $8, now())
+    schema(
+      complete, uid, description,
+      size_x, size_y, size_z, part_length,
+      total_size, total_parts, created
+    )
+    values(
+      $1, $2, $3,
+      $4, $5, $6, $7,
+      $8, $9, $10
+    )
     returning *
   `;
 
   const values = [
-    false,
-    data.description || "",
-    data.size_x,
-    data.size_y,
-    data.size_z,
-    data.part_length,
-    0,
-    0
+    false, data.uid, data.description || "",
+    data.size_x, data.size_y, data.size_z, data.part_length,
+    0, 0, Date.now()
   ];
 
   return new Promise(function(resolve, reject){
@@ -62,11 +65,11 @@ module.exports.finalize = function(schema_id) {
   });
 };
 
-module.exports.get_by_id = function(schema_id) {
+module.exports.get_by_uid = function(uid) {
   return new Promise(function(resolve, reject) {
     pool.connect()
     .then(client => {
-      client.query("select * from schema where id = $1", [schema_id])
+      client.query("select * from schema where uid = $1", [uid])
       .then(sql_res => {
         resolve(sql_res.rows[0]);
         client.release();

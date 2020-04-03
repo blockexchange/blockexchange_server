@@ -1,5 +1,7 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const ShortUniqueId = require('short-unique-id').default;
+const uid = new ShortUniqueId();
 
 const app = require("../app");
 const schema_dao = require("../dao/schema");
@@ -12,6 +14,7 @@ app.post('/api/schema', jsonParser, function(req, res){
 	//TODO: insert req.body.tags
 
   schema_dao.create({
+    uid: uid.randomUUID(5),
     description: req.body.description,
     size_x: req.body.size_x,
     size_y: req.body.size_y,

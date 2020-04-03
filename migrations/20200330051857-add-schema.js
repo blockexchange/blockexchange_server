@@ -16,15 +16,19 @@ exports.up = function(db) {
       }
     },
     */
+    uid: { type: "string", length: 5, notNull: true },
 		description: { type: "text", notNull: true },
     complete: { type: 'boolean', notNull: true },
-    size_x: { type: 'int', notNull: true },
-    size_y: { type: 'int', notNull: true },
-    size_z: { type: 'int', notNull: true },
-		created: { type: 'datetime', notNull: true },
-    part_length: { type: 'int', notNull: true },
+    size_x: { type: 'smallint', notNull: true },
+    size_y: { type: 'smallint', notNull: true },
+    size_z: { type: 'smallint', notNull: true },
+		created: { type: 'bigint', notNull: true },
+    part_length: { type: 'smallint', notNull: true },
 		total_size: { type: 'int', notNull: true },
 		total_parts: { type: 'int', notNull: true }
+  })
+  .then(() => {
+    return db.addIndex("schema", "schema_uid", ["uid"], true);
   });
 };
 
