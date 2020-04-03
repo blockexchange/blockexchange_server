@@ -17,6 +17,7 @@ docker run --name blockexchange_server --rm \
  -e PGHOST=127.0.0.1 \
  -e PGDATABASE=postgres \
  -e PGPORT=5432 \
+ -e BLOCKEXCHANGE_KEY=blah \
  --network host \
  blockexchange &
 
