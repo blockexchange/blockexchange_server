@@ -7,5 +7,6 @@ export PGDATABASE=postgres
 export PGPORT=5432
 export BLOCKEXCHANGE_NAME=dev-exchange
 export BLOCKEXCHANGE_OWNER=nobody
+export BLOCKEXCHANGE_KEY=abcdefSecretKey
 
 npm run watch
