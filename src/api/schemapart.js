@@ -4,6 +4,7 @@ const jsonParser = bodyParser.json({limit: '20mb'});
 const app = require("../app");
 const schemapart_dao = require("../dao/schemapart");
 const serializer = require("../util/serializer");
+const tokencheck = require("../util/tokencheck");
 
 // data='{"schema_id": 1, "offset_x": 0, "offset_y": 0, "offset_z": 0, "data": "return {}"}'
 // curl -X POST 127.0.0.1:8080/api/schemapart --data "${data}" -H "Content-Type: application/json"
@@ -12,18 +13,23 @@ app.post('/api/schemapart', jsonParser, function(req, res){
 	//console.log("Data: ", req.body);//DEBUG
   //TODO: check if schema is not completed
 
-  const serialized_data = serializer.serialize(req.body.data);
+  tokencheck(req, res)
+  .then(() => {
+    //TODO: verify claims.user_id == schema.user_id
+    const serialized_data = serializer.serialize(req.body.data);
 
-  schemapart_dao.create({
-    schema_id: req.body.schema_id,
-    offset_x: req.body.offset_x,
-    offset_y: req.body.offset_y,
-    offset_z: req.body.offset_z,
-    data: serialized_data.data,
-    metadata: serialized_data.metadata
+    schemapart_dao.create({
+      schema_id: req.body.schema_id,
+      offset_x: req.body.offset_x,
+      offset_y: req.body.offset_y,
+      offset_z: req.body.offset_z,
+      data: serialized_data.data,
+      metadata: serialized_data.metadata
+    })
+    .then(id_obj => res.json(id_obj))
+    .catch(() => res.status(500).end());
   })
-  .then(id_obj => res.json(id_obj))
-  .catch(() => res.status(500).end());
+  .catch(() => res.status(401).end());
 });
 
 

@@ -4,20 +4,20 @@ module.exports.create = function(data) {
   const query = `
     insert into
     schema(
-      complete, uid, description,
+      complete, user_id, uid, description,
       size_x, size_y, size_z, part_length,
       total_size, total_parts, created
     )
     values(
-      $1, $2, $3,
-      $4, $5, $6, $7,
-      $8, $9, $10
+      $1, $2, $3, $4,
+      $5, $6, $7, $8,
+      $9, $10, $11
     )
     returning *
   `;
 
   const values = [
-    false, data.uid, data.description || "",
+    false, data.user_id, data.uid, data.description || "",
     data.size_x, data.size_y, data.size_z, data.part_length,
     0, 0, Date.now()
   ];

@@ -27,7 +27,7 @@ app.post('/api/token', jsonParser, function(req, res){
 
       const payload = {
         username: user.name,
-        userid: user.id
+        user_id: user.id
       };
       const token = jwt.sign(payload, process.env.BLOCKEXCHANGE_KEY);
       res.send(token);

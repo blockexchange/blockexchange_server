@@ -2,7 +2,6 @@
 exports.up = function(db) {
   return db.createTable('schema', {
     id: { type: 'bigint', primaryKey: true, autoIncrement: true },
-    /*
     user_id: {
       type: "bigint",
       notNull: true,
@@ -15,8 +14,7 @@ exports.up = function(db) {
         }
       }
     },
-    */
-    uid: { type: "string", length: 5, notNull: true },
+    uid: { type: "string", length: 6, notNull: true },
 		description: { type: "text", notNull: true },
     complete: { type: 'boolean', notNull: true },
     size_x: { type: 'smallint', notNull: true },
