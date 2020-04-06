@@ -23,6 +23,7 @@ app.post('/api/token', jsonParser, function(req, res){
     .then(success => {
       if (!success) {
         res.status(401).end();
+	return;
       }
 
       const payload = {
