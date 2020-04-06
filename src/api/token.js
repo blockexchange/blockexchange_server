@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 
 const app = require("../app");
@@ -19,20 +19,18 @@ app.post('/api/token', jsonParser, function(req, res){
       return;
     }
 
-    bcrypt.compare(req.body.password, user.hash)
-    .then(success => {
-      if (!success) {
-        res.status(401).end();
-	return;
-      }
+    const success = bcrypt.compareSync(req.body.password, user.hash);
+    if (!success) {
+      res.status(401).end();
+      return;
+    }
 
-      const payload = {
-        username: user.name,
-        user_id: user.id
-      };
-      const token = jwt.sign(payload, process.env.BLOCKEXCHANGE_KEY);
-      res.send(token);
-    });
+    const payload = {
+      username: user.name,
+      user_id: user.id
+    };
+    const token = jwt.sign(payload, process.env.BLOCKEXCHANGE_KEY);
+    res.send(token);
   })
   .catch((e) => {
     console.error(e);

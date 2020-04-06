@@ -1,8 +1,7 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const bcrypt = require('bcryptjs');
 
 const app = require("../app");
 const user_dao = require("../dao/user");
@@ -36,12 +35,13 @@ app.post('/api/register', jsonParser, function(req, res){
         message: "Username already exists"
       });
     } else {
-      return bcrypt.hash(req.body.password, saltRounds)
-      .then(hash => user_dao.create({
+      var salt = bcrypt.genSaltSync(10);
+      var hash = bcrypt.hashSync(req.body.password, salt);
+      return user_dao.create({
           name: req.body.name,
           hash: hash,
           mail: req.body.mail
-      }))
+      })
       .then(() => res.json({ success: true }));
     }
   })

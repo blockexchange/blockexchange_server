@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^4.0.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "db-migrate": "^0.11.6",
     "db-migrate-pg": "^1.0.0",

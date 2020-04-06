@@ -1,5 +1,5 @@
 # Stage 1 testing
-FROM node:13.12.0-alpine
+FROM node:13.12.0-alpine as builder
 
 COPY . /data
 COPY .git/refs/heads/master /data/public/version.txt
@@ -7,6 +7,7 @@ COPY .git/refs/heads/master /data/public/version.txt
 # build
 RUN cd /data &&\
   npm i &&\
+  npm test &&\
   npm run jshint_backend &&\
   npm run jshint_frontend &&\
   npm run bundle
