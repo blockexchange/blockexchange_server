@@ -9,7 +9,7 @@
     "jshint_frontend": "cd public/js && jshint .",
     "test": "mocha",
     "start": "db-migrate up && node src/index.js",
-    "watch": "db-migrate up && nodemon -w src/ src/index.js"
+    "watch": "nodemon -w src/ -x 'npm run bundle && npm start'"
   },
   "author": "",
   "license": "ISC",
