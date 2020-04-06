@@ -17,7 +17,7 @@ app.post('/api/schema', jsonParser, function(req, res){
   tokencheck(req, res)
   .then(claims => {
     schema_dao.create({
-      user_id: claims.user_id,
+      user_id: +claims.user_id,
       uid: uid.randomUUID(6),
       description: req.body.description,
       size_x: req.body.size_x,
@@ -39,26 +39,34 @@ app.post('/api/schema', jsonParser, function(req, res){
 });
 
 // curl -X POST 127.0.0.1:8080/api/schema/1/complete
-app.post('/api/schema/:id/complete', jsonParser, function(req, res){
-  console.log("POST /api/schema/id/complete", req.params.id, req.body);
+app.post('/api/schema/:uid/complete', jsonParser, function(req, res){
+  console.log("POST /api/schema/id/complete", req.params.uid, req.body);
 
   tokencheck(req, res)
-  .then(() => {
-    // TODO: verify claims.user_id == schema.user_id
-  	// TODO: parse req.body.node_count
-    schema_dao.finalize(req.params.id)
-    .then(() => res.end())
-    .catch(() => res.status(500).end());
+  .then(claims => {
+    return schema_dao.get_by_uid(req.params.uid)
+    .then(schema => {
+      console.log(schema, claims);
+      // check user id in claims
+      if (schema.user_id != +claims.user_id){
+        res.status(401).end();
+        return;
+      }
+
+      return schema_dao.finalize(schema.id)
+      .then(() => res.end())
+      .catch(() => res.status(500).end());
+    });
   })
   .catch(() => res.status(401).end());
 });
 
 
 // curl 127.0.0.1:8080/api/schema/1
-app.get('/api/schema/:id', function(req, res){
-  console.log("GET /api/schema", req.params.id);
+app.get('/api/schema/:uid', function(req, res){
+  console.log("GET /api/schema/:uid", req.params.uid);
 
-  schema_dao.get_by_uid(req.params.id)
+  schema_dao.get_by_uid(req.params.uid)
   .then(schema => res.json(schema))
   .catch(() => res.status(500).end());
 });

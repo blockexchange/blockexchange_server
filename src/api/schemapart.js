@@ -3,31 +3,45 @@ const jsonParser = bodyParser.json({limit: '20mb'});
 
 const app = require("../app");
 const schemapart_dao = require("../dao/schemapart");
+const schema_dao = require("../dao/schema");
 const serializer = require("../util/serializer");
 const tokencheck = require("../util/tokencheck");
 
 // data='{"schema_id": 1, "offset_x": 0, "offset_y": 0, "offset_z": 0, "data": "return {}"}'
 // curl -X POST 127.0.0.1:8080/api/schemapart --data "${data}" -H "Content-Type: application/json"
 app.post('/api/schemapart', jsonParser, function(req, res){
-  console.log("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
+  console.log("POST /api/schemapart", req.body.schema_uid, req.body.offset_x, req.body.offset_y, req.body.offset_z);
 	//console.log("Data: ", req.body);//DEBUG
   //TODO: check if schema is not completed
 
   tokencheck(req, res)
-  .then(() => {
-    //TODO: verify claims.user_id == schema.user_id
-    const serialized_data = serializer.serialize(req.body.data);
+  .then(claims => {
+    return schema_dao.get_by_uid(req.body.schema_uid)
+    .then(schema => {
+      // check user id in claims
+      if (schema.user_id != +claims.user_id){
+        res.status(401).end();
+        return;
+      }
 
-    schemapart_dao.create({
-      schema_id: req.body.schema_id,
-      offset_x: req.body.offset_x,
-      offset_y: req.body.offset_y,
-      offset_z: req.body.offset_z,
-      data: serialized_data.data,
-      metadata: serialized_data.metadata
-    })
-    .then(id_obj => res.json(id_obj))
-    .catch(() => res.status(500).end());
+      if (schema.completed) {
+        res.status(500).end();
+        return;
+      }
+
+      const serialized_data = serializer.serialize(req.body.data);
+
+      schemapart_dao.create({
+        schema_id: schema.id,
+        offset_x: req.body.offset_x,
+        offset_y: req.body.offset_y,
+        offset_z: req.body.offset_z,
+        data: serialized_data.data,
+        metadata: serialized_data.metadata
+      })
+      .then(id_obj => res.json(id_obj))
+      .catch(() => res.status(500).end());
+    });
   })
   .catch(() => res.status(401).end());
 });
