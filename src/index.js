@@ -7,6 +7,9 @@ require("./api/token");
 // stats / info
 require("./api/info");
 
+// search
+require("./api/searchschema");
+
 // down / upload
 require("./api/schema");
 require("./api/schemamods");

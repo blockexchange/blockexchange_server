@@ -82,3 +82,27 @@ module.exports.get_by_uid = function(uid) {
     });
   });
 };
+
+module.exports.find_by_description = function(keywords) {
+  const query = `
+    select *
+    from schema
+    where description_tokens @@ to_tsquery($1)
+    limit 1000
+  `;
+  return new Promise(function(resolve, reject) {
+    pool.connect()
+    .then(client => {
+      client.query(query, [keywords])
+      .then(sql_res => {
+        resolve(sql_res.rows);
+        client.release();
+      })
+      .catch(e => {
+        client.release();
+        console.error(e.stack);
+        reject();
+      });
+    });
+  });
+};
