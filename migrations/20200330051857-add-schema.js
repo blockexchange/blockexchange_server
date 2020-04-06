@@ -16,6 +16,7 @@ exports.up = function(db) {
     },
     uid: { type: "string", length: 6, notNull: true },
 		description: { type: "text", notNull: true },
+    description_tokens: { type: "TSVECTOR", notNull: true },
     complete: { type: 'boolean', notNull: true },
     size_x: { type: 'smallint', notNull: true },
     size_y: { type: 'smallint', notNull: true },

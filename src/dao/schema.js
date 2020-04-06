@@ -4,12 +4,12 @@ module.exports.create = function(data) {
   const query = `
     insert into
     schema(
-      complete, user_id, uid, description,
+      complete, user_id, uid, description, description_tokens,
       size_x, size_y, size_z, part_length,
       total_size, total_parts, created
     )
     values(
-      $1, $2, $3, $4,
+      $1, $2, $3, $4, to_tsvector($4),
       $5, $6, $7, $8,
       $9, $10, $11
     )
