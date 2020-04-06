@@ -27,7 +27,8 @@ exports.up = function(db) {
 		total_parts: { type: 'int', notNull: true }
   })
   .then(() => {
-    return db.addIndex("schema", "schema_uid", ["uid"], true);
+    return db.addIndex("schema", "schema_uid", ["uid"], true)
+		.then(() => db.addIndex("schema", "schema_created", ["created"]));
   });
 };
 

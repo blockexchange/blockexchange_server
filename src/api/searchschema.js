@@ -17,3 +17,13 @@ app.post('/api/searchschema', jsonParser, function(req, res){
   });
 
 });
+
+app.get("/api/searchrecent/:count", function(req, res){
+	schema_dao.find_recent(req.params.count)
+	.then(rows => res.json(rows))
+	.catch(e => {
+		console.error(e);
+		res.status(500).end();
+	});
+
+});

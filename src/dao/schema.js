@@ -106,3 +106,28 @@ module.exports.find_by_description = function(keywords) {
     });
   });
 };
+
+
+module.exports.find_recent = function(count) {
+  const query = `
+    select *
+    from schema
+		order by created desc
+    limit $1
+  `;
+  return new Promise(function(resolve, reject) {
+    pool.connect()
+    .then(client => {
+      client.query(query, [Math.min(count, 250)])
+      .then(sql_res => {
+        resolve(sql_res.rows);
+        client.release();
+      })
+      .catch(e => {
+        client.release();
+        console.error(e.stack);
+        reject();
+      });
+    });
+  });
+};
