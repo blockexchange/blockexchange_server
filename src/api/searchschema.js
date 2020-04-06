@@ -9,8 +9,14 @@ const schema_dao = require("../dao/schema");
 app.post('/api/searchschema', jsonParser, function(req, res){
   console.log("POST /api/searchschema", req.body);
 
-  schema_dao.find_by_description(req.body.keywords)
-  .then(rows => res.json(rows))
+	var q;
+	if (req.body.user_id) {
+		q = schema_dao.find_by_user_id(req.body.user_id);
+	} else if (req.body.keywords) {
+		q = schema_dao.find_by_description(req.body.keywords);
+	}
+
+  q.then(rows => res.json(rows))
   .catch(e => {
     console.error(e);
     res.status(500).end();

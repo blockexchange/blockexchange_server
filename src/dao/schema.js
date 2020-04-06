@@ -83,6 +83,24 @@ module.exports.get_by_uid = function(uid) {
   });
 };
 
+module.exports.find_by_user_id = function(user_id) {
+  return new Promise(function(resolve, reject) {
+    pool.connect()
+    .then(client => {
+      client.query("select * from schema where user_id = $1", [user_id])
+      .then(sql_res => {
+        resolve(sql_res.rows);
+        client.release();
+      })
+      .catch(e => {
+        client.release();
+        console.error(e.stack);
+        reject();
+      });
+    });
+  });
+};
+
 module.exports.find_by_description = function(keywords) {
   const query = `
     select *
