@@ -12,7 +12,6 @@ const tokencheck = require("../util/tokencheck");
 app.post('/api/schemapart', jsonParser, function(req, res){
   console.log("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
 	//console.log("Data: ", req.body);//DEBUG
-  //TODO: check if schema is not completed
 
   tokencheck(req, res)
   .then(claims => {
