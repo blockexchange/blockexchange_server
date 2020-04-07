@@ -13,7 +13,7 @@ module.exports.create = function(data) {
       $1, $2, $3, $4,
       $5, $6, $7, $8,
       $9, $10, $11,
-      to_tsvector($4) || ' ' || to_tsvector($3)
+      to_tsvector($12)
     )
     returning *
   `;
@@ -21,7 +21,8 @@ module.exports.create = function(data) {
   const values = [
     false, data.user_id, data.name, data.description || "",
     data.size_x, data.size_y, data.size_z, data.part_length,
-    0, 0, Date.now()
+    0, 0, Date.now(),
+    data.name + " " + data.description
   ];
 
   return new Promise(function(resolve, reject){
