@@ -1,9 +1,9 @@
 
-const ModList = mods => m("div", Object.keys(mods).map(mod_name => {
+const modList = mods => m("div", Object.keys(mods).map(mod_name => {
 	return m("span", { class: "badge badge-secondary" }, mod_name);
 }));
 
-const Entry = entry => m("tr", [
+const entry = entry => m("tr", [
 	m("td", entry.user.name),
 	m("td", entry.name),
 	m("td", new Date(+entry.created).toString()),
@@ -11,10 +11,10 @@ const Entry = entry => m("tr", [
 	m("td", entry.size_x + " / " + entry.size_y + " / " + entry.size_z),
 	m("td", entry.total_parts),
 	m("td", entry.description),
-	m("td", ModList(entry.mods))
+	m("td", modList(entry.mods))
 ]);
 
-export default list => m("table", { class: "table table-striped table-condensed" }, [
+const table = list => m("table", { class: "table table-striped table-condensed" }, [
 	m("thead", [
 		m("tr", [
 			m("th", "User"),
@@ -28,6 +28,12 @@ export default list => m("table", { class: "table table-striped table-condensed"
 		])
 	]),
 	m("tbody", [
-		list.map(Entry)
+		list.map(entry)
 	])
 ]);
+
+export default {
+	view(vnode) {
+		return table(vnode.attrs.list);
+	}
+};

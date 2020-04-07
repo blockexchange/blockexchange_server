@@ -36,7 +36,10 @@ app.post('/api/searchschema', jsonParser, function(req, res){
 		q = schema_dao.find_by_keywords(req.body.keywords);
 	}
 
-  q.then(rows => res.json(rows))
+  q.then(rows => {
+		return Promise.all(rows.map(enrich))
+		.then(enriched_rows => res.json(enriched_rows));
+	})
   .catch(e => {
     console.error(e);
     res.status(500).end();

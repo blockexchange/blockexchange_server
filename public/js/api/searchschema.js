@@ -1,5 +1,5 @@
 
-export const find_by_description = keywords => m.request({
+export const find_by_keywords = keywords => m.request({
 	method: "POST",
 	data: {
 		keywords: keywords
