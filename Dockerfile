@@ -13,7 +13,7 @@ RUN cd /data &&\
   npm run bundle
 
 # use optimized js bundle
-RUN cp public/index_prod.html public/index.html
+RUN cp /data/public/index_prod.html /data/public/index.html
 
 # Stage 2 package
 FROM node:13.12.0-alpine
