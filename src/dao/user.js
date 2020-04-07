@@ -40,16 +40,16 @@ module.exports.create = function(data) {
   const query = `
     insert into
     public.user(
-      name, hash, mail
+      name, hash, mail, created
     )
     values(
-      $1, $2, $3
+      $1, $2, $3, $4
     )
     returning *
   `;
 
   const values = [
-    data.name, data.hash, data.mail
+    data.name, data.hash, data.mail, Date.now()
   ];
 
   return new Promise(function(resolve, reject){

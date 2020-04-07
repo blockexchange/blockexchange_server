@@ -4,10 +4,12 @@ exports.up = function(db) {
     id: { type: 'bigint', primaryKey: true, autoIncrement: true },
     name: { type: 'string', notNull: true },
     hash: { type: 'string', notNull: true },
+    created: { type: 'bigint', notNull: true },
     mail: { type: 'string' }
   })
   .then(() => {
-    return db.addIndex("user", "user_name", ["name"], true);
+    return db.addIndex("user", "user_name", ["name"], true)
+    .then(() => db.addIndex("user", "user_created", ["created"]));
   });
 };
 

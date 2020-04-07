@@ -4,6 +4,8 @@
 
 * **id** bigint
 * **name** varchar
+* **hash** varchar
+* **created** bigint
 
 ## schema
 
