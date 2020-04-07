@@ -56,3 +56,31 @@ app.get("/api/searchrecent/:count", function(req, res){
 	});
 
 });
+
+
+app.get("/api/search/schema/byname/:username/:name", function(req, res){
+	console.log("POST /api/search/schema/byname/:username/:name", req.params);
+
+	user_dao.get_by_name(req.params.username)
+	.then(user => {
+		if (!user) {
+			res.status(404).end();
+			return;
+		}
+
+		schema_dao.get_by_name(req.params.name)
+		.then(schema => {
+			if (!schema) {
+				res.status(404).end();
+				return;
+			}
+
+			res.json(schema);
+		});
+	})
+	.catch(e => {
+		console.error(e);
+		res.status(500).end();
+	});
+
+});
