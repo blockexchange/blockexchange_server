@@ -27,8 +27,7 @@ exports.up = function(db) {
     search_tokens: { type: "TSVECTOR", notNull: true }
   })
   .then(() => {
-    return db.addIndex("schema", "schema_uid", ["uid"], true)
-		.then(() => db.addIndex("schema", "schema_created", ["created"]));
+    return db.addIndex("schema", "schema_created", ["created"]);
   });
 };
 
