@@ -7,10 +7,8 @@ exports.up = function(db) {
     created: { type: 'bigint', notNull: true },
     mail: { type: 'string' }
   })
-  .then(() => {
-    return db.addIndex("user", "user_name", ["name"], true)
-    .then(() => db.addIndex("user", "user_created", ["created"]));
-  });
+  .then(() => db.addIndex("user", "user_name", ["name"], true))
+  .then(() => db.addIndex("user", "user_created", ["created"]));
 };
 
 exports.down = function(db) {

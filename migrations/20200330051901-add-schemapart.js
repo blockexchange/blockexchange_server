@@ -19,7 +19,10 @@ exports.up = function(db) {
     offset_z: { type: 'smallint', notNull: true },
     data: { type: 'blob', notNull: true },
     metadata: { type: 'blob', notNull: true }
-  });
+  })
+  .then(() => db.addIndex("schemapart", "schemapart_coords", [
+    "schema_id", "offset_x", "offset_y", "offset_z"
+  ]));
 };
 
 exports.down = function(db) {
