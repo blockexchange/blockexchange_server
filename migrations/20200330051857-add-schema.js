@@ -14,9 +14,8 @@ exports.up = function(db) {
         }
       }
     },
-    uid: { type: "string", length: 6, notNull: true },
+    name: { type: "string", length: 64, notNull: true },
 		description: { type: "text", notNull: true },
-    description_tokens: { type: "TSVECTOR", notNull: true },
     complete: { type: 'boolean', notNull: true },
     size_x: { type: 'smallint', notNull: true },
     size_y: { type: 'smallint', notNull: true },
@@ -24,7 +23,8 @@ exports.up = function(db) {
 		created: { type: 'bigint', notNull: true },
     part_length: { type: 'smallint', notNull: true },
 		total_size: { type: 'int', notNull: true },
-		total_parts: { type: 'int', notNull: true }
+		total_parts: { type: 'int', notNull: true },
+    search_tokens: { type: "TSVECTOR", notNull: true }
   })
   .then(() => {
     return db.addIndex("schema", "schema_uid", ["uid"], true)

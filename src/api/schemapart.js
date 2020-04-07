@@ -10,13 +10,13 @@ const tokencheck = require("../util/tokencheck");
 // data='{"schema_id": 1, "offset_x": 0, "offset_y": 0, "offset_z": 0, "data": "return {}"}'
 // curl -X POST 127.0.0.1:8080/api/schemapart --data "${data}" -H "Content-Type: application/json"
 app.post('/api/schemapart', jsonParser, function(req, res){
-  console.log("POST /api/schemapart", req.body.schema_uid, req.body.offset_x, req.body.offset_y, req.body.offset_z);
+  console.log("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
 	//console.log("Data: ", req.body);//DEBUG
   //TODO: check if schema is not completed
 
   tokencheck(req, res)
   .then(claims => {
-    return schema_dao.get_by_uid(req.body.schema_uid)
+    return schema_dao.get_by_id(req.body.schema_id)
     .then(schema => {
       // check user id in claims
       if (schema.user_id != +claims.user_id){

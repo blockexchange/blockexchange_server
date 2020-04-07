@@ -33,7 +33,7 @@ app.post('/api/searchschema', jsonParser, function(req, res){
 	if (req.body.user_id) {
 		q = schema_dao.find_by_user_id(req.body.user_id);
 	} else if (req.body.keywords) {
-		q = schema_dao.find_by_description(req.body.keywords);
+		q = schema_dao.find_by_keywords(req.body.keywords);
 	}
 
   q.then(rows => res.json(rows))

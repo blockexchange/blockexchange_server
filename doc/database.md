@@ -8,7 +8,7 @@
 ## schema
 
 * **id** bigint
-* **uid** varchar(5)
+* **name** varchar(64)
 * **description** text
 * **complete** boolean
 * **size_x** smallint

@@ -1,13 +1,11 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
-const ShortUniqueId = require('short-unique-id').default;
-const uid = new ShortUniqueId();
 
 const app = require("../app");
 const schema_dao = require("../dao/schema");
 const tokencheck = require("../util/tokencheck");
 
-// data='{"size_x": 10, "size_y": 10, "size_z": 10, "part_length": 10}'
+// data='{"size_x": 10, "size_y": 10, "size_z": 10, "part_length": 10, "name": "xyz"}'
 // curl -X POST 127.0.0.1:8080/api/schema --data "${data}" -H "Content-Type: application/json"
 app.post('/api/schema', jsonParser, function(req, res){
   console.log("POST /api/schema", req.body);
@@ -18,7 +16,7 @@ app.post('/api/schema', jsonParser, function(req, res){
   .then(claims => {
     schema_dao.create({
       user_id: +claims.user_id,
-      uid: uid.randomUUID(6),
+      name: req.body.name,
       description: req.body.description,
       size_x: req.body.size_x,
       size_y: req.body.size_y,
@@ -39,12 +37,12 @@ app.post('/api/schema', jsonParser, function(req, res){
 });
 
 // curl -X POST 127.0.0.1:8080/api/schema/1/complete
-app.post('/api/schema/:uid/complete', jsonParser, function(req, res){
-  console.log("POST /api/schema/id/complete", req.params.uid, req.body);
+app.post('/api/schema/:id/complete', jsonParser, function(req, res){
+  console.log("POST /api/schema/id/complete", req.params.id, req.body);
 
   tokencheck(req, res)
   .then(claims => {
-    return schema_dao.get_by_uid(req.params.uid)
+    return schema_dao.get_by_id(req.params.id)
     .then(schema => {
       console.log(schema, claims);
       // check user id in claims
@@ -63,10 +61,10 @@ app.post('/api/schema/:uid/complete', jsonParser, function(req, res){
 
 
 // curl 127.0.0.1:8080/api/schema/1
-app.get('/api/schema/:uid', function(req, res){
-  console.log("GET /api/schema/:uid", req.params.uid);
+app.get('/api/schema/:id', function(req, res){
+  console.log("GET /api/schema/:id", req.params.id);
 
-  schema_dao.get_by_uid(req.params.uid)
+  schema_dao.get_by_id(req.params.id)
   .then(schema => res.json(schema))
   .catch(() => res.status(500).end());
 });

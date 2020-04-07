@@ -4,20 +4,22 @@ module.exports.create = function(data) {
   const query = `
     insert into
     schema(
-      complete, user_id, uid, description, description_tokens,
+      complete, user_id, name, description,
       size_x, size_y, size_z, part_length,
-      total_size, total_parts, created
+      total_size, total_parts, created,
+      search_tokens
     )
     values(
-      $1, $2, $3, $4, to_tsvector($4),
+      $1, $2, $3, $4,
       $5, $6, $7, $8,
-      $9, $10, $11
+      $9, $10, $11,
+      to_tsvector($4) || ' ' || to_tsvector($3)
     )
     returning *
   `;
 
   const values = [
-    false, data.user_id, data.uid, data.description || "",
+    false, data.user_id, data.name, data.description || "",
     data.size_x, data.size_y, data.size_z, data.part_length,
     0, 0, Date.now()
   ];
@@ -65,11 +67,29 @@ module.exports.finalize = function(schema_id) {
   });
 };
 
-module.exports.get_by_uid = function(uid) {
+module.exports.get_by_name = function(name) {
   return new Promise(function(resolve, reject) {
     pool.connect()
     .then(client => {
-      client.query("select * from schema where uid = $1", [uid])
+      client.query("select * from schema where name = $1", [name])
+      .then(sql_res => {
+        resolve(sql_res.rows[0]);
+        client.release();
+      })
+      .catch(e => {
+        client.release();
+        console.error(e.stack);
+        reject();
+      });
+    });
+  });
+};
+
+module.exports.get_by_id = function(id) {
+  return new Promise(function(resolve, reject) {
+    pool.connect()
+    .then(client => {
+      client.query("select * from schema where id = $1", [id])
       .then(sql_res => {
         resolve(sql_res.rows[0]);
         client.release();
@@ -101,11 +121,11 @@ module.exports.find_by_user_id = function(user_id) {
   });
 };
 
-module.exports.find_by_description = function(keywords) {
+module.exports.find_by_keywords = function(keywords) {
   const query = `
     select *
     from schema
-    where description_tokens @@ to_tsquery($1)
+    where search_tokens @@ to_tsquery($1)
     limit 1000
   `;
   return new Promise(function(resolve, reject) {
