@@ -10,8 +10,6 @@ const tokencheck = require("../util/tokencheck");
 app.post('/api/schema', jsonParser, function(req, res){
   console.log("POST /api/schema", req.body);
 
-  //TODO: insert req.body.tags
-
   tokencheck(req, res)
   .then(claims => {
     schema_dao.create({
