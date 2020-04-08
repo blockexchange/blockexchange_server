@@ -2,7 +2,6 @@
 FROM node:13.12.0-alpine as builder
 
 COPY . /data
-COPY .git/refs/heads/master /data/public/version.txt
 
 # build
 RUN cd /data &&\
@@ -19,7 +18,6 @@ RUN cp /data/public/index_prod.html /data/public/index.html
 FROM node:13.12.0-alpine
 
 COPY . /data
-COPY .git/refs/heads/master /data/public/version.txt
 
 RUN cd /data && npm i --only=production
 COPY --from=builder /data/public /data/public
