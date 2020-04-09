@@ -1,5 +1,41 @@
 const pool = require("../pool");
 
+module.exports.update = function(data) {
+  const query = `
+    update schema
+    set
+      name = $2,
+      description = $3,
+      search_tokens = to_tsvector($4),
+      rating = $5,
+      downloads = $6
+    where id = $1
+  `;
+
+  const values = [
+    data.id,
+    data.name, data.description,
+    data.name + " " + data.description,
+    data.rating, data.downloads
+  ];
+
+  return new Promise(function(resolve, reject){
+    pool.connect()
+    .then(client => {
+      return client.query(query, values)
+      .then(() => {
+        resolve(true);
+        client.release();
+      })
+      .catch(e => {
+        client.release();
+        console.error(e.stack);
+        reject();
+      });
+    });
+  });
+};
+
 module.exports.create = function(data) {
   const query = `
     insert into

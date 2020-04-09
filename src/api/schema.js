@@ -63,6 +63,10 @@ app.get('/api/schema/:id', function(req, res){
   console.log("GET /api/schema/:id", req.params.id);
 
   schema_dao.get_by_id(req.params.id)
-  .then(schema => res.json(schema))
+  .then(schema => {
+    res.json(schema);
+    schema.downloads++;
+    schema_dao.update(schema);
+  })
   .catch(() => res.status(500).end());
 });
