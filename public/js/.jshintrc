@@ -5,6 +5,7 @@
   "browser": true,
   "globals": {
     "m": true,
+		"moment": true,
     "console": true
   }
 }

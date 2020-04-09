@@ -1,15 +1,34 @@
 
+const licenseBadge = license => {
+	switch (license) {
+		case "CC0":
+			return m("img", {src:"pics/license_cc0.png"});
+		default:
+			return license;
+	}
+};
+
+const badge = (cl, txt) => m("span", {
+	class: `badge badge-${cl}`},
+	txt
+);
+
 const modList = mods => m("div", Object.keys(mods).map(mod_name => {
-	return m("span", { class: "badge badge-secondary" }, mod_name);
+	return badge("secondary", mod_name);
 }));
 
 const entry = entry => m("tr", [
 	m("td", entry.user.name),
 	m("td", entry.name),
-	m("td", new Date(+entry.created).toString()),
+	m("td", [
+		moment(+entry.created).format("YYYY-MM-DD HH:mm"),
+		" (",
+		moment.duration( moment(+entry.created).diff() ).humanize(true),
+		")"
+	]),
 	m("td", entry.downloads),
-	m("td", entry.license),
-	m("td", entry.total_size),
+	m("td", licenseBadge(entry.license)),
+	m("td", badge("success", entry.total_size)),
 	m("td", entry.size_x + " / " + entry.size_y + " / " + entry.size_z),
 	m("td", entry.total_parts),
 	m("td", entry.description),
