@@ -42,14 +42,14 @@ module.exports.create = function(data) {
     schema(
       complete, user_id, name, description,
       size_x, size_y, size_z, part_length,
-      total_size, total_parts, created,
+      total_size, total_parts, created, license,
       search_tokens
     )
     values(
       $1, $2, $3, $4,
       $5, $6, $7, $8,
-      $9, $10, $11,
-      to_tsvector($12)
+      $9, $10, $11, $12,
+      to_tsvector($13)
     )
     returning *
   `;
@@ -57,7 +57,7 @@ module.exports.create = function(data) {
   const values = [
     false, data.user_id, data.name, data.description || "",
     data.size_x, data.size_y, data.size_z, data.part_length,
-    0, 0, Date.now(),
+    0, 0, Date.now(), data.license || "CC0",
     data.name + " " + data.description
   ];
 

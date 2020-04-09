@@ -19,7 +19,8 @@ app.post('/api/schema', jsonParser, function(req, res){
       size_x: req.body.size_x,
       size_y: req.body.size_y,
       size_z: req.body.size_z,
-      part_length: req.body.part_length
+      part_length: req.body.part_length,
+			license: req.body.license
     })
     .then(inserted_data => res.json(inserted_data))
     .catch(e => {
