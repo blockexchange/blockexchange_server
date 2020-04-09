@@ -1,5 +1,7 @@
-import App from './components/App.js';
+import Start from './components/Start.js';
+import Search from './components/Search.js';
 
 export default {
-  "/": App
+  "/": Start,
+  "/search": Search
 };
