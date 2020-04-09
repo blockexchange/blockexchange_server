@@ -18,6 +18,7 @@ RUN cp /data/public/index_prod.html /data/public/index.html
 FROM node:13.12.0-alpine
 
 COPY . /data
+RUN apk update && apk add curl
 
 RUN cd /data && npm i --only=production
 COPY --from=builder /data/public /data/public
