@@ -16,7 +16,7 @@ const debounced_search = debounce(() => {
     find_recent(20).then(l => list = l);
 }, 500);
 
-debounced_search();
+find_recent(20).then(l => list = l);
 
 function changeKeywords(k){
   keywords = k;
