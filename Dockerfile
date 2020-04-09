@@ -26,4 +26,7 @@ WORKDIR /data
 
 EXPOSE 8080
 
+HEALTHCHECK --interval=5s --timeout=3s \
+  CMD curl -f http://localhost:8080/ || exit 1
+
 CMD ["npm", "start"]
