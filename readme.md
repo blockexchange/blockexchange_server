@@ -7,9 +7,9 @@ minetest blockexchange server software
 ![](https://github.com/blockexchange/blockexchange_server/workflows/test/badge.svg)
 
 
-State: **WIP**
+# Overview
 
-Docker: https://hub.docker.com/r/blockexchange/blockexchange
+Corresponding mod and more information: https://github.com/blockexchange/blockexchange
 
 # Running
 
@@ -27,6 +27,8 @@ Docker: https://hub.docker.com/r/blockexchange/blockexchange
 * **BLOCKEXCHANGE_KEY** private key to sign the json web tokens with
 
 ## Docker usage
+
+Image: https://hub.docker.com/r/blockexchange/blockexchange
 
 This example shows a simple throw-away setup.
 
