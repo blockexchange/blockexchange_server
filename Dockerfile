@@ -11,9 +11,6 @@ RUN cd /data &&\
   npm run jshint_frontend &&\
   npm run bundle
 
-# use optimized js bundle
-RUN cp /data/public/index_prod.html /data/public/index.html
-
 # Stage 2 package
 FROM node:13.12.0-alpine
 
