@@ -3,7 +3,12 @@ import { isNodeHidden, getNodePos } from './utils.js';
 
 
 export default function(scene, schema, posx, posy, posz){
-  return m.request(`api/schemapart/${schema.id}/${posx}/${posy}/${posz}`)
+
+	const block_x = Math.floor(posx * schema.part_length);
+	const block_y = Math.floor(posy * schema.part_length);
+	const block_z = Math.floor(posz * schema.part_length);
+
+  return m.request(`api/schemapart/${schema.id}/${block_x}/${block_y}/${block_z}`)
   .then(function(mapblock){
     if (!mapblock)
       return;
@@ -37,8 +42,8 @@ export default function(scene, schema, posx, posy, posz){
           var matrix = new THREE.Matrix4()
             .makeTranslation(
               x + (posx*16),
-              y + (posy*16),
-              z + (posz*16)
+              z + (posy*16),
+              y + (posz*16)
             );
 
           var list = nodenameGeometriesMap[nodeName];

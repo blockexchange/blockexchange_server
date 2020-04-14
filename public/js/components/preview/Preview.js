@@ -1,6 +1,7 @@
 import { setup as setupControls, update as updateControls } from './controls.js';
 import { init as initColormapping } from './colormapping.js';
 import drawMapblock from './render.js';
+import iterator from './iterator.js';
 
 const height = 640;
 const width = 800;
@@ -32,13 +33,25 @@ export default {
 
     setupControls(camera, renderer, render);
 
-		initColormapping().then(() => {
-			drawMapblock(scene, schema, 0, 0, 0);
-		});
+		const it = iterator(schema);
+
+		function fetchNextMapblock(){
+			const pos = it();
+
+			if (pos){
+				drawMapblock(scene, schema, pos.x, pos.y, pos.z)
+				.then(render)
+				.then(() => setTimeout(fetchNextMapblock, 500));
+			}
+		}
+
+		initColormapping().then(fetchNextMapblock);
 
     function render(){
     	renderer.render( scene, camera );
     }
+
+		animate();
 
     function animate() {
     	requestAnimationFrame( animate );
