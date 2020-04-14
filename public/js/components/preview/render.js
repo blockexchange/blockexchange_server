@@ -42,8 +42,8 @@ export default function(scene, schema, posx, posy, posz){
           var matrix = new THREE.Matrix4()
             .makeTranslation(
               x + (posx*16),
-              z + (posy*16),
-              y + (posz*16)
+              y + (posy*16),
+              z + (posz*16)
             );
 
           var list = nodenameGeometriesMap[nodeName];

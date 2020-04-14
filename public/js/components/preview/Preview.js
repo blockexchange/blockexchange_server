@@ -21,11 +21,15 @@ export default {
     camera.position.y = 100;
 
     const scene = new THREE.Scene();
+		vnode.state.scene = scene;
+		vnode.state.active = true;
 
     const renderer = new THREE.WebGLRenderer({
       antialias: false,
       precision: "lowp"
     });
+
+		vnode.state.renderer = renderer;
 
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( width, height );
@@ -36,6 +40,9 @@ export default {
 		const it = iterator(schema);
 
 		function fetchNextMapblock(){
+			if (!vnode.state.active){
+				return;
+			}
 			const pos = it();
 
 			if (pos){
@@ -54,6 +61,9 @@ export default {
 		animate();
 
     function animate() {
+			if (!vnode.state.active){
+				return;
+			}
     	requestAnimationFrame( animate );
     	updateControls();
     }
@@ -63,5 +73,8 @@ export default {
   },
   onremove: function(vnode) {
     console.log("onremove", vnode);
+		vnode.state.renderer.dispose();
+		vnode.state.scene.dispose();
+		vnode.state.active = false;
   }
 };

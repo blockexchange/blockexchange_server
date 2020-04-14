@@ -1,5 +1,5 @@
 export function getNodePos(x,y,z){
-  return x + (y * 16) + (z * 256);
+  return z + (y * 16) + (x * 256);
 }
 
 
