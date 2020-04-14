@@ -12,10 +12,5 @@ export const find_recent = count => m.request({
 });
 
 export const get_by_user_and_schemaname = (user_name, schema_name) => m.request({
-	method: "POST",
-	data: {
-		user_name: user_name,
-		schema_name: schema_name
-	},
-	url: "api/searchschema"
+	url: `/api/search/schema/byname/${user_name}/${schema_name}`
 });

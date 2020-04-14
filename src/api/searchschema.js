@@ -81,22 +81,17 @@ app.get("/api/searchrecent/:count", function(req, res){
 app.get("/api/search/schema/byname/:username/:name", function(req, res){
 	console.log("POST /api/search/schema/byname/:username/:name", req.params);
 
-	user_dao.get_by_name(req.params.username)
-	.then(user => {
-		if (!user) {
+	schema_dao.get_by_schemaname_and_username(req.params.name, req.params.username)
+	.then(schema => {
+		if (!schema) {
 			res.status(404).end();
 			return;
 		}
 
-		schema_dao.get_by_name(req.params.name)
-		.then(schema => {
-			if (!schema) {
-				res.status(404).end();
-				return;
-			}
-
-			res.json(schema);
-		});
+		return enrich(schema)
+		.then(enriched_schema => {
+			res.json(enriched_schema);			
+		})
 	})
 	.catch(e => {
 		console.error(e);

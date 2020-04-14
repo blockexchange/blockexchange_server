@@ -11,7 +11,9 @@ export default {
         vnode.state.result = schema;
       });
 
-    } else {
+    }
+
+    if (vnode.state.result) {
       return m(SchemaDetail, { schema: vnode.state.result });
     }
   }
