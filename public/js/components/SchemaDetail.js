@@ -1,4 +1,5 @@
 import LicenseBadge from './LicenseBadge.js';
+import Preview from './preview/Preview.js';
 
 export default {
   view: function(vnode){
@@ -27,6 +28,7 @@ export default {
     		moment.duration( moment(+schema.created).diff() ).humanize(true),
     		")"
     	]),
+      m(Preview, { schema: schema })
     ]);
   }
 };
