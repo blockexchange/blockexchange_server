@@ -1,5 +1,7 @@
 import { get_by_user_and_schemaname } from '../api/searchschema.js';
 
+import SchemaDetail from '../components/SchemaDetail.js';
+
 export default {
   view: function(vnode){
     if (!vnode.state.result && !vnode.state.busy){
@@ -8,8 +10,9 @@ export default {
       .then(schema => {
         vnode.state.result = schema;
       });
-    }
 
-    return JSON.stringify(vnode.state);
+    } else {
+      return m(SchemaDetail, { schema: vnode.state.result });
+    }
   }
 };
