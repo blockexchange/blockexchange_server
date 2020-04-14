@@ -16,6 +16,7 @@ app.post('/api/schema', jsonParser, function(req, res){
       user_id: +claims.user_id,
       name: req.body.name,
       description: req.body.description,
+      long_description: req.body.long_description,
       size_x: req.body.size_x,
       size_y: req.body.size_y,
       size_z: req.body.size_z,

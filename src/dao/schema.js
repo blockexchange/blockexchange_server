@@ -8,7 +8,8 @@ module.exports.update = function(data) {
       description = $3,
       search_tokens = to_tsvector($4),
       rating = $5,
-      downloads = $6
+      downloads = $6,
+      long_description = $7
     where id = $1
   `;
 
@@ -16,7 +17,8 @@ module.exports.update = function(data) {
     data.id,
     data.name, data.description,
     data.name + " " + data.description,
-    data.rating, data.downloads
+    data.rating, data.downloads,
+    data.long_description
   ];
 
   return new Promise(function(resolve, reject){
@@ -43,13 +45,15 @@ module.exports.create = function(data) {
       complete, user_id, name, description,
       size_x, size_y, size_z, part_length,
       total_size, total_parts, created, license,
-      search_tokens
+      search_tokens,
+      long_description
     )
     values(
       $1, $2, $3, $4,
       $5, $6, $7, $8,
       $9, $10, $11, $12,
-      to_tsvector($13)
+      to_tsvector($13),
+      $14
     )
     returning *
   `;
@@ -58,7 +62,8 @@ module.exports.create = function(data) {
     false, data.user_id, data.name, data.description || "",
     data.size_x, data.size_y, data.size_z, data.part_length,
     0, 0, Date.now(), data.license || "CC0",
-    data.name + " " + data.description
+    data.name + " " + data.description,
+    data.long_description || ""
   ];
 
   return new Promise(function(resolve, reject){
