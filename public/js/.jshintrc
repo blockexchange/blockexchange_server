@@ -6,6 +6,7 @@
   "globals": {
     "m": true,
 		"moment": true,
-    "console": true
+    "console": true,
+    "THREE": true
   }
 }

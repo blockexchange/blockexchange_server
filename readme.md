@@ -54,3 +54,10 @@ docker run -it --rm \
 ```
 
 Go to http://127.0.0.1:8080
+
+# License
+
+Code: MIT
+
+Textures:
+* public/textures/default*.png CC BY-SA 3.0 https://github.com/minetest/minetest_game/
