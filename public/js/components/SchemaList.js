@@ -18,8 +18,8 @@ const modList = mods => m("div", Object.keys(mods).map(mod_name => {
 }));
 
 const entry = entry => m("tr", [
-	m("td", entry.user.name),
-	m("td", entry.name),
+	m("td", m("a", { href: "#!/schema/" + entry.user.name }, entry.user.name)),
+	m("td", m("a", { href: "#!/schema/" + entry.user.name + "/" + entry.name }, entry.name)),
 	m("td", [
 		moment(+entry.created).format("YYYY-MM-DD HH:mm"),
 		" (",
