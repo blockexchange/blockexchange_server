@@ -90,8 +90,8 @@ app.get("/api/search/schema/byname/:username/:name", function(req, res){
 
 		return enrich(schema)
 		.then(enriched_schema => {
-			res.json(enriched_schema);			
-		})
+			res.json(enriched_schema);
+		});
 	})
 	.catch(e => {
 		console.error(e);
