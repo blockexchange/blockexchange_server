@@ -1,12 +1,5 @@
 
-const licenseBadge = license => {
-	switch (license) {
-		case "CC0":
-			return m("img", {src:"pics/license_cc0.png"});
-		default:
-			return license;
-	}
-};
+import LicenseBadge from './LicenseBadge.js';
 
 const badge = (cl, txt) => m("span", {
 	class: `badge badge-${cl}`},
@@ -27,7 +20,7 @@ const entry = entry => m("tr", [
 		")"
 	]),
 	m("td", entry.downloads),
-	m("td", licenseBadge(entry.license)),
+	m("td", m(LicenseBadge, { license: entry.license })),
 	m("td", badge("success", entry.total_size)),
 	m("td", entry.size_x + " / " + entry.size_y + " / " + entry.size_z),
 	m("td", entry.total_parts),

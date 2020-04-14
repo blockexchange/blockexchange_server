@@ -1,7 +1,7 @@
-import Start from './components/Start.js';
-import Search from './components/Search.js';
-import UserSchemaList from './components/UserSchemaList.js';
-import SchemaDetail from './components/SchemaDetail.js';
+import Start from './views/Start.js';
+import Search from './views/Search.js';
+import UserSchemaList from './views/UserSchemaList.js';
+import SchemaDetail from './views/SchemaDetail.js';
 
 export default {
   "/": Start,

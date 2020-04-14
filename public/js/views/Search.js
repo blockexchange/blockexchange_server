@@ -1,6 +1,6 @@
 
-import SearchBar from './SearchBar.js';
-import SchemaList from './SchemaList.js';
+import SearchBar from '../components/SearchBar.js';
+import SchemaList from '../components/SchemaList.js';
 
 import store from '../store/search.js';
 

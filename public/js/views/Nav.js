@@ -1,5 +1,5 @@
 
-import UserStatus from './UserStatus.js';
+import UserStatus from '../components/UserStatus.js';
 
 const a = (...args) => m("a", ...args);
 const div = (...args) => m("div", ...args);
