@@ -1,17 +1,24 @@
 import { getMaterial } from './material.js';
-import { getMapblock } from './api.js';
 import { isNodeHidden, getNodePos } from './utils.js';
 
 
-export function drawMapblock(scene, posx, posy, posz){
-  return getMapblock(posx, posy, posz)
+export default function(scene, schema, posx, posy, posz){
+  return m.request(`api/schemapart/${schema.id}/${posx}/${posy}/${posz}`)
   .then(function(mapblock){
     if (!mapblock)
       return;
 
-    if (mapblock.blockmapping.length == 1 && mapblock.blockmapping[0] == "air"){
+		if (Object.keys(mapblock.data.node_mapping).length == 1 && mapblock.data.node_mapping.air) {
       return;
     }
+
+		// create reverse mapping: nodeId -> nodeName
+		const node_mapping_rev = {};
+		Object.keys(mapblock.data.node_mapping).forEach(nodeName => {
+			const nodeId = mapblock.data.node_mapping[nodeName];
+			node_mapping_rev[nodeId] = nodeName;
+		});
+		mapblock.data.node_mapping_rev = node_mapping_rev;
 
     var nodenameGeometriesMap = {}; // nodeName => [matrix, matrix, ...]
 
@@ -24,8 +31,8 @@ export function drawMapblock(scene, posx, posy, posz){
           }
 
 					var i = getNodePos(x,y,z);
-          var contentId = mapblock.contentid[i];
-          var nodeName = mapblock.blockmapping[contentId];
+          var contentId = mapblock.data.node_ids[i];
+          var nodeName = mapblock.data.node_mapping_rev[contentId];
 
           var matrix = new THREE.Matrix4()
             .makeTranslation(

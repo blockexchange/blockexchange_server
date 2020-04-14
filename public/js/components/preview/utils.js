@@ -10,21 +10,21 @@ export function isNodeHidden(mapblock,x,y,z){
   }
 
   function isTransparent(contentId){
-    var nodeName = mapblock.blockmapping[contentId];
+    var nodeName = mapblock.data.node_mapping_rev[contentId];
     return nodeName == "air" || nodeName == "default:water_source";
   }
 
-  if (isTransparent(mapblock.contentid[getNodePos(x-1,y,z)]))
+  if (isTransparent(mapblock.data.node_ids[getNodePos(x-1,y,z)]))
     return false;
-  if (isTransparent(mapblock.contentid[getNodePos(x,y-1,z)]))
+  if (isTransparent(mapblock.data.node_ids[getNodePos(x,y-1,z)]))
     return false;
-  if (isTransparent(mapblock.contentid[getNodePos(x,y,z-1)]))
+  if (isTransparent(mapblock.data.node_ids[getNodePos(x,y,z-1)]))
     return false;
-  if (isTransparent(mapblock.contentid[getNodePos(x+1,y,z)]))
+  if (isTransparent(mapblock.data.node_ids[getNodePos(x+1,y,z)]))
     return false;
-  if (isTransparent(mapblock.contentid[getNodePos(x,y+1,z)]))
+  if (isTransparent(mapblock.data.node_ids[getNodePos(x,y+1,z)]))
     return false;
-  if (isTransparent(mapblock.contentid[getNodePos(x,y,z+1)]))
+  if (isTransparent(mapblock.data.node_ids[getNodePos(x,y,z+1)]))
     return false;
 
   return true;

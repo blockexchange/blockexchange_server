@@ -1,4 +1,9 @@
 import { setup as setupControls, update as updateControls } from './controls.js';
+import { init as initColormapping } from './colormapping.js';
+import drawMapblock from './render.js';
+
+const height = 640;
+const width = 800;
 
 export default {
   view: function(vnode){
@@ -7,7 +12,9 @@ export default {
   },
   oncreate: function(vnode) {
     console.log("oncreate", vnode);
-    const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 2, 2000 );
+
+		const schema = vnode.attrs.schema;
+    const camera = new THREE.PerspectiveCamera( 45, height / width, 2, 2000 );
     camera.position.z = -150;
     camera.position.x = -150;
     camera.position.y = 100;
@@ -20,10 +27,14 @@ export default {
     });
 
     renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setSize( width, height );
     document.body.appendChild( renderer.domElement );
 
     setupControls(camera, renderer, render);
+
+		initColormapping().then(() => {
+			drawMapblock(scene, schema, 0, 0, 0);
+		});
 
     function render(){
     	renderer.render( scene, camera );

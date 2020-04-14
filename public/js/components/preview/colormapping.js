@@ -1,9 +1,7 @@
-import { getColormapping } from './api.js';
-
 let mapping;
 
 export function init(){
-  return getColormapping()
+  return m.request("colormapping.json")
     .then(_mapping => mapping = _mapping);
 }
 
