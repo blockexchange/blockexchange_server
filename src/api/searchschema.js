@@ -44,10 +44,8 @@ app.post('/api/searchschema', jsonParser, function(req, res){
 
 	} else if (req.body.schema_name && req.body.user_name) {
 		// by schema name and user name (unique)
-		q = schema_dao.get_by_schemaname_and_username(
-			req.body.schema_name,
-			req.body.user_name
-		);
+		q = schema_dao.get_by_schemaname_and_username(req.body.schema_name, req.body.user_name)
+		.then(schema => [schema]);
 
 	} else {
 		// nothing to search for

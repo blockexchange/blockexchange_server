@@ -218,7 +218,7 @@ module.exports.get_by_schemaname_and_username = function(schema_name, user_name)
   const query = `
     select *
     from schema
-    where user_id = (select id from 'user' where name = $1)
+    where user_id = (select id from public.user where name = $1)
     and name = $2
     limit 1
   `;
