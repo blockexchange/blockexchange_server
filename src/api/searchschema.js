@@ -31,11 +31,28 @@ app.post('/api/searchschema', jsonParser, function(req, res){
 
 	var q;
 	if (req.body.user_id) {
+		// just by user_id
 		q = schema_dao.find_by_user_id(req.body.user_id);
+
 	} else if (req.body.keywords) {
+		// by keywords
 		q = schema_dao.find_by_keywords(req.body.keywords);
+
 	} else if (req.body.schema_id) {
+		// by unique id
 		q = schema_dao.get_by_id(req.body.schema_id).then(schema => [schema]);
+
+	} else if (req.body.schema_name && req.body.user_name) {
+		// by schema name and user name (unique)
+		q = schema_dao.get_by_schemaname_and_username(
+			req.body.schema_name,
+			req.body.user_name
+		);
+
+	} else {
+		// nothing to search for
+		res.json([]);
+		return;
 	}
 
   q.then(rows => {
