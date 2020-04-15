@@ -3,9 +3,9 @@ export default function(schema){
 
 	var pos;
 
-	const x_parts = Math.ceil((schema.size_x - 1) / schema.part_length);
-	const y_parts = Math.ceil((schema.size_y - 1) / schema.part_length);
-	const z_parts = Math.ceil((schema.size_z - 1) / schema.part_length);
+	const x_parts = Math.ceil(schema.size_x / schema.part_length);
+	const y_parts = Math.ceil(schema.size_y / schema.part_length);
+	const z_parts = Math.ceil(schema.size_z / schema.part_length);
 
 	return function(){
 		if (!pos){
