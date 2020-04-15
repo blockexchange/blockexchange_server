@@ -27,15 +27,15 @@ export default function(scene, schema, posx, posy, posz){
 
     var nodenameGeometriesMap = {}; // nodeName => [matrix, matrix, ...]
 
-		for (var z=0; z<schemapart.data.size.x; z++){
+		for (var x=0; x<schemapart.data.size.x; x++){
 			for (var y=0; y<schemapart.data.size.y; y++){
-	      for (var x=0; x<schemapart.data.size.z; x++){
+				for (var z=0; z<schemapart.data.size.z; z++){
           if (isNodeHidden(schemapart, x,y,z)){
             //skip hidden node
             continue;
           }
 
-					var i = getNodePos(x,y,z);
+					var i = getNodePos(schemapart,x,y,z);
           var contentId = schemapart.data.node_ids[i];
           var nodeName = schemapart.data.node_mapping_rev[contentId];
 
