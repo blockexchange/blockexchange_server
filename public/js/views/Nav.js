@@ -9,7 +9,10 @@ const li = (...args) => m("li", ...args);
 export default {
   view(){
     return m("nav", { class: "navbar fixed-top navbar-expand-lg navbar-dark bg-dark" }, [
-      a({class: "navbar-brand", href: "#!/" }, "Block exchange"),
+      a({class: "navbar-brand", href: "#!/" }, [
+				m("img", { src: "pics/blockexchange_logo_small.png" }),
+				" Block exchange"
+			]),
       div({class:"navbar-collapse collapse"}, [
         ul({class: "navbar-nav mr-auto"}, [
           li({class: "nav-item"}, a({class:"nav-link",href:"#!/search"}, "Search"))
