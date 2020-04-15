@@ -63,6 +63,7 @@ export default function(scene, schema, posx, posy, posz){
       if (material){
 				var list = nodenameGeometriesMap[nodeName];
 				var geometry = new THREE.BoxGeometry(1,1,1);
+				// TODO: fix possible memory leakage
 				var mesh = new THREE.InstancedMesh( geometry, material, list.length );
 				for (var i=0; i<list.length; i++){
 					mesh.setMatrixAt(i, list[i]);
