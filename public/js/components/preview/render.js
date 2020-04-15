@@ -43,7 +43,7 @@ export default function(scene, schema, posx, posy, posz){
             .makeTranslation(
               x + (posx*16),
               y + (posy*16),
-              z + (posz*16)
+              (z + (posz*16)) * -1
             );
 
           var list = nodenameGeometriesMap[nodeName];
