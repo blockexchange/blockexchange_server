@@ -27,9 +27,9 @@ export default function(scene, schema, posx, posy, posz){
 
     var nodenameGeometriesMap = {}; // nodeName => [matrix, matrix, ...]
 
-		for (var x=0; x<schemapart.data.size.x; x++){
+		for (var z=0; z<schemapart.data.size.x; z++){
 			for (var y=0; y<schemapart.data.size.y; y++){
-	      for (var z=0; z<schemapart.data.size.z; z++){
+	      for (var x=0; x<schemapart.data.size.z; x++){
           if (isNodeHidden(schemapart, x,y,z)){
             //skip hidden node
             continue;

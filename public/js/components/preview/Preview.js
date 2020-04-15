@@ -33,7 +33,7 @@ export default {
 
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( width, height );
-    document.body.appendChild( renderer.domElement );
+    vnode.dom.appendChild( renderer.domElement );
 
     setupControls(camera, renderer, render);
 
