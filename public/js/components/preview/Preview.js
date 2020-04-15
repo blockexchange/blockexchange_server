@@ -55,6 +55,7 @@ export default {
 
 			if (pos){
 				drawMapblock(scene, schema, pos.x, pos.y, pos.z)
+				.then(() => renderer.render( scene, camera ))
 				.then(() => setTimeout(fetchNextMapblock, 150));
 			}
 		}
@@ -62,12 +63,14 @@ export default {
 		initColormapping().then(fetchNextMapblock);
 		animate();
 
+		controls.addEventListener('change', () => renderer.render( scene, camera ));
+		renderer.render( scene, camera );
+
     function animate() {
 			if (!vnode.state.active){
 				return;
 			}
     	controls.update();
-			renderer.render( scene, camera );
 			requestAnimationFrame( animate );
     }
   },
