@@ -1,7 +1,7 @@
-import { setup as setupControls, update as updateControls } from './controls.js';
 import { init as initColormapping } from './colormapping.js';
 import drawMapblock from './render.js';
 import iterator from './iterator.js';
+import OrbitControls from './orbitcontrols.js';
 
 const height = 450;
 const width = 800;
@@ -34,7 +34,7 @@ export default {
     renderer.setSize( width, height );
     vnode.dom.appendChild( renderer.domElement );
 
-    setupControls(camera, renderer, render);
+		const controls = new OrbitControls( camera, renderer.domElement, renderer.domElement );
 
 		const it = iterator(schema);
 		let count = 0;
@@ -55,26 +55,20 @@ export default {
 
 			if (pos){
 				drawMapblock(scene, schema, pos.x, pos.y, pos.z)
-				.then(render)
 				.then(() => setTimeout(fetchNextMapblock, 150));
 			}
 		}
 
 		initColormapping().then(fetchNextMapblock);
-
-    function render(){
-    	renderer.render( scene, camera );
-    }
-
 		animate();
-		render();
 
     function animate() {
 			if (!vnode.state.active){
 				return;
 			}
-    	requestAnimationFrame( animate );
-    	updateControls();
+    	controls.update();
+			renderer.render( scene, camera );
+			requestAnimationFrame( animate );
     }
   },
   onbeforeupdate: function() {
