@@ -7,13 +7,10 @@ const height = 640;
 const width = 800;
 
 export default {
-  view: function(vnode){
-    console.log("oviewninit", vnode);
+  view: function(){
     return m("div");
   },
   oncreate: function(vnode) {
-    console.log("oncreate", vnode);
-
 		const schema = vnode.attrs.schema;
     const camera = new THREE.PerspectiveCamera( 45, height / width, 2, 2000 );
     camera.position.z = -150;
@@ -72,7 +69,6 @@ export default {
     return false;
   },
   onremove: function(vnode) {
-    console.log("onremove", vnode);
 		vnode.state.renderer.dispose();
 		vnode.state.scene.dispose();
 		vnode.state.active = false;
