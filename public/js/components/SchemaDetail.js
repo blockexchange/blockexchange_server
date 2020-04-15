@@ -31,8 +31,12 @@ export default {
     		moment.duration( moment(+schema.created).diff() ).humanize(true),
     		")"
     	]),
-			m("span", { class: "badge badge-primary"}, Math.floor(vnode.state.progress) + "%"),
-      m(Preview, { schema: schema, progressCallback: f => vnode.state.progress = f * 100 })
+      m(Preview, { schema: schema, progressCallback: f => vnode.state.progress = f * 100 }),
+			m("div", { class: "progress"}, [
+				m("div", { class: "progress-bar", style: `width: ${vnode.state.progress}%` }, [
+					(Math.floor(vnode.state.progress * 10) / 10) + "%"
+				])
+			])
     ]);
   }
 };
