@@ -45,7 +45,7 @@ export default {
 			if (pos){
 				drawMapblock(scene, schema, pos.x, pos.y, pos.z)
 				.then(render)
-				.then(() => setTimeout(fetchNextMapblock, 500));
+				.then(() => setTimeout(fetchNextMapblock, 150));
 			}
 		}
 
