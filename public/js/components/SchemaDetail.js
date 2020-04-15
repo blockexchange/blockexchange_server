@@ -2,6 +2,9 @@ import LicenseBadge from './LicenseBadge.js';
 import Preview from './preview/Preview.js';
 
 export default {
+	oncreate: function(vnode){
+		vnode.state.progress = 0;
+	},
   view: function(vnode){
     const schema = vnode.attrs.schema;
 
@@ -28,7 +31,8 @@ export default {
     		moment.duration( moment(+schema.created).diff() ).humanize(true),
     		")"
     	]),
-      m(Preview, { schema: schema })
+			m("span", { class: "badge badge-primary"}, Math.floor(vnode.state.progress) + "%"),
+      m(Preview, { schema: schema, progressCallback: f => vnode.state.progress = f * 100 })
     ]);
   }
 };

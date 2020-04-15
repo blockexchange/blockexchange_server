@@ -3,21 +3,23 @@ import { init as initColormapping } from './colormapping.js';
 import drawMapblock from './render.js';
 import iterator from './iterator.js';
 
-const height = 640;
+const height = 450;
 const width = 800;
 
 export default {
   view: function(){
-    return m("div");
+    return m("div", { style: `border: 1px solid black; height: ${height+2}px; width: ${width+2}px`});
   },
   oncreate: function(vnode) {
 		const schema = vnode.attrs.schema;
-    const camera = new THREE.PerspectiveCamera( 45, height / width, 2, 2000 );
+    const camera = new THREE.PerspectiveCamera( 45, width / height, 2, 2000 );
     camera.position.z = -150;
     camera.position.x = -150;
     camera.position.y = 100;
 
     const scene = new THREE.Scene();
+		scene.background = new THREE.Color();
+
 		vnode.state.scene = scene;
 		vnode.state.active = true;
 
@@ -35,12 +37,21 @@ export default {
     setupControls(camera, renderer, render);
 
 		const it = iterator(schema);
+		let count = 0;
 
 		function fetchNextMapblock(){
 			if (!vnode.state.active){
 				return;
 			}
 			const pos = it();
+			count++;
+
+			if (typeof(vnode.attrs.progressCallback) == "function") {
+				if (pos)
+					vnode.attrs.progressCallback(count / schema.total_parts);
+				else
+					vnode.attrs.progressCallback(1);
+			}
 
 			if (pos){
 				drawMapblock(scene, schema, pos.x, pos.y, pos.z)
@@ -56,6 +67,7 @@ export default {
     }
 
 		animate();
+		render();
 
     function animate() {
 			if (!vnode.state.active){
