@@ -27,19 +27,32 @@ app.post('/api/token', jsonParser, function(req, res){
 
     const payload = {
       username: user.name,
-      user_id: user.id,
-      permissions: {
+      user_id: user.id
+    };
+
+
+    if (user.name == "temp"){
+      // temporary/default user
+      payload.permissions = {
+        schema: {
+          create: true
+        }
+      };
+    } else {
+      // normal user
+      payload.permissions = {
         user: {
           update: true
         },
         schema: {
-          // TODO: limit for "temp" user
           create: true,
           update: true,
           delete: true
         }
-      }
-    };
+      };
+    }
+    // TODO: custom permissions on token for normal users
+
     const token = jwt.sign(payload, process.env.BLOCKEXCHANGE_KEY);
     res.send(token);
   })
