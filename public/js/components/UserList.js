@@ -1,21 +1,21 @@
-import { get_all } from '../api/user.js';
+import users from '../service/users.js';
 
 var list;
 
 export default {
-  oninit: function() {
+  oninit: function(){
     if (!list){
-      get_all()
-      .then(l => list = l);
+      users().then(u => list = u);
+      list = [];
     }
   },
   view: function(){
-    if (!list){
-      return m("div");
-    }
     return m("ul", list.map(user => {
       return m("li", [
-        m("a", { href: `#!/schema/${user.name}` }, user.name)
+        m("a", { href: `#!/schema/${user.name}` }, user.name),
+        " (Created ",
+        moment.duration( moment(+user.created).diff() ).humanize(true),
+        ")"
       ]);
     }));
   }
