@@ -15,6 +15,11 @@ app.post('/api/schemapart', jsonParser, function(req, res){
 
   tokencheck(req, res)
   .then(claims => {
+    if (!claims.permissions.schema.create){
+      res.status(401).end();
+      return;
+    }
+
     return schema_dao.get_by_id(req.body.schema_id)
     .then(schema => {
       // check user id in claims

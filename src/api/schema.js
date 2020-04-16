@@ -12,6 +12,11 @@ app.post('/api/schema', jsonParser, function(req, res){
 
   tokencheck(req, res)
   .then(claims => {
+    if (!claims.permissions.schema.create){
+      res.status(401).end();
+      return;
+    }
+
     schema_dao.create({
       user_id: +claims.user_id,
       name: req.body.name,
@@ -36,18 +41,58 @@ app.post('/api/schema', jsonParser, function(req, res){
 
 });
 
+app.put("/api/schema/:id", jsonParser, function(req, res){
+  console.log("PUT /api/schema/:id", req.params.id, req.body);
+  const new_schema = req.body;
+
+  tokencheck(req, res)
+  .then(claims => {
+    if (!claims.permissions.schema.update){
+      res.status(401).end();
+      return;
+    }
+
+    return schema_dao.get_by_id(new_schema.id)
+    .then(old_schema => {
+      if (old_schema.user_id != claims.user_id){
+        res.status(401).end();
+        return;
+      }
+
+      // update schema
+      return schema_dao.update(new_schema)
+      .then(() => res.json(new_schema));
+    });
+  })
+  .catch(e => {
+    console.error(e);
+    res.status(500).end();
+  });
+});
+
 // curl -X POST 127.0.0.1:8080/api/schema/1/complete
 app.post('/api/schema/:id/complete', jsonParser, function(req, res){
   console.log("POST /api/schema/id/complete", req.params.id, req.body);
 
   tokencheck(req, res)
   .then(claims => {
+    // check if the user can create schemas
+    if (!claims.permissions.schema.create){
+      res.status(401).end();
+      return;
+    }
+
     return schema_dao.get_by_id(req.params.id)
     .then(schema => {
-      console.log(schema, claims);
       // check user id in claims
       if (schema.user_id != +claims.user_id){
         res.status(401).end();
+        return;
+      }
+
+      // check if already completed
+      if (schema.complete){
+        res.status(500).end();
         return;
       }
 

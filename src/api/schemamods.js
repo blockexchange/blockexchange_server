@@ -31,6 +31,11 @@ app.post('/api/schema/:id/mods', jsonParser, function(req, res){
 
   tokencheck(req, res)
   .then(claims => {
+    if (!claims.permissions.schema.create){
+      res.status(401).end();
+      return;
+    }
+
     return schema_dao.get_by_id(req.params.id)
     .then(schema => {
       // check user id in claims
