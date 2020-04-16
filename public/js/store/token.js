@@ -6,7 +6,9 @@ export function get_token(){
 }
 
 export function get_claims(){
-  // TODO
+  if (token){
+    return JSON.parse(atob(token.split(".")[1]));
+  }
 }
 
 export function set_token(t){

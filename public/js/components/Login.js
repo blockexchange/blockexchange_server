@@ -4,7 +4,8 @@ import { request_token } from '../api/token.js';
 
 const store = {
   username: "",
-  password: ""
+  password: "",
+  message: null
 };
 
 const username_input = () => m("input", {
@@ -25,11 +26,15 @@ const login_button = () => m("button", {
   class: "btn btn-primary btn-block",
   disabled: !store.username || !store.password,
   onclick: () => {
+    store.message = null;
     request_token(store.username, store.password)
     .then(token => set_token(token))
-    .catch(e => console.log(e));
+    .catch(e => store.message = e.message);
   }
-}, "Login");
+}, [
+  "Login ",
+  m("span", { class: "badge badge-danger" }, store.message)
+]);
 
 const logout_button = () => m("button", {
   class: "btn btn-primary btn-block",
