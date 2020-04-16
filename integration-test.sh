@@ -50,7 +50,7 @@ docker run --rm -i \
   -v $(pwd)/blockexchange:/var/lib/minetest/.minetest/worlds/world/worldmods/blockexchange \
   -v $(pwd)/blockexchange/test/test_mod:/var/lib/minetest/.minetest/worlds/world/worldmods/blockexchange_test \
   --network host \
-	registry.gitlab.com/minetest/minetest/server:5.1.0
+	registry.gitlab.com/minetest/minetest/server:5.2.0
 
 test -f ${WORLDDIR}/integration_test.json && exit 0 || exit 1
 
