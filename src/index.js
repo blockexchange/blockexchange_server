@@ -2,6 +2,7 @@ const app = require("./app");
 const migrate = require("./migrate");
 
 // user mgmt
+require("./api/user");
 require("./api/register");
 require("./api/token");
 

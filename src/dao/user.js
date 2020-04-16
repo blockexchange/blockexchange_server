@@ -36,6 +36,24 @@ module.exports.get_by_id = function(id) {
   });
 };
 
+module.exports.get_all = function() {
+  return new Promise(function(resolve, reject) {
+    pool.connect()
+    .then(client => {
+      client.query("select * from public.user")
+      .then(sql_res => {
+        resolve(sql_res.rows);
+        client.release();
+      })
+      .catch(e => {
+        client.release();
+        console.error(e.stack);
+        reject();
+      });
+    });
+  });
+};
+
 module.exports.create = function(data) {
   const query = `
     insert into

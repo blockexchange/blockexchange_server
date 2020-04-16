@@ -7,6 +7,22 @@ export const find_by_keywords = keywords => m.request({
 	url: "api/searchschema"
 });
 
+export const find_by_userid = user_id => m.request({
+	method: "POST",
+	data: {
+		user_id: user_id
+	},
+	url: "api/searchschema"
+});
+
+export const find_by_username = user_name => m.request({
+	method: "POST",
+	data: {
+		user_name: user_name
+	},
+	url: "api/searchschema"
+});
+
 export const find_recent = count => m.request({
 	url: `api/searchrecent/${count}`
 });

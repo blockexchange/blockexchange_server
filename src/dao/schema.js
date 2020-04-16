@@ -164,6 +164,33 @@ module.exports.find_by_user_id = function(user_id) {
   });
 };
 
+module.exports.find_by_user_name = function(user_name) {
+  const query = `
+    select * from schema
+    where user_id = (
+      select id
+      from public.user
+      where name = $1
+    )
+  `;
+
+  return new Promise(function(resolve, reject) {
+    pool.connect()
+    .then(client => {
+      client.query(query, [user_name])
+      .then(sql_res => {
+        resolve(sql_res.rows);
+        client.release();
+      })
+      .catch(e => {
+        client.release();
+        console.error(e.stack);
+        reject();
+      });
+    });
+  });
+};
+
 module.exports.find_by_keywords = function(keywords) {
   const query = `
     select *
