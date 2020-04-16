@@ -10,6 +10,16 @@ create table public.user(
 create unique index user_name on public.user(name);
 create index user_created on public.user(created);
 
+
+-- create temporary user with default password "temp"
+insert into public.user(created, name, hash)
+  values(
+    extract(epoch from now()) * 1000,
+    'temp',
+    '$2a$10$g.6pRR93BwXfsMnPLWIKgOfIBDOcc48wJPCDtfNfzJbD/7zE2xgtm'
+  );
+
+
 create table schema(
   id serial primary key not null,
   created bigint not null,
@@ -23,7 +33,10 @@ create table schema(
   part_length smallint not null,
   total_size int not null,
   total_parts int not null,
-  search_tokens tsvector not null
+  search_tokens tsvector not null,
+	downloads int not null default 0,
+	license varchar not null default 'CC0',
+	long_description text not null default ''
 );
 
 create index schema_created on schema(created);
