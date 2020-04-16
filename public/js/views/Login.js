@@ -1,7 +1,7 @@
+import Login from '../components/Login.js';
+
 export default {
   view: function(){
-    return m.trust(`
-      <div>xyz</div>
-    `);
+    return m(Login);
   }
 };

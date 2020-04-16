@@ -12,6 +12,7 @@ export default {
       a({class: "navbar-brand", href: "#!/" }, "Block exchange"),
       div({class:"navbar-collapse collapse"}, [
         ul({class: "navbar-nav mr-auto"}, [
+          li({class: "nav-item"}, a({class:"nav-link",href:"#!/users"}, "Users")),
           li({class: "nav-item"}, a({class:"nav-link",href:"#!/search"}, "Search"))
         ])
       ]),
