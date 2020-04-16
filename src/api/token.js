@@ -27,7 +27,18 @@ app.post('/api/token', jsonParser, function(req, res){
 
     const payload = {
       username: user.name,
-      user_id: user.id
+      user_id: user.id,
+      permissions: {
+        user: {
+          update: true
+        },
+        schema: {
+          // TODO: limit for "temp" user
+          create: true,
+          update: true,
+          delete: true
+        }
+      }
     };
     const token = jwt.sign(payload, process.env.BLOCKEXCHANGE_KEY);
     res.send(token);
