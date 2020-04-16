@@ -70,6 +70,36 @@ app.put("/api/schema/:id", jsonParser, function(req, res){
   });
 });
 
+
+app.delete("/api/schema/:id", function(req, res){
+  console.log("DELETE /api/schema/:id", req.params.id, req.body);
+
+  tokencheck(req, res)
+  .then(claims => {
+    if (!claims.permissions.schema.delete){
+      res.status(401).end();
+      return;
+    }
+
+    return schema_dao.get_by_id(req.params.id)
+    .then(schema => {
+      if (schema.user_id != claims.user_id){
+        res.status(401).end();
+        return;
+      }
+
+      // delete schema
+      return schema_dao.delete_by_id(req.params.id)
+      .then(() => res.end());
+    });
+  })
+  .catch(e => {
+    console.error(e);
+    res.status(500).end();
+  });
+});
+
+
 // curl -X POST 127.0.0.1:8080/api/schema/1/complete
 app.post('/api/schema/:id/complete', jsonParser, function(req, res){
   console.log("POST /api/schema/id/complete", req.params.id, req.body);

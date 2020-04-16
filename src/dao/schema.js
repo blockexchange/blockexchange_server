@@ -128,6 +128,24 @@ module.exports.get_by_name = function(name) {
   });
 };
 
+module.exports.delete_by_id = function(id) {
+  return new Promise(function(resolve, reject) {
+    pool.connect()
+    .then(client => {
+      client.query("delete from schema where id = $1", [id])
+      .then(() => {
+        resolve(true);
+        client.release();
+      })
+      .catch(e => {
+        client.release();
+        console.error(e.stack);
+        reject();
+      });
+    });
+  });
+};
+
 module.exports.get_by_id = function(id) {
   return new Promise(function(resolve, reject) {
     pool.connect()

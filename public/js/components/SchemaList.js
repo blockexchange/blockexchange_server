@@ -1,5 +1,7 @@
 
 import LicenseBadge from './LicenseBadge.js';
+import { get_claims } from '../store/token.js';
+import { remove } from '../api/schema.js';
 
 const badge = (cl, txt) => m("span", {
 	class: `badge badge-${cl}`},
@@ -10,7 +12,19 @@ const modList = mods => m("div", Object.keys(mods).map(mod_name => {
 	return badge("secondary", mod_name);
 }));
 
-const entry = entry => m("tr", [
+const actions = (schema, i, list) => {
+	const claims = get_claims();
+	if (claims && claims.user_id == schema.user_id && claims.permissions.schema.delete)
+		return m("button", {
+			class: "btn btn-sm btn-danger",
+			onclick: () => {
+				remove(schema)
+				.then(() => list.splice(i, 1))
+			}
+		}, "Delete");
+};
+
+const entry = (entry, i, list) => m("tr", [
 	m("td", m("a", { href: "#!/schema/" + entry.user.name }, entry.user.name)),
 	m("td", m("a", { href: "#!/schema/" + entry.user.name + "/" + entry.name }, entry.name)),
 	m("td", [
@@ -25,7 +39,8 @@ const entry = entry => m("tr", [
 	m("td", entry.size_x + " / " + entry.size_y + " / " + entry.size_z),
 	m("td", entry.total_parts),
 	m("td", entry.description),
-	m("td", modList(entry.mods))
+	m("td", modList(entry.mods)),
+	m("td", actions(entry, i, list))
 ]);
 
 const table = list => m("table", { class: "table table-striped table-condensed" }, [
@@ -40,7 +55,8 @@ const table = list => m("table", { class: "table table-striped table-condensed" 
 			m("th", "Size [blocks]"),
 			m("th", "Parts"),
 			m("th", "Description"),
-			m("th", "Mods")
+			m("th", "Mods"),
+			m("th", "Actions")
 		])
 	]),
 	m("tbody", [
