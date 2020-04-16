@@ -19,7 +19,7 @@ const actions = (schema, i, list) => {
 			class: "btn btn-sm btn-danger",
 			onclick: () => {
 				remove(schema)
-				.then(() => list.splice(i, 1))
+				.then(() => list.splice(i, 1));
 			}
 		}, "Delete");
 };
