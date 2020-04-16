@@ -7,8 +7,9 @@ module.exports.update = function(data) {
       name = $2,
       description = $3,
       search_tokens = to_tsvector($4),
-      long_description = $5
-      user_id = $6
+      long_description = $5,
+      user_id = $6,
+      license = $7
     where id = $1
   `;
 
@@ -17,7 +18,8 @@ module.exports.update = function(data) {
     data.name, data.description,
     data.name + " " + data.description,
     data.long_description,
-    data.user_id
+    data.user_id,
+    data.license
   ];
 
   return new Promise(function(resolve, reject){
