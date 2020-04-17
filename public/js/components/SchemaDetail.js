@@ -1,5 +1,6 @@
 import LicenseBadge from './LicenseBadge.js';
 import Preview from './preview/Preview.js';
+import SchemaUsage from './SchemaUsage.js';
 
 export default {
 	oncreate: function(vnode){
@@ -36,7 +37,8 @@ export default {
 				m("div", { class: "progress-bar", style: `width: ${vnode.state.progress}%` }, [
 					(Math.floor(vnode.state.progress * 10) / 10) + "%"
 				])
-			])
+			]),
+			m(SchemaUsage, { schema: schema })
     ]);
   }
 };
