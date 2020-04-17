@@ -11,7 +11,7 @@ module.exports = function(query, values, options){
       .then(sql_res => {
         if (!sql_res.rows || sql_res.rows.length == 0){
           // no result
-          resolve();
+          resolve(single_row ? null : []);
         }
         resolve(single_row ? sql_res.rows[0] : sql_res.rows);
         client.release();
