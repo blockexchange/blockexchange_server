@@ -5,49 +5,41 @@ const app = require("../app");
 const schemapart_dao = require("../dao/schemapart");
 const schema_dao = require("../dao/schema");
 const serializer = require("../util/serializer");
-const tokencheck = require("../util/tokencheck");
 
-// data='{"schema_id": 1, "offset_x": 0, "offset_y": 0, "offset_z": 0, "data": "return {}"}'
-// curl -X POST 127.0.0.1:8080/api/schemapart --data "${data}" -H "Content-Type: application/json"
-app.post('/api/schemapart', jsonParser, function(req, res){
+const tokenmiddleware = require("../middleware/token");
+const tokencheck = tokenmiddleware(claims => {
+  return claims.permissions.schema.create;
+});
+
+app.post('/api/schemapart', tokencheck, jsonParser, function(req, res){
   console.log("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
-	//console.log("Data: ", req.body);//DEBUG
 
-  tokencheck(req, res)
-  .then(claims => {
-    if (!claims.permissions.schema.create){
+  return schema_dao.get_by_id(req.body.schema_id)
+  .then(schema => {
+    // check user id in claims
+    if (schema.user_id != +req.claims.user_id){
       res.status(401).end();
       return;
     }
 
-    return schema_dao.get_by_id(req.body.schema_id)
-    .then(schema => {
-      // check user id in claims
-      if (schema.user_id != +claims.user_id){
-        res.status(401).end();
-        return;
-      }
+    if (schema.completed) {
+      res.status(500).end();
+      return;
+    }
 
-      if (schema.completed) {
-        res.status(500).end();
-        return;
-      }
+    const serialized_data = serializer.serialize(req.body.data);
 
-      const serialized_data = serializer.serialize(req.body.data);
-
-      schemapart_dao.create({
-        schema_id: schema.id,
-        offset_x: req.body.offset_x,
-        offset_y: req.body.offset_y,
-        offset_z: req.body.offset_z,
-        data: serialized_data.data,
-        metadata: serialized_data.metadata
-      })
-      .then(id_obj => res.json(id_obj))
-      .catch(() => res.status(500).end());
-    });
-  })
-  .catch(() => res.status(401).end());
+    schemapart_dao.create({
+      schema_id: schema.id,
+      offset_x: req.body.offset_x,
+      offset_y: req.body.offset_y,
+      offset_z: req.body.offset_z,
+      data: serialized_data.data,
+      metadata: serialized_data.metadata
+    })
+    .then(id_obj => res.json(id_obj))
+    .catch(() => res.status(500).end());
+  });
 });
 
 
