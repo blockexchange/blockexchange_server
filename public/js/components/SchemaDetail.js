@@ -5,6 +5,11 @@ import ModList from './ModList.js';
 
 import { get_by_user_and_schemaname } from '../api/searchschema.js';
 
+const modDetails = schema => m("ul",
+	m("div", Object.keys(schema.mods).map(
+		mod_name => m("li", `${mod_name}: ${schema.mods[mod_name]}`)
+	)));
+
 const title = schema => m("h3", [
 	m("span", { class: "badge badge-primary"}, schema.id),
 	" ",
@@ -34,7 +39,7 @@ export default class {
 
     return m("div", [
 			title(schema),
-
+			m("hr"),
 			m("div", { class: "row" }, [
 				m("div", { class: "col-md-6"}, [
 					m("h4", schema.description),
@@ -51,26 +56,54 @@ export default class {
 					])
 				])
 			]),
+			m("hr"),
 
 			m("div", { class: "row" }, [
 				m("div", { class: "col-md-6"}, [
-					m("div", [
-						"Size [bytes]: ", m("span", { class: "badge badge-secondary"}, schema.total_size)
-					]),
-					"License: ",
-					m(LicenseBadge, { license: schema.license }),
-					m("div", [
-						"Created: ",
-						moment(+schema.created).format("YYYY-MM-DD HH:mm"),
-						" (",
-						moment.duration( moment(+schema.created).diff() ).humanize(true),
-						")"
-					]),
-					m(SchemaUsage, { schema: schema })
+					m("table", { class: "table table-condensed table-striped" }, [
+						m("tbody", [
+							m("tr", [
+								m("td", "Size [bytes]"),
+								m("td", m("span", { class: "badge badge-secondary"}, schema.total_size))
+							]),
+							m("tr", [
+								m("td", "Size [blocks]"),
+								m("td", `${schema.size_x} / ${schema.size_y} / ${schema.size_z}`)
+							]),
+							m("tr", [
+								m("td", "Volume [blocks]"),
+								m("td", `${schema.size_x * schema.size_y * schema.size_z}`)
+							]),
+							m("tr", [
+								m("td", "License"),
+								m("td", m(LicenseBadge, { license: schema.license }))
+							]),
+							m("tr", [
+								m("td", "Created"),
+								m("td", [
+									moment(+schema.created).format("YYYY-MM-DD HH:mm"),
+									" (",
+									moment.duration( moment(+schema.created).diff() ).humanize(true),
+									")"
+								])
+							]),
+							m("tr", [
+								m("td", "Parts"),
+								m("td", schema.total_parts)
+							]),
+							m("tr", [
+								m("td", "Mods"),
+								m("td", m(ModList, { schema: schema }))
+							]),
+							m("tr", [
+								m("td", "Mod block count"),
+								m("td", modDetails(schema))
+							])
+						])
+					])
 				]),
 				m("div", { class: "col-md-6"}, [
-					"Mod dependencies:",
-					m(ModList, { schema: schema })
+					m(SchemaUsage, { schema: schema })
 				]),
 			])
 
