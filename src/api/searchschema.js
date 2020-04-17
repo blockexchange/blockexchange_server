@@ -16,6 +16,7 @@ function enrich(schema){
 		results[0].forEach(mod => mods[mod.mod_name] = mod.node_count);
 
 		return Object.assign({}, schema, {
+			search_tokens: null,
 			mods: mods,
 			user: {
 				name: results[1].name
