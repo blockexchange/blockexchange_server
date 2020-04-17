@@ -2,14 +2,14 @@
 
 ## user
 
-* **id** bigint
+* **id** serial
 * **name** varchar
 * **hash** varchar
 * **created** bigint
 
 ## schema
 
-* **id** bigint
+* **id** serial
 * **name** varchar(64)
 * **description** text
 * **complete** boolean
@@ -21,10 +21,15 @@
 * **total_size** int
 * **total_parts** int
 
+## user_schema_star
+
+* **user_id** serial (user.id)
+* **schema_id** serial (schema.id)
+
 ## schmemapart
 
-* **id** bigint
-* **schema_id** bigint (schema.id)
+* **id** serial
+* **schema_id** serial (schema.id)
 * **offset_x** smallint
 * **offset_y** smallint
 * **offset_z** smallint
@@ -33,12 +38,12 @@
 
 ## schemamod
 
-* **id** bigint
-* **schema_id** bigint (schema.id)
+* **id** serial
+* **schema_id** serial (schema.id)
 * **mod_name** varchar(32)
 
 ## schematag
 
-* **id** bigint
-* **schema_id** bigint (schema.id)
+* **id** serial
+* **schema_id** serial (schema.id)
 * **tag_name** varchar(32)
