@@ -8,8 +8,6 @@ export default {
     return m("div", { style: `height: 450px; width: 100%;`});
   },
   oncreate: function(vnode) {
-    console.log(vnode.dom);
-
 		const schema = vnode.attrs.schema;
     const camera = new THREE.PerspectiveCamera( 70, 2, 1, 1000 );
     camera.position.z = -150;
