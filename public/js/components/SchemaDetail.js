@@ -5,6 +5,14 @@ import ModList from './ModList.js';
 
 import { get_by_user_and_schemaname } from '../api/searchschema.js';
 
+const title = schema => m("h3", [
+	m("span", { class: "badge badge-primary"}, schema.id),
+	" ",
+	schema.name,
+	" ",
+	m("small", { class: "text-muted" }, "by " + schema.user.name)
+]);
+
 export default class {
 	constructor(vnode) {
 		this.state = {
@@ -25,20 +33,27 @@ export default class {
 		}
 
     return m("div", [
-      m("h3", [
-        m("span", { class: "badge badge-primary"}, schema.id),
-        " ",
-        schema.name,
-        " ",
-        m("small", { class: "text-muted" }, "by " + schema.user.name)
-      ]),
+			title(schema),
 
 			m("div", { class: "row" }, [
-				m("div", { class: "col-md-8"}, [
+				m("div", { class: "col-md-6"}, [
 					m("h4", schema.description),
 	        schema.long_description
 				]),
-				m("div", { class: "col-md-4"}, [
+				m("div", { class: "col-md-6"}, [
+					m("div", [
+						m(Preview, { schema: schema, progressCallback: f => this.state.progress = f * 100 }),
+						m("div", { class: "progress"}, [
+							m("div", { class: "progress-bar", style: `width: ${this.state.progress}%` }, [
+								(Math.floor(this.state.progress * 10) / 10) + "%"
+							])
+						])
+					])
+				])
+			]),
+
+			m("div", { class: "row" }, [
+				m("div", { class: "col-md-6"}, [
 					m("div", [
 						"Size [bytes]: ", m("span", { class: "badge badge-secondary"}, schema.total_size)
 					]),
@@ -52,23 +67,13 @@ export default class {
 						")"
 					]),
 					m(SchemaUsage, { schema: schema })
-				])
-			]),
-
-			m("div", { class: "row" }, [
-				m("div", { class: "col-md-8" }, [
-					m(Preview, { schema: schema, progressCallback: f => this.state.progress = f * 100 }),
-					m("div", { class: "progress"}, [
-						m("div", { class: "progress-bar", style: `width: ${this.state.progress}%` }, [
-							(Math.floor(this.state.progress * 10) / 10) + "%"
-						])
-					])
 				]),
-				m("div", { class: "col-md-4" }, [
+				m("div", { class: "col-md-6"}, [
 					"Mod dependencies:",
 					m(ModList, { schema: schema })
-				])
+				]),
 			])
+
     ]);
   }
 }

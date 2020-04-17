@@ -3,16 +3,15 @@ import drawMapblock from './render.js';
 import iterator from './iterator.js';
 import OrbitControls from './orbitcontrols.js';
 
-const height = 450;
-const width = 800;
-
 export default {
   view: function(){
-    return m("div", { style: `border: 1px solid black; height: ${height+2}px; width: ${width+2}px`});
+    return m("div", { style: `height: 450px; width: 100%;`});
   },
   oncreate: function(vnode) {
+    console.log(vnode.dom);
+
 		const schema = vnode.attrs.schema;
-    const camera = new THREE.PerspectiveCamera( 45, width / height, 2, 2000 );
+    const camera = new THREE.PerspectiveCamera( 70, 2, 1, 1000 );
     camera.position.z = -150;
     camera.position.x = -150;
     camera.position.y = 100;
@@ -31,8 +30,10 @@ export default {
 		vnode.state.renderer = renderer;
 
     renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( width, height );
     vnode.dom.appendChild( renderer.domElement );
+
+    const box = renderer.domElement.parentElement.getBoundingClientRect();
+    renderer.setSize( box.width, box.height );
 
 		const controls = new OrbitControls( camera, renderer.domElement, renderer.domElement );
 
@@ -70,6 +71,7 @@ export default {
 			if (!vnode.state.active){
 				return;
 			}
+
     	controls.update();
 			requestAnimationFrame( animate );
     }
