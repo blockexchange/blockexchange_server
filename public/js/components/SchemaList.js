@@ -1,16 +1,10 @@
 
 import LicenseBadge from './LicenseBadge.js';
+import ModList from './ModList.js';
+
 import { get_claims } from '../store/token.js';
 import { remove } from '../api/schema.js';
 
-const badge = (cl, txt) => m("span", {
-	class: `badge badge-${cl}`},
-	txt
-);
-
-const modList = mods => m("div", Object.keys(mods).map(mod_name => {
-	return badge("secondary", mod_name);
-}));
 
 const actions = (schema, i, list) => {
 	const claims = get_claims();
@@ -35,11 +29,11 @@ const entry = (entry, i, list) => m("tr", [
 	]),
 	m("td", entry.downloads),
 	m("td", m(LicenseBadge, { license: entry.license })),
-	m("td", badge("success", entry.total_size)),
+	m("td", m("span", { class: "badge badge-success" }, entry.total_size)),
 	m("td", entry.size_x + " / " + entry.size_y + " / " + entry.size_z),
 	m("td", entry.total_parts),
 	m("td", entry.description),
-	m("td", modList(entry.mods)),
+	m("td", m(ModList, { schema: entry }) ),
 	m("td", actions(entry, i, list))
 ]);
 

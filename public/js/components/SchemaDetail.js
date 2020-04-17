@@ -1,15 +1,7 @@
 import LicenseBadge from './LicenseBadge.js';
 import Preview from './preview/Preview.js';
 import SchemaUsage from './SchemaUsage.js';
-
-const badge = (cl, txt) => m("span", {
-	class: `badge badge-${cl}`},
-	txt
-);
-
-const modList = mods => m("div", Object.keys(mods).map(mod_name => {
-	return badge("secondary", mod_name);
-}));
+import ModList from './ModList.js';
 
 export default {
 	oncreate: function(vnode){
@@ -60,7 +52,7 @@ export default {
 				]),
 				m("div", { class: "col-md-4" }, [
 					"Mod dependencies:",
-					modList(schema.mods)
+					m(ModList, { schema: schema })
 				])
 			])
     ]);
