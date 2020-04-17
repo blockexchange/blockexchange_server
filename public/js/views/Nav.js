@@ -12,9 +12,36 @@ export default {
       a({class: "navbar-brand", href: "#!/" }, "Block exchange"),
       div({class:"navbar-collapse collapse"}, [
         ul({class: "navbar-nav mr-auto"}, [
-          li({class: "nav-item"}, a({class:"nav-link",href:"#!/login"}, "Login")),
-          li({class: "nav-item"}, a({class:"nav-link",href:"#!/users"}, "Users")),
-          li({class: "nav-item"}, a({class:"nav-link",href:"#!/search"}, "Search"))
+          li({class: "nav-item"},
+            a({class:"nav-link",href:"#!/"}, [
+              m("i", { class: "fa fa-question" }),
+              "About"
+            ])
+          ),
+          li({class: "nav-item"},
+            a({class:"nav-link",href:"#!/login"}, [
+              m("i", { class: "fa fa-sign-in" }),
+              "Login"
+            ])
+          ),
+          li({class: "nav-item"},
+            a({class:"nav-link",href:"#!/mod"}, [
+              m("i", { class: "fa fa-download" }),
+              "Mod/Installation"
+            ])
+          ),
+          li({class: "nav-item"},
+            a({class:"nav-link",href:"#!/users"}, [
+              m("i", { class: "fa fa-users" }),
+              "Users"
+            ])
+          ),
+          li({class: "nav-item"},
+            a({class:"nav-link",href:"#!/search"}, [
+              m("i", { class: "fa fa-search" }),
+              "Search"
+            ])
+          )
         ])
       ]),
       m(UserStatus)

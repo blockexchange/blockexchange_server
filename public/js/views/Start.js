@@ -1,19 +1,32 @@
 
 export default {
   view(){
-    return m("div", { style: "text-align: center;" }, [
-			m("img", { src: "pics/blockexchange.png" }),
-			m("hr"),
-			m("div", [
-        m("a", { class: "btn btn-primary", href: "#!/search" }, "Search"),
-        m("a", { class: "btn btn-primary", href: "#!/users" }, "Users"),
-			]),
-			m("div", [
-				m("a", { class: "btn btn-secondary", href: "https://github.com/blockexchange" }, [
-					m("i", { class: "fab fa-github" }),
-					" Source"
-				]),
-			])
-    ]);
+    return m.trust(`
+      <div style="text-align: center;">
+        <img src="pics/blockexchange.png"/>
+        <hr>
+        <h4>Exchange your schemas across worlds with ease</h4>
+        <hr>
+
+        <div>
+          <a href="#!/search" class="btn btn-primary">
+            <i class="fa fa-search"></i>
+            Search
+          </a>
+          <a href="#!/users" class="btn btn-primary">
+            <i class="fa fa-users"></i>
+            Users
+          </a>
+          <a href="#!/mod" class="btn btn-primary">
+            <i class="fa fa-download"></i>
+            Mod/Installation
+          </a>
+          <a href="https://github.com/blockexchange" class="btn btn-secondary">
+            <i class="fab fa-github"></i>
+            Source
+          </a>
+        </div>
+      </div>
+    `);
   }
 };
