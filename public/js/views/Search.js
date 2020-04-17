@@ -7,26 +7,46 @@ import store from '../store/search.js';
 import debounce from '../util/debounce.js';
 
 import { find_recent, find_by_keywords } from '../api/searchschema.js';
+import { remove } from '../api/schema.js';
 
-const debounced_search = debounce(() => {
-  if (store.keywords && store.keywords.length > 0)
-    find_by_keywords(store.keywords).then(l => store.result = l);
-  else
-    find_recent(20).then(l => store.result = l);
-}, 500);
 
-find_recent(20).then(l => store.result = l);
+export default class {
+  constructor(){
+    this.debounced_search = debounce(this.search , 500);
+    this.state = {
+      result: []
+    };
+    this.search();
+  }
 
-function changeKeywords(k){
-  store.keywords = k;
-  debounced_search();
-}
+  search() {
+    if (store.keywords && store.keywords.length > 0)
+      find_by_keywords(store.keywords)
+      .then(l => this.state.result = l);
+    else
+      find_recent(20).then(l => this.state.result = l);
+  }
 
-export default {
+  removeItem(schema) {
+    remove(schema)
+    .then(() => this.search());
+  }
+
+  changeKeywords(k){
+    store.keywords = k;
+    this.debounced_search();
+  }
+
   view(){
     return("div", [
-      m("div", m(SearchBar, { keywords: store.keywords, onChange: changeKeywords })),
-      m("div", m(SchemaList, { list: store.result }))
+      m("div", m(SearchBar, {
+        keywords: store.keywords,
+        onChange: k => this.changeKeywords(k)
+      })),
+      m("div", m(SchemaList, {
+        list: this.state.result,
+        removeItem: schema => this.removeItem(schema)
+      }))
     ]);
   }
-};
+}

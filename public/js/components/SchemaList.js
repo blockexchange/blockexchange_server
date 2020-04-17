@@ -1,24 +1,10 @@
 
 import LicenseBadge from './LicenseBadge.js';
 import ModList from './ModList.js';
-
-import { get_claims } from '../store/token.js';
-import { remove } from '../api/schema.js';
+import SchemaActions from './SchemaActions.js';
 
 
-const actions = (schema, i, list) => {
-	const claims = get_claims();
-	if (claims && claims.user_id == schema.user_id && claims.permissions.schema.delete)
-		return m("button", {
-			class: "btn btn-sm btn-danger",
-			onclick: () => {
-				remove(schema)
-				.then(() => list.splice(i, 1));
-			}
-		}, "Delete");
-};
-
-const entry = (entry, i, list) => m("tr", [
+const entry = (entry, removeItem) => m("tr", [
 	m("td", m("a", { href: "#!/schema/" + entry.user.name }, entry.user.name)),
 	m("td", m("a", { href: "#!/schema/" + entry.user.name + "/" + entry.name }, entry.name)),
 	m("td", [
@@ -34,10 +20,10 @@ const entry = (entry, i, list) => m("tr", [
 	m("td", entry.total_parts),
 	m("td", entry.description),
 	m("td", m(ModList, { schema: entry }) ),
-	m("td", actions(entry, i, list))
+	m("td", m(SchemaActions, { schema: entry, removeItem: removeItem }))
 ]);
 
-const table = list => m("table", { class: "table table-striped table-condensed" }, [
+const table = (list, removeItem) => m("table", { class: "table table-striped table-condensed" }, [
 	m("thead", [
 		m("tr", [
 			m("th", "User"),
@@ -54,12 +40,12 @@ const table = list => m("table", { class: "table table-striped table-condensed" 
 		])
 	]),
 	m("tbody", [
-		list.map(entry)
+		list.map(e => entry(e, removeItem))
 	])
 ]);
 
 export default {
 	view(vnode) {
-		return table(vnode.attrs.list);
+		return table(vnode.attrs.list, vnode.attrs.removeItem);
 	}
 };

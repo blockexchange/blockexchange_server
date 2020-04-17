@@ -1,14 +1,31 @@
 import SchemaList from '../components/SchemaList.js';
 
 import { find_by_username } from '../api/searchschema.js';
+import { remove } from '../api/schema.js';
 
-export default {
-  oninit: function(vnode) {
-    vnode.state.list = [];
-    find_by_username(vnode.attrs.username)
-    .then(l => vnode.state.list = l);
-  },
-  view: function(vnode){
-    return m(SchemaList, { list: vnode.state.list });
+export default class {
+  constructor(vnode) {
+    this.state = {
+      list: [],
+      username: vnode.attrs.username
+    };
+    this.search();
   }
-};
+
+  search(){
+    find_by_username(this.state.username)
+    .then(l => this.state.list = l);
+  }
+
+  removeItem(schema){
+    remove(schema)
+    .then(() => this.search());
+  }
+
+  view(){
+    return m(SchemaList, {
+      list: this.state.list,
+      removeItem: schema => this.removeItem(schema)
+    });
+  }
+}
