@@ -43,7 +43,7 @@ export default class {
 			m("div", { class: "row" }, [
 				m("div", { class: "col-md-6"}, [
 					m("h4", schema.description),
-	        schema.long_description
+	        m("pre", schema.long_description || "<no description>")
 				]),
 				m("div", { class: "col-md-6"}, [
 					m("div", [
