@@ -27,3 +27,17 @@ module.exports.find_by_schema_id = function(schema_id) {
 
   return executor(query, values, { single_row: true });
 };
+
+
+module.exports.count_by_schema_id = function(schema_id) {
+  const query = `
+    select count(*) as stars from user_schema_star
+    where schema_id = $1
+  `;
+
+  const values = [
+    schema_id
+  ];
+
+  return executor(query, values, { single_row: true });
+};

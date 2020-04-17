@@ -5,11 +5,15 @@ const app = require("../app");
 const schema_dao = require("../dao/schema");
 const schemamod_dao = require("../dao/schemamod");
 const user_dao = require("../dao/user");
+const user_schema_star_dao = require("../dao/userschemastar");
+
+// TODO: maybe optimize with subqueries
 
 function enrich(schema){
 	return Promise.all([
 		schemamod_dao.find_all(schema.id),
-		user_dao.get_by_id(schema.user_id)
+		user_dao.get_by_id(schema.user_id),
+		user_schema_star_dao.count_by_schema_id(schema.id)
 	])
 	.then(results => {
 		const mods = {};
@@ -20,7 +24,8 @@ function enrich(schema){
 			mods: mods,
 			user: {
 				name: results[1].name
-			}
+			},
+			stars: +results[2].stars
 		});
 	});
 }
