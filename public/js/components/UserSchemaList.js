@@ -1,4 +1,4 @@
-import SchemaList from '../components/SchemaList.js';
+import SchemaList from './schemalist/SchemaList.js';
 
 import { find_by_username } from '../api/searchschema.js';
 import { remove } from '../api/schema.js';

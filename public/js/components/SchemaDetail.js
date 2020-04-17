@@ -3,12 +3,26 @@ import Preview from './preview/Preview.js';
 import SchemaUsage from './SchemaUsage.js';
 import ModList from './ModList.js';
 
-export default {
-	oncreate: function(vnode){
-		vnode.state.progress = 0;
-	},
-  view: function(vnode){
-    const schema = vnode.attrs.schema;
+import { get_by_user_and_schemaname } from '../api/searchschema.js';
+
+export default class {
+	constructor(vnode) {
+		this.state = {
+			progress: 0
+		};
+
+		get_by_user_and_schemaname(vnode.attrs.username, vnode.attrs.schemaname)
+		.then(s => this.state.schema = s);
+	}
+
+
+  view() {
+		// TODO: cleanup/separate
+    const schema = this.state.schema;
+
+		if (!schema){
+			return m("div");
+		}
 
     return m("div", [
       m("h3", [
@@ -43,10 +57,10 @@ export default {
 
 			m("div", { class: "row" }, [
 				m("div", { class: "col-md-8" }, [
-					m(Preview, { schema: schema, progressCallback: f => vnode.state.progress = f * 100 }),
+					m(Preview, { schema: schema, progressCallback: f => this.state.progress = f * 100 }),
 					m("div", { class: "progress"}, [
-						m("div", { class: "progress-bar", style: `width: ${vnode.state.progress}%` }, [
-							(Math.floor(vnode.state.progress * 10) / 10) + "%"
+						m("div", { class: "progress-bar", style: `width: ${this.state.progress}%` }, [
+							(Math.floor(this.state.progress * 10) / 10) + "%"
 						])
 					])
 				]),
@@ -57,4 +71,4 @@ export default {
 			])
     ]);
   }
-};
+}

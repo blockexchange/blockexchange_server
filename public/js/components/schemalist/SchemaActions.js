@@ -1,4 +1,4 @@
-import { get_claims } from '../store/token.js';
+import { get_claims } from '../../store/token.js';
 
 
 export default {

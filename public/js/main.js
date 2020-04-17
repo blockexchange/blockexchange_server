@@ -1,6 +1,6 @@
 
 import routes from './routes.js';
-import Nav from './views/Nav.js';
+import Nav from './components/Nav.js';
 
 import { setup_tracker } from './util/matomo.js';
 import info from './service/info.js';

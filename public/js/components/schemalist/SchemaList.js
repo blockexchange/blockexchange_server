@@ -1,6 +1,6 @@
 
-import LicenseBadge from './LicenseBadge.js';
-import ModList from './ModList.js';
+import LicenseBadge from '../LicenseBadge.js';
+import ModList from '../ModList.js';
 import SchemaActions from './SchemaActions.js';
 
 
