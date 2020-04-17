@@ -1,4 +1,4 @@
-const pool = require("../pool");
+const executor = require("./executor");
 
 module.exports.update = function(data) {
   const query = `
@@ -22,21 +22,7 @@ module.exports.update = function(data) {
     data.license
   ];
 
-  return new Promise(function(resolve, reject){
-    pool.connect()
-    .then(client => {
-      return client.query(query, values)
-      .then(() => {
-        resolve(true);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor(query, values);
 };
 
 module.exports.create = function(data) {
@@ -67,21 +53,7 @@ module.exports.create = function(data) {
     data.long_description || ""
   ];
 
-  return new Promise(function(resolve, reject){
-    pool.connect()
-    .then(client => {
-      return client.query(query, values)
-      .then(sql_res => {
-        resolve(sql_res.rows[0]);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor(query, values, { single_row: true });
 };
 
 module.exports.finalize = function(schema_id) {
@@ -93,93 +65,23 @@ module.exports.finalize = function(schema_id) {
     where id = $1
   `;
 
-  return new Promise(function(resolve, reject){
-    pool.connect()
-    .then(client => {
-      client.query(query, [schema_id])
-      .then(() => {
-  			client.release();
-  			resolve();
-  		})
-      .catch(e => {
-  			client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor(query, [schema_id], { single_row: true });
 };
 
 module.exports.get_by_name = function(name) {
-  return new Promise(function(resolve, reject) {
-    pool.connect()
-    .then(client => {
-      client.query("select * from schema where name = $1", [name])
-      .then(sql_res => {
-        resolve(sql_res.rows[0]);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor("select * from schema where name = $1", [name], { single_row: true });
 };
 
 module.exports.delete_by_id = function(id) {
-  return new Promise(function(resolve, reject) {
-    pool.connect()
-    .then(client => {
-      client.query("delete from schema where id = $1", [id])
-      .then(() => {
-        resolve(true);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor("delete from schema where id = $1", [id], { single_row: true });
 };
 
 module.exports.get_by_id = function(id) {
-  return new Promise(function(resolve, reject) {
-    pool.connect()
-    .then(client => {
-      client.query("select * from schema where id = $1", [id])
-      .then(sql_res => {
-        resolve(sql_res.rows[0]);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor("select * from schema where id = $1", [id], { single_row: true });
 };
 
 module.exports.find_by_user_id = function(user_id) {
-  return new Promise(function(resolve, reject) {
-    pool.connect()
-    .then(client => {
-      client.query("select * from schema where user_id = $1", [user_id])
-      .then(sql_res => {
-        resolve(sql_res.rows);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor("select * from schema where user_id = $1", [user_id]);
 };
 
 module.exports.find_by_user_name = function(user_name) {
@@ -192,21 +94,7 @@ module.exports.find_by_user_name = function(user_name) {
     )
   `;
 
-  return new Promise(function(resolve, reject) {
-    pool.connect()
-    .then(client => {
-      client.query(query, [user_name])
-      .then(sql_res => {
-        resolve(sql_res.rows);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor(query, [user_name]);
 };
 
 module.exports.find_by_keywords = function(keywords) {
@@ -217,21 +105,8 @@ module.exports.find_by_keywords = function(keywords) {
     and complete = true
     limit 1000
   `;
-  return new Promise(function(resolve, reject) {
-    pool.connect()
-    .then(client => {
-      client.query(query, [keywords])
-      .then(sql_res => {
-        resolve(sql_res.rows);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+
+  return executor(query, [keywords]);
 };
 
 
@@ -243,21 +118,8 @@ module.exports.find_recent = function(count) {
 		order by created desc
     limit $1
   `;
-  return new Promise(function(resolve, reject) {
-    pool.connect()
-    .then(client => {
-      client.query(query, [Math.min(count, 250)])
-      .then(sql_res => {
-        resolve(sql_res.rows);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+
+  return executor(query, [Math.min(count, 250)]);
 };
 
 module.exports.get_by_schemaname_and_username = function(schema_name, user_name) {
@@ -269,21 +131,7 @@ module.exports.get_by_schemaname_and_username = function(schema_name, user_name)
     limit 1
   `;
 
-  const data = [user_name, schema_name];
+  const values = [user_name, schema_name];
 
-  return new Promise(function(resolve, reject) {
-    pool.connect()
-    .then(client => {
-      client.query(query, data)
-      .then(sql_res => {
-        resolve(sql_res.rows[0]);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor(query, values, { single_row: true });
 };

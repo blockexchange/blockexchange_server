@@ -1,4 +1,4 @@
-const pool = require("../pool");
+const executor = require("./executor");
 
 module.exports.create = function(schemapart) {
   const query = `
@@ -8,31 +8,16 @@ module.exports.create = function(schemapart) {
     returning id
   `;
 
-  return new Promise(function(resolve, reject){
-    pool.connect()
-    .then(client => {
+  const values = [
+    schemapart.schema_id,
+    schemapart.offset_x,
+    schemapart.offset_y,
+    schemapart.offset_z,
+    schemapart.data,
+    schemapart.metadata
+  ];
 
-  	  const values = [
-  	    schemapart.schema_id,
-  	    schemapart.offset_x,
-  	    schemapart.offset_y,
-  	    schemapart.offset_z,
-  	    schemapart.data,
-        schemapart.metadata
-  	  ];
-
-      client.query(query, values)
-      .then(sql_res => {
-  			resolve(sql_res.rows[0]);
-  			client.release();
-  		})
-      .catch(e => {
-  			client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor(query, values, { single_row: true });
 };
 
 module.exports.get_by_id_and_offset = function(schema_id, x, y, z) {
@@ -45,25 +30,7 @@ module.exports.get_by_id_and_offset = function(schema_id, x, y, z) {
     and offset_z = $4
   `;
 
-  return new Promise(function(resolve, reject){
-    const values = [ schema_id, x, y, z ];
+  const values = [ schema_id, x, y, z ];
 
-    pool.connect()
-    .then(client => {
-      client.query(query, values)
-      .then(sql_res => {
-        if (sql_res.rowCount == 0){
-          resolve();
-        } else {
-          resolve(sql_res.rows[0]);
-        }
-  			client.release();
-      })
-      .catch(e => {
-  			client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor(query, values, { single_row: true });
 };

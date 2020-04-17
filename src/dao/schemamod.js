@@ -1,4 +1,4 @@
-const pool = require("../pool");
+const executor = require("./executor");
 
 module.exports.create = function(schema_id, mod_name, node_count) {
   const query = `
@@ -12,21 +12,7 @@ module.exports.create = function(schema_id, mod_name, node_count) {
     schema_id, mod_name, node_count
   ];
 
-  return new Promise(function(resolve, reject){
-    pool.connect()
-    .then(client => {
-      return client.query(query, values)
-      .then(sql_res => {
-        resolve(sql_res.rows[0]);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor(query, values, { single_row: true });
 };
 
 module.exports.find_all = function(schema_id) {
@@ -39,19 +25,5 @@ module.exports.find_all = function(schema_id) {
     schema_id
   ];
 
-  return new Promise(function(resolve, reject){
-    pool.connect()
-    .then(client => {
-      return client.query(query, values)
-      .then(sql_res => {
-        resolve(sql_res.rows);
-        client.release();
-      })
-      .catch(e => {
-        client.release();
-        console.error(e.stack);
-        reject();
-      });
-    });
-  });
+  return executor(query, values);
 };
