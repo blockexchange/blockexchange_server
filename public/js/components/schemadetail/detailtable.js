@@ -1,13 +1,13 @@
 import moddetails from './moddetails.js';
 import ModList from '../ModList.js';
 import LicenseBadge from '../LicenseBadge.js';
-
+import prettybytesize from '../../util/prettybytesize.js';
 
 export default schema => m("table", { class: "table table-condensed table-striped" }, [
   m("tbody", [
     m("tr", [
       m("td", "Size [bytes]"),
-      m("td", m("span", { class: "badge badge-secondary"}, schema.total_size))
+      m("td", m("span", { class: "badge badge-secondary"}, prettybytesize(schema.total_size)))
     ]),
     m("tr", [
       m("td", "Size [blocks]"),

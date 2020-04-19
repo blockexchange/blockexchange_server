@@ -3,6 +3,8 @@ import LicenseBadge from '../LicenseBadge.js';
 import ModList from '../ModList.js';
 import SchemaActions from './SchemaActions.js';
 
+import prettybytesize from '../../util/prettybytesize.js';
+
 
 const entry = (entry, removeItem) => m("tr", [
 	m("td", m("a", { href: "#!/schema/" + entry.user.name }, entry.user.name)),
@@ -15,7 +17,7 @@ const entry = (entry, removeItem) => m("tr", [
 	]),
 	m("td", entry.downloads),
 	m("td", m(LicenseBadge, { license: entry.license })),
-	m("td", m("span", { class: "badge badge-success" }, entry.total_size)),
+	m("td", m("span", { class: "badge badge-secondary" }, prettybytesize(entry.total_size))),
 	m("td", entry.size_x + " / " + entry.size_y + " / " + entry.size_z),
 	m("td", entry.total_parts),
 	m("td", entry.description),
