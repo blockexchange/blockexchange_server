@@ -12,6 +12,9 @@ require("./api/info");
 // search
 require("./api/searchschema");
 
+// schema metadata
+require("./api/schema_star");
+
 // down / upload
 require("./api/schema_get");
 require("./api/schema_update");
