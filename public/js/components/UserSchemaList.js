@@ -25,6 +25,7 @@ export default class {
   view(){
     return m(SchemaList, {
       list: this.state.list,
+			hide_user: true,
       removeItem: schema => this.removeItem(schema)
     });
   }

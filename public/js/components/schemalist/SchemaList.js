@@ -6,8 +6,8 @@ import SchemaActions from './SchemaActions.js';
 import prettybytesize from '../../util/prettybytesize.js';
 
 
-const entry = (entry, removeItem) => m("tr", [
-	m("td", m("a", { href: "#!/schema/" + entry.user.name }, entry.user.name)),
+const entry = (entry, removeItem, hide_user) => m("tr", [
+	hide_user ? null : m("td", m("a", { href: "#!/schema/" + entry.user.name }, entry.user.name)),
 	m("td", m("a", { href: "#!/schema/" + entry.user.name + "/" + entry.name }, entry.name)),
 	m("td", [
 		moment(+entry.created).format("YYYY-MM-DD HH:mm"),
@@ -25,10 +25,10 @@ const entry = (entry, removeItem) => m("tr", [
 	m("td", m(SchemaActions, { schema: entry, removeItem: removeItem }))
 ]);
 
-const table = (list, removeItem) => m("table", { class: "table table-striped table-condensed" }, [
+const table = (list, removeItem, hide_user) => m("table", { class: "table table-striped table-condensed" }, [
 	m("thead", [
 		m("tr", [
-			m("th", "User"),
+			hide_user ? null : m("th", "User"),
 			m("th", "Name"),
 			m("th", "Created"),
 			m("th", "Downloads"),
@@ -42,12 +42,12 @@ const table = (list, removeItem) => m("table", { class: "table table-striped tab
 		])
 	]),
 	m("tbody", [
-		list.map(e => entry(e, removeItem))
+		list.map(e => entry(e, removeItem, hide_user))
 	])
 ]);
 
 export default {
 	view(vnode) {
-		return table(vnode.attrs.list, vnode.attrs.removeItem);
+		return table(vnode.attrs.list, vnode.attrs.removeItem, vnode.attrs.hide_user);
 	}
 };
