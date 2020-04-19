@@ -1,5 +1,6 @@
 import Preview from '../preview/Preview.js';
 import SchemaUsage from '../SchemaUsage.js';
+import Breadcrumb from '../Breadcrumb.js';
 
 import { get_by_user_and_schemaname } from '../../api/searchschema.js';
 
@@ -23,14 +24,28 @@ export default class {
 		.then(s => this.state.schema = s);
 	}
 
-  view() {
+  view(vnode) {
     const schema = this.state.schema;
 
 		if (!schema){
-			return m("div");
+			return m("div", "Loading...");
 		}
 
     return m("div", [
+			m(Breadcrumb, {
+				links: [{
+					name: "Home",
+					link: "#!/"
+				},{
+					name: "User-schemas",
+				},{
+					name: vnode.attrs.username,
+					link: "#!/schema/" + vnode.attrs.username
+				},{
+					name: vnode.attrs.schemaname,
+					active: true
+				}]
+			}),
 			title(schema),
 			m("hr"),
 			m("div", { class: "row" }, [

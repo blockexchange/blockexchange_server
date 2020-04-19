@@ -1,6 +1,7 @@
 
 import SearchBar from './SearchBar.js';
 import SchemaList from './schemalist/SchemaList.js';
+import Breadcrumb from './Breadcrumb.js';
 
 import store from '../store/search.js';
 
@@ -38,7 +39,16 @@ export default class {
   }
 
   view(){
-    return("div", [
+    return [
+			m(Breadcrumb, {
+				links: [{
+					name: "Home",
+					link: "#!/"
+				},{
+					name: "Search",
+					active: true
+				}]
+			}),
       m("div", m(SearchBar, {
         keywords: store.keywords,
         onChange: k => this.changeKeywords(k)
@@ -47,6 +57,6 @@ export default class {
         list: this.state.result,
         removeItem: schema => this.removeItem(schema)
       }))
-    ]);
+    ];
   }
 }

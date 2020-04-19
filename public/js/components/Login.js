@@ -2,6 +2,8 @@
 import { get_claims, set_token } from '../store/token.js';
 import { request_token } from '../api/token.js';
 
+import Breadcrumb from './Breadcrumb.js';
+
 const store = {
   username: "",
   password: "",
@@ -45,16 +47,27 @@ const logout_button = () => m("button", {
 
 export default {
   view: function(){
-    return m("div", { class: "row"}, [
-      m("div", { class: "col-md-4"}),
-      m("div", { class: "col-md-4"}, [
-        m("form", { class: "" }, [
-          username_input(),
-          password_input(),
-          get_claims() ? logout_button() : login_button()
-        ])
-      ]),
-      m("div", { class: "col-md-4"})
-    ]);
+    return [
+			m(Breadcrumb, {
+				links: [{
+					name: "Home",
+					link: "#!/"
+				},{
+					name: "Login",
+					active: true
+				}]
+			}),
+			m("div", { class: "row"}, [
+	      m("div", { class: "col-md-4"}),
+	      m("div", { class: "col-md-4"}, [
+	        m("form", { class: "" }, [
+	          username_input(),
+	          password_input(),
+	          get_claims() ? logout_button() : login_button()
+	        ])
+	      ]),
+	      m("div", { class: "col-md-4"})
+    	])
+		];
   }
 };
