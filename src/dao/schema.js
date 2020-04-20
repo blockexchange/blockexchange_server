@@ -7,9 +7,8 @@ module.exports.update = function(data) {
       name = $2,
       description = $3,
       search_tokens = to_tsvector($4),
-      long_description = $5,
-      user_id = $6,
-      license = $7
+      user_id = $5,
+      license = $6
     where id = $1
   `;
 
@@ -17,7 +16,6 @@ module.exports.update = function(data) {
     data.id,
     data.name, data.description,
     data.name + " " + data.description,
-    data.long_description,
     data.user_id,
     data.license
   ];
@@ -32,15 +30,13 @@ module.exports.create = function(data) {
       complete, user_id, name, description,
       size_x, size_y, size_z, part_length,
       total_size, total_parts, created, license,
-      search_tokens,
-      long_description
+      search_tokens
     )
     values(
       $1, $2, $3, $4,
       $5, $6, $7, $8,
       $9, $10, $11, $12,
-      to_tsvector($13),
-      $14
+      to_tsvector($13)
     )
     returning *
   `;
@@ -49,8 +45,7 @@ module.exports.create = function(data) {
     false, data.user_id, data.name, data.description || "",
     data.size_x, data.size_y, data.size_z, data.part_length,
     0, 0, Date.now(), data.license || "CC0",
-    data.name + " " + data.description,
-    data.long_description || ""
+    data.name + " " + data.description
   ];
 
   return executor(query, values, { single_row: true });

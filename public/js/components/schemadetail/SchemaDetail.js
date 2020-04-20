@@ -75,8 +75,7 @@ export default class {
 			m("hr"),
 			m("div", { class: "row" }, [
 				m("div", { class: "col-md-6"}, [
-					m("h4", schema.description),
-	        m("pre", schema.long_description || "<no description>")
+					m("pre", schema.description || "<no description>")
 				]),
 				m("div", { class: "col-md-6"}, [
 					m("div", [
