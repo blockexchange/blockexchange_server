@@ -1,10 +1,7 @@
 
 import UserStatus from './UserStatus.js';
-
-const a = (...args) => m("a", ...args);
-const div = (...args) => m("div", ...args);
-const ul = (...args) => m("ul", ...args);
-const li = (...args) => m("li", ...args);
+import { a, div, ul, li } from './fragments/html.js';
+import { fa } from './fragments/fa.js';
 
 export default {
   view(){
@@ -14,31 +11,31 @@ export default {
         ul({class: "navbar-nav mr-auto"}, [
           li({class: "nav-item"},
             a({class:"nav-link",href:"#!/"}, [
-              m("i", { class: "fa fa-question" }),
+              fa("question"),
               "About"
             ])
           ),
           li({class: "nav-item"},
             a({class:"nav-link",href:"#!/login"}, [
-              m("i", { class: "fa fa-sign-in" }),
+              fa("sign-in"),
               "Login"
             ])
           ),
           li({class: "nav-item"},
             a({class:"nav-link",href:"#!/mod"}, [
-              m("i", { class: "fa fa-download" }),
+              fa("download"),
               "Mod/Installation"
             ])
           ),
           li({class: "nav-item"},
             a({class:"nav-link",href:"#!/users"}, [
-              m("i", { class: "fa fa-users" }),
+              fa("users"),
               "Users"
             ])
           ),
           li({class: "nav-item"},
             a({class:"nav-link",href:"#!/search"}, [
-              m("i", { class: "fa fa-search" }),
+              fa("search"),
               "Search"
             ])
           )
