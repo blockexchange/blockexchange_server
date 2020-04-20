@@ -8,7 +8,9 @@ export default {
     	" ",
     	schema.name,
     	" ",
-    	m("small", { class: "text-muted" }, "by " + schema.user.name)
+    	m("small", { class: "text-muted" }, "by " + schema.user.name),
+      " ",
+      schema.complete ? "" : m("span", { class: "badge badge-warning" }, "Incomplete!")
     ]);
   }
 };

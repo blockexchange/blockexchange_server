@@ -97,7 +97,6 @@ module.exports.find_by_keywords = function(keywords) {
     select *
     from schema
     where search_tokens @@ to_tsquery($1)
-    and complete = true
     limit 1000
   `;
 
@@ -109,7 +108,6 @@ module.exports.find_recent = function(count) {
   const query = `
     select *
     from schema
-    where complete = true
 		order by created desc
     limit $1
   `;
