@@ -7,7 +7,7 @@ const badge = (cl, txt) => m("span", {
 const get_badge_class = mod_name => {
 	switch(mod_name) {
 		case "ignore":
-			return "dange";
+			return "danger";
 		case "default":
 			return "success";
 		default:
