@@ -3,9 +3,7 @@ import SchemaUsage from '../SchemaUsage.js';
 import Breadcrumb from '../Breadcrumb.js';
 import Star from './Star.js';
 import SchemaTitle from '../SchemaTitle.js';
-
-import { button } from '../fragments/bootstrap.js';
-import { fa } from '../fragments/fa.js';
+import EditButton from './EditButton.js';
 
 import { get_by_user_and_schemaname } from '../../api/searchschema.js';
 
@@ -59,11 +57,9 @@ export default class {
 						load_data: () => this.load_data()
 					})
 				]),
-				m("div", { class: "col-md-4", style: "text-align: right;" }, button("secondary",
-					`#!/schema/${vnode.attrs.username}/${vnode.attrs.schemaname}/edit`, [
-					fa("edit"),
-					" Edit"
-				]))
+				m("div", { class: "col-md-4", style: "text-align: right;" }, m(EditButton, {
+					schema: schema
+				}))
 			]),
 			m("hr"),
 			m("div", { class: "row" }, [
