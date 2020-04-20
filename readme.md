@@ -6,6 +6,8 @@ minetest blockexchange server software
 ![](https://github.com/blockexchange/blockexchange_server/workflows/jshint_backend/badge.svg)
 ![](https://github.com/blockexchange/blockexchange_server/workflows/test/badge.svg)
 
+![Docker Pulls](https://img.shields.io/docker/pulls/blockexchange/blockexchange)
+![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/blockexchange/blockexchange)
 
 # Overview
 
