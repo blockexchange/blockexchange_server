@@ -1,6 +1,7 @@
 import Preview from '../preview/Preview.js';
 import SchemaUsage from '../SchemaUsage.js';
 import Breadcrumb from '../Breadcrumb.js';
+import Star from './Star.js';
 
 import { get_by_user_and_schemaname } from '../../api/searchschema.js';
 
@@ -17,10 +18,17 @@ const title = schema => m("h3", [
 export default class {
 	constructor(vnode) {
 		this.state = {
-			progress: 0
+			progress: 0,
+			username: vnode.attrs.username,
+			schemaname: vnode.attrs.schemaname,
+			schema: null
 		};
 
-		get_by_user_and_schemaname(vnode.attrs.username, vnode.attrs.schemaname)
+		this.load_data();
+	}
+
+	load_data(){
+		get_by_user_and_schemaname(this.state.username, this.state.schemaname)
 		.then(s => this.state.schema = s);
 	}
 
@@ -46,7 +54,13 @@ export default class {
 					active: true
 				}]
 			}),
-			title(schema),
+			m("div", { class: "row" }, [
+				m("div", { class: "col-md-11"},	title(schema)),
+				m("div", { class: "col-md-1", }, m(Star, {
+					schema: schema,
+					load_data: () => this.load_data()
+				}))
+			]),
 			m("hr"),
 			m("div", { class: "row" }, [
 				m("div", { class: "col-md-6"}, [
