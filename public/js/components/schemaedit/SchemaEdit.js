@@ -61,6 +61,19 @@ export default class {
       hr(),
       row([
         col6([
+          m("input", {
+            class: "form-control",
+            placeholder: "Schema name",
+            value: schema.name,
+            oninput: e => schema.name = e.target.value
+          })
+        ]),
+        col6([
+          m("h3", schema.name)
+        ])
+      ]),
+      row([
+        col6([
           textarea({
             value: schema.description,
             class: "form-control",
