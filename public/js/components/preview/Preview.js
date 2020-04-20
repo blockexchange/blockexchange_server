@@ -22,7 +22,10 @@ export default {
 
     const renderer = new THREE.WebGLRenderer({
       antialias: false,
-      precision: "lowp"
+      precision: "lowp",
+
+      // canvas to blob: https://stackoverflow.com/questions/12168909/blob-from-dataurl
+      preserveDrawingBuffer: true
     });
 
 		vnode.state.renderer = renderer;
