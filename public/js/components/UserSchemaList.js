@@ -2,7 +2,6 @@ import SchemaList from './schemalist/SchemaList.js';
 import Breadcrumb from './Breadcrumb.js';
 
 import { find_by_username } from '../api/searchschema.js';
-import { remove } from '../api/schema.js';
 
 export default class {
   constructor(vnode) {
@@ -16,11 +15,6 @@ export default class {
   search(){
     find_by_username(this.state.username)
     .then(l => this.state.list = l);
-  }
-
-  removeItem(schema){
-    remove(schema)
-    .then(() => this.search());
   }
 
   view(){
@@ -38,8 +32,7 @@ export default class {
 			}),
 			m(SchemaList, {
 	      list: this.state.list,
-				hide_user: true,
-	      removeItem: schema => this.removeItem(schema)
+				hide_user: true
 	    })
 		];
   }

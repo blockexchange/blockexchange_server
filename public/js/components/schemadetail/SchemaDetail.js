@@ -4,6 +4,7 @@ import Breadcrumb from '../Breadcrumb.js';
 import Star from './Star.js';
 import SchemaTitle from '../SchemaTitle.js';
 import EditButton from './EditButton.js';
+import DeleteButton from './DeleteButton.js';
 
 import { get_by_user_and_schemaname } from '../../api/searchschema.js';
 
@@ -57,9 +58,10 @@ export default class {
 						load_data: () => this.load_data()
 					})
 				]),
-				m("div", { class: "col-md-4", style: "text-align: right;" }, m(EditButton, {
-					schema: schema
-				}))
+				m("div", { class: "col-md-4 btn-group", style: "text-align: right;" }, [
+					m(EditButton, { schema: schema }),
+					m(DeleteButton, { schema: schema })
+				])
 			]),
 			m("hr"),
 			m("div", { class: "row" }, [

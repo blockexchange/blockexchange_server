@@ -1,12 +1,10 @@
 
 import LicenseBadge from '../LicenseBadge.js';
 import ModList from '../ModList.js';
-import SchemaActions from './SchemaActions.js';
 
 import prettybytesize from '../../util/prettybytesize.js';
 
-
-const entry = (entry, removeItem, hide_user) => m("tr", [
+const entry = (entry, hide_user) => m("tr", [
 	hide_user ? null : m("td", m("a", { href: "#!/schema/" + entry.user.name }, entry.user.name)),
 	m("td", m("a", { href: "#!/schema/" + entry.user.name + "/" + entry.name }, entry.name)),
 	m("td", [
@@ -21,11 +19,10 @@ const entry = (entry, removeItem, hide_user) => m("tr", [
 	m("td", entry.size_x + " / " + entry.size_y + " / " + entry.size_z),
 	m("td", entry.total_parts),
 	m("td", entry.description.substring(0,15)),
-	m("td", m(ModList, { schema: entry }) ),
-	m("td", m(SchemaActions, { schema: entry, removeItem: removeItem }))
+	m("td", m(ModList, { schema: entry }) )
 ]);
 
-const table = (list, removeItem, hide_user) => m("table", { class: "table table-striped table-condensed" }, [
+const table = (list, hide_user) => m("table", { class: "table table-striped table-condensed" }, [
 	m("thead", [
 		m("tr", [
 			hide_user ? null : m("th", "User"),
@@ -37,17 +34,16 @@ const table = (list, removeItem, hide_user) => m("table", { class: "table table-
 			m("th", "Size [blocks]"),
 			m("th", "Parts"),
 			m("th", "Description"),
-			m("th", "Mods"),
-			m("th", "Actions")
+			m("th", "Mods")
 		])
 	]),
 	m("tbody", [
-		list.map(e => entry(e, removeItem, hide_user))
+		list.map(e => entry(e, hide_user))
 	])
 ]);
 
 export default {
 	view(vnode) {
-		return table(vnode.attrs.list, vnode.attrs.removeItem, vnode.attrs.hide_user);
+		return table(vnode.attrs.list, vnode.attrs.hide_user);
 	}
 };

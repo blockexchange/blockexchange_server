@@ -8,8 +8,6 @@ import store from '../store/search.js';
 import debounce from '../util/debounce.js';
 
 import { find_recent, find_by_keywords } from '../api/searchschema.js';
-import { remove } from '../api/schema.js';
-
 
 export default class {
   constructor(){
@@ -26,11 +24,6 @@ export default class {
       .then(l => this.state.result = l);
     else
       find_recent(20).then(l => this.state.result = l);
-  }
-
-  removeItem(schema) {
-    remove(schema)
-    .then(() => this.search());
   }
 
   changeKeywords(k){
@@ -54,8 +47,7 @@ export default class {
         onChange: k => this.changeKeywords(k)
       })),
       m("div", m(SchemaList, {
-        list: this.state.result,
-        removeItem: schema => this.removeItem(schema)
+        list: this.state.result
       }))
     ];
   }
