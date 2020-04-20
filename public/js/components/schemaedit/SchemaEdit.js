@@ -29,8 +29,10 @@ export default class {
   }
 
   save(){
-    update(this.state.schema)
-    .then(() => window.location.hash = `#!/schema/${this.state.username}/${this.state.schemaname}`);
+    const schema = this.state.schema;
+
+    update(schema)
+    .then(() => window.location.hash = `#!/schema/${schema.user.name}/${schema.name}`);
   }
 
   view(){
