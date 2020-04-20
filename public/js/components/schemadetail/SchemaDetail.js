@@ -3,11 +3,14 @@ import SchemaUsage from '../SchemaUsage.js';
 import Breadcrumb from '../Breadcrumb.js';
 import Star from './Star.js';
 
+import { button } from '../fragments/bootstrap.js';
+import { fa } from '../fragments/fa.js';
+
 import { get_by_user_and_schemaname } from '../../api/searchschema.js';
 
 import detailtable from './detailtable.js';
 
-const title = schema => m("h3", [
+const title = schema => m("h3", { style: "display: inline;" }, [
 	m("span", { class: "badge badge-primary"}, schema.id),
 	" ",
 	schema.name,
@@ -55,11 +58,19 @@ export default class {
 				}]
 			}),
 			m("div", { class: "row" }, [
-				m("div", { class: "col-md-11"},	title(schema)),
-				m("div", { class: "col-md-1", }, m(Star, {
-					schema: schema,
-					load_data: () => this.load_data()
-				}))
+				m("div", { class: "col-md-8" },	[
+					title(schema),
+					" ",
+					m(Star, {
+						schema: schema,
+						load_data: () => this.load_data()
+					})
+				]),
+				m("div", { class: "col-md-4", style: "text-align: right;" }, button("secondary",
+					`#!/schema/${vnode.attrs.username}/${vnode.attrs.schemaname}/edit`, [
+					fa("edit"),
+					" Edit"
+				]))
 			]),
 			m("hr"),
 			m("div", { class: "row" }, [

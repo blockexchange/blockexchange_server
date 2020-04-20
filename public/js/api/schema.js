@@ -1,7 +1,7 @@
 
-export const get_by_uid = uid => m.request({
+export const get_by_id = id => m.request({
 	method: "GET",
-	url: `api/schema/${uid}`
+	url: `api/schema/${id}`
 });
 
 export const update = schema => m.request({
