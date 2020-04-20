@@ -3,6 +3,7 @@
 ## user
 
 * **id** serial
+* **role** varchar
 * **name** varchar
 * **hash** varchar
 * **created** bigint

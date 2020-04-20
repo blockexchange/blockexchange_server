@@ -30,7 +30,7 @@ app.post('/api/token', jsonParser, function(req, res){
       user_id: user.id
     };
 
-
+    //TODO: check role instead of name ["MEMBER", "TEMP"]
     if (user.name == "temp"){
       // temporary/default user
       payload.permissions = {
