@@ -2,6 +2,7 @@ import Preview from '../preview/Preview.js';
 import SchemaUsage from '../SchemaUsage.js';
 import Breadcrumb from '../Breadcrumb.js';
 import Star from './Star.js';
+import SchemaTitle from '../SchemaTitle.js';
 
 import { button } from '../fragments/bootstrap.js';
 import { fa } from '../fragments/fa.js';
@@ -9,14 +10,6 @@ import { fa } from '../fragments/fa.js';
 import { get_by_user_and_schemaname } from '../../api/searchschema.js';
 
 import detailtable from './detailtable.js';
-
-const title = schema => m("h3", { style: "display: inline;" }, [
-	m("span", { class: "badge badge-primary"}, schema.id),
-	" ",
-	schema.name,
-	" ",
-	m("small", { class: "text-muted" }, "by " + schema.user.name)
-]);
 
 export default class {
 	constructor(vnode) {
@@ -59,7 +52,7 @@ export default class {
 			}),
 			m("div", { class: "row" }, [
 				m("div", { class: "col-md-8" },	[
-					title(schema),
+					m(SchemaTitle, { schema: schema }),
 					" ",
 					m(Star, {
 						schema: schema,

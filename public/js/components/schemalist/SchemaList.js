@@ -20,7 +20,7 @@ const entry = (entry, removeItem, hide_user) => m("tr", [
 	m("td", m("span", { class: "badge badge-secondary" }, prettybytesize(entry.total_size))),
 	m("td", entry.size_x + " / " + entry.size_y + " / " + entry.size_z),
 	m("td", entry.total_parts),
-	m("td", entry.description),
+	m("td", entry.description.substring(0,15)),
 	m("td", m(ModList, { schema: entry }) ),
 	m("td", m(SchemaActions, { schema: entry, removeItem: removeItem }))
 ]);
