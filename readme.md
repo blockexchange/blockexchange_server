@@ -28,6 +28,7 @@ Corresponding mod and more information: https://github.com/blockexchange/blockex
 * **PGDATABASE**
 * **BLOCKEXCHANGE_KEY** private key to sign the json web tokens with
 
+
 ## Docker usage
 
 Image: https://hub.docker.com/r/blockexchange/blockexchange
