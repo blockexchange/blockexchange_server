@@ -4,7 +4,7 @@ import UserSchemaList from './components/UserSchemaList.js';
 import SchemaDetail from './components/schemadetail/SchemaDetail.js';
 import SchemaEdit from './components/schemaedit/SchemaEdit.js';
 import UserList from './components/UserList.js';
-import Login from './components/Login.js';
+import Login from './components/login/Login.js';
 import Register from './components/Register.js';
 import Mod from './components/Mod.js';
 
