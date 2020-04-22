@@ -12,7 +12,7 @@ module.exports = () => {
       .catch(e => {
         client.release();
         console.error(e.stack);
-        reject();
+        reject(e);
       });
     });
   });

@@ -24,8 +24,14 @@ require("./api/schemamods");
 require("./api/schemapart");
 
 migrate().then(() => {
-  app.listen(8080, () => console.log('Listening on http://127.0.0.1:8080'));
+  app.listen(8080, err => {
+		if (err)
+			console.error(err);
+		else
+			console.log('Listening on http://127.0.0.1:8080');
+	});
 })
-.catch(() => {
+.catch(e => {
+	console.error(e);
   process.exit(-1);
 });
