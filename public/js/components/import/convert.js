@@ -61,28 +61,41 @@ export default function(blocks){
           }
         },
       };
+      //fill holes
+      for (let i=0; i<4096; i++){
+        mapblock.data.node_ids[i] = 0;
+        mapblock.data.param1[i] = 0;
+        mapblock.data.param2[i] = 0;
+      }
+
       mapblocks.push(mapblock);
       mapblocks_z_slices[mapblock_z] = mapblock;
     }
 
+
     //TODO: non-uniform block sizes (other than 16 blocks wide)
-    const index = pos_to_index(block);
+    const index = pos_to_index({
+      x: block.x - offset_x,
+      y: block.y - offset_y,
+      z: block.z - offset_z
+    });
 
     if (block.meta){
-      mapblock.data.metadata.meta = block.meta;
+      //TODO
+      //mapblock.data.metadata.meta = block.meta;
     }
 
     mapblock.data.param1[index] = block.param1;
     mapblock.data.param2[index] = block.param2;
 
     var node_id;
-    if (mapblock.data.node_ids[block.name]){
+    if (mapblock.data.node_mapping[block.name]){
       // nodename exists
-      node_id = mapblock.data.node_ids[block.name];
+      node_id = mapblock.data.node_mapping[block.name];
     } else {
       // create new entry
       node_id = mapblock.data.max_nodeid++;
-      mapblock.data.node_ids[block.name] = node_id;
+      mapblock.data.node_mapping[block.name] = node_id;
     }
 
     mapblock.data.node_ids[index] = node_id;

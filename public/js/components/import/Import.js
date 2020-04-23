@@ -28,6 +28,7 @@ function upload_parts(result, name, description){
 
       part.schema_id = schema.id;
 
+      console.log(part);
       create_schemapart(part)
       .then(() => setTimeout(worker, 500));
     }
