@@ -13,6 +13,24 @@ export const update = schema => m.request({
 	}
 });
 
+export const create = schema => m.request({
+	method: "POST",
+	url: `api/schema`,
+	data: schema,
+	headers: {
+		"Authorization": localStorage.blockexchange_token
+	}
+});
+
+export const complete = schema => m.request({
+	method: "POST",
+	url: `api/schema/${schema.id}/complete`,
+	data: schema,
+	headers: {
+		"Authorization": localStorage.blockexchange_token
+	}
+});
+
 export const remove = schema => m.request({
 	method: "DELETE",
 	url: `api/schema/${schema.id}`,

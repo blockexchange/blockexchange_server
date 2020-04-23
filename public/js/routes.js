@@ -7,6 +7,7 @@ import UserList from './components/UserList.js';
 import Login from './components/login/Login.js';
 import Register from './components/Register.js';
 import Mod from './components/Mod.js';
+import Import from './components/import/Import.js';
 
 export default {
   "/": Start,
@@ -15,6 +16,7 @@ export default {
   "/register": Register,
   "/search": Search,
   "/mod": Mod,
+  "/import": Import,
   "/schema/:username": UserSchemaList,
   "/schema/:username/:schemaname": SchemaDetail,
   "/schema/:username/:schemaname/edit": SchemaEdit
