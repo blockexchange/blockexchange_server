@@ -3,6 +3,7 @@ import { row, col6, col12 } from '../fragments/bootstrap.js';
 import { hr, textarea, pre } from '../fragments/html.js';
 import { fa } from '../fragments/fa.js';
 
+import ModList from '../ModList.js';
 import LicenseBadge from '../LicenseBadge.js';
 
 import state from './state.js';
@@ -52,6 +53,18 @@ export default {
         col6([
           m(LicenseBadge, { license: state.license })
         ])
+      ]),
+      row([
+        col6(
+          m(ModList, { schema: { mods: state.result.stats }})
+        ),
+        col6(
+          m("ul",
+          	m("div", Object.keys(state.result.stats).map(
+          		mod_name => m("li", `${mod_name}: ${state.result.stats[mod_name]}`)
+          	))
+          )
+        )
       ]),
       hr(),
       row(col12([

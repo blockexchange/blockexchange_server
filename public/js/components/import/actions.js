@@ -3,6 +3,7 @@ import parse_we from './parse.js';
 import state from './state.js';
 
 import { create as create_schema, complete as complete_schema } from '../../api/schema.js';
+import { create as create_mods } from '../../api/schemamods.js';
 import { create as create_schemapart } from '../../service/schemapart.js';
 import { get_claims } from '../../store/token.js';
 
@@ -12,8 +13,7 @@ export function parse(){
 }
 
 export function convert(){
-  const result = convert_we(state.blocks);
-  state.result = result;
+  state.result = convert_we(state.blocks);
   state.name = "WE-Import @ " + Date.now();
   state.description = "Imported @ " + moment().format("YYYY-MM-DD HH:mm:ss");
   state.license = "CC0";
@@ -40,7 +40,8 @@ export function upload(){
       m.redraw();
 
       if (!part){
-        complete_schema(schema)
+        create_mods(schema.id, result.stats)
+        .then(() => complete_schema(schema))
         .then(() => {
           state.result = null;
           state.blocks = null;

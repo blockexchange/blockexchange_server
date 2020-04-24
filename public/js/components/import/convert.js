@@ -33,8 +33,15 @@ function get_or_create_mapblock(mapblocks_x_slices, parts, mapblock_x, mapblock_
   return mapblock;
 }
 
-export default function(blocks){
+function get_modname(nodename){
+  return nodename.split(":")[0];
+}
+
+export default function(blocks, stats){
   var max_x = 0, max_y = 0, max_z = 0;
+
+  //mod and node count stats
+  stats = stats || {};
 
   // mapblocks as array
   const parts = [];
@@ -87,6 +94,14 @@ export default function(blocks){
     }
 
     mapblock.data.node_ids[index] = node_id;
+
+    // update stats
+    const modname = get_modname(block.name);
+    if (stats[modname]){
+      stats[modname]++;
+    } else {
+      stats[modname] = 1;
+    }
   });
 
   // fill in empty mapblocks
@@ -99,6 +114,7 @@ export default function(blocks){
   }
 
   return {
+    stats: stats,
     parts: parts,
     max_x: max_x,
     max_y: max_y,
