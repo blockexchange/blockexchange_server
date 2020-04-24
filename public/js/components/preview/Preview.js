@@ -58,6 +58,7 @@ export default {
 			if (pos){
 				drawMapblock(scene, schema, pos.x, pos.y, pos.z)
 				.then(() => renderer.render( scene, camera ))
+        .then(() => m.redraw())
 				.then(() => setTimeout(fetchNextMapblock, 150));
 			}
 		}

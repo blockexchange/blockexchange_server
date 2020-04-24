@@ -1,6 +1,7 @@
 import { getMaterial } from './material.js';
 import { isNodeHidden, getNodePos } from './utils.js';
 
+import { get as schemapart_get } from '../../service/schemapart.js';
 
 export default function(scene, schema, posx, posy, posz){
 
@@ -8,7 +9,7 @@ export default function(scene, schema, posx, posy, posz){
 	const block_y = Math.floor(posy * schema.part_length);
 	const block_z = Math.floor(posz * schema.part_length);
 
-  return m.request(`api/schemapart/${schema.id}/${block_x}/${block_y}/${block_z}`)
+  return schemapart_get(schema.id, block_x, block_y, block_z)
   .then(function(schemapart){
     if (!schemapart)
       return;

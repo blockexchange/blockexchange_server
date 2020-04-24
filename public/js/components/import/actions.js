@@ -3,7 +3,7 @@ import parse_we from './parse.js';
 import state from './state.js';
 
 import { create as create_schema, complete as complete_schema } from '../../api/schema.js';
-import { create as create_schemapart } from '../../api/schemapart.js';
+import { create as create_schemapart } from '../../service/schemapart.js';
 import { get_claims } from '../../store/token.js';
 
 
