@@ -64,9 +64,13 @@ export default function(blocks){
       z: block.z - offset_z
     });
 
-    if (block.meta){
-      //TODO
-      //mapblock.data.metadata.meta = block.meta;
+    if (block.meta && (
+        (block.meta.fields && Object.keys(block.meta.fields).length) ||
+        (block.meta.inventory && Object.keys(block.meta.inventory).length)
+      )){
+      // Assign metadata
+      const pos_str = `(${block.x},${block.y},${block.z})`;
+      mapblock.data.metadata.meta[pos_str] = block.meta;
     }
 
     mapblock.data.param1[index] = block.param1;
