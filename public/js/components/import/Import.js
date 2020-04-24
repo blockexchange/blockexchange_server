@@ -46,8 +46,8 @@ function readString(we_schema){
   console.log("unboxed", blocks.length);
 
   const result = convert(blocks);
-  console.log("schema parts: " + result.parts.length);
-  console.log(result.parts[0]);
+  console.log("total schema parts: " + result.parts.length);
+  console.log("max sizes: " + result.max_x + "/" + result.max_y + "/" + result.max_z);
 
   upload_parts(result, "WE-Import @" + Date.now(), "WE Import wip");
 }

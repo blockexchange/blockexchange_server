@@ -1,13 +1,43 @@
 
+import { createMapblock } from './mapblock.js';
+
 function pos_to_index(pos){
-  return pos.x + (pos.y * 16) + (pos.z * 256);
+  return pos.z + (pos.y * 16) + (pos.x * 256);
+}
+
+function get_or_create_mapblock(mapblocks_x_slices, parts, mapblock_x, mapblock_y, mapblock_z){
+  const offset_x = mapblock_x * 16;
+  const offset_y = mapblock_y * 16;
+  const offset_z = mapblock_z * 16;
+
+  var mapblocks_y_slices = mapblocks_x_slices[mapblock_x];
+  if (!mapblocks_y_slices){
+    mapblocks_y_slices = [];
+    mapblocks_x_slices[mapblock_x] = mapblocks_y_slices;
+  }
+
+  var mapblocks_z_slices = mapblocks_y_slices[mapblock_y];
+  if (!mapblocks_z_slices){
+    mapblocks_z_slices = [];
+    mapblocks_y_slices[mapblock_y] = mapblocks_z_slices;
+  }
+
+  var mapblock = mapblocks_z_slices[mapblock_z];
+  if (!mapblock){
+    mapblock = createMapblock(offset_x, offset_y, offset_z);
+
+    parts.push(mapblock);
+    mapblocks_z_slices[mapblock_z] = mapblock;
+  }
+
+  return mapblock;
 }
 
 export default function(blocks){
   var max_x = 0, max_y = 0, max_z = 0;
 
   // mapblocks as array
-  const mapblocks = [];
+  const parts = [];
 
   // mapblocks as 3 dimensional array indexed by order (0,1,2)
   const mapblocks_x_slices = [];
@@ -25,53 +55,7 @@ export default function(blocks){
     max_y = Math.max(max_y, offset_y + 15);
     max_z = Math.max(max_z, offset_z + 15);
 
-    var mapblocks_y_slices = mapblocks_x_slices[mapblock_x];
-    if (!mapblocks_y_slices){
-      mapblocks_y_slices = [];
-      mapblocks_x_slices[mapblock_x] = mapblocks_y_slices;
-    }
-
-    var mapblocks_z_slices = mapblocks_y_slices[mapblock_y];
-    if (!mapblocks_z_slices){
-      mapblocks_z_slices = [];
-      mapblocks_y_slices[mapblock_y] = mapblocks_z_slices;
-    }
-
-    var mapblock = mapblocks_z_slices[mapblock_z];
-    if (!mapblock){
-      mapblock = {
-        schema_id: 0, //TODO
-        offset_x: offset_x,
-        offset_y: offset_y,
-        offset_z: offset_z,
-        data: {
-          node_ids: new Array(4096),
-          param1: new Array(4096),
-          param2: new Array(4096),
-          node_mapping: { air: 0 },
-          max_nodeid: 1,
-          metadata: {
-            meta: {},
-            timers: {}
-          },
-          size: {
-            x: 16,
-            y: 16,
-            z: 16
-          }
-        },
-      };
-      //fill holes
-      for (let i=0; i<4096; i++){
-        mapblock.data.node_ids[i] = 0;
-        mapblock.data.param1[i] = 0;
-        mapblock.data.param2[i] = 0;
-      }
-
-      mapblocks.push(mapblock);
-      mapblocks_z_slices[mapblock_z] = mapblock;
-    }
-
+    const mapblock = get_or_create_mapblock(mapblocks_x_slices, parts, mapblock_x, mapblock_y, mapblock_z);
 
     //TODO: non-uniform block sizes (other than 16 blocks wide)
     const index = pos_to_index({
@@ -101,9 +85,17 @@ export default function(blocks){
     mapblock.data.node_ids[index] = node_id;
   });
 
+  // fill in empty mapblocks
+  for (let mapblock_x=0; mapblock_x<Math.ceil(max_x / 16); mapblock_x++){
+    for (let mapblock_y=0; mapblock_y<Math.ceil(max_y / 16); mapblock_y++){
+      for (let mapblock_z=0; mapblock_z<Math.ceil(max_z / 16); mapblock_z++){
+        get_or_create_mapblock(mapblocks_x_slices, parts, mapblock_x, mapblock_y, mapblock_z);
+      }
+    }
+  }
 
   return {
-    parts: mapblocks,
+    parts: parts,
     max_x: max_x,
     max_y: max_y,
     max_z: max_z
