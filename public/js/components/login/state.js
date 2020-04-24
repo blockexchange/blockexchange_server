@@ -12,6 +12,12 @@ const state = {
     .then(token => set_token(token))
     .catch(e => state.message = e.message);
   },
+  temp_login: function(){
+    state.message = null;
+    request_token("temp", "temp")
+    .then(token => set_token(token))
+    .catch(e => state.message = e.message);
+  },
   logout: function(){
     set_token(null);
   },

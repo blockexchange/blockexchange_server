@@ -25,6 +25,13 @@ const login_button = () => m("button", {
   m("span", { class: "badge badge-danger" }, state.message)
 ]);
 
+const temp_login_button = () => m("button", {
+  class: "btn btn-secondary btn-block",
+  onclick: state.temp_login
+}, [
+  "Login with temporary account"
+]);
+
 const logout_button = () => m("button", {
   class: "btn btn-primary btn-block",
   onclick: state.logout
@@ -46,7 +53,8 @@ export default {
 	        m("form", { class: "" }, [
 	          username_input(),
 	          password_input(),
-	          state.isLoggedIn() ? logout_button() : login_button()
+	          state.isLoggedIn() ? logout_button() : login_button(),
+            state.isLoggedIn() ? null : temp_login_button()
 	        ])
 	      ]),
 	      m("div", { class: "col-md-4"})
