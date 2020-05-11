@@ -92,6 +92,19 @@ module.exports.find_by_user_name = function(user_name) {
   return executor(query, [user_name]);
 };
 
+module.exports.delete_old_temp_schemas = function(before_timestamp) {
+  const query = `
+    delete from schema
+    where user_id = (
+      select id
+      from public.user
+      where name = $1
+    ) and created < $2
+  `;
+
+  return executor(query, ["temp", before_timestamp]);
+};
+
 module.exports.find_by_keywords = function(keywords) {
   const query = `
     select *
