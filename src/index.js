@@ -23,15 +23,24 @@ require("./api/schema_delete");
 require("./api/schemamods");
 require("./api/schemapart");
 
+const cleanupjob = require("./jobs/temp_schema_cleanup");
+
 migrate().then(() => {
   app.listen(8080, err => {
-		if (err)
+		if (err){
 			console.error(err);
-		else
+		} else {
 			console.log('Listening on http://127.0.0.1:8080');
+      cleanupjob.start();
+    }
 	});
 })
 .catch(e => {
 	console.error(e);
+  cleanupjob.stop();
   process.exit(-1);
+});
+
+process.on('SIGINT', function() {
+  cleanupjob.stop();
 });
