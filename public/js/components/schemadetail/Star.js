@@ -14,5 +14,5 @@ export default {
       // no stars
       return m("i", { class: "far fa-star"});
     }
-}
+  }
 };
