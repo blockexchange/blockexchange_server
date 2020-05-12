@@ -8,7 +8,6 @@ const user_dao = require("../dao/user");
 const user_schema_star_dao = require("../dao/userschemastar");
 
 // TODO: maybe optimize with subqueries
-
 function enrich(schema){
 	return Promise.all([
 		schemamod_dao.find_all(schema.id),
@@ -36,6 +35,8 @@ app.post('/api/searchschema', jsonParser, function(req, res){
   console.log("POST /api/searchschema", req.body);
 
 	var q;
+
+	// select proper query
 	if (req.body.user_id) {
 		// just by user_id
 		q = schema_dao.find_by_user_id(req.body.user_id);
@@ -63,7 +64,11 @@ app.post('/api/searchschema', jsonParser, function(req, res){
 		return;
 	}
 
+	// TODO: sorting { sorting: { field: "created", desc: false }}
+	// TODO: paging { paging: { page: 1, items: 20 }}
+
   q.then(rows => {
+		// enrich with additional data and return
 		return Promise.all(rows.map(enrich))
 		.then(enriched_rows => res.json(enriched_rows));
 	})
