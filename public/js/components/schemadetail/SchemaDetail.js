@@ -7,6 +7,7 @@ import EditButton from './EditButton.js';
 import DeleteButton from './DeleteButton.js';
 
 import { get_by_user_and_schemaname } from '../../api/searchschema.js';
+import { get_all as get_all_stars } from '../../api/userschemastar.js';
 
 import detailtable from './detailtable.js';
 
@@ -16,7 +17,9 @@ export default class {
 			progress: 0,
 			username: vnode.attrs.username,
 			schemaname: vnode.attrs.schemaname,
-			schema: null
+			schema: null,
+			userstars: null,
+			ready: false
 		};
 
 		this.load_data();
@@ -24,13 +27,17 @@ export default class {
 
 	load_data(){
 		get_by_user_and_schemaname(this.state.username, this.state.schemaname)
-		.then(s => this.state.schema = s);
+		.then(s => this.state.schema = s)
+		.then(() => get_all_stars(this.state.schema.id))
+		.then(userstars => this.state.userstars = userstars)
+		.then(() => this.state.ready = true);
 	}
 
   view(vnode) {
-    const schema = this.state.schema;
+		const schema = this.state.schema;
+		const userstars = this.state.userstars;
 
-		if (!schema){
+		if (!this.state.ready){
 			return m("div", "Loading...");
 		}
 
@@ -55,7 +62,7 @@ export default class {
 					" ",
 					m(Star, {
 						schema: schema,
-						load_data: () => this.load_data()
+						userstars: userstars
 					})
 				]),
 				m("div", { class: "col-md-4 btn-group", style: "text-align: right;" }, [

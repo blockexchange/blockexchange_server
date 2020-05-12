@@ -10,7 +10,7 @@ app.get('/api/schema/:id/star', jsonParser, function(req, res){
   console.log("GET /api/schema/:id/star", req.params.id);
 
 	userschemastar_dao.find_by_schema_id(req.params.id)
-	.then(result => res.json(result))
+	.then(result => res.json(result || []))
 	.catch(() => res.status(500).end());
 
 });
