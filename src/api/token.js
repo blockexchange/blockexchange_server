@@ -30,8 +30,8 @@ app.post('/api/token', jsonParser, function(req, res){
       user_id: user.id
     };
 
-    //TODO: check role instead of name ["MEMBER", "TEMP"]
-    if (user.name == "temp"){
+    // check for temporary role, only allow creation of content with it
+    if (user.role == "TEMP"){
       // temporary/default user
       payload.permissions = {
         schema: {
