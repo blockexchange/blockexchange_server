@@ -103,6 +103,11 @@ app.get("/api/search/schema/byname/:username/:name", function(req, res){
 			return;
 		}
 
+		if (req.query.download === "true") {
+	    // increment download counter
+	    schema_dao.increment_downloads(schema.id);
+	  }
+
 		return enrich(schema)
 		.then(enriched_schema => {
 			res.json(enriched_schema);

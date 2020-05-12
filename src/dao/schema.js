@@ -141,3 +141,15 @@ module.exports.get_by_schemaname_and_username = function(schema_name, user_name)
 
   return executor(query, values, { single_row: true });
 };
+
+module.exports.increment_downloads = function(schema_id) {
+  const query = `
+    update schema
+    set downloads = downloads + 1
+    where id = $1
+  `;
+
+  const values = [schema_id];
+
+  return executor(query, values, { single_row: true });
+};
