@@ -23,7 +23,7 @@
     "prom-client": "^12.0.0"
   },
   "devDependencies": {
-    "jshint": "^2.11.0",
+    "jshint": "^2.11.1",
     "mocha": "^7.1.2",
     "nodemon": "^2.0.3",
     "rollup": "^2.10.0"
