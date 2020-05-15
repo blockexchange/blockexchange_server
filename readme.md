@@ -58,6 +58,20 @@ docker run -it --rm \
 
 Go to http://127.0.0.1:8080
 
+# Development
+
+Web- and backend development
+
+```
+# start the postgres database
+./dev/start_pg.sh
+
+# start the nodejs server
+./start_server.sh
+```
+
+Go to http://127.0.0.1:8080
+
 # License
 
 Code: MIT
