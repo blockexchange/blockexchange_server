@@ -29,8 +29,8 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
   .catch(() => res.status(500).end());
 });
 
-app.post('/api/schema/:id/screenshot/:title', permission_create, function(req, res){
-  console.log("POST /api/schema/:id/screenshot/:title", req.params.id, req.params.title);
+app.post('/api/schema/:id/screenshot', permission_create, jsonParser, function(req, res){
+  console.log("POST /api/schema/:id/screenshot", req.params.id);
 
   return schema_dao.get_by_id(req.params.id)
   .then(schema => {
@@ -40,7 +40,25 @@ app.post('/api/schema/:id/screenshot/:title', permission_create, function(req, r
       return;
     }
 
-    schema_screenshot_dao.create(schema.id, req.params.title, req.body)
+    schema_screenshot_dao.create(schema.id, req.body.title, req.body.type, req.body.data)
     .then(() => res.end());
   });
+});
+
+
+app.get('/api/schema/:id/screenshot/:screenshot_id', permission_delete, function(req, res){
+  console.log("DELETE /api/schema/:id/screenshot/:screenshot_id", req.params.id, req.params.screenshot_id);
+
+  return schema_dao.get_by_id(req.params.id)
+  .then(schema => {
+    // check user id in claims
+    if (schema.user_id != +req.claims.user_id){
+      res.status(401).end();
+      return;
+    }
+
+    schema_screenshot_dao.remove(req.params.screenshot_id)
+    .then(() => res.end());
+  })
+  .catch(() => res.status(500).end());
 });
