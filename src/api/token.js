@@ -48,6 +48,10 @@ app.post('/api/token', jsonParser, function(req, res){
           create: true,
           update: true,
           delete: true
+        },
+        screenshot: {
+          create: true,
+          delete: true
         }
       };
     }
