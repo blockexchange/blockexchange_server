@@ -39,7 +39,7 @@ trap cleanup EXIT
 
 # wait for nodejs start
 sleep 1
-until docker exec -it blockexchange_server curl -v http://127.0.0.1:8080/
+until docker exec -i blockexchange_server curl -v http://127.0.0.1:8080/
 do
   sleep 1
 done
