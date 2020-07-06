@@ -8,6 +8,7 @@
 		"moment": true,
     "console": true,
     "THREE": true,
-    "luaparse": true
+    "luaparse": true,
+    "htm": true
   }
 }
