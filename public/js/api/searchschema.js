@@ -1,7 +1,7 @@
 
 export const find_by_keywords = keywords => m.request({
 	method: "POST",
-	data: {
+	body: {
 		keywords: keywords
 	},
 	url: "api/searchschema"
@@ -9,7 +9,7 @@ export const find_by_keywords = keywords => m.request({
 
 export const find_by_userid = user_id => m.request({
 	method: "POST",
-	data: {
+	body: {
 		user_id: user_id
 	},
 	url: "api/searchschema"
@@ -17,7 +17,7 @@ export const find_by_userid = user_id => m.request({
 
 export const find_by_username = user_name => m.request({
 	method: "POST",
-	data: {
+	body: {
 		user_name: user_name
 	},
 	url: "api/searchschema"

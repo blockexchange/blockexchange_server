@@ -7,7 +7,7 @@ export const get = (schema_id, block_x, block_y, block_z) => m.request({
 export const create = part => m.request({
 	method: "POST",
   url: `api/schemapart`,
-	data: part,
+	body: part,
 	headers: {
 		"Authorization": localStorage.blockexchange_token
 	}

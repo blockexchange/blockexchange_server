@@ -7,7 +7,7 @@ export const get_by_uid = uid => m.request({
 export const create = (uid, modstats) => m.request({
 	method: "POST",
 	url: `api/schema/${uid}/mods`,
-	data: modstats,
+	body: modstats,
 	headers: {
 		"Authorization": localStorage.blockexchange_token
 	}

@@ -16,7 +16,7 @@ export const update = schema => m.request({
 export const create = schema => m.request({
 	method: "POST",
 	url: `api/schema`,
-	data: schema,
+	body: schema,
 	headers: {
 		"Authorization": localStorage.blockexchange_token
 	}
@@ -25,7 +25,7 @@ export const create = schema => m.request({
 export const complete = schema => m.request({
 	method: "POST",
 	url: `api/schema/${schema.id}/complete`,
-	data: schema,
+	body: schema,
 	headers: {
 		"Authorization": localStorage.blockexchange_token
 	}
