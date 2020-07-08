@@ -58,6 +58,40 @@ docker run -it --rm \
 
 Go to http://127.0.0.1:8080
 
+## docker-compose usage
+
+A `docker-compose` example:
+
+```yml
+version: "2"
+
+services:
+ blockexchange:
+  image: blockexchange/blockexchange
+  restart: always
+  depends_on:
+   - postgres
+  environment:
+   - PGUSER=postgres
+   - PGPASSWORD=enter
+   - PGHOST=postgres
+   - PGDATABASE=postgres
+   - PGPORT=5432
+   - BLOCKEXCHANGE_NAME=My-Blockexchange
+   - BLOCKEXCHANGE_OWNER=yourname
+  ports:
+   - "8080:8080"
+
+ postgres:
+  image: postgres:12
+  restart: always
+  environment:
+   POSTGRES_PASSWORD: enter
+  volumes:
+   - "./data/postgres:/var/lib/postgresql/data"
+```
+
+
 # Development
 
 Web- and backend development
