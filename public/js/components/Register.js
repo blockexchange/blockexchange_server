@@ -1,30 +1,32 @@
 import Breadcrumb from './Breadcrumb.js';
+import html from './html.js';
 
+const links = [{
+  name: "Home",
+  link: "#!/"
+},{
+  name: "Register",
+  active: true
+}];
 
 export default {
-  view: function(){
-    return [
-			m(Breadcrumb, {
-				links: [{
-					name: "Home",
-					link: "#!/"
-				},{
-					name: "Register",
-					active: true
-				}]
-			}),
-			m("div", { class: "row"}, [
-	      m("div", { class: "col-md-4"}),
-	      m("div", { class: "col-md-4"}, [
-	        m("form", { class: "" }, [
-	          m("input", { class: "form-control", placeholder: "Username" }),
-	          m("input[type=password]", { class: "form-control", placeholder: "Password" }),
-	          m("input[type=password]", { class: "form-control", placeholder: "Password" }),
-	          m("button", { class: "btn btn-primary btn-block" }, "Register")
-	        ])
-	      ]),
-	      m("div", { class: "col-md-4"})
-	    ])
-		];
-  }
+  view: () => html`
+    <${Breadcrumb} links=${links}/>
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4">
+        <form onsubmit=${e => e.preventDefault()}>
+          <input class="form-control" placeholder="Username"/>
+          <input class="form-control" placeholder="Password"/>
+          <input class="form-control" placeholder="Password"/>
+          <button class="btn btn-primary btn-block">
+            Register
+          </button>
+        </form>
+      </div>
+      <div class="col-md-4">
+      </div>
+    </div>
+  `
 };

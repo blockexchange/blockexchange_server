@@ -1,13 +1,21 @@
-
 import SearchBar from './SearchBar.js';
 import SchemaList from './schemalist/SchemaList.js';
 import Breadcrumb from './Breadcrumb.js';
 
 import store from '../store/search.js';
-
 import debounce from '../util/debounce.js';
 
 import { find_recent, find_by_keywords } from '../api/searchschema.js';
+
+import html from './html.js';
+
+const links = [{
+  name: "Home",
+  link: "#!/"
+},{
+  name: "Search",
+  active: true
+}];
 
 export default class {
   constructor(){
@@ -31,24 +39,15 @@ export default class {
     this.debounced_search();
   }
 
-  view(){
-    return [
-			m(Breadcrumb, {
-				links: [{
-					name: "Home",
-					link: "#!/"
-				},{
-					name: "Search",
-					active: true
-				}]
-			}),
-      m("div", m(SearchBar, {
-        keywords: store.keywords,
-        onChange: k => this.changeKeywords(k)
-      })),
-      m("div", m(SchemaList, {
-        list: this.state.result
-      }))
-    ];
+  view() {
+    return html`
+      <${Breadcrumb} links=${links}/>
+      <div>
+        <${SearchBar} keywords=${store.keywords} onChange=${k => this.changeKeywords(k)}/>
+      </div>
+      <div>
+        <${SchemaList} list=${this.state.result}/>
+      </div>
+    `;
   }
 }

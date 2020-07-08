@@ -1,6 +1,26 @@
 import users from '../service/users.js';
 import Breadcrumb from './Breadcrumb.js';
 
+import html from './html.js';
+
+const links = [{
+  name: "Home",
+  link: "#!/"
+},{
+  name: "Users",
+  active: true
+}];
+
+const UserEntry = user => html`
+<li>
+  <a href="#!/schema/${user.name}">
+    ${user.name}
+    ${" "}
+    (created ${moment.duration( moment(+user.created).diff() ).humanize(true)})
+  </a>
+</li>
+`;
+
 var list;
 
 export default {
@@ -10,25 +30,10 @@ export default {
       list = [];
     }
   },
-  view: function(){
-    return [
-			m(Breadcrumb, {
-				links: [{
-					name: "Home",
-					link: "#!/"
-				},{
-					name: "Users",
-					active: true
-				}]
-			}),
-			m("ul", list.map(user => {
-	      return m("li", [
-	        m("a", { href: `#!/schema/${user.name}` }, user.name),
-	        " (Created ",
-	        moment.duration( moment(+user.created).diff() ).humanize(true),
-	        ")"
-	      ]);
-	    }))
-		];
-  }
+  view: () => html`
+    <${Breadcrumb} links=${links}/>
+    <ul>
+      ${list.map(UserEntry)}
+    </ul>
+  `
 };

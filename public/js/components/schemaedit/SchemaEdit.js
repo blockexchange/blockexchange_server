@@ -1,7 +1,4 @@
-
-import { div, textarea, pre, hr } from '../fragments/html.js';
-import { fa } from '../fragments/fa.js';
-import { row, col6, col12 } from '../fragments/bootstrap.js';
+import html from '../html.js';
 
 import SchemaTitle from '../SchemaTitle.js';
 import LicenseBadge from '../LicenseBadge.js';
@@ -19,6 +16,22 @@ export default class {
       schemaname: vnode.attrs.schemaname,
       schema: null
     };
+
+    this.links = [{
+      name: "Home",
+      link: "#!/"
+    },{
+      name: "User-schemas",
+    },{
+      name: this.state.username,
+      link: "#!/schema/" + this.state.username
+    },{
+      name: this.state.schemaname,
+      link: "#!/schema/" + this.state.username + "/" + this.state.schemaname
+    },{
+      name: "Edit",
+      active: true
+    }];
 
     this.load_data();
   }
@@ -41,76 +54,59 @@ export default class {
       return;
     }
 
-    return div([
-      m(Breadcrumb, {
-        links: [{
-          name: "Home",
-          link: "#!/"
-        },{
-          name: "User-schemas",
-        },{
-          name: this.state.username,
-          link: "#!/schema/" + this.state.username
-        },{
-          name: this.state.schemaname,
-          link: "#!/schema/" + this.state.username + "/" + this.state.schemaname
-        },{
-          name: "Edit",
-          active: true
-        }]
-      }),
-      m(SchemaTitle, { schema: schema }),
-      hr(),
-      row([
-        col6([
-          m("input", {
-            class: "form-control",
-            placeholder: "Schema name",
-            value: schema.name,
-            oninput: e => schema.name = e.target.value
-          })
-        ]),
-        col6([
-          m("h3", schema.name)
-        ])
-      ]),
-      row([
-        col6([
-          textarea({
-            value: schema.description,
-            class: "form-control",
-            style: "height: 350px",
-            oninput: e => schema.description = e.target.value
-          })
-        ]),
-        col6([
-          pre(schema.description)
-        ])
-      ]),
-      row([
-        col6([
-          m("input", {
-            class: "form-control",
-            placeholder: "License",
-            value: schema.license,
-            oninput: e => schema.license = e.target.value
-          })
-        ]),
-        col6([
-          m(LicenseBadge, { license: schema.license })
-        ])
-      ]),
-      hr(),
-      row(col12([
-        m("button", {
-          class: "btn btn-primary btn-block",
-          onclick: () => this.save()
-        },[
-          fa("save"),
-          " Save"
-        ])
-      ]))
-    ]);
+    return html`
+      <div>
+        <${Breadcrumb} links=${this.links}/>
+        <${SchemaTitle} schema=${schema}/>
+        <hr/>
+        <div class="row">
+          <div class="col-md-6">
+            <input type="text"
+              class="form-control"
+              placeholder="Schema name"
+              value=${schema.name}
+              oninput=${e => schema.name = e.target.value}/>
+          </div>
+          <div class="col-md-6">
+            <h3>${schema.name}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <textarea class="form-control"
+            value=${schema.description}
+            style="height: 350px"
+            oninput=${e => schema.description = e.target.value}
+          />
+        </div>
+        <div class="col-md-6">
+          <pre>${schema.description}</pre>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <input type="text"
+            class="form-control"
+            placeholder="License"
+            value=${schema.license}
+            oninput=${e => schema.license = e.target.value}
+          />
+        </div>
+        <div class="col-md-6">
+          <${LicenseBadge} license=${schema.license}/>
+        </div>
+      </div>
+      <hr/>
+      <div class="row">
+        <div class="col-md-12">
+          <button class="btn btn-primary btn-block"
+            onclick=${() => this.save()}>
+            <i class="fa fa-save"> Save</i>
+          </button>
+        </div>
+      </div>
+    `;
   }
 
 }

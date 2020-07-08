@@ -1,6 +1,8 @@
 import SchemaList from './schemalist/SchemaList.js';
 import Breadcrumb from './Breadcrumb.js';
 
+import html from './html.js';
+
 import { find_by_username } from '../api/searchschema.js';
 
 export default class {
@@ -9,6 +11,17 @@ export default class {
       list: [],
       username: vnode.attrs.username
     };
+
+    this.state.links = [{
+      name: "Home",
+      link: "#!/"
+    },{
+      name: "User-schemas",
+    },{
+      name: this.state.username,
+      active: true
+    }];
+
     this.search();
   }
 
@@ -18,22 +31,9 @@ export default class {
   }
 
   view(){
-    return [
-			m(Breadcrumb, {
-				links: [{
-					name: "Home",
-					link: "#!/"
-				},{
-					name: "User-schemas",
-				},{
-					name: this.state.username,
-					active: true
-				}]
-			}),
-			m(SchemaList, {
-	      list: this.state.list,
-				hide_user: true
-	    })
-		];
+    return html`
+      <${Breadcrumb} links=${this.state.links}/>
+      <${SchemaList} list=${this.state.list} hide_user=${true}/>
+    `;
   }
 }

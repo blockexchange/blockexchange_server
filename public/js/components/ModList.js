@@ -1,8 +1,8 @@
+import html from './html.js';
 
-const badge = (cl, txt) => m("span", {
-	class: `badge badge-${cl}`},
-	txt
-);
+const badge = (cl, txt) => html`
+	<span class="badge badge-${cl}">${txt}</span>
+`;
 
 const get_badge_class = mod_name => {
 	switch(mod_name) {
@@ -16,10 +16,9 @@ const get_badge_class = mod_name => {
 };
 
 export default {
-  view: function(vnode) {
-    const schema = vnode.attrs.schema;
-    return m("div", Object.keys(schema.mods).map(mod_name => {
-    	return badge(get_badge_class(mod_name), mod_name);
-    }));
-  }
+	view: ({ attrs: { schema }}) => html`
+		<div>
+			${Object.keys(schema.mods).map(mod_name => badge(get_badge_class(mod_name), mod_name))}
+		</div>
+	`
 };

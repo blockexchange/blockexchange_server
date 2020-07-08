@@ -1,12 +1,14 @@
 import { get_claims } from '../store/token.js';
 
+import html from './html.js';
+
 export default {
   view: function() {
     const claims = get_claims();
     if (!claims){
-      return m("div");
+      return `<div/>`;
     }
 
-    return m("span", { class: "badge badge-light" }, claims.username);
+    return html`<span class="badge badge-light">${claims.username}</span>"`;
   }
 };
