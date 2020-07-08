@@ -1,18 +1,20 @@
 
+import html from './html.js';
+
 export default {
 	view: function(vnode){
-		const links = vnode.attrs.links.map(l => {
-			let content = l.name;
-			if (l.link){
-				content = m("a", { href: l.link }, l.name);
-			}
+		const links = vnode.attrs.links.map(l => html`
+			<li class="breadcrumb-item ${l.active ? "active" : ""}">
+				${l.link ? html`<a href=${l.link}>${l.name}</a>` : l.name}
+			</li>
+		`);
 
-			return m("li", {
-				class: "breadcrumb-item" + (l.active ? " active" : ""),
-			}, content);
-		});
-		return m("nav", [
-			m("ol", { class: "breadcrumb" }, links)
-		]);
+		return html`
+			<nav>
+				<ol class="breadcrumb">
+					${links}
+				</ol>
+			</nav>
+		`;
 	}
 };

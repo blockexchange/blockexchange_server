@@ -1,7 +1,6 @@
 import Breadcrumb from '../Breadcrumb.js';
 import state from './state.js';
-
-const html = htm.bind(m);
+import html from '../html.js';
 
 const login_button = () => html`
   <button class="btn btn-primary btn-block"
