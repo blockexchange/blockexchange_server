@@ -36,7 +36,7 @@ export default {
     <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-      <form>
+      <form onsubmit=${(e) => e.preventDefault()}>
         <input type="text"
           class="form-control"
           placeholder="Username"
