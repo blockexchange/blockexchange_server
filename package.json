@@ -5,12 +5,11 @@
   "main": "index.js",
   "scripts": {
     "jshint_backend": "cd src && jshint .",
-    "bundle": "cd public/js && rollup -c rollup.config.js",
+    "bundle": "sh prepublish.sh && cd public/js && rollup -c rollup.config.js",
     "jshint_frontend": "cd public/js && jshint .",
     "test": "mocha",
     "start": "node src/index.js",
-    "watch": "nodemon -w src/ src/index.js",
-    "prepublish": "sh prepublish.sh"
+    "watch": "nodemon -w src/ src/index.js"
   },
   "author": "",
   "license": "ISC",
