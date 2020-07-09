@@ -1,11 +1,12 @@
 import state from './state.js';
+import html from '../html.js';
 
 export default {
-  view: function(){
-    return m("div", { class: "progress"}, [
-      m("div", { class: "progress-bar", style: `width: ${state.progress}%` }, [
-        (Math.floor(state.progress * 10) / 10) + "%"
-      ])
-    ]);
-  }
+  view: () => html`
+    <div class="progress">
+      <div class="progress-bar" style="width: ${state.progress}%">
+        ${Math.floor(state.progress * 10) / 10}%
+      </div>
+    </div>
+  `
 };

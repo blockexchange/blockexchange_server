@@ -1,4 +1,4 @@
-import { fa } from '../fragments/fa.js';
+import html from '../html.js';
 
 import { get_claims } from '../../store/token.js';
 import { remove } from '../../api/schema.js';
@@ -18,23 +18,25 @@ export default class {
     if (claims && claims.user_id == schema.user_id && claims.permissions.schema.delete){
       if (!this.state.confirm){
         // delete button
-        return m("button", {
-          class: "btn btn-danger",
-          onclick: () => this.state.confirm = true
-        }, [fa("trash"), " Delete"]);
+        return html`
+          <button class="btn btn-danger" onclick=${() => this.state.confirm = true}>
+            <i class="fa fa-trash"/> Delete
+          </button>
+        `;
+
       } else {
+        const confirmRemove = () => remove(schema)
+          .then(() => window.location.hash = `#!/schema/${schema.user.name}`);
+
         // confirmation buttons
-        return [
-          m("button", {
-            class: "btn btn-danger",
-            onclick: () => remove(schema)
-            .then(() => window.location.hash = `#!/schema/${schema.user.name}`)
-          }, "Confirm"),
-          m("button", {
-            class: "btn btn-success",
-            onclick: () => this.state.confirm = false
-          }, "Cancel"),
-        ];
+        return html`
+          <button class="btn btn-danger" onclick=${confirmRemove}>
+            Confirm
+          </button>
+          <button class="btn btn-success" onclick=${() => this.state.confirm = false}>
+            Cancel
+          </button>
+        `;
       }
     }
   }

@@ -3,10 +3,13 @@ import drawMapblock from './render.js';
 import iterator from './iterator.js';
 import OrbitControls from './orbitcontrols.js';
 
+import html from '../html.js';
+
 export default {
-  view: function(){
-    return m("div", { style: `height: 450px; width: 100%;`});
-  },
+  view: () => html`
+    <div style="height: 450px; width: 100%;"/>
+  `,
+
   oncreate: function(vnode) {
 		const schema = vnode.attrs.schema;
     const camera = new THREE.PerspectiveCamera( 70, 2, 1, 1000 );

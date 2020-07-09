@@ -1,5 +1,6 @@
 
 import state from './state.js';
+import html from '../html.js';
 
 import Configure from './Configure.js';
 import Progress from './Progress.js';
@@ -22,29 +23,30 @@ function readFile(file){
   reader.readAsBinaryString(file);
 }
 
+const links = [{
+  name: "Home",
+  link: "#!/"
+},{
+  name: "Import",
+}];
+
 export default {
   view: function(){
     if (!get_claims()){
       window.location.hash = "#!/";
       return;
     }
-    return [
-      m(Breadcrumb, {
-        links: [{
-          name: "Home",
-          link: "#!/"
-        },{
-          name: "Import",
-        }]
-      }),
-      m("h3", "Import Worldedit-Schema"),
-      m("input[type=file]", {
-        onchange: e => readFile(e.target.files[0])
-      }),
-      hr(),
-      m(Progress),
-      hr(),
-      state.blocks ? m(Configure) : null
-    ];
+
+    return html`
+      <${Breadcrumb} links=${links}/>
+      <h3>Import Worldedit-Schema</h3>
+      <input type="file"
+        onchange=${e => readFile(e.target.files[0])}
+      />
+      <hr/>
+      <${Progress}/>
+      <hr/>
+      ${state.blocks ? html`<${Configure}/>` : null }
+    `;
   }
 };
