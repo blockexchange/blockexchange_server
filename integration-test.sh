@@ -44,6 +44,13 @@ do
   sleep 1
 done
 
+### Test web client
+
+# TODO: docker run --network host selenium/standalone-chrome
+# TODO: node e2e/e2e.js
+
+### Test minetest client
+
 git clone https://github.com/blockexchange/blockexchange.git
 
 CFG=/tmp/minetest.conf
