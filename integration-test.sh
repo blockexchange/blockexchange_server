@@ -1,11 +1,13 @@
 #!/bin/bash
 
+set -e
+
 # build
 docker build . -t blockexchange
 
 # setup
 docker network create blockexchange
-docker run --name blockexchange_pg --rm \
+docker run --name blockexchange_pg --rm -d \
  -e POSTGRES_PASSWORD=enter \
  --network blockexchange \
  postgres &
@@ -18,7 +20,7 @@ do
 done
 
 
-docker run --name blockexchange_server --rm \
+docker run --name blockexchange_server --rm -d \
  -e PGUSER=postgres \
  -e PGPASSWORD=enter \
  -e PGHOST=blockexchange_pg \
@@ -26,19 +28,19 @@ docker run --name blockexchange_server --rm \
  -e PGPORT=5432 \
  -e BLOCKEXCHANGE_KEY=blah \
  --network blockexchange \
- blockexchange &
+ blockexchange
 
 function cleanup {
 	# cleanup
 	docker stop blockexchange_server
-	docker stop blockexchange_pg
+  docker stop blockexchange_pg
+  docker stop blockexchange_selenium
   docker network rm blockexchange
 }
 
 trap cleanup EXIT
 
 # wait for nodejs start
-sleep 1
 until docker exec -i blockexchange_server curl -v http://127.0.0.1:8080/
 do
   sleep 1
@@ -46,12 +48,22 @@ done
 
 ### Test web client
 
-# TODO: docker run --network host selenium/standalone-chrome
-# TODO: node e2e/e2e.js
+docker build e2e -t bx_e2e
+
+docker run --name blockexchange_selenium --rm -d \
+ --network blockexchange \
+ selenium/standalone-chrome
+
+until docker exec -i blockexchange_server curl -v http://blockexchange_selenium:4444/
+do
+  sleep 1
+done
+
+docker run --name blockexchange_e2e --network blockexchange --rm bx_e2e
 
 ### Test minetest client
 
-git clone https://github.com/blockexchange/blockexchange.git
+git clone https://github.com/blockexchange/blockexchange.git || echo ok
 
 CFG=/tmp/minetest.conf
 MTDIR=/tmp/mt
@@ -63,7 +75,7 @@ cat <<EOF > ${CFG}
 EOF
 
 mkdir -p ${WORLDDIR}
-chmod 777 ${MTDIR} -R
+chmod 777 ${MTDIR} -R || echo ok
 docker run --rm -i \
 	-v ${CFG}:/etc/minetest/minetest.conf:ro \
 	-v ${MTDIR}:/var/lib/minetest/.minetest \
