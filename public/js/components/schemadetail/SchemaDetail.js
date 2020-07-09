@@ -6,6 +6,8 @@ import SchemaTitle from '../SchemaTitle.js';
 import EditButton from './EditButton.js';
 import DeleteButton from './DeleteButton.js';
 
+import html from '../html.js';
+
 import { get_by_user_and_schemaname } from '../../api/searchschema.js';
 import { get_all as get_all_stars } from '../../api/userschemastar.js';
 
@@ -22,6 +24,19 @@ export default class {
 			ready: false
 		};
 
+		this.links = [{
+			name: "Home",
+			link: "#!/"
+		},{
+			name: "User-schemas",
+		},{
+			name: vnode.attrs.username,
+			link: "#!/schema/" + vnode.attrs.username
+		},{
+			name: vnode.attrs.schemaname,
+			active: true
+		}];
+
 		this.load_data();
 	}
 
@@ -33,68 +48,55 @@ export default class {
 		.then(() => this.state.ready = true);
 	}
 
-  view(vnode) {
+  view() {
 		const schema = this.state.schema;
 		const userstars = this.state.userstars;
 
 		if (!this.state.ready){
-			return m("div", "Loading...");
+			return html`<div>Loading...</div>`;
 		}
 
-    return m("div", [
-			m(Breadcrumb, {
-				links: [{
-					name: "Home",
-					link: "#!/"
-				},{
-					name: "User-schemas",
-				},{
-					name: vnode.attrs.username,
-					link: "#!/schema/" + vnode.attrs.username
-				},{
-					name: vnode.attrs.schemaname,
-					active: true
-				}]
-			}),
-			m("div", { class: "row" }, [
-				m("div", { class: "col-md-8" },	[
-					m(SchemaTitle, { schema: schema }),
-					" ",
-					m(Star, {
-						schema: schema,
-						userstars: userstars
-					})
-				]),
-				m("div", { class: "col-md-4 btn-group", style: "text-align: right;" }, [
-					m(EditButton, { schema: schema }),
-					m(DeleteButton, { schema: schema })
-				])
-			]),
-			m("hr"),
-			m("div", { class: "row" }, [
-				m("div", { class: "col-md-6"}, [
-					m("pre", schema.description || "<no description>")
-				]),
-				m("div", { class: "col-md-6"}, [
-					m("div", [
-						m(Preview, { schema: schema, progressCallback: f => this.state.progress = f * 100 }),
-						m("div", { class: "progress"}, [
-							m("div", { class: "progress-bar", style: `width: ${this.state.progress}%` }, [
-								(Math.floor(this.state.progress * 10) / 10) + "%"
-							])
-						])
-					])
-				])
-			]),
-			m("hr"),
-
-			m("div", { class: "row" }, [
-				m("div", { class: "col-md-6"}, detailtable(schema)),
-				m("div", { class: "col-md-6"}, [
-					m(SchemaUsage, { schema: schema })
-				]),
-			])
-
-    ]);
+		return html`
+			<div>
+				<${Breadcrumb} links=${this.links}/>
+				<div class="row">
+					<div class="col-md-8">
+						<${SchemaTitle} schema=${schema}/>
+						${" "}
+						<${Star} schema=${schema} userstars=${userstars}/>
+					</div>
+					<div class="col-md-4 btn-group" style="text-align: right;">
+						<${EditButton} schema=${schema}/>
+						<${DeleteButton} schema=${schema}/>
+					</div>
+				</div>
+				<hr/>
+				<div class="row">
+					<div class="col-md-6">
+						<pre>${schema.description || "<no description>"}</pre>
+					</div>
+					<div class="col-md-6">
+						<div>
+							<${Preview} schema=${schema}
+								progressCallback=${f => this.state.progress = f * 100}/>
+							<div class="progress">
+								<div class="progress-bar" style="width: ${this.state.progress}%">
+									${Math.floor(this.state.progress * 10) / 10}%
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr/>
+				<div class="row">
+					<div class="col-md-6">
+						${detailtable(schema)}
+					</div>
+					<div class="col-md-6">
+						<${SchemaUsage} schema=${schema}/>
+					</div>
+				</div>
+			</div>
+		`;
   }
 }

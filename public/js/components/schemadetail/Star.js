@@ -1,3 +1,4 @@
+import html from '../html.js';
 
 //import { get_claims } from '/../../store/token.js';
 
@@ -10,14 +11,10 @@ export default {
 
     if (schema.stars > 0){
       // has 1 or more stars
-      return [
-        schema.stars,
-        " ",
-        m("i", { class: "fa-star"})
-      ];
+      return html`${schema.stars} <i class="fa fa-star"/>`;
     } else {
       // no stars
-      return m("i", { class: "far fa-star"});
+      return html`<i class="far fa-star"/>`;
     }
   }
 };

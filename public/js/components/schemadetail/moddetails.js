@@ -1,5 +1,9 @@
+import html from '../html.js';
 
-export default schema => m("ul",
-	m("div", Object.keys(schema.mods).map(
-		mod_name => m("li", `${mod_name}: ${schema.mods[mod_name]}`)
-	)));
+export default schema => html`
+	<ul>
+		<div>
+			${Object.keys(schema.mods).map(mod => html`<li>${mod}: ${schema.mods[mod]}</li>`)}
+		</div>
+	</ul>
+`;
