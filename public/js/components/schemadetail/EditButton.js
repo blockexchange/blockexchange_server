@@ -9,7 +9,8 @@ export default {
 
     if (claims && claims.user_id == schema.user_id && claims.permissions.schema.update){
       return html`
-        <button class="btn btn-secondary" href="#!/schema/${schema.user.name}/${schema.name}/edit">
+        <button class="btn btn-secondary"
+          onclick=${() => location.hash = "#!/schema/${schema.user.name}/${schema.name}/edit"}>
           <i class="fa fa-edit"/> Edit
         </button>
       `;
