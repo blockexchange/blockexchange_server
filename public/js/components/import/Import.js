@@ -7,7 +7,6 @@ import Progress from './Progress.js';
 
 import { parse, convert } from './actions.js';
 
-import { hr } from '../fragments/html.js';
 import Breadcrumb from '../Breadcrumb.js';
 
 import { get_claims } from '../../store/token.js';
