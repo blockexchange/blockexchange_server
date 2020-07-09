@@ -7,7 +7,7 @@ export const get_by_id = id => m.request({
 export const update = schema => m.request({
 	method: "PUT",
 	url: `api/schema/${schema.id}`,
-	data: schema,
+	body: schema,
 	headers: {
 		"Authorization": localStorage.blockexchange_token
 	}
