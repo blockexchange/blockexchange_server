@@ -99,6 +99,12 @@ Web- and backend development
 # start the postgres database
 ./dev/start_pg.sh
 
+# install the npm packages
+npm install
+
+# prepare the frontend libraries
+npm bundle
+
 # start the nodejs server
 ./start_server.sh
 ```
