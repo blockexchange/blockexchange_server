@@ -6,77 +6,103 @@ digraph {
 user [label=<
 <table border="0" cellborder="1" cellspacing="0">
   <tr><td><i>user</i></td></tr>
-  <tr><td port="1">id (serial)</td></tr>
-  <tr><td port="2">created (bigint)</td></tr>
-  <tr><td port="3">name (varchar)</td></tr>
-  <tr><td port="4">hash (varchar)</td></tr>
-  <tr><td port="5">mail (varchar)</td></tr>
-  <tr><td port="5a">role (varchar(16))</td></tr>
+  <tr><td port="user_id">id (serial)</td></tr>
+  <tr><td>created (bigint)</td></tr>
+  <tr><td>name (varchar)</td></tr>
+  <tr><td>hash (varchar)</td></tr>
+  <tr><td>mail (varchar)</td></tr>
+  <tr><td>role (varchar(16))</td></tr>
 </table>>];
 
+schemagroup [label=<
+<table border="0" cellborder="1" cellspacing="0">
+  <tr><td><i>schemagroup</i></td></tr>
+  <tr><td port="schemagroup_id">id (serial)</td></tr>
+  <tr><td>name (varchar)</td></tr>
+</table>>];
+
+
+user_schemagroup_permission [label=<
+<table border="0" cellborder="1" cellspacing="0">
+  <tr><td><i>user_schemagroup_permission</i></td></tr>
+  <tr><td port="user_schemagroup_permission_user_id">user_id (serial)</td></tr>
+  <tr><td port="user_schemagroup_permission_schemagroup_id">schemagroup_id (serial)</td></tr>
+  <tr><td>create (boolean)</td></tr>
+  <tr><td>update (boolean)</td></tr>
+  <tr><td>delete (boolean)</td></tr>
+  <tr><td>manage (boolean)</td></tr>
+</table>>];
+
+user_schemagroup_permission:user_schemagroup_permission_user_id -> user:user_id;
+user_schemagroup_permission:user_schemagroup_permission_schemagroup_id -> schemagroup:schemagroup_id;
 
 schema [label=<
 <table border="0" cellborder="1" cellspacing="0">
   <tr><td><i>schema</i></td></tr>
-  <tr><td port="6">id (serial)</td></tr>
-  <tr><td port="7">created (bigint)</td></tr>
-  <tr><td port="8">user_id (serial)</td></tr>
-  <tr><td port="9">name (varchar)</td></tr>
-  <tr><td port="10">description (text)</td></tr>
-  <tr><td port="11">complet (boolean)</td></tr>
-  <tr><td port="12">size_x (smallint)</td></tr>
-  <tr><td port="13">size_y (smallint)</td></tr>
-  <tr><td port="14">size_z (smallint)</td></tr>
-  <tr><td port="15">part_length (smallint)</td></tr>
-  <tr><td port="16">total_size (int)</td></tr>
-  <tr><td port="17">total_parts (int)</td></tr>
-  <tr><td port="18">search_tokens (tsvector)</td></tr>
-  <tr><td port="19">downloads (int)</td></tr>
-  <tr><td port="20">license (varchar)</td></tr>
+  <tr><td port="schema_id">id (serial)</td></tr>
+  <tr><td>created (bigint)</td></tr>
+  <tr><td port="schema_group_id">group_id (serial)</td></tr>
+  <tr><td>name (varchar)</td></tr>
+  <tr><td>description (text)</td></tr>
+  <tr><td>complete (boolean)</td></tr>
+  <tr><td>size_x (smallint)</td></tr>
+  <tr><td>size_y (smallint)</td></tr>
+  <tr><td>size_z (smallint)</td></tr>
+  <tr><td>part_length (smallint)</td></tr>
+  <tr><td>total_size (int)</td></tr>
+  <tr><td>total_parts (int)</td></tr>
+  <tr><td>search_tokens (tsvector)</td></tr>
+  <tr><td>downloads (int)</td></tr>
+  <tr><td>license (varchar)</td></tr>
 </table>>];
+
+schema:schema_group_id -> schemagroup:schemagroup_id;
 
 schemapart [label=<
 <table border="0" cellborder="1" cellspacing="0">
   <tr><td><i>schemapart</i></td></tr>
-  <tr><td port="22">id (serial)</td></tr>
-  <tr><td port="23">schema_id (bigint)</td></tr>
-  <tr><td port="24">offset_x (smallint)</td></tr>
-  <tr><td port="25">offset_y (smallint)</td></tr>
-  <tr><td port="26">offset_z (smallint)</td></tr>
-  <tr><td port="27">data (bytea)</td></tr>
-  <tr><td port="28">metadata (bytea)</td></tr>
+  <tr><td>id (serial)</td></tr>
+  <tr><td port="schemapart_schema_id">schema_id (bigint)</td></tr>
+  <tr><td>offset_x (smallint)</td></tr>
+  <tr><td>offset_y (smallint)</td></tr>
+  <tr><td>offset_z (smallint)</td></tr>
+  <tr><td>data (bytea)</td></tr>
+  <tr><td>metadata (bytea)</td></tr>
 </table>>];
+
+schemapart:schemapart_schema_id -> schema:schema_id;
 
 schemamod [label=<
 <table border="0" cellborder="1" cellspacing="0">
   <tr><td><i>schemamod</i></td></tr>
-  <tr><td port="29">id (serial)</td></tr>
-  <tr><td port="30">schema_id (bigint)</td></tr>
-  <tr><td port="31">mod_name (varchar(64))</td></tr>
-  <tr><td port="32">node_count (int)</td></tr>
+  <tr><td>id (serial)</td></tr>
+  <tr><td port="schemamod_schema_id">schema_id (bigint)</td></tr>
+  <tr><td>mod_name (varchar(64))</td></tr>
+  <tr><td>node_count (int)</td></tr>
 </table>>];
+
+schemamod:schemamod_schema_id -> schema:schema_id;
 
 user_schema_star [label=<
 <table border="0" cellborder="1" cellspacing="0">
   <tr><td><i>user_schema_star</i></td></tr>
-  <tr><td port="33">user_id (serial)</td></tr>
-  <tr><td port="34">schema_id (bigint)</td></tr>
+  <tr><td port="user_schema_star_user_id">user_id (serial)</td></tr>
+  <tr><td port="user_schema_star_schema_id">schema_id (bigint)</td></tr>
 </table>>];
+
+user_schema_star:user_schema_star_user_id -> user:user_id;
+user_schema_star:user_schema_star_schema_id -> schema:schema_id;
 
 schema_screenshot [label=<
 <table border="0" cellborder="1" cellspacing="0">
   <tr><td><i>schema_screenshot</i></td></tr>
-  <tr><td port="35">id (serial)</td></tr>
-  <tr><td port="36">schema_id (bigint)</td></tr>
-  <tr><td port="37">title (varchar(128))</td></tr>
-  <tr><td port="38">data (bytea)</td></tr>
-  <tr><td port="39">type (varchar(64))</td></tr>
+  <tr><td>id (serial)</td></tr>
+  <tr><td port="schema_screenshot_schema_id">schema_id (bigint)</td></tr>
+  <tr><td>title (varchar(128))</td></tr>
+  <tr><td>data (bytea)</td></tr>
+  <tr><td>type (varchar(64))</td></tr>
 </table>>];
 
-schema:8 -> user:1;
-schemapart:23 -> schema:6;
-schemamod:30 -> schema:6;
-user_schema_star:33 -> user:1;
-user_schema_star:34 -> schema:6;
-schema_screenshot:36 -> schema:6;
+schema_screenshot:schema_screenshot_schema_id -> schema:schema_id;
+
 }
