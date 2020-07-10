@@ -70,6 +70,7 @@ schema_screenshot [label=<
   <tr><td port="36">schema_id (bigint)</td></tr>
   <tr><td port="37">title (varchar(128))</td></tr>
   <tr><td port="38">data (bytea)</td></tr>
+  <tr><td port="39">type (varchar(64))</td></tr>
 </table>>];
 
 schema:8 -> user:1;
