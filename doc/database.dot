@@ -1,0 +1,26 @@
+digraph {
+    graph [pad="0.5", nodesep="0.5", ranksep="2"];
+    node [shape=plain]
+    rankdir=LR;
+
+user [label=<
+<table border="0" cellborder="1" cellspacing="0">
+  <tr><td><i>user</i></td></tr>
+  <tr><td port="1">id (serial)</td></tr>
+  <tr><td port="2">created (bigint)</td></tr>
+  <tr><td port="3">name (varchar)</td></tr>
+  <tr><td port="4">hash (varchar)</td></tr>
+  <tr><td port="5">mail (varchar)</td></tr>
+</table>>];
+
+
+schema [label=<
+<table border="0" cellborder="1" cellspacing="0">
+  <tr><td><i>schema</i></td></tr>
+  <tr><td port="6">id (serial)</td></tr>
+  <tr><td port="7">created (bigint)</td></tr>
+  <tr><td port="8">user_id (serial)</td></tr>
+</table>>];
+
+schema:8 -> user:1;
+}
