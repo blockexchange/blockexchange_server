@@ -111,6 +111,12 @@ npm bundle
 
 Go to http://127.0.0.1:8080
 
+# Database
+
+Database model:
+
+<img src="./doc/database.png"/>
+
 # License
 
 Code: MIT
