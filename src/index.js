@@ -19,6 +19,7 @@ require("./api/schema_star");
 require("./api/schema_get");
 require("./api/schema_update");
 require("./api/schema_create");
+require("./api/schema_complete");
 require("./api/schema_delete");
 require("./api/schemamods");
 require("./api/schemapart");

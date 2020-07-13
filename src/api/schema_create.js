@@ -3,16 +3,32 @@ const jsonParser = bodyParser.json();
 
 const app = require("../app");
 const schema_dao = require("../dao/schema");
-const tokenmiddleware = require("../middleware/token");
-const tokencheck = tokenmiddleware(claims => {
-  return claims.permissions.schema.create;
-});
+const user_schemagroup_permission_dao = require("../dao/user_schemagroup_permission");
+const { verifytoken, rolecheck } = require("../middleware/token");
 
-app.post('/api/schema', tokencheck, jsonParser, function(req, res){
+const schemagroup_verify = function(req, res, next){
+  const schemagroup_id = req.body.schemagroup_id;
+  const user_id = req.claims.user_id;
+
+  user_schemagroup_permission_dao.get_by_user_and_schemagroup_id(user_id, schemagroup_id)
+  .then(perm => {
+    if (!perm || !perm.create){
+      res.status(403).end();
+      return;
+    }
+    next();
+  })
+  .catch(e => {
+    console.error(e);
+    res.status(500).end();
+  });
+};
+
+app.post('/api/schema', verifytoken, rolecheck("MEMBER"), jsonParser, schemagroup_verify, function(req, res){
   console.log("POST /api/schema", req.body);
 
   schema_dao.create({
-    user_id: +req.claims.user_id,
+    schemagroup_id: req.body.schemagroup_id,
     name: req.body.name,
     description: req.body.description,
     size_x: req.body.size_x,
@@ -27,29 +43,4 @@ app.post('/api/schema', tokencheck, jsonParser, function(req, res){
     res.status(500).end();
   });
 
-});
-
-
-
-app.post('/api/schema/:id/complete', tokencheck, jsonParser, function(req, res){
-  console.log("POST /api/schema/id/complete", req.params.id, req.body);
-
-  return schema_dao.get_by_id(req.params.id)
-  .then(schema => {
-    // check user id in claims
-    if (schema.user_id != +req.claims.user_id){
-      res.status(401).end();
-      return;
-    }
-
-    // check if already completed
-    if (schema.complete){
-      res.status(500).end();
-      return;
-    }
-
-    return schema_dao.finalize(schema.id)
-    .then(() => res.end())
-    .catch(() => res.status(500).end());
-    });
 });

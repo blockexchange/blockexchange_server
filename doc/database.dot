@@ -19,6 +19,7 @@ schemagroup [label=<
   <tr><td><i>schemagroup</i></td></tr>
   <tr><td port="schemagroup_id">id (serial)</td></tr>
   <tr><td>name (varchar)</td></tr>
+  <tr><td>created (bigint)</td></tr>
 </table>>];
 
 
@@ -41,7 +42,7 @@ schema [label=<
   <tr><td><i>schema</i></td></tr>
   <tr><td port="schema_id">id (serial)</td></tr>
   <tr><td>created (bigint)</td></tr>
-  <tr><td port="schema_group_id">group_id (serial)</td></tr>
+  <tr><td port="schema_schemagroup_id">schemagroup_id (serial)</td></tr>
   <tr><td>name (varchar)</td></tr>
   <tr><td>description (text)</td></tr>
   <tr><td>complete (boolean)</td></tr>
@@ -56,7 +57,7 @@ schema [label=<
   <tr><td>license (varchar)</td></tr>
 </table>>];
 
-schema:schema_group_id -> schemagroup:schemagroup_id;
+schema:schema_schemagroup_id -> schemagroup:schemagroup_id;
 
 schemapart [label=<
 <table border="0" cellborder="1" cellspacing="0">

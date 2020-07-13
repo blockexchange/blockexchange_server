@@ -4,27 +4,29 @@ const jsonParser = bodyParser.json();
 const app = require("../app");
 const schema_dao = require("../dao/schema");
 const schemamod_dao = require("../dao/schemamod");
-const user_dao = require("../dao/user");
+const schemagroup_dao = require("../dao/schemagroup");
 const user_schema_star_dao = require("../dao/userschemastar");
 
 // TODO: maybe optimize with subqueries
 function enrich(schema){
 	return Promise.all([
 		schemamod_dao.find_all(schema.id),
-		user_dao.get_by_id(schema.user_id),
+		schemagroup_dao.get_by_id(schema.schemagroup_id),
 		user_schema_star_dao.count_by_schema_id(schema.id)
 	])
 	.then(results => {
+		const schemamods = results[0];
+		const schemagroup = results[1];
+		const stars = results[2];
+
 		const mods = {};
-		results[0].forEach(mod => mods[mod.mod_name] = mod.node_count);
+		schemamods.forEach(mod => mods[mod.mod_name] = mod.node_count);
 
 		return Object.assign({}, schema, {
 			search_tokens: null,
 			mods: mods,
-			user: {
-				name: results[1].name
-			},
-			stars: +results[2].stars
+			schemagroup: schemagroup,
+			stars: +stars.stars
 		});
 	});
 }
@@ -53,10 +55,14 @@ app.post('/api/searchschema', jsonParser, function(req, res){
 		// by unique id
 		q = schema_dao.get_by_id(req.body.schema_id).then(schema => [schema]);
 
-	} else if (req.body.schema_name && req.body.user_name) {
-		// by schema name and user name (unique)
-		q = schema_dao.get_by_schemaname_and_username(req.body.schema_name, req.body.user_name)
+	} else if (req.body.schema_name && req.body.group_name) {
+		// by schema name and group_name
+		q = schema_dao.get_by_schemaname_and_groupname(req.body.schema_name, req.body.group_name)
 		.then(schema => [schema]);
+
+	} else if (req.body.group_name) {
+		// by group_name
+		q = schema_dao.find_by_schemagroup_name(req.body.group_name);
 
 	} else {
 		// nothing to search for
@@ -93,10 +99,10 @@ app.get("/api/searchrecent/:count", function(req, res){
 });
 
 
-app.get("/api/search/schema/byname/:username/:name", function(req, res){
-	console.log("POST /api/search/schema/byname/:username/:name", req.params);
+app.get("/api/search/schema/byname/:group_name/:name", function(req, res){
+	console.log("POST /api/search/schema/byname/:group_name/:name", req.params);
 
-	schema_dao.get_by_schemaname_and_username(req.params.name, req.params.username)
+	schema_dao.get_by_schemaname_and_groupname(req.params.name, req.params.group_name)
 	.then(schema => {
 		if (!schema) {
 			res.status(404).end();
