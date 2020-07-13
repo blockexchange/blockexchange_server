@@ -2,12 +2,31 @@ const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
 const app = require("../app");
-const schema_screenshot_dao = require("../dao/schema_screenshot");
 const schema_dao = require("../dao/schema");
+const schema_screenshot_dao = require("../dao/schema_screenshot");
+const user_schemagroup_permission_dao = require("../dao/user_schemagroup_permission");
 
-const tokenmiddleware = require("../middleware/token");
-const permission_create = tokenmiddleware(claims => claims.permissions.screenshot.create);
-const permission_delete = tokenmiddleware(claims => claims.permissions.screenshot.delete);
+const { verifytoken, rolecheck } = require("../middleware/token");
+
+const schemagroup_verify = function(req, res, next){
+  const user_id = req.claims.user_id;
+  const schema_id = req.params.id;
+
+  schema_dao.get_by_id(schema_id)
+  .then(schema => user_schemagroup_permission_dao.get_by_user_and_schemagroup_id(user_id, schema.schemagroup_id))
+  .then(perm => {
+    if (!perm || !perm.delete){
+      res.status(403).end();
+      return;
+    }
+    next();
+  })
+  .catch(e => {
+    console.error(e);
+    res.status(500).end();
+  });
+};
+
 
 app.get('/api/schema/:id/screenshot', function(req, res){
   console.log("GET /api/schema/:id/screenshot", req.params.id);
@@ -29,7 +48,7 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
   .catch(() => res.status(500).end());
 });
 
-app.post('/api/schema/:id/screenshot', permission_create, jsonParser, function(req, res){
+app.post('/api/schema/:id/screenshot', verifytoken, rolecheck("MEMBER"), schemagroup_verify, jsonParser, function(req, res){
   console.log("POST /api/schema/:id/screenshot", req.params.id);
 
   return schema_dao.get_by_id(req.params.id)
@@ -46,7 +65,7 @@ app.post('/api/schema/:id/screenshot', permission_create, jsonParser, function(r
 });
 
 
-app.get('/api/schema/:id/screenshot/:screenshot_id', permission_delete, function(req, res){
+app.get('/api/schema/:id/screenshot/:screenshot_id', verifytoken, rolecheck("MEMBER"), schemagroup_verify, function(req, res){
   console.log("DELETE /api/schema/:id/screenshot/:screenshot_id", req.params.id, req.params.screenshot_id);
 
   return schema_dao.get_by_id(req.params.id)

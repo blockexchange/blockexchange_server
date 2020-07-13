@@ -4,7 +4,7 @@ const jsonParser = bodyParser.json();
 const app = require("../app");
 const schema_dao = require("../dao/schema");
 const user_schemagroup_permission_dao = require("../dao/user_schemagroup_permission");
-const { verifytoken, rolecheck } = require("../middleware/token");
+const { verifytoken } = require("../middleware/token");
 
 const schemagroup_verify = function(req, res, next){
   const schemagroup_id = req.params.id;
@@ -25,7 +25,7 @@ const schemagroup_verify = function(req, res, next){
 };
 
 
-app.post('/api/schema/:id/complete', verifytoken, rolecheck("MEMBER"), jsonParser, schemagroup_verify, function(req, res){
+app.post('/api/schema/:id/complete', verifytoken, jsonParser, schemagroup_verify, function(req, res){
   console.log("POST /api/schema/id/complete", req.params.id, req.body);
 
   return schema_dao.get_by_id(req.params.id)

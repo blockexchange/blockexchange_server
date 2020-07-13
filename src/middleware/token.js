@@ -11,18 +11,16 @@ module.exports.rolecheck = function(rolename) {
   };
 };
 
-module.exports.verifytoken = function() {
-  return function(req, res, next) {
-    var token = req.headers.authorization;
-    try {
-      const payload = jwt.verify(token, process.env.BLOCKEXCHANGE_KEY);
-      req.claims = payload;
+module.exports.verifytoken = function(req, res, next) {
+  var token = req.headers.authorization;
+  try {
+    const payload = jwt.verify(token, process.env.BLOCKEXCHANGE_KEY);
+    req.claims = payload;
 
-      // no authorization check
-      next();
-    } catch (e) {
-      // not authenticated
-      res.status(401).end();
-    }
-  };
+    // no authorization check
+    next();
+  } catch (e) {
+    // not authenticated
+    res.status(401).end();
+  }
 };

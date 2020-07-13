@@ -3,8 +3,7 @@ const jsonParser = bodyParser.json();
 
 const app = require("../app");
 const userschemastar_dao = require("../dao/userschemastar");
-const tokenmiddleware = require("../middleware/token");
-const tokencheck = tokenmiddleware();
+const { verifytoken, rolecheck } = require("../middleware/token");
 
 app.get('/api/schema/:id/star', jsonParser, function(req, res){
   console.log("GET /api/schema/:id/star", req.params.id);
@@ -15,7 +14,7 @@ app.get('/api/schema/:id/star', jsonParser, function(req, res){
 
 });
 
-app.put('/api/schema/:id/star', tokencheck, jsonParser, function(req, res){
+app.put('/api/schema/:id/star', verifytoken, rolecheck("MEMBER"), jsonParser, function(req, res){
   console.log("POST /api/schema/:id/star", req.params.id, req.claims.user_id);
 
 	userschemastar_dao.create(req.claims.user_id, req.params.id)
@@ -24,7 +23,7 @@ app.put('/api/schema/:id/star', tokencheck, jsonParser, function(req, res){
 
 });
 
-app.delete('/api/schema/:id/star', tokencheck, jsonParser, function(req, res){
+app.delete('/api/schema/:id/star', verifytoken, rolecheck("MEMBER"), jsonParser, function(req, res){
   console.log("DELETE /api/schema/:id/star", req.params.id, req.claims.user_id);
 
 	userschemastar_dao.remove(req.claims.user_id, req.params.id)
