@@ -26,7 +26,7 @@ export default class {
 
       } else {
         const confirmRemove = () => remove(schema)
-          .then(() => window.location.hash = `#!/schema/${schema.user.name}`);
+          .then(() => window.location.hash = `#!/schema/${schema.schemagroup.name}`);
 
         // confirmation buttons
         return html`

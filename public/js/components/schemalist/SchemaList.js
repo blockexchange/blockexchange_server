@@ -5,11 +5,11 @@ import ModList from '../ModList.js';
 
 import prettybytesize from '../../util/prettybytesize.js';
 
-const entry = (schema, hide_user) => html`
+const entry = (schema, hide_group) => html`
 	<tr class="${schema.complete ? "" : "table-danger"}">
-		${hide_user ? null : html`<td><a href="#!/schema/${schema.user.name}">${schema.user.name}</a></td>`}
+		${hide_group ? null : html`<td><a href="#!/schema/${schema.schemagroup.name}">${schema.schemagroup.name}</a></td>`}
 		<td>
-			<a href="#!/schema/${schema.user.name}/${schema.name}">
+			<a href="#!/schema/${schema.schemagroup.name}/${schema.name}">
 				${schema.name}
 			</a>
 		</td>
@@ -30,10 +30,10 @@ const entry = (schema, hide_user) => html`
 `;
 
 export default {
-	view: ({ attrs: { list, hide_user }}) => html`
+	view: ({ attrs: { list, hide_group }}) => html`
 		<table class="table table-striped table-condensed">
 			<thead>
-				${hide_user ? null : html`<th>User</th>`}
+				${hide_group ? null : html`<th>User</th>`}
 				<th>Name</th>
 				<th>Created</th>
 				<th>Downloads</th>
@@ -45,7 +45,7 @@ export default {
 				<th>Mods</th>
 			</thead>
 			<tbody>
-				${list.map(e => entry(e, hide_user))}
+				${list.map(e => entry(e, hide_group))}
 			</tbody>
 		</table>
 	`

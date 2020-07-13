@@ -45,7 +45,7 @@ export default class {
     const schema = this.state.schema;
 
     update(schema)
-    .then(() => window.location.hash = `#!/schema/${schema.user.name}/${schema.name}`);
+    .then(() => window.location.hash = `#!/schema/${schema.schemagroup.name}/${schema.name}`);
   }
 
   view(){

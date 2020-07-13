@@ -28,7 +28,7 @@ export default class {
 			name: "Home",
 			link: "#!/"
 		},{
-			name: "User-schemas",
+			name: "Group",
 		},{
 			name: vnode.attrs.username,
 			link: "#!/schema/" + vnode.attrs.username

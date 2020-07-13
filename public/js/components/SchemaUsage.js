@@ -6,7 +6,7 @@ export default {
       <div class="card-body">
         <p>Usage:</p>
         <p>/bx_pos1</p>
-        <p>/bx_load ${schema.user.name} ${schema.name}</p>
+        <p>/bx_load ${schema.schemagroup.name} ${schema.name}</p>
       </div>
     </div>
   `
