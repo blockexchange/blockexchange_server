@@ -21,7 +21,7 @@ export default class {
       name: "Home",
       link: "#!/"
     },{
-      name: "User-schemas",
+      name: "Groups",
     },{
       name: this.state.username,
       link: "#!/schema/" + this.state.username
