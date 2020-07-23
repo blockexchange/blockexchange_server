@@ -6,7 +6,7 @@ export default {
       <span class="badge badge-primary">${schema.id}</span>
       ${schema.name}
       <small class="text-muted"> by ${schema.user.name}</small>
-      ${schema.complete ? "" : html`<span class="badge badge-warning>Incomplete!</span>`}
+      ${schema.complete ? "" : html`<span class="badge badge-warning">Incomplete!</span>`}
     </h3>
   `
 };
