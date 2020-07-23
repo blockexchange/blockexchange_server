@@ -1,0 +1,3 @@
+[submodule "dev/worldmods/blockexchange"]
+	path = dev/worldmods/blockexchange
+	url = https://github.com/blockexchange/blockexchange.git
