@@ -14,6 +14,7 @@ app.get('/api/schema/:id/screenshot', function(req, res){
 
   schema_screenshot_dao.find_all(req.params.id)
   .then(screenshots => screenshots || [])
+  .then(screenshots => screenshots.map(s => ({ id: s.id, type: s.type, title: s.title })))
   .then(screenshots => res.json(screenshots))
   .catch(() => res.status(500).end());
 });
