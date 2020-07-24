@@ -24,7 +24,8 @@ require("./api/schemamods");
 require("./api/schemapart");
 
 // discord feed
-require("./feed/discord");
+const discord_feed = require("./feed/discord");
+discord_feed();
 
 const cleanupjob = require("./jobs/temp_schema_cleanup");
 
