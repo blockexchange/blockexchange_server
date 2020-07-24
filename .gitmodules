@@ -1,3 +1,9 @@
 [submodule "dev/worldmods/blockexchange"]
 	path = dev/worldmods/blockexchange
 	url = https://github.com/blockexchange/blockexchange.git
+[submodule "dev/worldmods/mesecons"]
+	path = dev/worldmods/mesecons
+	url = https://github.com/minetest-mods/mesecons.git
+[submodule "dev/worldmods/worldedit"]
+	path = dev/worldmods/worldedit
+	url = https://github.com/Uberi/Minetest-WorldEdit.git
