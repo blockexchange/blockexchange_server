@@ -1,5 +1,5 @@
-import convert_we from './convert.js';
-import parse_we from './parse.js';
+import convert_we from '../../util/import/convert.js';
+import parse_we from '../../util/import/parse.js';
 import state from './state.js';
 
 import { create as create_schema, complete as complete_schema } from '../../api/schema.js';
