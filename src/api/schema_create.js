@@ -1,6 +1,8 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
+const events = require("../events");
+
 const app = require("../app");
 const schema_dao = require("../dao/schema");
 const tokenmiddleware = require("../middleware/token");
@@ -50,6 +52,7 @@ app.post('/api/schema/:id/complete', tokencheck, jsonParser, function(req, res){
 
     return schema_dao.finalize(schema.id)
     .then(() => res.end())
+    .then(() => events.emit("new-schema", schema))
     .catch(() => res.status(500).end());
     });
 });

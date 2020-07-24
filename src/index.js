@@ -23,6 +23,9 @@ require("./api/schema_delete");
 require("./api/schemamods");
 require("./api/schemapart");
 
+// discord feed
+require("./feed/discord");
+
 const cleanupjob = require("./jobs/temp_schema_cleanup");
 
 migrate().then(() => {
