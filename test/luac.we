@@ -1,0 +1,11 @@
+5:return {{["y"] = 0, ["x"] = 0, ["name"] = "mesecons_insulated:insulated_off", ["z"] = 0, ["param1"] = 15}, {["y"] = 0, ["x"] = 1, ["name"] = "mesecons_luacontroller:luacontroller0000", ["z"] = 0, ["meta"] = {["inventory"] = {}, ["fields"] = {["ignore_offevents"] = "return {}", ["luac_id"] = "19440", ["lc_memory"] = "return {[\"decoder\"] = 1}", ["code"] = "-- Digiline Decoder\
+-- Reads an 8 bit binary number (signed or unsigned) from the bus, and converts it to decimal notation\r-- by So.Po.Coder for Minetest Mesecons Lua Controller\r-- A: Clock, B: Digiline Out 1, C: Input 2, D: Input 1\r\rif (event.type == \"program\") then\
+  mem.decoder = 1\rend\
+\
+-- create the bus array, insert the first two bits and pass to the next decoder in sequence\rif (event.type == \"on\" and event.pin.name == \"A\") then\r  bus = {}\r  table.insert(bus, pin.d and 1 or 0)\
+  table.insert(bus, pin.c and 1 or 0)\r  digiline_send(\"decoder\" .. tonumber(mem.decoder + 1), bus) -- send to the next decoder\rend", ["formspec"] = "size[12,10]background[-0.2,-0.25;12.4,10.75;jeija_luac_background.png]label[0.1,8.3;]textarea[0.2,0.2;12.2,9.5;code;;-- Digiline Decoder\
+-- Reads an 8 bit binary number (signed or unsigned) from the bus\\, and converts it to decimal notation\r-- by So.Po.Coder for Minetest Mesecons Lua Controller\r-- A: Clock\\, B: Digiline Out 1\\, C: Input 2\\, D: Input 1\r\rif (event.type == \"program\") then\
+  mem.decoder = 1\rend\
+\
+-- create the bus array\\, insert the first two bits and pass to the next decoder in sequence\rif (event.type == \"on\" and event.pin.name == \"A\") then\r  bus = {}\r  table.insert(bus\\, pin.d and 1 or 0)\
+  table.insert(bus\\, pin.c and 1 or 0)\r  digiline_send(\"decoder\" .. tonumber(mem.decoder + 1)\\, bus) -- send to the next decoder\rend]image_button[4.75,8.75;2.5,1;jeija_luac_runbutton.png;program;]image_button_exit[11.72,-0.25;0.425,0.4;jeija_close_window.png;exit;]", ["real_portstates"] = "9"}}, ["param1"] = 15}, {["y"] = 0, ["x"] = 2, ["name"] = "mesecons_extrawires:corner_off", ["z"] = 0, ["param1"] = 15}}
