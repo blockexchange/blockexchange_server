@@ -58,13 +58,13 @@ export default function(blocks, stats){
     const offset_y = mapblock_y * 16;
     const offset_z = mapblock_z * 16;
 
-    max_x = Math.max(max_x, offset_x + 15);
-    max_y = Math.max(max_y, offset_y + 15);
-    max_z = Math.max(max_z, offset_z + 15);
+    max_x = Math.max(max_x, block.x);
+    max_y = Math.max(max_y, block.y);
+    max_z = Math.max(max_z, block.z);
 
     const mapblock = get_or_create_mapblock(mapblocks_x_slices, parts, mapblock_x, mapblock_y, mapblock_z);
 
-    //TODO: non-uniform block sizes (other than 16 blocks wide)
+    // this assumes a constant 16-block mapblock size
     const index = pos_to_index({
       x: block.x - offset_x,
       y: block.y - offset_y,
