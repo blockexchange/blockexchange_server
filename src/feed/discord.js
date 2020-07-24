@@ -1,4 +1,4 @@
-const events = require("../eevnts");
+const events = require("../events");
 const axios = require('axios');
 
 module.exports = function(){
