@@ -25,7 +25,7 @@ Corresponding mod and more information: https://github.com/blockexchange/blockex
 * **PGPORT**
 * **PGDATABASE**
 * **BLOCKEXCHANGE_KEY** private key to sign the json web tokens with
-
+* **DISCORD_SCHEMA_FEED_URL** discord webhook for the "new schema" feed
 
 ## Docker usage
 
