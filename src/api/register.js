@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const logger = require("../logger");
 
 const bcrypt = require('bcryptjs');
 
@@ -9,7 +10,7 @@ const user_dao = require("../dao/user");
 // data='{"name": "xyz", "password": "abc", "mail": null}'
 // curl -X POST 127.0.0.1:8080/api/register --data "${data}" -H "Content-Type: application/json"
 app.post('/api/register', jsonParser, function(req, res){
-  console.log("POST /api/register", req.body.name, req.body.mail);
+  logger.debug("POST /api/register", req.body.name, req.body.mail);
 
   if (!req.body.name || req.body.name.length == 0) {
     res.json({

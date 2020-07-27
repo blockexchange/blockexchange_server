@@ -1,9 +1,10 @@
 const app = require("../app");
 const user_dao = require("../dao/user");
+const logger = require("../logger");
 
 
 app.get('/api/user', function(req, res){
-  console.log("GET /api/user");
+  logger.debug("GET /api/user");
 
   user_dao.get_all()
   .then(users => {

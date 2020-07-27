@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const logger = require("../logger");
 
 const app = require("../app");
 const schema_dao = require("../dao/schema");
@@ -10,7 +11,7 @@ const tokencheck = tokenmiddleware(claims => {
 });
 
 app.put("/api/schema/:id", tokencheck, jsonParser, function(req, res){
-  console.log("PUT /api/schema/:id", req.params.id, req.body);
+  logger.debug("PUT /api/schema/:id", req.params.id, req.body);
   const new_schema = req.body;
 
   return schema_dao.get_by_id(new_schema.id)

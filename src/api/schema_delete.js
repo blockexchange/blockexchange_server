@@ -1,5 +1,6 @@
 const app = require("../app");
 const schema_dao = require("../dao/schema");
+const logger = require("../logger");
 
 const tokenmiddleware = require("../middleware/token");
 const tokencheck = tokenmiddleware(claims => {
@@ -7,7 +8,7 @@ const tokencheck = tokenmiddleware(claims => {
 });
 
 app.delete("/api/schema/:id", tokencheck, function(req, res){
-  console.log("DELETE /api/schema/:id", req.params.id, req.body);
+  logger.debug("DELETE /api/schema/:id", req.params.id, req.body);
 
   return schema_dao.get_by_id(req.params.id)
   .then(schema => {

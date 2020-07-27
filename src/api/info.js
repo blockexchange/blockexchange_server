@@ -1,7 +1,8 @@
 const app = require("../app");
+const logger = require("../logger");
 
 app.get('/api/info', function(req, res){
-  console.log("GET /api/info");
+  logger.debug("GET /api/info");
 
 	res.json({
 		api_version_major: 1,

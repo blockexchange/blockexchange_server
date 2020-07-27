@@ -1,10 +1,11 @@
 
 const app = require("../app");
 const schema_dao = require("../dao/schema");
+const logger = require("../logger");
 
 // curl 127.0.0.1:8080/api/schema/1
 app.get('/api/schema/:id', function(req, res){
-  console.log("GET /api/schema/:id", req.params.id);
+  logger.debug("GET /api/schema/:id", req.params.id);
 
   if (req.query.download === "true") {
     // increment download counter

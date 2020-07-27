@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const logger = require("../logger");
 
 const app = require("../app");
 const schema_screenshot_dao = require("../dao/schema_screenshot");
@@ -10,7 +11,7 @@ const permission_create = tokenmiddleware(claims => claims.permissions.screensho
 const permission_delete = tokenmiddleware(claims => claims.permissions.screenshot.delete);
 
 app.get('/api/schema/:id/screenshot', function(req, res){
-  console.log("GET /api/schema/:id/screenshot", req.params.id);
+  logger.debug("GET /api/schema/:id/screenshot", req.params.id);
 
   schema_screenshot_dao.find_all(req.params.id)
   .then(screenshots => screenshots || [])
@@ -20,7 +21,7 @@ app.get('/api/schema/:id/screenshot', function(req, res){
 });
 
 app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
-  console.log("GET /api/schema/:id/screenshot/:screenshot_id", req.params.id, req.params.screenshot_id);
+  logger.debug("GET /api/schema/:id/screenshot/:screenshot_id", req.params.id, req.params.screenshot_id);
 
   schema_screenshot_dao.get_by_id(req.params.screenshot_id)
   .then(screenshot => {
@@ -31,7 +32,7 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
 });
 
 app.post('/api/schema/:id/screenshot', permission_create, jsonParser, function(req, res){
-  console.log("POST /api/schema/:id/screenshot", req.params.id);
+  logger.debug("POST /api/schema/:id/screenshot", req.params.id);
 
   return schema_dao.get_by_id(req.params.id)
   .then(schema => {
@@ -48,7 +49,7 @@ app.post('/api/schema/:id/screenshot', permission_create, jsonParser, function(r
 
 
 app.get('/api/schema/:id/screenshot/:screenshot_id', permission_delete, function(req, res){
-  console.log("DELETE /api/schema/:id/screenshot/:screenshot_id", req.params.id, req.params.screenshot_id);
+  logger.debug("DELETE /api/schema/:id/screenshot/:screenshot_id", req.params.id, req.params.screenshot_id);
 
   return schema_dao.get_by_id(req.params.id)
   .then(schema => {

@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const logger = require("../logger");
 
 const app = require("../app");
 const schemamod_dao = require("../dao/schemamod");
@@ -11,7 +12,7 @@ const tokencheck = tokenmiddleware(claims => {
 });
 
 app.get('/api/schema/:id/mods', function(req, res){
-  console.log("GET /api/schema/:id/mods", req.params.id);
+  logger.debug("GET /api/schema/:id/mods", req.params.id);
 
   schema_dao.get_by_id(req.params.id)
   .then(schema => {
@@ -30,7 +31,7 @@ app.get('/api/schema/:id/mods', function(req, res){
 
 
 app.post('/api/schema/:id/mods', tokencheck, jsonParser, function(req, res){
-  console.log("POST /api/schema/:id/mods", req.params.id, req.body);
+  logger.debug("POST /api/schema/:id/mods", req.params.id, req.body);
 
   return schema_dao.get_by_id(req.params.id)
   .then(schema => {

@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json({limit: '20mb'});
+const logger = require("../logger");
 
 const app = require("../app");
 const schemapart_dao = require("../dao/schemapart");
@@ -12,7 +13,7 @@ const tokencheck = tokenmiddleware(claims => {
 });
 
 app.post('/api/schemapart', tokencheck, jsonParser, function(req, res){
-  console.log("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
+  logger.debug("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
 
   return schema_dao.get_by_id(req.body.schema_id)
   .then(schema => {
@@ -45,7 +46,7 @@ app.post('/api/schemapart', tokencheck, jsonParser, function(req, res){
 
 // curl 127.0.0.1:8080/api/schemapart/1/0/0/0
 app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', function(req, res){
-  console.log("GET /api/schemapart", req.params);
+  logger.debug("GET /api/schemapart", req.params);
 
   schemapart_dao.get_by_id_and_offset(
     req.params.schema_id,

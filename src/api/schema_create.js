@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const logger = require("../logger");
 
 const events = require("../events");
 
@@ -11,7 +12,7 @@ const tokencheck = tokenmiddleware(claims => {
 });
 
 app.post('/api/schema', tokencheck, jsonParser, function(req, res){
-  console.log("POST /api/schema", req.body);
+  logger.debug("POST /api/schema", req.body);
 
   schema_dao.create({
     user_id: +req.claims.user_id,
@@ -34,7 +35,7 @@ app.post('/api/schema', tokencheck, jsonParser, function(req, res){
 
 
 app.post('/api/schema/:id/complete', tokencheck, jsonParser, function(req, res){
-  console.log("POST /api/schema/id/complete", req.params.id, req.body);
+  logger.debug("POST /api/schema/id/complete", req.params.id, req.body);
 
   return schema_dao.get_by_id(req.params.id)
   .then(schema => {

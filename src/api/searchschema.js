@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const logger = require("../logger");
 
 const app = require("../app");
 const schema_dao = require("../dao/schema");
@@ -32,7 +33,7 @@ function enrich(schema){
 // data='{"keywords": "description"}'
 // curl -X POST 127.0.0.1:8080/api/searchschema --data "${data}" -H "Content-Type: application/json"
 app.post('/api/searchschema', jsonParser, function(req, res){
-  console.log("POST /api/searchschema", req.body);
+  logger.debug("POST /api/searchschema", req.body);
 
 	var q;
 
@@ -94,7 +95,7 @@ app.get("/api/searchrecent/:count", function(req, res){
 
 
 app.get("/api/search/schema/byname/:username/:name", function(req, res){
-	console.log("POST /api/search/schema/byname/:username/:name", req.params);
+	logger.debug("POST /api/search/schema/byname/:username/:name", req.params);
 
 	schema_dao.get_by_schemaname_and_username(req.params.name, req.params.username)
 	.then(schema => {
