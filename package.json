@@ -17,18 +17,18 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "htm": "^3.0.4",
     "jsonwebtoken": "^8.5.1",
-    "luaparse": "^0.3.0",
-    "mithril": "^2.0.4",
-    "moment": "^2.27.0",
     "pg": "^8.3.0",
     "postgres-migrations": "^4.0.3",
     "prom-client": "^12.0.0",
-    "three": "^0.118.3",
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "luaparse": "^0.3.0",
+    "mithril": "^2.0.4",
+    "moment": "^2.27.0",
+    "three": "^0.118.3",
+    "htm": "^3.0.4",
     "jshint": "^2.11.1",
     "mocha": "^8.0.1",
     "rollup": "^2.23.0"
