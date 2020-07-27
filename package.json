@@ -26,7 +26,8 @@
     "pg": "^8.3.0",
     "postgres-migrations": "^4.0.3",
     "prom-client": "^12.0.0",
-    "three": "^0.118.3"
+    "three": "^0.118.3",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "jshint": "^2.11.1",

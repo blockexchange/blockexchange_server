@@ -1,5 +1,6 @@
 const app = require("./app");
 const migrate = require("./migrate");
+const logger = require("./logger");
 
 // user mgmt
 require("./api/user");
@@ -32,15 +33,15 @@ const cleanupjob = require("./jobs/temp_schema_cleanup");
 migrate().then(() => {
   app.listen(8080, err => {
 		if (err){
-			console.error(err);
+      logger.error(err);
 		} else {
-			console.log('Listening on http://127.0.0.1:8080');
+			logger.info('Listening on http://127.0.0.1:8080');
       cleanupjob.start();
     }
 	});
 })
 .catch(e => {
-	console.error(e);
+	logger.error(e);
   cleanupjob.stop();
   process.exit(-1);
 });
