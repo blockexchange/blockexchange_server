@@ -1,10 +1,11 @@
 import state from './state.js';
 import html from '../html.js';
+import { login, logout, temp_login } from './actions.js';
 
 const login_button = () => html`
   <button class="btn btn-primary btn-block"
     disabled=${!state.username || !state.password}
-    onclick=${state.login}>
+    onclick=${login}>
       Login
       <span class="badge badge-danger">${state.message}</span>
   </button>
@@ -12,14 +13,14 @@ const login_button = () => html`
 
 const temp_login_button = () => html`
   <button class="btn btn-secondary btn-block"
-    onclick=${state.temp_login}>
+    onclick=${temp_login}>
     Login with a temporary account
   </button>
 `;
 
 const logout_button = () => html`
   <button class="btn btn-primary btn-block"
-    onclick=${state.logout}>
+    onclick=${logout}>
     Logout
   </button>
 `;
