@@ -45,7 +45,3 @@ migrate().then(() => {
   cleanupjob.stop();
   process.exit(-1);
 });
-
-process.on('SIGINT', function() {
-  cleanupjob.stop();
-});
