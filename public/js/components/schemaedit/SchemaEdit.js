@@ -2,7 +2,6 @@ import html from '../html.js';
 
 import SchemaTitle from '../SchemaTitle.js';
 import LicenseBadge from '../LicenseBadge.js';
-import Breadcrumb from '../Breadcrumb.js';
 
 import { get_by_user_and_schemaname } from '../../api/searchschema.js';
 import { update } from '../../api/schema.js';
@@ -16,22 +15,6 @@ export default class {
       schemaname: vnode.attrs.schemaname,
       schema: null
     };
-
-    this.links = [{
-      name: "Home",
-      link: "#!/"
-    },{
-      name: "User-schemas",
-    },{
-      name: this.state.username,
-      link: "#!/schema/" + this.state.username
-    },{
-      name: this.state.schemaname,
-      link: "#!/schema/" + this.state.username + "/" + this.state.schemaname
-    },{
-      name: "Edit",
-      active: true
-    }];
 
     this.load_data();
   }
@@ -56,7 +39,6 @@ export default class {
 
     return html`
       <div>
-        <${Breadcrumb} links=${this.links}/>
         <${SchemaTitle} schema=${schema}/>
         <hr/>
         <div class="row">

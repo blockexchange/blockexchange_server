@@ -1,14 +1,7 @@
-import Breadcrumb from './Breadcrumb.js';
 import html from './html.js';
-
-const links = [{
-  name: "Home",
-  link: "#!/"
-}];
 
 export default {
   view: () => html`
-    <${Breadcrumb} links=${links}/>
     <div style="text-align: center;">
       <img src="pics/blockexchange.png"/>
       <hr/>

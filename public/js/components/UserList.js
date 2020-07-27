@@ -1,15 +1,6 @@
 import users from '../service/users.js';
-import Breadcrumb from './Breadcrumb.js';
 
 import html from './html.js';
-
-const links = [{
-  name: "Home",
-  link: "#!/"
-},{
-  name: "Users",
-  active: true
-}];
 
 const UserEntry = user => html`
 <li>
@@ -31,7 +22,6 @@ export default {
     }
   },
   view: () => html`
-    <${Breadcrumb} links=${links}/>
     <ul>
       ${list.map(UserEntry)}
     </ul>

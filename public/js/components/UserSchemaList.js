@@ -1,5 +1,4 @@
 import SchemaList from './schemalist/SchemaList.js';
-import Breadcrumb from './Breadcrumb.js';
 
 import html from './html.js';
 
@@ -11,17 +10,6 @@ export default class {
       list: [],
       username: vnode.attrs.username
     };
-
-    this.state.links = [{
-      name: "Home",
-      link: "#!/"
-    },{
-      name: "User-schemas",
-    },{
-      name: this.state.username,
-      active: true
-    }];
-
     this.search();
   }
 
@@ -32,7 +20,6 @@ export default class {
 
   view(){
     return html`
-      <${Breadcrumb} links=${this.state.links}/>
       <${SchemaList} list=${this.state.list} hide_user=${true}/>
     `;
   }

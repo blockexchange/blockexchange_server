@@ -1,4 +1,3 @@
-import Breadcrumb from '../Breadcrumb.js';
 import state from './state.js';
 import html from '../html.js';
 
@@ -25,14 +24,9 @@ const logout_button = () => html`
   </button>
 `;
 
-const breadcrumb_links = [
-  { name: "Home", link: "#!/" },
-  { name: "Login", active: true }
-];
 
 export default {
   view: () => html`
-    <${Breadcrumb} links=${breadcrumb_links}/>
     <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">

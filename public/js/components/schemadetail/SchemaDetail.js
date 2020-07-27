@@ -1,6 +1,5 @@
 import Preview from '../preview/Preview.js';
 import SchemaUsage from '../SchemaUsage.js';
-import Breadcrumb from '../Breadcrumb.js';
 import Star from './Star.js';
 import SchemaTitle from '../SchemaTitle.js';
 import EditButton from './EditButton.js';
@@ -24,19 +23,6 @@ export default class {
 			ready: false
 		};
 
-		this.links = [{
-			name: "Home",
-			link: "#!/"
-		},{
-			name: "User-schemas",
-		},{
-			name: vnode.attrs.username,
-			link: "#!/schema/" + vnode.attrs.username
-		},{
-			name: vnode.attrs.schemaname,
-			active: true
-		}];
-
 		this.load_data();
 	}
 
@@ -58,7 +44,6 @@ export default class {
 
 		return html`
 			<div>
-				<${Breadcrumb} links=${this.links}/>
 				<div class="row">
 					<div class="col-md-8">
 						<${SchemaTitle} schema=${schema}/>
