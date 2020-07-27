@@ -28,7 +28,7 @@ module.exports.create = function(data) {
     insert into
     schema(
       complete, user_id, name, description,
-      size_x, size_y, size_z, part_length,
+      max_x, max_y, max_z, part_length,
       total_size, total_parts, created, license,
       search_tokens
     )
@@ -43,7 +43,7 @@ module.exports.create = function(data) {
 
   const values = [
     false, data.user_id, data.name, data.description || "",
-    data.size_x, data.size_y, data.size_z, data.part_length,
+    data.max_x, data.max_y, data.max_z, data.part_length,
     0, 0, Date.now(), data.license || "CC0",
     data.name + " " + data.description
   ];

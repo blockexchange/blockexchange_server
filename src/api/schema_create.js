@@ -18,9 +18,9 @@ app.post('/api/schema', tokencheck, jsonParser, function(req, res){
     user_id: +req.claims.user_id,
     name: req.body.name,
     description: req.body.description,
-    size_x: req.body.size_x,
-    size_y: req.body.size_y,
-    size_z: req.body.size_z,
+    max_x: req.body.max_x,
+    max_y: req.body.max_y,
+    max_z: req.body.max_z,
     part_length: req.body.part_length,
 		license: req.body.license
   })

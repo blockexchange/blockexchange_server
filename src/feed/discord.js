@@ -15,7 +15,7 @@ module.exports = function(){
         const data = {
           content: `Schema created: **${schema.name}** by **${user.name}**\n` +
             `License: **${schema.license}**\n` +
-            `Size: ${schema.size_x}/${schema.size_y}/${schema.size_z} Blocks / ${schema.total_size} bytes\n` +
+            `Size: ${schema.max_x+1}/${schema.max_y+1}/${schema.max_z+1} Blocks / ${schema.total_size} bytes\n` +
             `Description:\n\`\`\`\n${schema.description}\n\`\`\`\n`
         };
 

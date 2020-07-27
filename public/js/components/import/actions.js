@@ -27,9 +27,9 @@ export function upload(){
   create_schema({
     name: state.name,
     description: state.description,
-    size_x: state.result.max_x,
-    size_y: state.result.max_y,
-    size_z: state.result.max_z,
+    max_x: state.result.max_x,
+    max_y: state.result.max_y,
+    max_z: state.result.max_z,
     license: state.license,
     part_length: 16
   })

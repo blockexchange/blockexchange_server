@@ -22,7 +22,7 @@ const entry = (schema, hide_user) => html`
 		<td>
 			<span class="badge badge-secondary">${prettybytesize(schema.total_size)}</span>
 		</td>
-		<td>${schema.size_x}/${schema.size_y}/${schema.size_z}</td>
+		<td>${schema.max_x+1}/${schema.max_y+1}/${schema.max_z+1}</td>
 		<td>${schema.total_parts}</td>
 		<td>${schema.description.substring(0,15)}</td>
 		<td><${ModList} schema=${schema}/></td>
