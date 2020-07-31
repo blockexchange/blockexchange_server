@@ -24,7 +24,7 @@ module.exports.get_by_id = function(id) {
   const query = `select * from schema_screenshot where id = $1`;
   const values = [id];
 
-  return executor(query, values);
+  return executor(query, values, { single_row: true });
 };
 
 

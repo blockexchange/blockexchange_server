@@ -1,5 +1,5 @@
 const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json({limit: '20mb'});
+const rawParser = bodyParser.raw({type: '*/*', limit: '20mb'});
 const logger = require("../logger");
 
 const app = require("../app");
@@ -25,14 +25,14 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
 
   schema_screenshot_dao.get_by_id(req.params.screenshot_id)
   .then(screenshot => {
-    res.header(screenshot.type)
+    res.header("Content-Type", screenshot.type)
     .send(screenshot.data);
   })
   .catch(() => res.status(500).end());
 });
 
-app.post('/api/schema/:id/screenshot', permission_create, jsonParser, function(req, res){
-  logger.debug("POST /api/schema/:id/screenshot", req.params.id);
+app.post('/api/schema/:id/screenshot', permission_create, rawParser, function(req, res){
+  logger.debug("POST /api/schema/:id/screenshot", req.params.id, req.query);
 
   return schema_dao.get_by_id(req.params.id)
   .then(schema => {
@@ -41,9 +41,13 @@ app.post('/api/schema/:id/screenshot', permission_create, jsonParser, function(r
       res.status(401).end();
       return;
     }
-
-    schema_screenshot_dao.create(schema.id, req.body.title, req.body.type, req.body.data)
-    .then(() => res.end());
+    const data = Buffer.from(req.body.toString('binary'),'binary');
+    schema_screenshot_dao.create(schema.id, req.query.title || "upload", req.headers["content-type"], data)
+    .then(() => res.end())
+    .catch(e => {
+      logger.error(e);
+      res.status(500).end();
+    });
   });
 });
 
