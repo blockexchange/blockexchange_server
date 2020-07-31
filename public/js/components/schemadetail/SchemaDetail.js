@@ -42,7 +42,6 @@ export default class {
 		}
 
 		return html`
-			<div>
 				<div class="row">
 					<div class="col-md-8">
 						<${SchemaTitle} schema=${schema}/>
@@ -60,7 +59,9 @@ export default class {
 						<pre>${schema.description || "<no description>"}</pre>
 					</div>
 					<div class="col-md-6">
-						Images here...
+						<a class="btn btn-secondary btn-xs" href=${`#!/schema/${this.state.username}/${this.state.schemaname}/preview`}>
+							3D Preview <i class="fa fa-play"/>
+						</a>
 					</div>
 				</div>
 				<hr/>
@@ -72,7 +73,6 @@ export default class {
 						<${SchemaUsage} schema=${schema}/>
 					</div>
 				</div>
-			</div>
-		`;
+			`;
   }
 }

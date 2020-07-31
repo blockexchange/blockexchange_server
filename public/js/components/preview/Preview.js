@@ -26,14 +26,13 @@ export default class {
       return html`<div>Loading...</div>`;
     }
 
-    return html`<div>
+    return html`
       <${Scene} schema=${this.state.schema}
         progressCallback=${f => this.state.progress = f * 100}/>
       <div class="progress">
         <div class="progress-bar" style="width: ${this.state.progress}%">
           ${Math.floor(this.state.progress * 10) / 10}%
         </div>
-      </div>
-    </div>`;
+      </div>`;
   }
 }
