@@ -3,6 +3,7 @@ import Star from './Star.js';
 import SchemaTitle from '../SchemaTitle.js';
 import EditButton from './EditButton.js';
 import DeleteButton from './DeleteButton.js';
+import SchemaScreenshots from './SchemaScreenshots.js';
 
 import html from '../html.js';
 
@@ -57,6 +58,13 @@ export default class {
 				<div class="row">
 					<div class="col-md-6">
 						<pre>${schema.description || "<no description>"}</pre>
+					</div>
+					<div class="col-md-6">
+						<${SchemaScreenshots} schemaid=${this.state.schema.id}/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
 					</div>
 					<div class="col-md-6">
 						<a class="btn btn-secondary btn-xs" href=${`#!/schema/${this.state.username}/${this.state.schemaname}/preview`}>

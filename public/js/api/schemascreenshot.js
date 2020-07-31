@@ -9,12 +9,13 @@ export const get = (schema_id, screenshot_id) => m.request({
 	url: `api/schema/${schema_id}/screenshot/${screenshot_id}`
 });
 
-export const create = (schema_id, type, data) => m.request({
+export const create = (schema_id, type, title, data) => m.request({
 	method: "POST",
 	url: `api/schema/${schema_id}/screenshot`,
 	body: {
 		type: type,
-		data: data
+		data: data,
+		title: title
 	},
 	headers: {
 		"Authorization": localStorage.blockexchange_token

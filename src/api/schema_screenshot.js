@@ -1,5 +1,5 @@
 const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
+const jsonParser = bodyParser.json({limit: '20mb'});
 const logger = require("../logger");
 
 const app = require("../app");
@@ -25,7 +25,7 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
 
   schema_screenshot_dao.get_by_id(req.params.screenshot_id)
   .then(screenshot => {
-    res.header("")
+    res.header(screenshot.type)
     .send(screenshot.data);
   })
   .catch(() => res.status(500).end());
@@ -48,7 +48,7 @@ app.post('/api/schema/:id/screenshot', permission_create, jsonParser, function(r
 });
 
 
-app.get('/api/schema/:id/screenshot/:screenshot_id', permission_delete, function(req, res){
+app.delete('/api/schema/:id/screenshot/:screenshot_id', permission_delete, function(req, res){
   logger.debug("DELETE /api/schema/:id/screenshot/:screenshot_id", req.params.id, req.params.screenshot_id);
 
   return schema_dao.get_by_id(req.params.id)
