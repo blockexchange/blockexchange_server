@@ -3,11 +3,7 @@ import html from '../html.js';
 import { get_all, create } from '../../api/schemascreenshot.js';
 
 function readFile(schemaid, file){
-  const reader = new FileReader();
-  reader.onload = function(fe){
-    create(schemaid, file.type, file.name, fe.target.result);
-  };
-  reader.readAsBinaryString(file);
+  create(schemaid, file.type, file.name, file);
 }
 
 export default class {
