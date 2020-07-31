@@ -3,7 +3,8 @@ import Star from './Star.js';
 import SchemaTitle from '../SchemaTitle.js';
 import EditButton from './EditButton.js';
 import DeleteButton from './DeleteButton.js';
-import SchemaScreenshots from './SchemaScreenshots.js';
+import ScreenshotsDisplay from './ScreenshotsDisplay.js';
+import ScreenshotsUpload from './ScreenshotsUpload.js';
 
 import html from '../html.js';
 
@@ -60,7 +61,7 @@ export default class {
 						<pre>${schema.description || "<no description>"}</pre>
 					</div>
 					<div class="col-md-6">
-						<${SchemaScreenshots} schemaid=${this.state.schema.id}/>
+						<${ScreenshotsDisplay} schemaid=${this.state.schema.id}/>
 					</div>
 				</div>
 				<div class="row">
@@ -70,6 +71,7 @@ export default class {
 						<a class="btn btn-secondary btn-xs" href=${`#!/schema/${this.state.username}/${this.state.schemaname}/preview`}>
 							3D Preview <i class="fa fa-play"/>
 						</a>
+						<${ScreenshotsUpload} schemaid=${this.state.schema.id}/>
 					</div>
 				</div>
 				<hr/>

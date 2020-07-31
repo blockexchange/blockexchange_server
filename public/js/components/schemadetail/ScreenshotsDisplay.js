@@ -1,10 +1,10 @@
 import html from '../html.js';
 
-import { get_all, create } from '../../api/schemascreenshot.js';
+import { get_all } from '../../api/schemascreenshot.js';
 
-function readFile(schemaid, file){
-  create(schemaid, file.type, file.name, file);
-}
+const screenshot = (schema_id, s) => html`
+  <img caption=${s.title} src=${`api/schema/${schema_id}/screenshot/${s.id}`}/>
+`;
 
 export default class {
   constructor(vnode) {
@@ -22,10 +22,7 @@ export default class {
     }
 
     return html`
-      <input type="file"
-        onchange=${e => readFile(vnode.attrs.schemaid, e.target.files[0])}
-         accept="image/png, image/jpeg"
-      />
+      ${this.state.screenshots.map(s => screenshot(vnode.attrs.schemaid, s))}
     `;
   }
 }
