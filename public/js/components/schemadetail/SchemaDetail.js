@@ -1,4 +1,3 @@
-import Preview from '../preview/Preview.js';
 import SchemaUsage from '../SchemaUsage.js';
 import Star from './Star.js';
 import SchemaTitle from '../SchemaTitle.js';
@@ -61,15 +60,7 @@ export default class {
 						<pre>${schema.description || "<no description>"}</pre>
 					</div>
 					<div class="col-md-6">
-						<div>
-							<${Preview} schema=${schema}
-								progressCallback=${f => this.state.progress = f * 100}/>
-							<div class="progress">
-								<div class="progress-bar" style="width: ${this.state.progress}%">
-									${Math.floor(this.state.progress * 10) / 10}%
-								</div>
-							</div>
-						</div>
+						Images here...
 					</div>
 				</div>
 				<hr/>

@@ -8,6 +8,7 @@ import Login from './components/login/Login.js';
 import Register from './components/Register.js';
 import Mod from './components/Mod.js';
 import Import from './components/import/Import.js';
+import Preview from './components/preview/Preview.js';
 
 export default {
   "/": Start,
@@ -19,5 +20,6 @@ export default {
   "/import": Import,
   "/schema/:username": UserSchemaList,
   "/schema/:username/:schemaname": SchemaDetail,
-  "/schema/:username/:schemaname/edit": SchemaEdit
+  "/schema/:username/:schemaname/edit": SchemaEdit,
+  "/schema/:username/:schemaname/preview": Preview
 };

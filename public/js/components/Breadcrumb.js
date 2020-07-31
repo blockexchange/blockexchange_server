@@ -61,7 +61,11 @@ export default {
 			}
 
 			if (parts.length >= 5){
-				items.push(html`<li class="breadcrumb-item">Edit</li>`);
+				if (parts[4] == "edit"){
+					items.push(html`<li class="breadcrumb-item">Edit</li>`);
+				} else if (parts[4] == "preview"){
+					items.push(html`<li class="breadcrumb-item">Preview</li>`);
+				}
 			}
 		}
 
