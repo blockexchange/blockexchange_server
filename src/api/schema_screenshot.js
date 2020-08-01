@@ -6,6 +6,8 @@ const app = require("../app");
 const schema_screenshot_dao = require("../dao/schema_screenshot");
 const schema_dao = require("../dao/schema");
 
+const jimp = require("jimp");
+
 const tokenmiddleware = require("../middleware/token");
 const permission_create = tokenmiddleware(claims => claims.permissions.screenshot.create);
 const permission_delete = tokenmiddleware(claims => claims.permissions.screenshot.delete);
@@ -25,8 +27,21 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
 
   schema_screenshot_dao.get_by_id(req.params.screenshot_id)
   .then(screenshot => {
-    res.header("Content-Type", screenshot.type)
-    .send(screenshot.data);
+    if (req.query.height && req.query.width){
+      //scale to fit specified dimensions
+      //TODO: cache and reuse result
+      return jimp.read(screenshot.data)
+        .then(img => img.scaleToFit(+req.query.width, +req.query.height))
+        .then(img => img.getBufferAsync(screenshot.type))
+        .then(buffer => {
+          res.header("Content-Type", screenshot.type)
+          .send(buffer);
+        });
+    } else {
+      //plain image
+      res.header("Content-Type", screenshot.type)
+      .send(screenshot.data);
+    }
   })
   .catch(() => res.status(500).end());
 });

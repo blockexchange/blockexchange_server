@@ -3,7 +3,7 @@ import html from '../html.js';
 import { get_all } from '../../api/schemascreenshot.js';
 
 const screenshot = (schema_id, s) => html`
-  <img caption=${s.title} src=${`api/schema/${schema_id}/screenshot/${s.id}`}/>
+  <img caption=${s.title} src=${`api/schema/${schema_id}/screenshot/${s.id}?height=200&width=200`}/>
 `;
 
 export default class {
