@@ -6,7 +6,7 @@ export default {
   view: function() {
     const claims = get_claims();
     if (!claims){
-      return `<div/>`;
+      return html`<div/>`;
     }
 
     return html`<span class="badge badge-light">${claims.username}</span>"`;
