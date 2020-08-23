@@ -5,7 +5,7 @@ import SchemaTitle from '../SchemaTitle.js';
 import EditButton from './EditButton.js';
 import DeleteButton from './DeleteButton.js';
 
-import html from '../html.js';
+const html = htm.bind(m);
 
 import { get_by_user_and_schemaname } from '../../api/searchschema.js';
 import { get_all as get_all_stars } from '../../api/userschemastar.js';
