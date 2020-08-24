@@ -15,7 +15,7 @@ export default schema => html`
     </tr>
     <tr>
       <td>Size [blocks]</td>
-      <td>${schema.max_x+1} / ${schema.max_y+1} / ${schema.max_z+1}</td>
+      <td>${schema.max_x+1} x ${schema.max_y+1} x ${schema.max_z+1}</td>
     </tr>
     <tr>
       <td>Volume [blocks]</td>
