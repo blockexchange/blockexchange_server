@@ -13,6 +13,7 @@ services:
    - PGPORT=5432
    - BLOCKEXCHANGE_NAME=My-Blockexchange
    - BLOCKEXCHANGE_OWNER=yourname
+   - BLOCKEXCHANGE_KEY=abcdefSecretKey
   ports:
    - "8080:8080"
 
