@@ -87,7 +87,6 @@ export default {
   },
   onremove: function(vnode) {
 		vnode.state.renderer.dispose();
-		vnode.state.scene.dispose();
 		vnode.state.active = false;
   }
 };
