@@ -24,7 +24,7 @@
     "mithril": "^2.0.4",
     "moment": "^2.28.0",
     "pg": "^8.3.3",
-    "postgres-migrations": "^5.0.0",
+    "postgres-migrations": "^5.1.0",
     "prom-client": "^12.0.0",
     "three": "^0.121.1",
     "winston": "^3.3.3"
