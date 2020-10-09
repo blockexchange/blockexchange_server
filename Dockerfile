@@ -1,5 +1,5 @@
 # Stage 1 testing
-FROM node:14.12.0-alpine as builder
+FROM node:14.13.1-alpine as builder
 
 COPY . /data
 
@@ -12,7 +12,7 @@ RUN cd /data &&\
   npm run bundle
 
 # Stage 2 package
-FROM node:14.12.0-alpine
+FROM node:14.13.1-alpine
 
 COPY . /data
 RUN apk update && apk add curl
