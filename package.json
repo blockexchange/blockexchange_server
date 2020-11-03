@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "jshint": "^2.12.0",
-    "mocha": "^8.2.0",
+    "mocha": "^8.2.1",
     "rollup": "^2.33.1"
   }
 }
