@@ -1,7 +1,5 @@
-import html from './html.js';
-
-export default {
-  view: () => html`
+Vue.component('start-page', {
+	template: `
     <div style="text-align: center;">
       <img src="pics/blockexchange.png"/>
       <hr/>
@@ -28,4 +26,4 @@ export default {
       </div>
     </div>
   `
-};
+});

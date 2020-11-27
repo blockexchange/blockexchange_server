@@ -4,11 +4,9 @@
   "esversion": 6,
   "browser": true,
   "globals": {
-    "m": true,
-		"moment": true,
+    "Vue": true,
     "console": true,
     "THREE": true,
-    "luaparse": true,
-    "htm": true
+    "luaparse": true
   }
 }
