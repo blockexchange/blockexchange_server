@@ -1,5 +1,5 @@
 Vue.component('start-page', {
-	template: `
+	template: /*html*/`
     <div style="text-align: center;">
       <img src="pics/blockexchange.png"/>
       <hr/>
