@@ -20,7 +20,7 @@ Vue.component('start-page', {
           Mod/Installation
         </a>
         <a href="https://github.com/blockexchange" class="btn btn-secondary">
-          <i class="fab fa-github"></i>
+          <i class="fa fa-github"></i>
           Source
         </a>
       </div>
