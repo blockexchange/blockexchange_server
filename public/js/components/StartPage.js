@@ -19,9 +19,12 @@ export default {
           <i class="fa fa-download"></i>
           Mod/Installation
         </a>
-        <a href="https://github.com/blockexchange" class="btn btn-secondary">
+				<a href="https://github.com/blockexchange" class="btn btn-secondary">
           <i class="fa fa-github"></i>
           Source
+        </a>
+				<a href="https://github.com/login/oauth/authorize?client_id=68c2728e22f3a4b02dc0" class="btn btn-secondary">
+          Login test
         </a>
       </div>
     </div>
