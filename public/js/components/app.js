@@ -1,5 +1,10 @@
 Vue.component('app', {
 	template: `
-		<start-page/>
+		<div>
+			<nav-bar/>
+			<div class="container-fluid">
+				<start-page/>
+			</div>
+		</div>
 	`
 });

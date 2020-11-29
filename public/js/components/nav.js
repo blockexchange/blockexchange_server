@@ -1,5 +1,0 @@
-Vue.component('nav', {
-	template: `
-		
-	`
-});
