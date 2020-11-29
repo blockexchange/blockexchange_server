@@ -28,6 +28,7 @@
     "prom-client": "^12.0.0",
     "three": "^0.120.0",
     "vue": "^2.6.12",
+    "vue-router": "^3.4.9",
     "winston": "^3.3.3"
   },
   "devDependencies": {

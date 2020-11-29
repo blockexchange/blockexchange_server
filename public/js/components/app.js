@@ -3,7 +3,7 @@ Vue.component('app', {
 		<div>
 			<nav-bar/>
 			<div class="container-fluid">
-				<start-page/>
+				<router-view></router-view>
 			</div>
 		</div>
 	`
