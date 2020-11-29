@@ -1,6 +1,6 @@
 export default {
 	template: /*html*/`
-		<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<router-link to="/" class="navbar-brand">Block exchange</router-link>
 			<div class="navbar-collapse collapse">
 				<ul class="navbar-nav mr-auto">
