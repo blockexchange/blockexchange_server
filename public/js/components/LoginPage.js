@@ -1,10 +1,12 @@
 import { login } from '../service/login.js';
+import store from '../store/token.js';
 
 export default {
 	data: function() {
 		return {
 			username: "",
-			password: ""
+			password: "",
+			store: store
 		};
 	},
 	methods: {
@@ -25,7 +27,7 @@ export default {
 						placeholder="Password"
 						v-model="password"
 					/>
-					<button class="btn btn-secondary btn-block" v-on:click="login(username, password)">
+					<button v-if="!store.token" class="btn btn-secondary btn-block" v-on:click="login(username, password)">
 						Login
 					</button>
 				</form>
