@@ -1,4 +1,4 @@
-import './components.js';
+import './app.js';
 import routes from './routes.js';
 
 const router = new VueRouter({

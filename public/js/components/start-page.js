@@ -1,4 +1,4 @@
-Vue.component('start-page', {
+export default {
 	template: /*html*/`
     <div style="text-align: center;">
       <img src="pics/blockexchange.png"/>
@@ -26,4 +26,4 @@ Vue.component('start-page', {
       </div>
     </div>
   `
-});
+};

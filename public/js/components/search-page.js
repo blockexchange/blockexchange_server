@@ -1,6 +1,6 @@
-Vue.component('search-page', {
+export default {
 	template: /*html*/`
 		<div>
 		</div>
 	`
-});
+};

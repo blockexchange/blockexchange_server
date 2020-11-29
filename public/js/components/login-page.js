@@ -1,6 +1,6 @@
-Vue.component('login-page', {
+export default {
 	template: /*html*/`
 		<div>
 		</div>
 	`
-});
+};

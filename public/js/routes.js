@@ -1,8 +1,11 @@
+import StartPage from './components/start-page.js';
+import LoginPage from './components/login-page.js';
+import SearchPage from './components/search-page.js';
 
 export default [{
-  path: "/", component: { template: "<start-page/>" }
+  path: "/", component: StartPage
 },{
-  path: "/login", component: { template: "<login-page/>" }
+  path: "/login", component: LoginPage
 },{
-  path: "/search", component: { template: "<search-page/>" }
+  path: "/search", component: SearchPage
 }];

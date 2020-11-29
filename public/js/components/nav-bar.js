@@ -1,4 +1,4 @@
-Vue.component('nav-bar', {
+export default {
 	template: /*html*/`
 		<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
 			<router-link to="/" class="navbar-brand">Block exchange</router-link>
@@ -33,4 +33,4 @@ Vue.component('nav-bar', {
 			</div>
 	</nav>
 	`
-});
+};
