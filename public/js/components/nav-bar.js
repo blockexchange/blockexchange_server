@@ -5,14 +5,14 @@ Vue.component('nav-bar', {
 			<div class="navbar-collapse collapse">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item">
-						<a class="nav-link" href="#!/">
+						<router-link to="/" class="nav-link">
 							<i class="fa fa-question"></i> About
-						</a>
+						</router-link>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#!/login">
+						<router-link to="/login" class="nav-link">
 							<i class="fa fa-sign-in"></i> Login
-						</a>
+						</router-link>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#!/mod">
@@ -25,9 +25,9 @@ Vue.component('nav-bar', {
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#!/search">
+						<router-link to="/search" class="nav-link">
 							<i class="fa fa-search"></i> Search
-						</a>
+						</router-link>
 					</li>
 				</ul>
 			</div>
