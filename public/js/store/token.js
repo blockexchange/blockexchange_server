@@ -1,4 +1,4 @@
 
-export default new Vue({
+export default Vue.observable({
   token: null
 });

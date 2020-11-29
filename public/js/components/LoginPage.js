@@ -1,4 +1,4 @@
-import { login } from '../service/login.js';
+import { request_token } from '../api/token.js';
 import store from '../store/token.js';
 
 export default {
@@ -6,11 +6,22 @@ export default {
 		return {
 			username: "",
 			password: "",
-			store: store
+			message: null
 		};
 	},
 	methods: {
-		login: login
+		login(username, password) {
+			this.message = null;
+		  request_token(username, password)
+		  .then(t => store.token = t)
+		  .catch(e => this.message = e.message);
+		},
+		logout() {
+			store.token = null;
+		},
+		isLoggedIn() {
+			return !!store.token;
+		}
 	},
 	template: /*html*/`
 		<div class="row">
@@ -27,9 +38,15 @@ export default {
 						placeholder="Password"
 						v-model="password"
 					/>
-					<button v-if="!store.token" class="btn btn-secondary btn-block" v-on:click="login(username, password)">
+					<button v-if="!isLoggedIn()" class="btn btn-secondary btn-block" v-on:click="login(username, password)">
 						Login
 					</button>
+					<button v-if="isLoggedIn()" class="btn btn-secondary btn-block" v-on:click="logout()">
+						Logout
+					</button>
+					<span v-if="message">
+						{{ message }}
+					</span>
 				</form>
 			</div>
 			<div class="col-md-4"></div>
