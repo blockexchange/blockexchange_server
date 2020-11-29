@@ -1,5 +1,5 @@
 Vue.component('nav-bar', {
-	template: `
+	template: /*html*/`
 		<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
 			<router-link to="/" class="navbar-brand">Block exchange</router-link>
 			<div class="navbar-collapse collapse">

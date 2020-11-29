@@ -1,5 +1,5 @@
 Vue.component('app', {
-	template: `
+	template: /*html*/`
 		<div>
 			<nav-bar/>
 			<div class="container-fluid">
