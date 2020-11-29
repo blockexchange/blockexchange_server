@@ -1,4 +1,4 @@
-import NavBar from './components/nav-bar.js';
+import NavBar from './components/NavBar.js';
 
 Vue.component('app', {
 	components: {
