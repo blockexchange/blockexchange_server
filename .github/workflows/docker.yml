@@ -13,9 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: integration-test
-      run: ./integration-test.sh
-
     - name: docker publish
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
