@@ -8,6 +8,7 @@ Vue.component('app', {
 		<div>
 			<nav-bar/>
 			<div class="container-fluid">
+				<br>
 				<router-view></router-view>
 			</div>
 		</div>
