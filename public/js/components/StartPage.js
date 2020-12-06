@@ -2,6 +2,11 @@ export default {
 	template: /*html*/`
     <div style="text-align: center;">
       <img src="pics/blockexchange.png"/>
+			<div class="alert alert-danger" role="alert">
+			  Blockexchange is currently undergoing major refactoring and may be unusable for now
+				<br>
+				Stay tuned for the next official release announcement
+			</div>
       <hr/>
       <h4>Exchange your schemas across worlds with ease</h4>
       <hr/>
