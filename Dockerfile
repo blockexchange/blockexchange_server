@@ -15,7 +15,6 @@ RUN cd /data &&\
 FROM node:15.3.0-alpine
 
 COPY . /data
-RUN apk update && apk add curl
 
 RUN cd /data && npm ci --only=production
 COPY --from=builder /data/public /data/public
@@ -23,8 +22,5 @@ COPY --from=builder /data/public /data/public
 WORKDIR /data
 
 EXPOSE 8080
-
-HEALTHCHECK --interval=5s --timeout=3s \
-  CMD curl -f http://localhost:8080/ || exit 1
 
 CMD ["npm", "start"]

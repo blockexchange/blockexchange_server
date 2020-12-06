@@ -6,6 +6,7 @@ const logger = require("./logger");
 require("./api/user");
 require("./api/register");
 require("./api/token");
+require("./api/oauth_callback");
 
 // stats / info
 require("./api/info");

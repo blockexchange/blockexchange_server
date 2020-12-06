@@ -1,9 +1,12 @@
-import html from './html.js';
-
 export default {
-  view: () => html`
+	template: /*html*/`
     <div style="text-align: center;">
       <img src="pics/blockexchange.png"/>
+			<div class="alert alert-danger" role="alert">
+			  Blockexchange is currently undergoing major refactoring and may be unusable for now
+				<br>
+				Stay tuned for the next official release announcement
+			</div>
       <hr/>
       <h4>Exchange your schemas across worlds with ease</h4>
       <hr/>
@@ -21,9 +24,12 @@ export default {
           <i class="fa fa-download"></i>
           Mod/Installation
         </a>
-        <a href="https://github.com/blockexchange" class="btn btn-secondary">
-          <i class="fab fa-github"></i>
+				<a href="https://github.com/blockexchange" class="btn btn-secondary">
+          <i class="fa fa-github"></i>
           Source
+        </a>
+				<a href="https://github.com/login/oauth/authorize?client_id=68c2728e22f3a4b02dc0" class="btn btn-secondary">
+          Login test
         </a>
       </div>
     </div>
