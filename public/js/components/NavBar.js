@@ -1,4 +1,9 @@
+import LoginStatus from './login/LoginStatus.js';
+
 export default {
+	components: {
+		"login-status": LoginStatus
+	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<router-link to="/" class="navbar-brand">Block exchange</router-link>
@@ -30,6 +35,7 @@ export default {
 						</router-link>
 					</li>
 				</ul>
+				<login-status/>
 			</div>
 	</nav>
 	`

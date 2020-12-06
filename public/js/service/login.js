@@ -1,11 +1,14 @@
 import { request_token } from '../api/token.js';
-import store from '../store/token.js';
+import loginstore from '../store/login.js';
 
 export default {
 	login(username, password){
 		return request_token(username, password)
 		.then(t => {
-			store.token = t;
+			loginstore.token = t;
+			loginstore.loggedIn = true;
+			loginstore.username = username;
+
 			return { success: true };
 		})
 		.catch(e => {
@@ -17,6 +20,8 @@ export default {
 	},
 
 	logout(){
-		store.token = null;
+		loginstore.token = null;
+		loginstore.loggedIn = false;
+		loginstore.username = "";
 	}
 };

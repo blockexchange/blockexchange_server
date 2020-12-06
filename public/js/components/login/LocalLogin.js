@@ -1,4 +1,4 @@
-import store from '../../store/token.js';
+import store from '../../store/login.js';
 import LoginService from '../../service/login.js';
 
 export default {
@@ -20,7 +20,7 @@ export default {
 			});
 		},
 		isLoggedIn: function() {
-			return !!store.token;
+			return store.loggedIn;
 		}
 	},
 	template: /*html*/`
@@ -39,18 +39,13 @@ export default {
 				v-bind:disabled="!username || !password"
 				class="btn btn-secondary btn-block"
 				v-on:click="login(username, password)">
-				Login
+				Login <span class="badge badge-danger">{{ message }}</span>
 			</button>
 			<button v-if="isLoggedIn()"
 				class="btn btn-secondary btn-block"
 				v-on:click="loginService.logout()">
 				Logout
 			</button>
-			<span v-if="message">
-				<div class="alert alert-danger" role="alert">
-				  {{ message }}
-				</div>
-			</span>
 		</form>
 	`
 };
