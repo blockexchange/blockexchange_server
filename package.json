@@ -19,7 +19,7 @@
     "bootstrap": "^4.5.3",
     "express": "^4.17.1",
     "font-awesome": "^4.7.0",
-    "jimp": "^0.14.0",
+    "jimp": "^0.16.1",
     "jsonwebtoken": "^8.5.1",
     "luaparse": "^0.3.0",
     "moment": "^2.27.0",
