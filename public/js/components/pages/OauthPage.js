@@ -1,8 +1,7 @@
 export default {
-
-	template: /*html*/`
-		<div>
-			Token: {{ $route.params.token }}
-		</div>
-	`
+	beforeRouteEnter: function(to, from, next){
+		console.log(to.params.token);
+		next({ path: "/login" });
+	},
+	template: `<div></div>`
 };
