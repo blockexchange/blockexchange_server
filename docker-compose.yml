@@ -41,6 +41,17 @@ services:
   ports:
    - "30000:30000/udp"
 
+ selenium:
+  image: selenium/standalone-firefox:83.0
+  ports:
+   - 4444:4444
+
+ e2e-test:
+  build: e2e
+  depends_on:
+   - selenium
+   - blockexchange
+
 volumes:
   postgres: {}
   node_modules: {}
