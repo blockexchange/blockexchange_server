@@ -1,6 +1,9 @@
+const axios = require('axios');
+
 const app = require("../app");
 const logger = require("../logger");
-const axios = require('axios');
+const user_dao = require("../dao/user");
+const createjwt = require("../util/createjwt");
 
 app.get('/api/oauth_callback', function(req, res){
   logger.debug("GET /api/oauth_callback", req.query);
@@ -17,6 +20,8 @@ app.get('/api/oauth_callback', function(req, res){
     }
   };
 
+	let user_info;
+
   axios.post("https://github.com/login/oauth/access_token", data, options)
   .then(r => {
     if (!r.data.access_token){
@@ -30,14 +35,35 @@ app.get('/api/oauth_callback', function(req, res){
     });
   })
   .then(r => {
-    const user_info = r.data;
+    user_info = r.data;
     console.log(user_info);
+		return user_dao.get_by_name(user_info.login);
     // user_info.login / avatar_url / name / email
-    //TODO: build jwt
-    res.redirect(process.env.BASE_URL + "/#/oauth?jwt=blah");
-  })
+	})
+	.then(user => {
+		if (user){
+			if (user.type != "GITHUB") {
+				throw new Error("User already exists with another type!");
+			}
+			// valid github user
+			return user;
+		} else {
+			// create new user
+			return user_dao.create({
+				name: user_info.login,
+				role: "MEMBER",
+				type: "GITHUB",
+				hash: "", // no local password
+				mail: user_info.email
+			});
+		}
+	})
+	.then(user => {
+		const token = createjwt(user);
+		res.redirect(process.env.BASE_URL + "/#/oauth?token=" + token);
+	})
   .catch(e => {
     console.log(e);
-    res.send(e.messages);
+    res.send(e.message);
   });
 });

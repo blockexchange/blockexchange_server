@@ -16,16 +16,16 @@ module.exports.create = function(data) {
   const query = `
     insert into
     public.user(
-      role, name, hash, mail, created
+      role, name, hash, mail, type, created
     )
     values(
-      $1, $2, $3, $4, $5
+      $1, $2, $3, $4, $5, $6
     )
     returning *
   `;
 
   const values = [
-    data.role, data.name, data.hash, data.mail, Date.now()
+    data.role, data.name, data.hash, data.mail, data.type, Date.now()
   ];
 
   return executor(query, values, { single_row: true });

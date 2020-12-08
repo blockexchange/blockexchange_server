@@ -1,10 +1,9 @@
+const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+
+const createjwt = require("../util/createjwt");
 const logger = require("../logger");
-
-const bcrypt = require('bcryptjs');
-var jwt = require('jsonwebtoken');
-
 const app = require("../app");
 const user_dao = require("../dao/user");
 
@@ -26,39 +25,7 @@ app.post('/api/token', jsonParser, function(req, res){
       return;
     }
 
-    const payload = {
-      username: user.name,
-      user_id: user.id
-    };
-
-    // check for temporary role, only allow creation of content with it
-    if (user.role == "TEMP"){
-      // temporary/default user
-      payload.permissions = {
-        schema: {
-          create: true
-        }
-      };
-    } else {
-      // normal user
-      payload.permissions = {
-        user: {
-          update: true
-        },
-        schema: {
-          create: true,
-          update: true,
-          delete: true
-        },
-        screenshot: {
-          create: true,
-          delete: true
-        }
-      };
-    }
-    // TODO: custom permissions on token for normal users
-
-    const token = jwt.sign(payload, process.env.BLOCKEXCHANGE_KEY);
+		const token = createjwt(user);
     res.send(token);
   })
   .catch((e) => {
