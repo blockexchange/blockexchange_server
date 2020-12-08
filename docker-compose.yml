@@ -28,7 +28,7 @@ services:
   ports:
    - "8080:8080"
   working_dir: /data
-  entrypoint: ["sh", "-c", "npm ci && npm start"]
+  entrypoint: ["sh", "-c", "npm i && npm start"]
 
  minetest:
   image: registry.gitlab.com/minetest/minetest/server:5.3.0
