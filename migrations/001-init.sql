@@ -6,7 +6,8 @@ create table public.user(
   created bigint not null,
   name varchar not null,
   hash varchar not null,
-	role varchar(16) not null,
+  role varchar(16) not null default 'MEMBER',
+  type varchar(16) not null default 'LOCAL',
   mail varchar
 );
 
@@ -76,7 +77,7 @@ create table user_schema_star (
   user_id serial references public.user(id) on delete cascade,
   schema_id serial references schema(id) on delete cascade,
   primary key (user_id, schema_id)
-)
+);
 
 -- SCHEMA_SCREENSHOT
 
@@ -86,4 +87,4 @@ create table schema_screenshot (
 	type varchar(64) not null,
   title varchar(128) not null,
   data bytea not null
-)
+);
