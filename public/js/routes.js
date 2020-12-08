@@ -2,6 +2,7 @@ import StartPage from './components/pages/StartPage.js';
 import LoginPage from './components/pages/LoginPage.js';
 import SearchPage from './components/pages/SearchPage.js';
 import RegisterPage from './components/pages/RegisterPage.js';
+import OauthPage from './components/pages/OauthPage.js';
 
 export default [{
   path: "/", component: StartPage
@@ -11,4 +12,6 @@ export default [{
   path: "/search", component: SearchPage
 },{
 	path: "/register", component: RegisterPage
+},{
+	path: "/oauth/:token", component: OauthPage
 }];

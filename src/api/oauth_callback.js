@@ -60,7 +60,7 @@ app.get('/api/oauth_callback', function(req, res){
 	})
 	.then(user => {
 		const token = createjwt(user);
-		res.redirect(process.env.BASE_URL + "/#/oauth?token=" + token);
+		res.redirect(process.env.BASE_URL + "/#/oauth/" + token);
 	})
   .catch(e => {
     console.log(e);
