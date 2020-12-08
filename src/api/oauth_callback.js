@@ -6,7 +6,7 @@ app.get('/api/oauth_callback', function(req, res){
   logger.debug("GET /api/oauth_callback", req.query);
 
   const data = {
-    client_id: "68c2728e22f3a4b02dc0",
+    client_id: process.env.GITHUB_APP_ID,
     client_secret: process.env.GITHUB_APP_SECRET,
     code: req.query.code
   };
