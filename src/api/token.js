@@ -15,13 +15,24 @@ app.post('/api/token', jsonParser, function(req, res){
   user_dao.get_by_name(req.body.name)
   .then(user => {
     if (!user) {
-      res.status(404).end();
+      res.status(404).json({
+				message: "User not found"
+			});
       return;
     }
 
+		if (user.type != "LOCAL"){
+			res.status(403).json({
+				message: "Direct login with an external user not allowed"
+			});
+      return;
+		}
+
     const success = bcrypt.compareSync(req.body.password, user.hash);
     if (!success) {
-      res.status(401).end();
+      res.status(401).json({
+				message: "Invalid password"
+			});
       return;
     }
 
@@ -30,6 +41,8 @@ app.post('/api/token', jsonParser, function(req, res){
   })
   .catch((e) => {
     console.error(e);
-    res.status(500).end();
+    res.status(500).end({
+			message: "Internal server error"
+		});
   });
 });

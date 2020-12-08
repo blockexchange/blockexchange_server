@@ -19,6 +19,7 @@ export default {
 				}
 			});
 		},
+		logout: LoginService.logout,
 		isLoggedIn: function() {
 			return store.loggedIn;
 		}
@@ -43,7 +44,7 @@ export default {
 			</button>
 			<button v-if="isLoggedIn()"
 				class="btn btn-secondary btn-block"
-				v-on:click="loginService.logout()">
+				v-on:click="logout()">
 				Logout
 			</button>
 		</form>
