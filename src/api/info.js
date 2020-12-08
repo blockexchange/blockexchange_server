@@ -9,6 +9,9 @@ app.get('/api/info', function(req, res){
 		api_version_minor: 1,
 		name: process.env.BLOCKEXCHANGE_NAME || "unknown",
 		owner: process.env.BLOCKEXCHANGE_OWNER || "unknown",
+		oauth: {
+			github_id: process.env.GITHUB_APP_ID
+		},
     matomo: {
       url: process.env.MATOMO_URL,
       id: process.env.MATOMO_ID

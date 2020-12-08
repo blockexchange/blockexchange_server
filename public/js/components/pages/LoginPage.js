@@ -1,8 +1,14 @@
 import LocalLogin from '../login/LocalLogin.js';
+import infoStore from '../../store/info.js';
 
 export default {
 	components: {
 		'local-login': LocalLogin
+	},
+	data: function(){
+		return {
+			info: infoStore
+		};
 	},
 	template: /*html*/`
 		<div class="row">
@@ -34,7 +40,7 @@ export default {
 						External login
 					</div>
 					<div class="card-body">
-						<a href="https://github.com/login/oauth/authorize?client_id=68c2728e22f3a4b02dc0" class="btn btn-secondary">
+						<a v-bind:href="'https://github.com/login/oauth/authorize?client_id=' + info.oauth.github_id" class="btn btn-secondary">
 							<i class="fa fa-github"></i>
 							Login with Github
 						</a>
