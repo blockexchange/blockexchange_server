@@ -94,21 +94,22 @@ services:
 
 Web- and backend development
 
+Prerequisites:
+* docker
+* docker-compose
+
 ```
 # start the postgres database
-./dev/start_pg.sh
+docker-compose up -d postgres
 
-# install the npm packages
-npm install
+# start the blockexchange server
+docker-compose up -d blockexchange
 
-# prepare the frontend libraries
-npm bundle
-
-# start the nodejs server
-./start_server.sh
+# start the minetest server
+docker-compose up -d minetest
 ```
 
-Go to http://127.0.0.1:8080
+The blockexchange UI is at http://127.0.0.1:8080 and the minetest server is reachable via 127.0.0.1:30000
 
 # Database
 
