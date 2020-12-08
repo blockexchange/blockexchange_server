@@ -34,7 +34,7 @@ app.get('/api/oauth_callback', function(req, res){
     console.log(user_info);
     // user_info.login / avatar_url / name / email
     //TODO: build jwt
-    res.redirect("http://127.0.0.1:8080/#/oauth?jwt=blah");
+    res.redirect(process.env.BASE_URL + "/#/oauth?jwt=blah");
   })
   .catch(e => {
     console.log(e);
