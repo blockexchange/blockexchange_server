@@ -3,6 +3,7 @@ export default {
 		return {
 			username: "",
 			password: "",
+			password2: "",
 			mail: ""
 		};
 	},
@@ -22,6 +23,11 @@ export default {
 				class="form-control"
 				placeholder="Password"
 				v-model="password"
+			/>
+			<input type="password"
+				class="form-control"
+				placeholder="Password (verify)"
+				v-model="password2"
 			/>
 			<button class="btn btn-secondary btn-block">
 				Register
