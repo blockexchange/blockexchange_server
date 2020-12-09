@@ -1,12 +1,18 @@
 import './app.js';
 import routes from './routes.js';
 import infoStore from './store/info.js';
+import loginService from './service/login.js';
 
 function start(){
+	// try to restore state
+	loginService.restoreState();
+
+	// create router instance
 	const router = new VueRouter({
 	  routes: routes
 	});
 
+	// start vue
 	new Vue({
 	  el: "#app",
 	  router: router

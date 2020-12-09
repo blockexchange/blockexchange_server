@@ -35,7 +35,9 @@ export default {
 						</router-link>
 					</li>
 				</ul>
-				<login-status/>
+				<form class="form-inline my-2 my-lg-0">
+					<login-status/>
+				</form>
 			</div>
 	</nav>
 	`

@@ -19,7 +19,9 @@ export default {
 				}
 			});
 		},
-		logout: LoginService.logout,
+		logout: function(){
+			LoginService.logout();
+		},
 		isLoggedIn: function() {
 			return store.loggedIn;
 		}

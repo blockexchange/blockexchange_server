@@ -1,4 +1,5 @@
 import loginStore from '../../store/login.js';
+import loginService from '../../service/login.js';
 
 export default {
 	beforeRouteEnter: function(to, from, next){
@@ -6,6 +7,7 @@ export default {
 		loginStore.token = to.params.token;
 		loginStore.loggedIn = true;
 		loginStore.username = payload.username;
+		loginService.persist();
 
 		next({ path: "/login" });
 	},
