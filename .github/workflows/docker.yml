@@ -13,9 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Docker Layer Caching
-      uses: satackey/action-docker-layer-caching@v0.0.8
-
     - name: docker publish
       uses: elgohr/Publish-Docker-Github-Action@3.01
       with:
