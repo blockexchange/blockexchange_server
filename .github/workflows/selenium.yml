@@ -1,0 +1,23 @@
+name: selenium
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: set up environment
+      run: |
+        docker-compose up -d postgres
+        sleep 5
+        docker-compose up -d blockexchange selenium
+
+    - name: run tests
+      run: docker-compose up e2e-test
+
+    - name: clean up
+      run: docker-compose down
