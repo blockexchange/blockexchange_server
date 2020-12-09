@@ -12,6 +12,8 @@ app.get('/api/user', function(req, res){
       return {
         name: user.name,
         id: user.id,
+				type: user.type,
+				role: user.role,
         created: user.created
       };
     });

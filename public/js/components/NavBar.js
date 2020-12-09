@@ -25,9 +25,9 @@ export default {
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#!/users">
+						<router-link to="/users" class="nav-link">
 							<i class="fa fa-users"></i> Users
-						</a>
+						</router-link>
 					</li>
 					<li class="nav-item">
 						<router-link to="/search" class="nav-link">
