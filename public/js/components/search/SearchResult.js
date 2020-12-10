@@ -12,7 +12,11 @@ export default {
 			</thead>
 			<tbody>
 				<tr v-for="entry in list">
-					<td>{{ entry.name }}</td>
+					<td>
+						<router-link :to="{ name: 'schemapage', params: { schemaname: entry.name, username: entry.user.name }}">
+							{{ entry.name }}
+						</router-link>
+					</td>
 					<td>{{ entry.user.name }}</td>
 					<td>{{ entry.description }}</td>
 					<td>{{ entry.total_parts }}</td>
