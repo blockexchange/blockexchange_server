@@ -1,8 +1,10 @@
 import NavBar from './components/NavBar.js';
+import Footer from './components/Footer.js';
 
 Vue.component('app', {
 	components: {
-		"nav-bar": NavBar
+		"nav-bar": NavBar,
+		"nav-footer": Footer
 	},
 	template: /*html*/`
 		<div>
@@ -11,6 +13,7 @@ Vue.component('app', {
 				<br>
 				<router-view></router-view>
 			</div>
+			<nav-footer/>
 		</div>
 	`
 });

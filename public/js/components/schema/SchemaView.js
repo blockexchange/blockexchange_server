@@ -8,7 +8,6 @@ export default {
 		};
 	},
 	created: function(){
-		console.log("created", this.user_name, this.schema_name);
 		search({
 			schema_name: this.schema_name,
 			user_name: this.user_name
