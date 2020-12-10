@@ -25,12 +25,46 @@ describe('renderer', function() {
 		console.log(get_point(0,0,0), get_color(get_point(0,0,0)));
 		console.log(get_point(15,15,15), get_color(get_point(15,15,15)));
 
+		const tan30 = Math.tan(30 * Math.PI / 180);
+		const sqrt3div2 = 2 / Math.sqrt(3);
+
+		function drawCube(ctx, x, y, r, color){
+			// right side
+			ctx.fillStyle = "rgb(" + color.r + "," + color.g + "," + color.b + ")";
+			ctx.beginPath();
+			ctx.moveTo(r+x, (r*tan30)+y);
+			ctx.lineTo(x, (r*sqrt3div2)+y);
+			ctx.lineTo(x,y);
+			ctx.lineTo(r+x, -(r*tan30)+y);
+			ctx.closePath();
+			ctx.fill();
+
+			// left side
+			ctx.fillStyle = "rgb(" + (color.r-20) + "," + color.g + "," + color.b + ")";
+			ctx.beginPath();
+			ctx.moveTo(x, (r*sqrt3div2)+y);
+			ctx.lineTo(-r+x, (r*tan30)+y);
+			ctx.lineTo(-r+x, -(r*tan30)+y);
+			ctx.lineTo(x,y);
+			ctx.closePath();
+			ctx.fill();
+
+			// top side
+			ctx.fillStyle = "rgb(" + (color.r+20) + "," + color.g + "," + color.b + ")";
+			ctx.beginPath();
+			ctx.moveTo(-r+x, -(r*tan30)+y);
+			ctx.lineTo(x, -(r*sqrt3div2)+y);
+			ctx.lineTo(r+x, -(r*tan30)+y);
+			ctx.lineTo(x,y);
+			ctx.closePath();
+			ctx.fill();
+		}
+
 		const img1 = PImage.make(100, 100);
 		const ctx = img1.getContext('2d');
-		ctx.fillStyle = 'rgba(0,255,0, 0.5)';
-		ctx.fillRect(0,0,100,100);
-		ctx.fillStyle = 'rgba(255,0,0, 0.5)';
-		ctx.fillRect(10,10,80,80);
+		drawCube(ctx, 50, 50, 20, { r:200, g:0, b:0 });
+		drawCube(ctx, 50+20, 50+(20*tan30), 20, { r:100, g:0, b:0 });
+		drawCube(ctx, 50-20, 50+(20*tan30), 20, { r:50, g:0, b:0 });
 
 		PImage.encodePNGToStream(img1, fs.createWriteStream('image.png')).then(() => {
 		    console.log("wrote out the png file to out.png");
