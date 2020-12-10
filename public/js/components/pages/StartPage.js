@@ -1,7 +1,7 @@
 export default {
 	template: /*html*/`
     <div class="text-center">
-      <img class="img-fluid" src="pics/blockexchange.png"/>
+      <img class="img-fluid rounded" src="pics/blockexchange.png"/>
 			<div class="alert alert-danger" role="alert">
 			  Blockexchange is currently undergoing major refactoring and may be unusable for now
 				<br>
