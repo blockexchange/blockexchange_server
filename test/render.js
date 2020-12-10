@@ -27,6 +27,10 @@ describe('renderer', function() {
 
 		new Jimp(300, 530, 'green', (err, image) => {
 		  if (err) throw err;
+
+			const hex = Jimp.rgbaToInt(255, 0, 0, 255);
+			image.setPixelColor(hex, 20, 20);
+
 			image.write("./image.png");
 		});
 
