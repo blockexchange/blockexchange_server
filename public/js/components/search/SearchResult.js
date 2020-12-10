@@ -8,6 +8,7 @@ export default {
 					<th>User</th>
 					<th>description</th>
 					<th>Parts</th>
+					<th>Changed</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -20,6 +21,7 @@ export default {
 					<td>{{ entry.user.name }}</td>
 					<td>{{ entry.description }}</td>
 					<td>{{ entry.total_parts }}</td>
+					<td>{{ new Date(+entry.created).toDateString() }}</td>
 				</tr>
 			</tbody>
 		</table>
