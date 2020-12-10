@@ -19,5 +19,5 @@ export default [{
 },{
 	path: "/users", component: UsersPage
 },{
-	path: "/schema/:username/:schemaname", name: "schemapage", component: SchemaPage
+	path: "/schema/:user_name/:schema_name", name: "schemapage", component: SchemaPage
 }];

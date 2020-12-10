@@ -6,7 +6,7 @@ export default {
 	},
 	template: /*html*/`
 		<div>
-			<schema-view :username="$route.params.username" :schemaname="$route.params.schemaname"/>
+			<schema-view :user_name="$route.params.user_name" :schema_name="$route.params.schema_name"/>
 		</div>
 	`
 };
