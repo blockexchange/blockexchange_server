@@ -1,4 +1,4 @@
-const Jimp = require('jimp');
+const PImage = require('pureimage');
 const fs = require("fs");
 
 describe('renderer', function() {
@@ -25,14 +25,17 @@ describe('renderer', function() {
 		console.log(get_point(0,0,0), get_color(get_point(0,0,0)));
 		console.log(get_point(15,15,15), get_color(get_point(15,15,15)));
 
-		new Jimp(300, 530, 'green', (err, image) => {
-		  if (err) throw err;
+		const img1 = PImage.make(100, 100);
+		const ctx = img1.getContext('2d');
+		ctx.fillStyle = 'rgba(0,255,0, 0.5)';
+		ctx.fillRect(0,0,100,100);
+		ctx.fillStyle = 'rgba(255,0,0, 0.5)';
+		ctx.fillRect(10,10,80,80);
 
-			const hex = Jimp.rgbaToInt(255, 0, 0, 255);
-			image.setPixelColor(hex, 20, 20);
-
-			image.write("./image.png");
+		PImage.encodePNGToStream(img1, fs.createWriteStream('image.png')).then(() => {
+		    console.log("wrote out the png file to out.png");
+		}).catch((e) => {
+		    console.log("there was an error writing", e);
 		});
-
 	});
 });
