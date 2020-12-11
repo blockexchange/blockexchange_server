@@ -4,18 +4,18 @@ const fs = require("fs");
 describe('renderer', function() {
 	it('renders an image', function() {
 
-		const mapblock = JSON.parse(fs.readFileSync("test/schemapart_2_(0,0,0).json"));
+		const mapblock = JSON.parse(fs.readFileSync("test/testcube.json"));
 		const colormapping = JSON.parse(fs.readFileSync("test/colormapping.json"));
 
 		function get_point(x,y,z){
-			const index = x + (y*16) + (z*256);
-			return mapblock.node_ids[index];
+			const index = z + (y*16) + (x*256);
+			return mapblock.data.node_ids[index];
 		}
 
 		// reverse index
 		const nodeid_mapping = [];
-		Object.keys(mapblock.node_mapping).forEach(function(nodename){
-			nodeid_mapping[mapblock.node_mapping[nodename]] = nodename;
+		Object.keys(mapblock.data.node_mapping).forEach(function(nodename){
+			nodeid_mapping[mapblock.data.node_mapping[nodename]] = nodename;
 		});
 
 		function get_color(nodeid){

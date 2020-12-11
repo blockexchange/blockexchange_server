@@ -49,12 +49,12 @@ describe('serializer', function() {
     });
 
 		it('matches real-life in/output', function() {
-			const data_str = fs.readFileSync("./test/schemapart_2_(16,0,0).json");
-			const data = JSON.parse(data_str);
-			const schemapart = serializer.serialize(data);
+			const data_str = fs.readFileSync("./test/testcube.json");
+			const mapblock = JSON.parse(data_str);
+			const schemapart = serializer.serialize(mapblock.data);
 			const out_data = serializer.deserialize(schemapart);
 
-			assert.equal(data.size.x, out_data.size.x);
+			assert.equal(mapblock.data.size.x, out_data.size.x);
 		});
   });
 });
