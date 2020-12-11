@@ -1,0 +1,5 @@
+{
+  "verbose": true,
+  "watch": ["src"],
+	"exec": "npm i && npm run bundle && npm start"
+}

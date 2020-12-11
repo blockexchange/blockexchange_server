@@ -10,7 +10,9 @@ services:
    - "postgres:/var/lib/postgresql/data"
 
  blockexchange:
-  build: .
+  build:
+   context: .
+   dockerfile: Dockerfile-dev
   depends_on:
    - postgres
   environment:
@@ -24,11 +26,11 @@ services:
    - BLOCKEXCHANGE_KEY=abcdefSecretKey
    - BASE_URL=http://127.0.0.1:8080
   volumes:
-   - "./:/data"
+   - "node_modules:/data/node_modules"
+   - "./src:/data/src"
+   - "./public:/data/public"
   ports:
    - "8080:8080"
-  working_dir: /data
-  entrypoint: ["sh", "-c", "npm i && npm run bundle && npm start"]
 
  minetest:
   image: registry.gitlab.com/minetest/minetest/server:5.3.0

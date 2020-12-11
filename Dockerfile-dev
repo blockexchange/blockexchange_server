@@ -1,0 +1,15 @@
+FROM node:15.4.0-alpine as builder
+
+COPY . /data
+
+# build
+RUN ln -s /var/cache/apk /etc/apk/cache &&\
+	apk add alpine-sdk cairo-dev pango-dev jpeg-dev
+
+RUN npm i -g nodemon
+
+WORKDIR /data
+
+EXPOSE 8080
+
+CMD ["nodemon"]

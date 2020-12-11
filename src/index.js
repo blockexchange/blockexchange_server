@@ -10,6 +10,7 @@ require("./api/oauth_callback");
 
 // stats / info
 require("./api/info");
+require("./api/preview");
 
 // search
 require("./api/searchschema");
