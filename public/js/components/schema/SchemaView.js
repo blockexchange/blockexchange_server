@@ -1,4 +1,4 @@
-import { search } from '../../api/searchschema.js';
+import { search_by_user_and_schemaname } from '../../api/searchschema.js';
 
 export default {
 	props: ["user_name", "schema_name"],
@@ -8,11 +8,8 @@ export default {
 		};
 	},
 	created: function(){
-		search({
-			schema_name: this.schema_name,
-			user_name: this.user_name
-		})
-		.then(list => this.schema = list[0]);
+		search_by_user_and_schemaname(this.user_name, this.schema_name)
+		.then(s => this.schema = s);
 	},
 	template: /*html*/`
 		<div>
