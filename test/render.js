@@ -3,6 +3,7 @@ const fs = require("fs");
 
 describe('renderer', function() {
 	it('renders an image', function() {
+
 		const mapblock = JSON.parse(fs.readFileSync("test/schemapart_2_(0,0,0).json"));
 		const colormapping = JSON.parse(fs.readFileSync("test/colormapping.json"));
 
@@ -22,8 +23,6 @@ describe('renderer', function() {
 			return colormapping[nodename];
 		}
 
-		console.log(get_point(0,0,0), get_color(get_point(0,0,0)));
-		console.log(get_point(15,15,15), get_color(get_point(15,15,15)));
 
 		const tan30 = Math.tan(30 * Math.PI / 180);
 		const sqrt3div2 = 2 / Math.sqrt(3);
@@ -77,21 +76,64 @@ describe('renderer', function() {
 		drawCube(ctx, 50+20, 50+(20*tan30), 20, { r:100, g:0, b:0 });
 		drawCube(ctx, 50-20, 50+(20*tan30), 20, { r:50, g:0, b:0 });
 		*/
-		const x_offset = 200;
-		const y_offset = 200;
+
+		// mapblock pos 0,0,0 offset, extends to right/left/top
+		const x_offset = 500;
+		const y_offset = 900;
 		const size = 20;
 
-		for (let y=0; y<16; y++){
-			for (let x=0; x<16; x++){
-				const z = 0;
-				const nodeid = get_point(x,y,z);
-				const color = get_color(nodeid);
-
-				if (color) {
-					drawCube(ctx, x_offset+(size*x), y_offset+(size*tan30*y), size, color);
-				}
-			}
+		function get_image_pos_x(x,y,z){
+			return x_offset+(size*x)-(size*z);
 		}
+
+		function get_image_pos_y(x,y,z){
+			return y_offset-(size*tan30*x)-(size*tan30*z)-(size*sqrt3div2*y);
+		}
+
+		const max_x = 16;
+		const max_z = 16;
+		const max_y = 16;
+
+		function draw_mapblock_pos(x,y,z){
+			const nodeid = get_point(x,y,z);
+			const color = get_color(nodeid);
+
+			if (color){
+				// color found, draw cube and return
+				drawCube(ctx, get_image_pos_x(x,y,z), get_image_pos_y(x,y,z), size, color);
+				return;
+			}
+
+			// no color found, search in the next layer
+			const next_x = x+1;
+			const next_z = z+1;
+			const next_y = y-1;
+
+			// check coordinate limits
+			if (next_x > max_x || next_z > max_z || next_y < 0){
+				// mapblock ends
+				return;
+			}
+
+			// recurse
+			return draw_mapblock_pos(next_x, next_y, next_z);
+		}
+
+		for (let y=0; y<max_y; y++){
+			// right side
+			for (let x=max_x; x>=0; x--)
+				draw_mapblock_pos(x,y,0);
+
+			// left side
+			for (let z=max_z; z>=0; z--)
+				draw_mapblock_pos(0,y,z);
+		}
+
+		// top side
+		for (let z=max_z; z>=0; z--)
+			for (let x=max_x; x>=0; x--)
+				draw_mapblock_pos(x,max_y,z);
+
 
 		PImage.encodePNGToStream(img1, fs.createWriteStream('image.png')).then(() => {
 		    console.log("wrote out the png file to out.png");
