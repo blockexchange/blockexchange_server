@@ -31,10 +31,18 @@ describe('renderer', function() {
 			return Math.min(255, Math.max(0, c+value));
 		}
 
+		const cache = {};
 		function adjust_color(color, value){
-			return "rgb(" + adjust_color_component(color.r, value) +
+			const key = color.r + "/" + color.g + "/" + color.b + "/" + value;
+			if (cache[key]){
+				return cache[key];
+			}
+			const str = "rgb(" + adjust_color_component(color.r, value) +
 				"," + adjust_color_component(color.g, value) +
 				"," + adjust_color_component(color.b, value) + ")";
+
+			cache[key] = str;
+			return str;
 		}
 
 		function drawCube(ctx, x, y, r, color){
