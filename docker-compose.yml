@@ -10,7 +10,7 @@ services:
    - "postgres:/var/lib/postgresql/data"
 
  blockexchange:
-  image: node:15.3.0-alpine
+  build: .
   depends_on:
    - postgres
   environment:
@@ -25,7 +25,6 @@ services:
    - BASE_URL=http://127.0.0.1:8080
   volumes:
    - "./:/data"
-   - "node_modules:/data/node_modules"
   ports:
    - "8080:8080"
   working_dir: /data

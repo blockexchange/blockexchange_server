@@ -1,3 +1,4 @@
 node_modules
 blockexchange
-integration-test.sh
+docker-compose.yml
+public

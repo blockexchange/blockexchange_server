@@ -1,4 +1,4 @@
-const PImage = require('pureimage');
+const { createCanvas } = require('canvas');
 const fs = require("fs");
 
 describe('renderer', function() {
@@ -8,6 +8,10 @@ describe('renderer', function() {
 		const colormapping = JSON.parse(fs.readFileSync("test/colormapping.json"));
 
 		function get_point(x,y,z){
+			if (x>15 || y>15 || z>15 || x<0 || y<0 || z<0)
+				//out of bounds
+				return;
+
 			const index = z + (y*16) + (x*256);
 			return mapblock.data.node_ids[index];
 		}
@@ -19,6 +23,9 @@ describe('renderer', function() {
 		});
 
 		function get_color(nodeid){
+			if (!nodeid)
+				// no nodeid, no color
+				return;
 			const nodename = nodeid_mapping[nodeid];
 			return colormapping[nodename];
 		}
@@ -45,45 +52,46 @@ describe('renderer', function() {
 			return str;
 		}
 
-		function drawCube(ctx, x, y, r, color){
+		function drawCube(ctx, x, y, r, color, sides){
 			// right side
-			ctx.fillStyle = adjust_color(color, 0);
-			ctx.beginPath();
-			ctx.moveTo(r+x, (r*tan30)+y);
-			ctx.lineTo(x, (r*sqrt3div2)+y);
-			ctx.lineTo(x,y);
-			ctx.lineTo(r+x, -(r*tan30)+y);
-			ctx.closePath();
-			ctx.fill();
+			if (sides.right){
+				ctx.fillStyle = adjust_color(color, 0);
+				ctx.beginPath();
+				ctx.moveTo(r+x, (r*tan30)+y);
+				ctx.lineTo(x, (r*sqrt3div2)+y);
+				ctx.lineTo(x,y);
+				ctx.lineTo(r+x, -(r*tan30)+y);
+				ctx.closePath();
+				ctx.fill();
+			}
 
 			// left side
-			ctx.fillStyle = adjust_color(color, -20);
-			ctx.beginPath();
-			ctx.moveTo(x, (r*sqrt3div2)+y);
-			ctx.lineTo(-r+x, (r*tan30)+y);
-			ctx.lineTo(-r+x, -(r*tan30)+y);
-			ctx.lineTo(x,y);
-			ctx.closePath();
-			ctx.fill();
+			if (sides.left){
+				ctx.fillStyle = adjust_color(color, -20);
+				ctx.beginPath();
+				ctx.moveTo(x, (r*sqrt3div2)+y);
+				ctx.lineTo(-r+x, (r*tan30)+y);
+				ctx.lineTo(-r+x, -(r*tan30)+y);
+				ctx.lineTo(x,y);
+				ctx.closePath();
+				ctx.fill();
+			}
 
 			// top side
-			ctx.fillStyle = adjust_color(color, 20);
-			ctx.beginPath();
-			ctx.moveTo(-r+x, -(r*tan30)+y);
-			ctx.lineTo(x, -(r*sqrt3div2)+y);
-			ctx.lineTo(r+x, -(r*tan30)+y);
-			ctx.lineTo(x,y);
-			ctx.closePath();
-			ctx.fill();
+			if (sides.top){
+				ctx.fillStyle = adjust_color(color, 20);
+				ctx.beginPath();
+				ctx.moveTo(-r+x, -(r*tan30)+y);
+				ctx.lineTo(x, -(r*sqrt3div2)+y);
+				ctx.lineTo(r+x, -(r*tan30)+y);
+				ctx.lineTo(x,y);
+				ctx.closePath();
+				ctx.fill();
+			}
 		}
 
-		const img1 = PImage.make(1024, 1024);
-		const ctx = img1.getContext('2d');
-		/*
-		drawCube(ctx, 50, 50, 20, { r:200, g:0, b:0 });
-		drawCube(ctx, 50+20, 50+(20*tan30), 20, { r:100, g:0, b:0 });
-		drawCube(ctx, 50-20, 50+(20*tan30), 20, { r:50, g:0, b:0 });
-		*/
+		const canvas = createCanvas(1024, 1024);
+		const ctx = canvas.getContext('2d');
 
 		// mapblock pos 0,0,0 offset, extends to right/left/top
 		const x_offset = 500;
@@ -108,7 +116,14 @@ describe('renderer', function() {
 
 			if (color){
 				// color found, draw cube and return
-				drawCube(ctx, get_image_pos_x(x,y,z), get_image_pos_y(x,y,z), size, color);
+
+				const sides = {
+					right: true,
+					left: true,
+					top: true
+				};
+
+				drawCube(ctx, get_image_pos_x(x,y,z), get_image_pos_y(x,y,z), size, color, sides);
 				return;
 			}
 
@@ -142,11 +157,8 @@ describe('renderer', function() {
 			for (let x=max_x; x>=0; x--)
 				draw_mapblock_pos(x,max_y,z);
 
-
-		PImage.encodePNGToStream(img1, fs.createWriteStream('image.png')).then(() => {
-		    console.log("wrote out the png file to out.png");
-		}).catch((e) => {
-		    console.log("there was an error writing", e);
-		});
+		const out = fs.createWriteStream("image.png");
+		const stream = canvas.createPNGStream();
+		stream.pipe(out);
 	});
 });

@@ -4,7 +4,8 @@ FROM node:15.4.0-alpine as builder
 COPY . /data
 
 # build
-RUN cd /data &&\
+RUN apk add alpine-sdk cairo-dev pango-dev jpeg-dev &&\
+	cd /data &&\
   npm ci &&\
   npm test &&\
   npm run jshint_backend &&\
@@ -16,7 +17,8 @@ FROM node:15.4.0-alpine
 
 COPY . /data
 
-RUN cd /data && npm ci --only=production
+RUN apk add cairo pango jpeg
+COPY --from=builder /data/node_modules /data/node_modules
 COPY --from=builder /data/public /data/public
 
 WORKDIR /data
