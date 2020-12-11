@@ -26,42 +26,36 @@ function adjust_color(color, value){
 	return str;
 }
 
-function drawCube(ctx, x, y, r, color, sides){
+function drawCube(ctx, x, y, r, color){
 	// right side
-	if (sides.right){
-		ctx.fillStyle = adjust_color(color, 0);
-		ctx.beginPath();
-		ctx.moveTo(r+x, (r*tan30)+y);
-		ctx.lineTo(x, (r*sqrt3div2)+y);
-		ctx.lineTo(x,y);
-		ctx.lineTo(r+x, -(r*tan30)+y);
-		ctx.closePath();
-		ctx.fill();
-	}
+	ctx.fillStyle = adjust_color(color, 0);
+	ctx.beginPath();
+	ctx.moveTo(r+x, (r*tan30)+y);
+	ctx.lineTo(x, (r*sqrt3div2)+y);
+	ctx.lineTo(x,y);
+	ctx.lineTo(r+x, -(r*tan30)+y);
+	ctx.closePath();
+	ctx.fill();
 
 	// left side
-	if (sides.left){
-		ctx.fillStyle = adjust_color(color, -20);
-		ctx.beginPath();
-		ctx.moveTo(x, (r*sqrt3div2)+y);
-		ctx.lineTo(-r+x, (r*tan30)+y);
-		ctx.lineTo(-r+x, -(r*tan30)+y);
-		ctx.lineTo(x,y);
-		ctx.closePath();
-		ctx.fill();
-	}
+	ctx.fillStyle = adjust_color(color, -20);
+	ctx.beginPath();
+	ctx.moveTo(x, (r*sqrt3div2)+y);
+	ctx.lineTo(-r+x, (r*tan30)+y);
+	ctx.lineTo(-r+x, -(r*tan30)+y);
+	ctx.lineTo(x,y);
+	ctx.closePath();
+	ctx.fill();
 
 	// top side
-	if (sides.top){
-		ctx.fillStyle = adjust_color(color, 20);
-		ctx.beginPath();
-		ctx.moveTo(-r+x, -(r*tan30)+y);
-		ctx.lineTo(x, -(r*sqrt3div2)+y);
-		ctx.lineTo(r+x, -(r*tan30)+y);
-		ctx.lineTo(x,y);
-		ctx.closePath();
-		ctx.fill();
-	}
+	ctx.fillStyle = adjust_color(color, 20);
+	ctx.beginPath();
+	ctx.moveTo(-r+x, -(r*tan30)+y);
+	ctx.lineTo(x, -(r*sqrt3div2)+y);
+	ctx.lineTo(r+x, -(r*tan30)+y);
+	ctx.lineTo(x,y);
+	ctx.closePath();
+	ctx.fill();
 }
 
 
@@ -93,24 +87,22 @@ module.exports.render = function(ctx, mapblock, x_offset, y_offset){
 	}
 
 
-	const max_x = 15;
-	const max_z = 15;
-	const max_y = 15;
+	const max_x = mapblock.data.size.x - 1;
+	const max_z = mapblock.data.size.y - 1;
+	const max_y = mapblock.data.size.z - 1;
 
-	function draw_mapblock_pos(x,y,z){
+	const blocks = [];
+
+	function probe_position(x,y,z){
 		const nodeid = get_point(x,y,z);
 		const color = get_color(nodeid_mapping[nodeid]);
 
 		if (color){
-			// color found, draw cube and return
-
-			const sides = {
-				right: true,
-				left: true,
-				top: true
-			};
-
-			drawCube(ctx, get_image_pos_x(x,y,z), get_image_pos_y(x,y,z), size, color, sides);
+			// block to draw found, mark and return
+			blocks.push({
+				pos: { x:x, y:y, z:z },
+				color: color
+			});
 			return;
 		}
 
@@ -126,22 +118,35 @@ module.exports.render = function(ctx, mapblock, x_offset, y_offset){
 		}
 
 		// recurse
-		return draw_mapblock_pos(next_x, next_y, next_z);
+		return probe_position(next_x, next_y, next_z);
 	}
 
 	for (let y=0; y<max_y; y++){
 		// right side
 		for (let x=max_x; x>=1; x--)
-			draw_mapblock_pos(x,y,0);
+			probe_position(x,y,0);
 
 		// left side
 		for (let z=max_z; z>=0; z--)
-			draw_mapblock_pos(0,y,z);
+			probe_position(0,y,z);
 	}
 
 	// top side
 	for (let z=max_z; z>=0; z--)
 		for (let x=max_x; x>=0; x--)
-			draw_mapblock_pos(x,max_y,z);
+			probe_position(x,max_y,z);
 
+	blocks.sort(function(a,b){
+		if (a.pos.y > b.pos.y)
+			return 1;
+		else if (a.pos.y < b.pos.y)
+			return -1;
+		else
+			return 0;
+	});
+
+	blocks.forEach(function(block){
+		const { x, y, z } = block.pos;
+		drawCube(ctx, get_image_pos_x(x,y,z), get_image_pos_y(x,y,z), size, block.color);
+	});
 };
