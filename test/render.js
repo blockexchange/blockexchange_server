@@ -98,9 +98,9 @@ describe('renderer', function() {
 			return y_offset-(size*tan30*x)-(size*tan30*z)-(size*sqrt3div2*y);
 		}
 
-		const max_x = 16;
-		const max_z = 16;
-		const max_y = 16;
+		const max_x = 15;
+		const max_z = 15;
+		const max_y = 15;
 
 		function draw_mapblock_pos(x,y,z){
 			const nodeid = get_point(x,y,z);
