@@ -129,7 +129,7 @@ describe('renderer', function() {
 
 		for (let y=0; y<max_y; y++){
 			// right side
-			for (let x=max_x; x>=0; x--)
+			for (let x=max_x; x>=1; x--)
 				draw_mapblock_pos(x,y,0);
 
 			// left side
