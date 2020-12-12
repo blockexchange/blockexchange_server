@@ -123,6 +123,3 @@ Database model:
 # License
 
 Code: MIT
-
-Textures:
-* public/textures/default*.png CC BY-SA 3.0 https://github.com/minetest/minetest_game/
