@@ -23,8 +23,12 @@ require("./api/schema_get");
 require("./api/schema_update");
 require("./api/schema_create");
 require("./api/schema_delete");
+require("./api/schema_screenshot");
 require("./api/schemamods");
 require("./api/schemapart");
+
+// events
+require("./events/render_schema");
 
 // discord feed
 const discord_feed = require("./feed/discord");

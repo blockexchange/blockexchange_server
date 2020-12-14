@@ -20,11 +20,11 @@ module.exports.find_all = function(schema_id) {
   return executor(query, values);
 };
 
-module.exports.get_by_id = function(id) {
-  const query = `select * from schema_screenshot where id = $1`;
-  const values = [id];
+module.exports.get_by_id = function(schema_id, id) {
+  const query = `select * from schema_screenshot where schema_id = $1 and id = $2`;
+  const values = [schema_id, id];
 
-  return executor(query, values);
+  return executor(query, values, { single_row: true });
 };
 
 

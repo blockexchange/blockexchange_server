@@ -23,9 +23,9 @@ app.get('/api/schema/:id/screenshot', function(req, res){
 app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
   logger.debug("GET /api/schema/:id/screenshot/:screenshot_id", req.params.id, req.params.screenshot_id);
 
-  schema_screenshot_dao.get_by_id(req.params.screenshot_id)
+  schema_screenshot_dao.get_by_id(+req.params.id, +req.params.screenshot_id)
   .then(screenshot => {
-    res.header("")
+    res.header("Content-type", screenshot.type)
     .send(screenshot.data);
   })
   .catch(() => res.status(500).end());
