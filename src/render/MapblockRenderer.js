@@ -59,7 +59,7 @@ function drawCube(ctx, x, y, r, color){
 }
 
 
-module.exports.render = function(ctx, mapblock, x_offset, y_offset){
+module.exports.render = function(ctx, mapblock, size, x_offset, y_offset){
 
 	const y_multiplier = mapblock.data.size.y;
 	const x_multiplier = mapblock.data.size.y * mapblock.data.size.x;
@@ -82,8 +82,6 @@ module.exports.render = function(ctx, mapblock, x_offset, y_offset){
 	Object.keys(mapblock.data.node_mapping).forEach(function(nodename){
 		nodeid_mapping[mapblock.data.node_mapping[nodename]] = nodename;
 	});
-
-	const size = 20;
 
 	function get_image_pos_x(x,y,z){
 		return x_offset+(size*x)-(size*z);
