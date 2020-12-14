@@ -61,12 +61,12 @@ function drawCube(ctx, x, y, r, color){
 
 module.exports.render = function(ctx, mapblock, size, x_offset, y_offset){
 
-	const y_multiplier = mapblock.data.size.y;
-	const x_multiplier = mapblock.data.size.y * mapblock.data.size.x;
+	const y_multiplier = mapblock.data.size.z;
+	const x_multiplier = mapblock.data.size.y * mapblock.data.size.z;
 
 	const max_x = mapblock.data.size.x - 1;
-	const max_z = mapblock.data.size.y - 1;
-	const max_y = mapblock.data.size.z - 1;
+	const max_z = mapblock.data.size.z - 1;
+	const max_y = mapblock.data.size.y - 1;
 
 	function get_point(x,y,z){
 		if (x>max_x || y>max_y || z>max_z || x<0 || y<0 || z<0)
