@@ -11,7 +11,10 @@ const sqrt3div2 = 2 / Math.sqrt(3);
 
 module.exports.render = async function(schemaid){
 
-	const canvas = createCanvas(1024, 1024);
+	const img_size_x = 1024;
+	const img_size_y = 1024;
+
+	const canvas = createCanvas(img_size_x, img_size_y);
 	const ctx = canvas.getContext('2d');
 
 	const schema = await get_by_id(schemaid);
@@ -41,11 +44,12 @@ module.exports.render = async function(schemaid){
 					}
 				};
 
-				const size = 10;
-				const x_offset = 500+(size*x)-(size*z);
-				const y_offset = 900-(size*tan30*x)-(size*tan30*z)-(size*sqrt3div2*y);
+				const max_size = Math.max(schema.max_x, Math.max(schema.max_y, schema.max_z));
+				const size = img_size_x / max_size / 2;
+				const x_offset = (img_size_x/2)+(size*x)-(size*z);
+				const y_offset = (img_size_y)-(size*tan30*x)-(size*tan30*z)-(size*sqrt3div2*y);
 
-				MapblockRenderer.render(ctx, mapblock, 10, x_offset, y_offset);
+				MapblockRenderer.render(ctx, mapblock, size, x_offset, y_offset);
 
 			}
 		}
