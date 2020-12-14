@@ -61,6 +61,11 @@ function drawCube(ctx, x, y, r, color){
 
 module.exports.render = function(ctx, mapblock, size, x_offset, y_offset){
 
+	if (Object.keys(mapblock.data.node_mapping).length == 1 && mapblock.data.node_mapping.air){
+		// only air, skip
+		return;
+	}
+
 	const y_multiplier = mapblock.data.size.z;
 	const x_multiplier = mapblock.data.size.y * mapblock.data.size.z;
 
@@ -101,7 +106,8 @@ module.exports.render = function(ctx, mapblock, size, x_offset, y_offset){
 			// block to draw found, mark and return
 			blocks.push({
 				pos: { x:x, y:y, z:z },
-				color: color
+				color: color,
+				order: y + ((max_x-x)*max_x) + ((max_z-z)+max_z)
 			});
 			return;
 		}
@@ -137,9 +143,9 @@ module.exports.render = function(ctx, mapblock, size, x_offset, y_offset){
 			probe_position(x,max_y,z);
 
 	blocks.sort(function(a,b){
-		if (a.pos.y > b.pos.y)
+		if (a.order > b.order)
 			return 1;
-		else if (a.pos.y < b.pos.y)
+		else if (a.order < b.order)
 			return -1;
 		else
 			return 0;
