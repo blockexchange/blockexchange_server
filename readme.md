@@ -35,6 +35,8 @@ Optional:
 * **GITHUB_APP_ID** Github app ID
 * **DISCORD_APP_SECRET** Discord app secret key
 * **DISCORD_APP_ID** Discord app ID
+* **MESEHUB_APP_SECRET** Mesehub app secret key
+* **MESEHUB_APP_ID** Mesehub app ID
 
 ## Docker usage
 
@@ -129,3 +131,7 @@ Database model:
 # License
 
 Code: MIT
+
+## Other assets
+
+* `public/pics/default_mese_crystal.png` CC BY-SA 3.0 https://github.com/minetest/minetest_game

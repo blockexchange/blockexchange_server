@@ -8,6 +8,7 @@ require("./api/register");
 require("./api/token");
 require("./api/oauth_callback_github");
 require("./api/oauth_callback_discord");
+require("./api/oauth_callback_mesehub");
 
 // stats / info
 require("./api/info");

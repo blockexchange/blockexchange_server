@@ -12,6 +12,7 @@ app.get('/api/info', function(req, res){
 		oauth: {
 			github_id: process.env.GITHUB_APP_ID,
 			discord_id: process.env.DISCORD_APP_ID,
+			mesehub_id: process.env.MESEHUB_APP_ID,
 			base_url: process.env.BASE_URL
 		},
     matomo: {

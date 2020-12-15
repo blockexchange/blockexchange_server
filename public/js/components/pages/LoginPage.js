@@ -48,9 +48,9 @@ export default {
 							<i class="fab fa-github"></i>
 							Login with Github
 						</a>
-						<a v-bind:href="''" class="btn btn-secondary">
-							<i class="fab fa-gitlab"></i>
-							Login with Gitlab
+						<a v-bind:href="'https://git.minetest.land/login/oauth/authorize?client_id=' + info.oauth.mesehub_id + '&redirect_uri=' + encodeURIComponent(info.oauth.base_url + '/api/oauth_callback/mesehub') + '&response_type=code&state=STATE'" class="btn btn-secondary">
+							<img src="pics/default_mese_crystal.png"/>
+							Login with Mesehub
 						</a>
 					</div>
 				</div>
