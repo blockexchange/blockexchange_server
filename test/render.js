@@ -157,8 +157,9 @@ describe('renderer', function() {
 			for (let x=max_x; x>=0; x--)
 				draw_mapblock_pos(x,max_y,z);
 
-		const out = fs.createWriteStream("image.png");
-		const stream = canvas.createPNGStream();
-		stream.pipe(out);
+		const buf = canvas.toBuffer("image/png");
+		if (!buf){
+			throw new Error("no image generated!");
+		}
 	});
 });
