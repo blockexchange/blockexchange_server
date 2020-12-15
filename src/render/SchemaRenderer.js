@@ -59,14 +59,5 @@ module.exports.render = async function(schemaid){
 		}
 	}
 
-	const png = await (new Promise(resolve => {
-		const stream = canvas.createPNGStream();
-		const bufs = [];
-		stream.on('data', function(d){ bufs.push(d); });
-		stream.on('end', function(){
-			resolve(Buffer.concat(bufs));
-		});
-	}));
-
-	return png;
+	return canvas.toBuffer("image/png");
 };

@@ -1,4 +1,6 @@
 const bodyParser = require('body-parser');
+var Canvas = require('canvas');
+
 const jsonParser = bodyParser.json();
 const logger = require("../logger");
 
@@ -25,10 +27,37 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
 
   schema_screenshot_dao.get_by_id(+req.params.id, +req.params.screenshot_id)
   .then(screenshot => {
-    res.header("Content-type", screenshot.type)
-    .send(screenshot.data);
+		if (req.query.width && req.query.height){
+			// resize
+			var img = new Canvas.Image();
+			img.onerror = function(e){
+				console.error(e);
+			};
+			img.onload = function(){
+				const width = +req.query.width;
+				const height = +req.query.height;
+				//console.log(img.height);
+
+				const canvas = Canvas.createCanvas(width, height);
+				var ctx = canvas.getContext('2d');
+ 				ctx.drawImage(img, 0, 0, width, height);
+
+				res.header("Content-type", "image/png")
+		    .send(canvas.toBuffer("image/png"));
+			};
+
+			img.src = "data:image/png;base64," + screenshot.data.toString("base64");
+		} else {
+			// original size
+			res.header("Content-type", screenshot.type)
+	    .send(screenshot.data);
+		}
+
   })
-  .catch(() => res.status(500).end());
+  .catch(e => {
+		console.error(e);
+		res.status(500).end();
+	});
 });
 
 app.post('/api/schema/:id/screenshot', permission_create, jsonParser, function(req, res){

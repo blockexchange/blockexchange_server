@@ -36,14 +36,7 @@ app.get('/api/preview/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', func
 
 		MapblockRenderer.render(ctx, mapblock, 20, 500, 900);
 
-		return new Promise(resolve => {
-			const stream = canvas.createPNGStream();
-			const bufs = [];
-			stream.on('data', function(d){ bufs.push(d); });
-			stream.on('end', function(){
-				resolve(Buffer.concat(bufs));
-			});
-		});
+		return canvas.toBuffer("image/png");
 	})
 	.then(png => {
 		if (png){
