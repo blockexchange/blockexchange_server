@@ -41,8 +41,16 @@ export default {
 					</div>
 					<div class="card-body">
 						<a v-bind:href="'https://github.com/login/oauth/authorize?client_id=' + info.oauth.github_id" class="btn btn-secondary">
-							<i class="fa fa-github"></i>
+							<i class="fab fa-discord"></i>
+							Login with Discord
+						</a>
+						<a v-bind:href="'https://github.com/login/oauth/authorize?client_id=' + info.oauth.github_id" class="btn btn-secondary">
+							<i class="fab fa-github"></i>
 							Login with Github
+						</a>
+						<a v-bind:href="'https://github.com/login/oauth/authorize?client_id=' + info.oauth.github_id" class="btn btn-secondary">
+							<i class="fab fa-gitlab"></i>
+							Login with Gitlab
 						</a>
 					</div>
 				</div>

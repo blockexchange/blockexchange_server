@@ -25,7 +25,7 @@ export default {
           Mod/Installation
         </a>
 				<a href="https://github.com/blockexchange" class="btn btn-secondary">
-          <i class="fa fa-github"></i>
+          <i class="fab fa-github"></i>
           Source
         </a>
       </div>
