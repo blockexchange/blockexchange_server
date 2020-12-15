@@ -7,18 +7,16 @@ const rolecheck = require("../util/rolecheck");
 const tokencheck = tokenmiddleware(claims => rolecheck.can_delete(claims.role));
 
 
-app.delete("/api/schema/:id", tokencheck, function(req, res){
-  logger.debug("DELETE /api/schema/:id", req.params.id, req.body);
+app.delete("/api/schema/:id", tokencheck, async function(req, res){
+	logger.debug("DELETE /api/schema/:id", req.params.id, req.body);
 
-  return schema_dao.get_by_id(req.params.id)
-  .then(schema => {
-    if (schema.user_id != req.claims.user_id){
-      res.status(403).end();
-      return;
-    }
+	const schema = schema_dao.get_by_id(req.params.id);
+	if (schema.user_id != req.claims.user_id){
+		res.status(403).end();
+		return;
+	}
 
-    // delete schema
-    return schema_dao.delete_by_id(req.params.id)
-    .then(() => res.end());
-  });
+	// delete schema
+	await schema_dao.delete_by_id(req.params.id);
+	res.end();
 });

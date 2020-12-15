@@ -41,13 +41,13 @@ const cleanupjob = require("./jobs/temp_schema_cleanup");
 migrate().then(() => {
 	logger.info("DB Migration done");
 	app.listen(8080, err => {
-	if (err){
-		logger.error(err);
-	} else {
-		logger.info('Listening on http://127.0.0.1:8080');
-		cleanupjob.start();
-	}
-});
+		if (err){
+			logger.error(err);
+		} else {
+			logger.info('Listening on http://127.0.0.1:8080');
+			cleanupjob.start();
+		}
+	});
 })
 .catch(e => {
 	logger.error(e);

@@ -10,49 +10,40 @@ const tokenmiddleware = require("../middleware/token");
 const rolecheck = require("../util/rolecheck");
 const tokencheck = tokenmiddleware(claims => rolecheck.can_upload(claims.role));
 
-app.post('/api/schema', tokencheck, jsonParser, function(req, res){
-  logger.debug("POST /api/schema", req.body);
+app.post('/api/schema', tokencheck, jsonParser, async function(req, res){
+	logger.debug("POST /api/schema", req.body);
 
-  schema_dao.create({
-    user_id: +req.claims.user_id,
-    name: req.body.name,
-    description: req.body.description,
-    max_x: req.body.max_x,
-    max_y: req.body.max_y,
-    max_z: req.body.max_z,
-    part_length: req.body.part_length,
+	const inserted_data = await schema_dao.create({
+		user_id: +req.claims.user_id,
+		name: req.body.name,
+		description: req.body.description,
+		max_x: req.body.max_x,
+		max_y: req.body.max_y,
+		max_z: req.body.max_z,
+		part_length: req.body.part_length,
 		license: req.body.license
-  })
-  .then(inserted_data => res.json(inserted_data))
-  .catch(e => {
-    console.error(e);
-    res.status(500).end();
-  });
-
+	});
+	res.json(inserted_data);
 });
 
 
 
-app.post('/api/schema/:id/complete', tokencheck, jsonParser, function(req, res){
-  logger.debug("POST /api/schema/id/complete", req.params.id, req.body);
+app.post('/api/schema/:id/complete', tokencheck, jsonParser, async function(req, res){
+	logger.debug("POST /api/schema/id/complete", req.params.id, req.body);
 
-  return schema_dao.get_by_id(req.params.id)
-  .then(schema => {
-    // check user id in claims
-    if (schema.user_id != +req.claims.user_id){
-      res.status(401).end();
-      return;
-    }
+	const schema = await schema_dao.get_by_id(req.params.id);
 
-    // check if already completed
-    if (schema.complete){
-      res.status(500).end();
-      return;
-    }
+	// check user id in claims
+	if (schema.user_id != +req.claims.user_id){
+		return res.status(401).end();
+	}
 
-    return schema_dao.finalize(schema.id)
-    .then(() => res.end())
-    .then(() => events.emit("new-schema", schema))
-    .catch(() => res.status(500).end());
-    });
+	// check if already completed
+	if (schema.complete){
+		return res.status(500).end();
+	}
+
+	await schema_dao.finalize(schema.id);
+	res.end();
+	events.emit("new-schema", schema);
 });
