@@ -1,11 +1,14 @@
 # Stage 1 testing
 FROM node:15.4.0-alpine as builder
 
+# deps
+RUN apk add alpine-sdk cairo-dev pango-dev jpeg-dev
+
+# files
 COPY . /data
 
-# build
-RUN apk add alpine-sdk cairo-dev pango-dev jpeg-dev &&\
-	cd /data &&\
+# compile / install
+RUN cd /data &&\
   npm ci &&\
   npm test &&\
   npm run jshint_backend &&\
