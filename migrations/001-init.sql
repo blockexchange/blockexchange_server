@@ -8,6 +8,7 @@ create table public.user(
   hash varchar not null,
   role varchar(16) not null default 'MEMBER',
   type varchar(16) not null default 'LOCAL',
+  external_id varchar(63),
   mail varchar
 );
 
@@ -19,7 +20,7 @@ insert into public.user(created, name, role, hash)
   values(
     extract(epoch from now()) * 1000,
     'temp',
-		'TEMP',
+    'TEMP',
     '$2a$10$g.6pRR93BwXfsMnPLWIKgOfIBDOcc48wJPCDtfNfzJbD/7zE2xgtm'
   );
 
