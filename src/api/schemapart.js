@@ -8,9 +8,8 @@ const schema_dao = require("../dao/schema");
 const serializer = require("../util/serializer");
 
 const tokenmiddleware = require("../middleware/token");
-const tokencheck = tokenmiddleware(claims => {
-  return claims.permissions.schema.create;
-});
+const rolecheck = require("../util/rolecheck");
+const tokencheck = tokenmiddleware(claims => rolecheck.can_upload(claims.role));
 
 app.post('/api/schemapart', tokencheck, jsonParser, function(req, res){
   logger.debug("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);

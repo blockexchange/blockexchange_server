@@ -7,9 +7,9 @@ const schemamod_dao = require("../dao/schemamod");
 const schema_dao = require("../dao/schema");
 
 const tokenmiddleware = require("../middleware/token");
-const tokencheck = tokenmiddleware(claims => {
-  return claims.permissions.schema.create;
-});
+const rolecheck = require("../util/rolecheck");
+const tokencheck = tokenmiddleware(claims => rolecheck.can_upload(claims.role));
+
 
 app.get('/api/schema/:id/mods', function(req, res){
   logger.debug("GET /api/schema/:id/mods", req.params.id);

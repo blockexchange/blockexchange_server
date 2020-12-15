@@ -3,9 +3,9 @@ const schema_dao = require("../dao/schema");
 const logger = require("../logger");
 
 const tokenmiddleware = require("../middleware/token");
-const tokencheck = tokenmiddleware(claims => {
-  return claims.permissions.schema.delete;
-});
+const rolecheck = require("../util/rolecheck");
+const tokencheck = tokenmiddleware(claims => rolecheck.can_delete(claims.role));
+
 
 app.delete("/api/schema/:id", tokencheck, function(req, res){
   logger.debug("DELETE /api/schema/:id", req.params.id, req.body);

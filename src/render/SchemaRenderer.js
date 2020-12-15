@@ -38,6 +38,11 @@ module.exports.render = async function(schemaid){
 
 				const schemapart = await get_by_id_and_offset(schemaid, x, y, z);
 
+				if (!schemapart){
+					// air only
+					continue;
+				}
+
 				const data = serializer.deserialize(schemapart);
 				const mapblock = {
 					data: {

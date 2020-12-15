@@ -1,16 +1,9 @@
-const bodyParser = require('body-parser');
 var Canvas = require('canvas');
 
-const jsonParser = bodyParser.json();
 const logger = require("../logger");
 
 const app = require("../app");
 const schema_screenshot_dao = require("../dao/schema_screenshot");
-const schema_dao = require("../dao/schema");
-
-const tokenmiddleware = require("../middleware/token");
-const permission_create = tokenmiddleware(claims => claims.permissions.screenshot.create);
-const permission_delete = tokenmiddleware(claims => claims.permissions.screenshot.delete);
 
 app.get('/api/schema/:id/screenshot', function(req, res){
   logger.debug("GET /api/schema/:id/screenshot", req.params.id);
@@ -59,7 +52,7 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
 		res.status(500).end();
 	});
 });
-
+/*
 app.post('/api/schema/:id/screenshot', permission_create, jsonParser, function(req, res){
   logger.debug("POST /api/schema/:id/screenshot", req.params.id);
 
@@ -93,3 +86,4 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', permission_delete, function
   })
   .catch(() => res.status(500).end());
 });
+*/

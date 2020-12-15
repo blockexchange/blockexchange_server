@@ -20,7 +20,7 @@ insert into public.user(created, name, role, hash)
   values(
     extract(epoch from now()) * 1000,
     'temp',
-    'TEMP',
+    'UPLOAD_ONLY',
     '$2a$10$g.6pRR93BwXfsMnPLWIKgOfIBDOcc48wJPCDtfNfzJbD/7zE2xgtm'
   );
 

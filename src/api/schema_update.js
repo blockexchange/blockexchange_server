@@ -6,9 +6,8 @@ const app = require("../app");
 const schema_dao = require("../dao/schema");
 
 const tokenmiddleware = require("../middleware/token");
-const tokencheck = tokenmiddleware(claims => {
-  return claims.permissions.schema.update;
-});
+const rolecheck = require("../util/rolecheck");
+const tokencheck = tokenmiddleware(claims => rolecheck.can_edit(claims.role));
 
 app.put("/api/schema/:id", tokencheck, jsonParser, function(req, res){
   logger.debug("PUT /api/schema/:id", req.params.id, req.body);
