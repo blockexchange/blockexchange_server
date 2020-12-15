@@ -1,15 +1,23 @@
 import { search_by_user_and_schemaname } from '../../api/searchschema.js';
+import { get_by_schemaid } from '../../api/screenshot.js';
 
 export default {
 	props: ["user_name", "schema_name"],
 	data: function(){
 		return {
-			schema: null
+			schema: null,
+			screenshots: []
 		};
 	},
 	created: function(){
 		search_by_user_and_schemaname(this.user_name, this.schema_name)
-		.then(s => this.schema = s);
+		.then(schema => {
+			this.schema = schema;
+			return get_by_schemaid(schema.id);
+		})
+		.then(screenshots => {
+			this.screenshots = screenshots;
+		});
 	},
 	template: /*html*/`
 		<div>
@@ -18,25 +26,6 @@ export default {
 			  <small class="text-muted">by {{ user_name }}</small>
 			</h3>
 			<div class="row" v-if="schema">
-				<div class="col-md-12">
-					<div class="card">
-						<div class="card-body">
-							<h5 class="card-title">Images</h5>
-							...
-						</div>
-					</div>
-				</div>
-			</div>
-			<br>
-			<div class="row" v-if="schema">
-				<div class="col-md-8">
-					<div class="card">
-					  <div class="card-body">
-					    <h5 class="card-title">Description</h5>
-					    <pre>{{ schema.description }}</pre>
-					  </div>
-					</div>
-				</div>
 				<div class="col-md-4">
 					<div class="card">
 						<div class="card-body">
@@ -55,6 +44,23 @@ export default {
 									<b>Parts: </b>{{ schema.total_parts }}
 								</li>
 							</ul>
+						</div>
+					</div>
+					<br>
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Description</h5>
+							<pre>{{ schema.description }}</pre>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Preview</h5>
+							<div v-for="screenshot in screenshots">
+								<img class="img-fluid" :src="'api/schema/' + schema.id + '/screenshot/' + screenshot.id"/>
+							</div>
 						</div>
 					</div>
 				</div>
