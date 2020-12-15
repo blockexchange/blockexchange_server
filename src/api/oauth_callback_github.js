@@ -5,8 +5,8 @@ const logger = require("../logger");
 const user_dao = require("../dao/user");
 const createjwt = require("../util/createjwt");
 
-app.get('/api/oauth_callback', function(req, res){
-  logger.debug("GET /api/oauth_callback", req.query);
+app.get('/api/oauth_callback/github', function(req, res){
+  logger.debug("GET /api/oauth_callback/github", req.query);
 
   const data = {
     client_id: process.env.GITHUB_APP_ID,
@@ -37,7 +37,7 @@ app.get('/api/oauth_callback', function(req, res){
   .then(r => {
     user_info = r.data;
     console.log(user_info);
-		return user_dao.get_by_name(user_info.login);
+		return user_dao.get_by_external_id(user_info.id);
     // user_info.login / avatar_url / name / email
 	})
 	.then(user => {
@@ -54,7 +54,8 @@ app.get('/api/oauth_callback', function(req, res){
 				role: "MEMBER",
 				type: "GITHUB",
 				hash: "", // no local password
-				mail: user_info.email
+				mail: user_info.email,
+				external_id: user_info.id
 			});
 		}
 	})

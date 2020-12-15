@@ -6,7 +6,8 @@ const logger = require("./logger");
 require("./api/user");
 require("./api/register");
 require("./api/token");
-require("./api/oauth_callback");
+require("./api/oauth_callback_github");
+require("./api/oauth_callback_discord");
 
 // stats / info
 require("./api/info");
@@ -37,17 +38,18 @@ discord_feed();
 const cleanupjob = require("./jobs/temp_schema_cleanup");
 
 migrate().then(() => {
-  app.listen(8080, err => {
-		if (err){
-      logger.error(err);
-		} else {
-			logger.info('Listening on http://127.0.0.1:8080');
-      cleanupjob.start();
-    }
-	});
+	logger.info("DB Migration done");
+	app.listen(8080, err => {
+	if (err){
+		logger.error(err);
+	} else {
+		logger.info('Listening on http://127.0.0.1:8080');
+		cleanupjob.start();
+	}
+});
 })
 .catch(e => {
 	logger.error(e);
-  cleanupjob.stop();
-  process.exit(-1);
+	cleanupjob.stop();
+	process.exit(-1);
 });

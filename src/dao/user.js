@@ -8,6 +8,10 @@ module.exports.get_by_id = function(id) {
   return executor("select * from public.user where id = $1", [id], { single_row: true });
 };
 
+module.exports.get_by_external_id = function(id) {
+  return executor("select * from public.user where external_id = $1", [id], { single_row: true });
+};
+
 module.exports.get_all = function() {
   return executor("select * from public.user");
 };
@@ -16,16 +20,16 @@ module.exports.create = function(data) {
   const query = `
     insert into
     public.user(
-      role, name, hash, mail, type, created
+      role, name, hash, mail, type, external_id, created
     )
     values(
-      $1, $2, $3, $4, $5, $6
+      $1, $2, $3, $4, $5, $6, $7
     )
     returning *
   `;
 
   const values = [
-    data.role, data.name, data.hash, data.mail, data.type, Date.now()
+    data.role, data.name, data.hash, data.mail, data.type, data.external_id, Date.now()
   ];
 
   return executor(query, values, { single_row: true });

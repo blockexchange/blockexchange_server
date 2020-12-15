@@ -40,7 +40,7 @@ export default {
 						External login
 					</div>
 					<div class="card-body">
-						<a v-bind:href="'https://github.com/login/oauth/authorize?client_id=' + info.oauth.github_id" class="btn btn-secondary">
+						<a v-bind:href="'https://discord.com/api/oauth2/authorize?client_id=' + info.oauth.discord_id + '&redirect_uri=' + encodeURIComponent(info.oauth.base_url + '/api/oauth_callback/discord') + '&response_type=code&scope=identify%20email'" class="btn btn-secondary">
 							<i class="fab fa-discord"></i>
 							Login with Discord
 						</a>
@@ -48,7 +48,7 @@ export default {
 							<i class="fab fa-github"></i>
 							Login with Github
 						</a>
-						<a v-bind:href="'https://github.com/login/oauth/authorize?client_id=' + info.oauth.github_id" class="btn btn-secondary">
+						<a v-bind:href="''" class="btn btn-secondary">
 							<i class="fab fa-gitlab"></i>
 							Login with Gitlab
 						</a>

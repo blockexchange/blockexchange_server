@@ -20,15 +20,21 @@ Corresponding mod and more information: https://github.com/blockexchange/blockex
 
 ## Environment variables
 
+Required:
 * **PGUSER**
 * **PGPASSWORD**
 * **PGHOST**
 * **PGPORT**
 * **PGDATABASE**
 * **BLOCKEXCHANGE_KEY** private key to sign the json web tokens with
+
+Optional:
 * **DISCORD_SCHEMA_FEED_URL** discord webhook for the "new schema" feed
+* **BASE_URL** Application base url, used for redirects (without trailing slash)
 * **GITHUB_APP_SECRET** Github app secret key
 * **GITHUB_APP_ID** Github app ID
+* **DISCORD_APP_SECRET** Discord app secret key
+* **DISCORD_APP_ID** Discord app ID
 
 ## Docker usage
 

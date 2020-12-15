@@ -24,7 +24,7 @@ services:
    - BLOCKEXCHANGE_NAME=My-Blockexchange
    - BLOCKEXCHANGE_OWNER=yourname
    - BLOCKEXCHANGE_KEY=abcdefSecretKey
-   - BASE_URL=http://127.0.0.1:8080
+   - BASE_URL=http://localhost:8080
   volumes:
    - "node_modules:/data/node_modules"
    - "./src:/data/src"
