@@ -6,7 +6,8 @@ module.exports = function(user) {
 		username: user.name,
 		user_id: user.id,
 		role: user.role,
-		type: user.type
+		type: user.type,
+		mail: user.mail
 	};
 
 	//ROLES: "UPLOAD_ONLY", "MEMBER", "ADMIN"

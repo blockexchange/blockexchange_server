@@ -15,14 +15,16 @@ export default {
 					</div>
 					<div class="card-body">
 						<input type="text"
-							class="form-control nput-block"
+							class="form-control"
 							placeholder="Username"
+							v-model="store.claims.username"
 						/>
 						<input type="text"
-							class="form-control nput-block"
+							class="form-control"
 							placeholder="E-Mail"
+							v-model="store.claims.mail"
 						/>
-						<a class="btn btn-primary">
+						<a class="btn btn-primary btn-block">
 							<i class="fa fa-save"/> Update profile
 						</a>
 					</div>
