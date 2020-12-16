@@ -21,6 +21,7 @@ services:
    - PGHOST=postgres
    - PGDATABASE=postgres
    - PGPORT=5432
+   - LOGLEVEL=debug
    - BLOCKEXCHANGE_NAME=My-Blockexchange
    - BLOCKEXCHANGE_OWNER=yourname
    - BLOCKEXCHANGE_KEY=abcdefSecretKey

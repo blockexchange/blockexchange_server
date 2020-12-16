@@ -2,7 +2,7 @@ const { createLogger, format, transports } = require('winston');
 
 
 module.exports = createLogger({
-  level: "info",
+  level: process.env.LOGLEVEL || "info",
   format: format.combine(
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss'

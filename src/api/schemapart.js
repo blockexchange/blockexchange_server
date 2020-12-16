@@ -14,7 +14,7 @@ const tokencheck = tokenmiddleware(claims => rolecheck.can_upload(claims.role));
 app.post('/api/schemapart', tokencheck, jsonParser, async function(req, res){
 	logger.debug("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
 
-	const schema = schema_dao.get_by_id(req.body.schema_id);
+	const schema = await schema_dao.get_by_id(req.body.schema_id);
 
 	// check user id in claims
 	if (schema.user_id != +req.claims.user_id){
@@ -51,7 +51,7 @@ app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', async functi
 		req.params.offset_y,
 		req.params.offset_z
 	);
-	
+
 	if (schemapart) {
 		const data = serializer.deserialize(schemapart);
 

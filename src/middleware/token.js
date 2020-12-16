@@ -1,4 +1,5 @@
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
+const logger = require("../logger");
 
 module.exports = function(authFn) {
   return function(req, res, next) {
@@ -21,6 +22,7 @@ module.exports = function(authFn) {
       }
     } catch (e) {
       // not authenticated
+			logger.error("token-middleware: unauthenticated", e);
       res.status(401).end();
     }
   };
