@@ -1,7 +1,7 @@
 (function(){
   var s = document.createElement("script");
 
-  if (location.host === "127.0.0.1:8080") {
+  if (location.host === "127.0.0.1:8080" || location.host === "localhost:8080") {
     //dev
     s.setAttribute("src", "js/main.js");
     s.setAttribute("type", "module");

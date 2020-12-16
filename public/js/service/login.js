@@ -7,11 +7,8 @@ export default {
 	login(username, password){
 		return request_token(username, password)
 		.then(t => {
-			loginstore.token = t;
 			loginstore.loggedIn = true;
-			loginstore.username = username;
-
-			this.persist();
+			this.parse_token(t);
 			return { success: true };
 		})
 		.catch(e => {
@@ -22,10 +19,20 @@ export default {
 		});
 	},
 
+	parse_token(token){
+		const payload = JSON.parse(atob(token.split(".")[1]));
+		loginstore.token = token;
+		loginstore.loggedIn = true;
+		loginstore.username = payload.username;
+		loginstore.claims = payload;
+		this.persist();
+	},
+
 	logout(){
 		loginstore.token = null;
 		loginstore.loggedIn = false;
 		loginstore.username = "";
+		loginstore.claims = null;
 		this.persist();
 	},
 
