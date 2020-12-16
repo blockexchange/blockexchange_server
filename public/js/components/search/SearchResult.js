@@ -12,7 +12,7 @@ export default {
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="entry in list">
+				<tr v-for="entry in list" v-bind:class="{ 'table-danger': !entry.complete }">
 					<td>
 						<router-link :to="{ name: 'schemapage', params: { schema_name: entry.name, user_name: entry.user.name }}">
 							{{ entry.name }}
@@ -20,7 +20,12 @@ export default {
 					</td>
 					<td>{{ entry.user.name }}</td>
 					<td>{{ entry.description }}</td>
-					<td>{{ entry.total_parts }}</td>
+					<td>
+						{{ entry.total_parts }}
+						<span v-if="!entry.complete" class="badge badge-danger">
+							Incomplete
+						</span>
+					</td>
 					<td>{{ new Date(+entry.created).toDateString() }}</td>
 				</tr>
 			</tbody>

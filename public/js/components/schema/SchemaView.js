@@ -24,6 +24,9 @@ export default {
 			<h3>
 			  {{ schema_name }}
 			  <small class="text-muted">by {{ user_name }}</small>
+				<span v-if="!schema.complete" class="badge badge-danger">
+					Incomplete
+				</span>
 			</h3>
 			<div class="row" v-if="schema">
 				<div class="col-md-4">
