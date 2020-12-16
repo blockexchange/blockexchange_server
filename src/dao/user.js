@@ -34,3 +34,12 @@ module.exports.create = function(data) {
 
   return executor(query, values, { single_row: true });
 };
+
+module.exports.update_user = function(user){
+	return executor(`
+		update public.user where id = $1
+		set name = $2, mail = $3
+	`, [
+		user.id, user.name, user.mail
+	]);
+};

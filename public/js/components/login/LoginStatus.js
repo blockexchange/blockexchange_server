@@ -7,6 +7,8 @@ export default {
 		};
 	},
 	template: /*html*/`
-		<span v-if="store.loggedIn" class="badge badge-success">Logged in as {{ store.username }}</span>
+		<router-link to="/profile">
+			<span v-if="store.loggedIn" class="badge badge-success">Logged in as {{ store.username }}</span>
+		</router-link>
 	`
 };
