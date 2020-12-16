@@ -10,12 +10,12 @@ module.exports = async function(query, values, options){
 			// no result
 			return single_row ? null : [];
 		}
-		client.release();
 		return single_row ? sql_res.rows[0] : sql_res.rows;
 
 	} catch (e) {
-		client.release();
 		console.error(e.stack);
 		throw(e);
+	} finally {
+		client.release();
 	}
 };
