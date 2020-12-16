@@ -34,6 +34,11 @@ app.post("/api/user/:user_id", jsonParser, tokencheck, async function(req, res){
 		return res.status(403).json({ message: "change not allowed" });
 	}
 
+	if (req.claims.role === "UPLOAD_ONLY"){
+		// static account, no changes happen here
+		return res.status(403).json({ message: "change not allowed (static account)" });
+	}
+
 	if (!req.body.name){
 		return res.status(400).json({ message: "no new name specified" });
 	}
