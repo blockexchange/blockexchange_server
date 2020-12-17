@@ -1,6 +1,10 @@
+import UpdateProfile from './UpdateProfile.js';
 import store from '../../store/login.js';
 
 export default {
+	components: {
+		"update-profile": UpdateProfile
+	},
 	data: function(){
 		return {
 			store: store
@@ -14,19 +18,7 @@ export default {
 						Update profile
 					</div>
 					<div class="card-body">
-						<input type="text"
-							class="form-control"
-							placeholder="Username"
-							v-model="store.claims.username"
-						/>
-						<input type="text"
-							class="form-control"
-							placeholder="E-Mail"
-							v-model="store.claims.mail"
-						/>
-						<a class="btn btn-primary btn-block">
-							<i class="fa fa-save"/> Update profile
-						</a>
+						<update-profile/>
 					</div>
 				</div>
 			</div>
@@ -41,7 +33,10 @@ export default {
 								ID: <b>{{ store.claims.user_id }}</b>
 							</li>
 							<li>
-								Name: <b>{{ store.username }}</b>
+								Name: <b>{{ store.claims.username }}</b>
+							</li>
+							<li>
+								Mail: <b>{{ store.claims.mail }}</b>
 							</li>
 							<li>
 								Role: <span class="badge badge-success">{{ store.claims.role }}</span>

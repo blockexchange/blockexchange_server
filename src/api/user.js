@@ -25,6 +25,30 @@ app.get('/api/user', async function(req, res){
 	res.json(list);
 });
 
+// validates the new username, checks for duplicates and invalid characters
+app.post("/api/validate_username", jsonParser, tokencheck, async function(req, res){
+	if (! /^[a-z0-9\_\-]+$/i.test(req.body.username)) {
+		return res.json({
+			valid: false,
+			message: "Username can only contain characters,numbers,dashes and underlines"
+		});
+	}
+
+	const existing_user = await user_dao.get_by_name(req.body.username);
+
+	if (existing_user){
+		return res.json({
+			valid: false,
+			message: "User already exists"
+		});
+	}
+
+	// all checks ok
+	res.json({
+		valid: true
+	});
+});
+
 // modify user (only name change allowed)
 app.post("/api/user/:user_id", jsonParser, tokencheck, async function(req, res){
 	logger.debug("POST /api/user", req.params.user_id, req.body);
@@ -43,9 +67,12 @@ app.post("/api/user/:user_id", jsonParser, tokencheck, async function(req, res){
 		return res.status(400).json({ message: "no new name specified" });
 	}
 
-	const existing_user = await user_dao.get_by_name(req.body.name);
-	if (existing_user){
-		return res.status(400).json({ message: "user with that name already exists" });
+	if (req.body.name !== req.claims.username){
+		// check if new name is available
+		const existing_user = await user_dao.get_by_name(req.body.name);
+		if (existing_user){
+			return res.status(400).json({ message: "user with that name already exists" });
+		}
 	}
 
 	const user = await user_dao.get_by_id(+req.params.user_id);
@@ -53,8 +80,9 @@ app.post("/api/user/:user_id", jsonParser, tokencheck, async function(req, res){
 		return res.status(400).json({ message: "user does not exist" });
 	}
 
-	logger.info(`user '${req.claims.username}' with id ${req.claims.user_id} changes name to '${req.body.name}'`);
+	logger.info(`user '${req.claims.username}' with id ${req.claims.user_id} changes name to '${req.body.name}' and mail to '${req.body.mail}'`);
 	user.name = req.body.name;
+	user.mail = req.body.mail;
 	user_dao.update_user(user);
 
 	res.json({

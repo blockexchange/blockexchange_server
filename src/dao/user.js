@@ -37,8 +37,9 @@ module.exports.create = function(data) {
 
 module.exports.update_user = function(user){
 	return executor(`
-		update public.user where id = $1
+		update public.user
 		set name = $2, mail = $3
+		where id = $1
 	`, [
 		user.id, user.name, user.mail
 	]);

@@ -1,3 +1,4 @@
+import securefetch from './securefetch.js';
 
 export const request_token = (name, password) => fetch("api/token", {
     method: "POST",
@@ -16,3 +17,8 @@ export const request_token = (name, password) => fetch("api/token", {
 			return r.text();
 		}
   });
+
+export const refresh = () => securefetch("api/token/refresh", {
+	method: "POST"
+	})
+	.then(r => r.text());
