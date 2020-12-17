@@ -3,7 +3,7 @@ export default [{
 	input: 'main.js',
 	output: {
 		file :'bundle.js',
-		format: 'umd',
+		format: 'iife',
 		sourcemap: true,
 		compact: true
 	}
