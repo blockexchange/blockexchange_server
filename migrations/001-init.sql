@@ -15,6 +15,17 @@ create table public.user(
 create unique index user_name on public.user(name);
 create index user_created on public.user(created);
 
+-- access_token
+
+create table access_token(
+	id serial primary key not null,
+	user_id bigint not null references public.user(id) on delete cascade,
+	created bigint not null,
+	expires bigint not null,
+	name varchar not null,
+	token varchar not null
+);
+
 -- create temporary user with default password "temp"
 insert into public.user(created, name, role, hash)
   values(
