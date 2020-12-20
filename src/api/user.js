@@ -83,7 +83,7 @@ app.post("/api/user/:user_id", jsonParser, tokencheck, async function(req, res){
 	logger.info(`user '${req.claims.username}' with id ${req.claims.user_id} changes name to '${req.body.name}' and mail to '${req.body.mail}'`);
 	user.name = req.body.name;
 	user.mail = req.body.mail;
-	user_dao.update_user(user);
+	await user_dao.update_user(user);
 
 	res.json({
 		success: true

@@ -18,7 +18,11 @@ export const request_token = (name, password) => fetch("api/token", {
 		}
   });
 
-export const refresh = () => securefetch("api/token/refresh", {
-	method: "POST"
+export const create = options => securefetch("api/token/create", {
+		method: "POST",
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(options)
 	})
 	.then(r => r.text());

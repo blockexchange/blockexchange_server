@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-module.exports = function(user) {
+module.exports = function(user, options) {
 
 	const payload = {
 		username: user.name,
@@ -12,5 +12,5 @@ module.exports = function(user) {
 
 	//ROLES: "UPLOAD_ONLY", "MEMBER", "ADMIN"
 
-	return jwt.sign(payload, process.env.BLOCKEXCHANGE_KEY);
+	return jwt.sign(payload, process.env.BLOCKEXCHANGE_KEY, options);
 };

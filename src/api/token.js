@@ -39,9 +39,24 @@ app.post('/api/token', jsonParser, async function(req, res){
 	res.send(token);
 });
 
-// returns a new token with the updated user data
-app.post("/api/token/refresh", tokencheck, async function(req, res){
+// create or refresh a token, optionally with some custom fields
+app.post("/api/token/create", jsonParser, tokencheck, async function(req, res){
+	logger.debug("POST /api/token/create", req.body);
+
 	const user = await user_dao.get_by_id(req.claims.user_id);
-	const token = createjwt(user);
+	const options = {};
+
+	if (req.body.expiresIn){
+		// in seconds
+		options.expiresIn = req.body.expiresIn;
+	}
+
+	if (req.body.upload_only){
+		// restricted token with upload-only permissions
+		user.role = "UPLOAD_ONLY";
+	}
+
+	const token = createjwt(user, options);
+
 	res.send(token);
 });
