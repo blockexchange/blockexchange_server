@@ -1,7 +1,11 @@
 import { search_by_user_and_schemaname } from '../../api/searchschema.js';
 import { get_by_schemaid } from '../../api/screenshot.js';
+import License from './License.js';
 
 export default {
+	components: {
+		"license-badge": License
+	},
 	props: ["user_name", "schema_name"],
 	data: function(){
 		return {
@@ -48,6 +52,9 @@ export default {
 								</li>
 								<li>
 									<b>Downloads: </b>{{ schema.downloads }}
+								</li>
+								<li>
+									<b>License: </b><license-badge style="display: inline;" :license="schema.license"/>
 								</li>
 							</ul>
 						</div>
