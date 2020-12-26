@@ -3,6 +3,8 @@ import routes from './routes.js';
 import infoStore from './store/info.js';
 import loginService from './service/login.js';
 
+import './util/prettysize-filter.js';
+
 function start(){
 	// try to restore state
 	loginService.restoreState();

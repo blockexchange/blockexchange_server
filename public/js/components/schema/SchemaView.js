@@ -38,7 +38,7 @@ export default {
 									<b>Changed: </b>{{ new Date(+schema.created).toDateString() }}
 								</li>
 								<li>
-									<b>Size: </b>{{ schema.total_size }} bytes
+									<b>Size: </b>{{ schema.total_size | prettysize }}
 								</li>
 								<li>
 									<b>Dimensions: </b>{{ schema.max_x }} / {{ schema.max_y }} / {{ schema.max_z }} blocks
