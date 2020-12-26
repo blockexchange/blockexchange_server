@@ -19,9 +19,9 @@ export default {
 					</router-link>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#!/mod">
+					<router-link to="/mod" class="nav-link">
 						<i class="fa fa-download"></i> Mod/Installation
-					</a>
+					</router-link>
 				</li>
 				<li class="nav-item">
 					<router-link to="/users" class="nav-link">
