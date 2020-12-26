@@ -45,7 +45,7 @@ export default {
 									<b>Size: </b>{{ schema.total_size | prettysize }}
 								</li>
 								<li>
-									<b>Dimensions: </b>{{ schema.max_x }} / {{ schema.max_y }} / {{ schema.max_z }} blocks
+									<b>Dimensions: </b>{{ schema.max_x }} / {{ schema.max_y }} / {{ schema.max_z }} nodes
 								</li>
 								<li>
 									<b>Parts: </b>{{ schema.total_parts }}
