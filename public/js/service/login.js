@@ -1,4 +1,4 @@
-import { request_token, create } from '../api/token.js';
+import { request_token, refresh } from '../api/token.js';
 import loginstore from '../store/login.js';
 
 const STORAGE_KEY = "blockexchange";
@@ -20,7 +20,7 @@ export default {
 	},
 
 	refresh(){
-		return create()
+		return refresh()
 		.then(t => {
 			loginstore.loggedIn = true;
 			this.parse_token(t);

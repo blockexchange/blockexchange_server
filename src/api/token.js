@@ -39,6 +39,16 @@ app.post('/api/token', jsonParser, async function(req, res){
 	res.send(token);
 });
 
+
+
+// refresh a token
+app.post("/api/token/refresh", jsonParser, tokencheck, async function(req, res){
+	logger.debug("POST /api/token/refresh", req.body);
+	const user = await user_dao.get_by_id(req.claims.user_id);
+	const token = createjwt(user);
+	res.send(token);
+});
+
 // create or refresh a token, optionally with some custom fields
 app.post("/api/token/create", jsonParser, tokencheck, async function(req, res){
 	logger.debug("POST /api/token/create", req.body);
