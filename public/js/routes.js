@@ -6,11 +6,14 @@ import OauthPage from './components/pages/OauthPage.js';
 import UsersPage from './components/pages/UsersPage.js';
 import SchemaPage from './components/pages/SchemaPage.js';
 import ProfilePage from './components/pages/ProfilePage.js';
+import ModPage from './components/pages/ModPage.js';
 
 export default [{
   path: "/", component: StartPage
 },{
   path: "/login", component: LoginPage
+},{
+  path: "/mod", component: ModPage
 },{
   path: "/search", component: SearchPage
 },{

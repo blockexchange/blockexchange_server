@@ -84,7 +84,10 @@ export default {
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">Download</h5>
-							<pre>Download steps here</pre>
+							<pre>
+/bx_pos1
+/bx_load {{ schema.user.name }} {{ schema.name }}
+							</pre>
 						</div>
 					</div>
 				</div>
