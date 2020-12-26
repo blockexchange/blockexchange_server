@@ -9,6 +9,8 @@ minetest blockexchange server software
 ![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/blockexchange/blockexchange)
 ![Discord](https://img.shields.io/discord/736160589130235965)
 
+Discord-server: https://discord.gg/BEf8hGEQz9
+
 # Overview
 
 Corresponding mod and more information: https://github.com/blockexchange/blockexchange
