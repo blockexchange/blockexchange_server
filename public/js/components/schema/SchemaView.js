@@ -20,7 +20,7 @@ export default {
 		});
 	},
 	template: /*html*/`
-		<div>
+		<div v-if="schema">
 			<h3>
 			  {{ schema_name }}
 			  <small class="text-muted">by {{ user_name }}</small>
@@ -28,7 +28,7 @@ export default {
 					Incomplete
 				</span>
 			</h3>
-			<div class="row" v-if="schema">
+			<div class="row">
 				<div class="col-md-4">
 					<div class="card">
 						<div class="card-body">
@@ -45,6 +45,9 @@ export default {
 								</li>
 								<li>
 									<b>Parts: </b>{{ schema.total_parts }}
+								</li>
+								<li>
+									<b>Downloads: </b>{{ schema.downloads }}
 								</li>
 							</ul>
 						</div>
@@ -69,7 +72,7 @@ export default {
 				</div>
 			</div>
 			<br>
-			<div class="row" v-if="schema">
+			<div class="row">
 				<div class="col-md-12">
 					<div class="card">
 						<div class="card-body">
