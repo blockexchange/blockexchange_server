@@ -1,0 +1,11 @@
+
+minApprovals:
+ COLLABORATOR: 0
+requiredLabels:
+ - dependencies
+
+rules:
+  - requiredTitleRegex: '\brollup|blockexchange|node|axios|mesecons\b'
+
+mergeMethod: rebase
+reportStatus: true
