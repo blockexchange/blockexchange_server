@@ -66,6 +66,22 @@ export default {
 							<pre>{{ schema.description }}</pre>
 						</div>
 					</div>
+					<br>
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Used nodes</h5>
+							<ul>
+								<li v-for="mod in Object.keys(schema.mods)">
+									<span class="badge badge-primary">
+										{{ mod }}
+									</span>
+									<span class="badge badge-success">
+										{{ schema.mods[mod] }}
+									</span>
+								</li>
+							</ul>
+						</div>
+					</div>
 				</div>
 				<div class="col-md-8">
 					<div class="card">
