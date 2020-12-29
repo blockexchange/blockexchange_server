@@ -2,9 +2,18 @@ import { search_by_user_and_schemaname } from '../../api/searchschema.js';
 import { get_by_schemaid } from '../../api/screenshot.js';
 import License from './License.js';
 
+import SchemaDetail from './SchemaDetail.js';
+import SchemaMods from './SchemaMods.js';
+import SchemaPreview from './SchemaPreview.js';
+import SchemaDownload from './SchemaDownload.js';
+
 export default {
 	components: {
-		"license-badge": License
+		"license-badge": License,
+		"schema-detail": SchemaDetail,
+		"schema-mods": SchemaMods,
+		"schema-preview": SchemaPreview,
+		"schema-download": SchemaDownload
 	},
 	props: ["user_name", "schema_name"],
 	data: function(){
@@ -37,26 +46,7 @@ export default {
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">Details</h5>
-							<ul>
-								<li>
-									<b>Changed: </b>{{ new Date(+schema.created).toDateString() }}
-								</li>
-								<li>
-									<b>Size: </b>{{ schema.total_size | prettysize }}
-								</li>
-								<li>
-									<b>Dimensions: </b>{{ schema.max_x }} / {{ schema.max_y }} / {{ schema.max_z }} nodes
-								</li>
-								<li>
-									<b>Parts: </b>{{ schema.total_parts }}
-								</li>
-								<li>
-									<b>Downloads: </b>{{ schema.downloads }}
-								</li>
-								<li>
-									<b>License: </b><license-badge style="display: inline;" :license="schema.license"/>
-								</li>
-							</ul>
+							<schema-detail :schema="schema"/>
 						</div>
 					</div>
 					<br>
@@ -70,16 +60,7 @@ export default {
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">Used nodes</h5>
-							<ul>
-								<li v-for="mod in Object.keys(schema.mods)">
-									<span class="badge badge-primary">
-										{{ mod }}
-									</span>
-									<span class="badge badge-success">
-										{{ schema.mods[mod] }}
-									</span>
-								</li>
-							</ul>
+							<schema-mods :schema="schema"/>
 						</div>
 					</div>
 				</div>
@@ -87,9 +68,7 @@ export default {
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">Preview</h5>
-							<div v-for="screenshot in screenshots">
-								<img class="img-fluid" :src="'api/schema/' + schema.id + '/screenshot/' + screenshot.id"/>
-							</div>
+							<schema-preview :screenshots="screenshots" :schema="schema"/>
 						</div>
 					</div>
 				</div>
@@ -100,10 +79,7 @@ export default {
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">Download</h5>
-							<pre>
-/bx_pos1
-/bx_load {{ schema.user.name }} {{ schema.name }}
-							</pre>
+							<schema-download :schema="schema"/>
 						</div>
 					</div>
 				</div>
