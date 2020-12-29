@@ -6,6 +6,7 @@ import SchemaDetail from './SchemaDetail.js';
 import SchemaMods from './SchemaMods.js';
 import SchemaPreview from './SchemaPreview.js';
 import SchemaDownload from './SchemaDownload.js';
+import SchemaDescription from './SchemaDescription.js';
 
 export default {
 	components: {
@@ -13,7 +14,8 @@ export default {
 		"schema-detail": SchemaDetail,
 		"schema-mods": SchemaMods,
 		"schema-preview": SchemaPreview,
-		"schema-download": SchemaDownload
+		"schema-download": SchemaDownload,
+		"schema-description": SchemaDescription
 	},
 	props: ["user_name", "schema_name"],
 	data: function(){
@@ -53,7 +55,7 @@ export default {
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">Description</h5>
-							<pre>{{ schema.description }}</pre>
+							<schema-description :schema="schema"/>
 						</div>
 					</div>
 					<br>
