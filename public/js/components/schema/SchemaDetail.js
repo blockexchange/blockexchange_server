@@ -1,4 +1,9 @@
+import SchemaLicense from './SchemaLicense.js';
+
 export default {
+	components: {
+		"schema-license": SchemaLicense
+	},
 	props: ["schema"],
 	template: /*html*/`
 	<ul>
@@ -18,7 +23,7 @@ export default {
 			<b>Downloads: </b>{{ schema.downloads }}
 		</li>
 		<li>
-			<b>License: </b><license-badge style="display: inline;" :license="schema.license"/>
+			<b>License: </b><schema-license style="display: inline;" :schema="schema"/>
 		</li>
 	</ul>
 	`

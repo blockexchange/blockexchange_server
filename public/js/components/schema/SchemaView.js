@@ -1,6 +1,5 @@
 import { search_by_user_and_schemaname } from '../../api/searchschema.js';
 import { get_by_schemaid } from '../../api/screenshot.js';
-import License from './License.js';
 
 import SchemaDetail from './SchemaDetail.js';
 import SchemaMods from './SchemaMods.js';
@@ -10,7 +9,6 @@ import SchemaDescription from './SchemaDescription.js';
 
 export default {
 	components: {
-		"license-badge": License,
 		"schema-detail": SchemaDetail,
 		"schema-mods": SchemaMods,
 		"schema-preview": SchemaPreview,
