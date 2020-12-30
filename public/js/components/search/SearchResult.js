@@ -8,6 +8,7 @@ export default {
 					<th>User</th>
 					<th>description</th>
 					<th>Parts</th>
+					<th>Size</th>
 					<th>Changed</th>
 				</tr>
 			</thead>
@@ -26,6 +27,7 @@ export default {
 							Incomplete
 						</span>
 					</td>
+					<td>{{ entry.total_size | prettysize }}</td>
 					<td>{{ new Date(+entry.created).toDateString() }}</td>
 				</tr>
 			</tbody>
