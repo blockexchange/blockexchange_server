@@ -70,6 +70,6 @@ app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', async functi
 			}
 		});
 	} else {
-		res.status(404).end();
+		res.status(204).end();
 	}
 });
