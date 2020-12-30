@@ -6,6 +6,7 @@ const logger = require("./logger");
 require("./api/user");
 require("./api/register");
 require("./api/token");
+require("./api/access_token");
 require("./api/oauth_callback_github");
 require("./api/oauth_callback_discord");
 require("./api/oauth_callback_mesehub");

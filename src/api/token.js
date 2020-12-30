@@ -24,7 +24,7 @@ app.post('/api/token', jsonParser, async function(req, res){
 
 	if (req.body.password === ""){
 		return res.status(403).json({
-			message: "Empty password not allowed"
+			message: "Empty password/access_token not allowed"
 		});
 	}
 
