@@ -80,17 +80,10 @@ app.post('/api/searchschema', jsonParser, function(req, res){
 
 });
 
-app.get("/api/searchrecent/:count", function(req, res){
-	schema_dao.find_recent(req.params.count)
-	.then(rows => {
-		return Promise.all(rows.map(enrich))
-		.then(enriched_rows => res.json(enriched_rows));
-	})
-	.catch(e => {
-		console.error(e);
-		res.status(500).end();
-	});
-
+app.get("/api/searchrecent/:count", async function(req, res){
+	const rows = await schema_dao.find_recent(req.params.count);
+	const enriched_rows = await Promise.all(rows.map(enrich));
+	res.json(enriched_rows);
 });
 
 
