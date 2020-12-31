@@ -31,3 +31,15 @@ module.exports.find_all_by_userid = function(user_id) {
 
   return executor(query, values);
 };
+
+module.exports.increment_usecount = function(id) {
+  const query = `
+    update access_token
+    set usecount = usecount + 1
+    where id = $1
+  `;
+
+  const values = [id];
+
+  return executor(query, values, { single_row: true });
+};

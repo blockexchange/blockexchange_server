@@ -24,7 +24,8 @@ digraph {
 		<tr><td port="42">created (bigint)</td></tr>
 		<tr><td port="43">expires (bigint)</td></tr>
 	  <tr><td port="44">name (varchar)</td></tr>
-	  <tr><td port="45">token (varchar)</td></tr>
+		<tr><td port="45">token (varchar)</td></tr>
+		<tr><td port="46">usecount (int)</td></tr>
 	</table>>];
 
 

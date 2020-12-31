@@ -23,7 +23,8 @@ create table access_token(
 	created bigint not null,
 	expires bigint not null,
 	name varchar not null,
-	token varchar not null
+	token varchar not null,
+	usecount int not null default 0
 );
 
 -- create temporary user with default password "temp"
