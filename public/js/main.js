@@ -2,6 +2,7 @@ import './app.js';
 import routes from './routes.js';
 import infoStore from './store/info.js';
 import loginService from './service/login.js';
+import messages from './messages.js';
 
 import './util/prettysize-filter.js';
 
@@ -14,10 +15,15 @@ function start(){
 	  routes: routes
 	});
 
+	const i18n = new VueI18n({
+	  messages: messages
+	});
+
 	// start vue
 	new Vue({
 	  el: "#app",
-	  router: router
+	  router: router,
+		i18n: i18n
 	});
 }
 

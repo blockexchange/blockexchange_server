@@ -10,7 +10,7 @@ export default {
 			<ul class="navbar-nav mr-auto">
 				<li class="nav-item">
 					<router-link to="/" class="nav-link">
-						<i class="fa fa-question"></i> About
+						<i class="fa fa-question"></i> {{ $t("nav.about") }}
 					</router-link>
 				</li>
 				<li class="nav-item">

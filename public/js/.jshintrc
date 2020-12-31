@@ -6,6 +6,7 @@
   "globals": {
     "Vue": true,
     "VueRouter": true,
+		"VueI18n": true,
     "console": true
   }
 }
