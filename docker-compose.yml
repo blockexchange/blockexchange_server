@@ -29,6 +29,7 @@ services:
   volumes:
    - "node_modules:/data/node_modules"
    - "./src:/data/src"
+   - "./test:/data/test"
    - "./public:/data/public"
   ports:
    - "8080:8080"
