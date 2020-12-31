@@ -1,5 +1,5 @@
 const fs = require("fs");
-const colormapping = JSON.parse(fs.readFileSync("test/colormapping.json"));
+const colormapping = JSON.parse(fs.readFileSync("src/colormapping.json"));
 
 const tan30 = Math.tan(30 * Math.PI / 180);
 const sqrt3div2 = 2 / Math.sqrt(3);
