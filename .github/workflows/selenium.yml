@@ -19,15 +19,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: set up environment
+    - name: run tests
       run: |
         docker-compose up -d postgres
         sleep 5
         docker-compose up -d blockexchange selenium
         sleep 5
-
-    - name: run tests
-      run: docker-compose up --exit-code-from e2e-test e2e-test
+        docker-compose up --exit-code-from e2e-test e2e-test
 
     - name: clean up
       run: docker-compose down

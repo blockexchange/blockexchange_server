@@ -9,9 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "axios": "^0.21.1"
-  },
-  "dependencies": {
+    "axios": "^0.21.1",
     "mocha": "^8.2.1"
   }
 }

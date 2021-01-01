@@ -8,8 +8,13 @@ const {Builder, By, until} = require('selenium-webdriver');
   try {
     await driver.get('http://blockexchange:8080/#/');
     await driver.wait(until.elementLocated(By.className('img-fluid')), 10000);
+
+	} catch (e) {
+		console.error(e);
+
   } finally {
     await driver.quit();
     console.log("e2e tests done!");
+
   }
 })();
