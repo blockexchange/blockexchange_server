@@ -30,6 +30,9 @@ require("./api/schema_screenshot");
 require("./api/schemamods");
 require("./api/schemapart");
 
+// static page
+require("./api/static");
+
 // events
 require("./events/render_schema");
 
