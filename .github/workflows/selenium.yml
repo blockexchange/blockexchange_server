@@ -24,6 +24,7 @@ jobs:
         docker-compose up -d postgres
         sleep 5
         docker-compose up -d blockexchange selenium
+        sleep 5
 
     - name: run tests
       run: docker-compose up --exit-code-from e2e-test e2e-test
