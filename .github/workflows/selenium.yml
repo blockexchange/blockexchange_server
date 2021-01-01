@@ -22,9 +22,10 @@ jobs:
     - name: run tests
       run: |
         docker-compose up -d postgres
-        sleep 5
+        sleep 10
         docker-compose up -d blockexchange selenium
-        sleep 5
+        sleep 10
+        docker-compose ps
         docker-compose up --exit-code-from e2e-test e2e-test
 
     - name: clean up

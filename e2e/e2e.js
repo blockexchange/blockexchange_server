@@ -11,6 +11,7 @@ const {Builder, By, until} = require('selenium-webdriver');
 
 	} catch (e) {
 		console.error(e);
+		setTimeout(() => process.exit(-1), 500);
 
   } finally {
     await driver.quit();
