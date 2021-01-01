@@ -32,11 +32,11 @@ module.exports = function(){
     const user = await user_dao.get_by_id(schema.user_id);
     const data = {
       content: `Schema created: **${schema.name}** by **${user.name}**\n` +
+				`Link: ${BASE_URL}/api/static/schema/${user.name}/${schema.name}\n` +
         `License: **${schema.license}**\n` +
         `Size: ${schema.max_x+1}/${schema.max_y+1}/${schema.max_z+1} Blocks / ${schema.total_size} bytes\n` +
 				`Description:\n\`\`\`\n${schema.description}\n\`\`\`\n` +
 				`Download:\n\`\`\`\n/bx_load ${user.name} ${schema.name}\n\`\`\`\n` +
-				`Link: ${BASE_URL}/api/static/schema/${user.name}/${schema.name}` +
 				preview_txt
     };
 
