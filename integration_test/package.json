@@ -1,0 +1,17 @@
+{
+  "name": "integration_test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "axios": "^0.21.1"
+  },
+  "dependencies": {
+    "mocha": "^8.2.1"
+  }
+}

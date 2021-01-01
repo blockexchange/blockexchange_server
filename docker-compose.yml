@@ -55,6 +55,11 @@ services:
    - selenium
    - blockexchange
 
+ integration_test:
+  build: integration_test
+  depends_on:
+   - blockexchange
+
 volumes:
   postgres: {}
   node_modules: {}

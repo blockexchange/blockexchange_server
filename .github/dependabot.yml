@@ -10,16 +10,34 @@ updates:
   schedule:
     interval: daily
   open-pull-requests-limit: 10
+- package-ecosystem: npm
+  directory: "/integration_test"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
     interval: daily
   open-pull-requests-limit: 10
+
 - package-ecosystem: docker
   directory: "/"
   schedule:
     interval: daily
   open-pull-requests-limit: 10
+- package-ecosystem: docker
+  directory: "/e2e"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: docker
+  directory: "/integration_test"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+
 - package-ecosystem: gitsubmodule
   directory: "/"
   schedule:

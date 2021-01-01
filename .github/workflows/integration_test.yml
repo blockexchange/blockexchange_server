@@ -1,12 +1,11 @@
-name: selenium
+name: integration_test
 
 on:
   push:
     paths:
       - "src/**"
-      - "public/**"
       - "migrations/**"
-      - "e2e/**"
+      - "integration_test/**"
       - "package.json"
       - "package-lock.json"
       - "Dockerfile"
@@ -23,10 +22,10 @@ jobs:
       run: |
         docker-compose up -d postgres
         sleep 5
-        docker-compose up -d blockexchange selenium
+        docker-compose up -d blockexchange
 
     - name: run tests
-      run: docker-compose up --exit-code-from e2e-test e2e-test
+      run: docker-compose up --exit-code-from integration_test integration_test
 
     - name: clean up
       run: docker-compose down
