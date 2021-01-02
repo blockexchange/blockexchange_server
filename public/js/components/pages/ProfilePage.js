@@ -1,16 +1,16 @@
 import UserProfile from '../user/UserProfile.js';
-import CreateToken from '../user/CreateToken.js';
+import AccessToken from '../user/AccessToken.js';
 
 export default {
 	components: {
 		"user-profile": UserProfile,
-		"create-token": CreateToken
+		"access-token": AccessToken
 	},
 	template: /*html*/`
 		<div>
 			<user-profile/>
 			<br>
-			<create-token/>
+			<access-token/>
 		</div>
 	`
 };
