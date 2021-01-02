@@ -6,11 +6,12 @@ const CreateForm = {
 		return {
 			name: "",
 			expires: 2,
-			modifier: "86400"
+			modifier: "86400000"
 		};
 	},
 	methods: {
 		add: function(){
+			console.log(this.expires, this.modifier);
 			create(this.name, Date.now() + (+this.expires * +this.modifier))
 			.then(() => this.$emit('updated'));
 		}
@@ -26,10 +27,10 @@ const CreateForm = {
 			v-model="expires"
 			placeholder="Expire-time"/>
 		<select class="form-control" v-model="modifier">
-			<option value="3600">Hours</option>
-			<option value="86400">Days</option>
-			<option value="2592000">Months</option>
-			<option value="31536000">Years</option>
+			<option :value="3600*1000">Hours</option>
+			<option :value="3600*1000*24">Days</option>
+			<option :value="3600*1000*24*30">Months</option>
+			<option :value="3600*1000*24*365">Years</option>
 		</select>
 		<button class="btn btn-primary" v-on:click="add" v-bind:disabled="!name">
 			<i class="fa fa-plus"/> Add
