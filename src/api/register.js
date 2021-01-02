@@ -40,6 +40,7 @@ app.post('/api/register', jsonParser, function(req, res){
       var hash = bcrypt.hashSync(req.body.password, salt);
       return user_dao.create({
           role: "MEMBER",
+					type: "LOCAL",
           name: req.body.name,
           hash: hash,
           mail: req.body.mail

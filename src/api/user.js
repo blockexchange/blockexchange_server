@@ -26,7 +26,7 @@ app.get('/api/user', async function(req, res){
 });
 
 // validates the new username, checks for duplicates and invalid characters
-app.post("/api/validate_username", jsonParser, tokencheck, async function(req, res){
+app.post("/api/validate_username", jsonParser, async function(req, res){
 	if (! /^[a-z0-9\_\-]+$/i.test(req.body.username)) {
 		return res.json({
 			valid: false,
