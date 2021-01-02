@@ -28,10 +28,15 @@ app.delete('/api/access_token/:id', tokencheck, async function(req, res){
 app.post('/api/access_token', tokencheck, jsonParser, async function(req, res){
 	logger.debug("POST /api/access_token", req.body);
 
+	if (!req.body.name){
+		res.status(500).end();
+		return;
+	}
+
 	const user_id = req.claims.user_id;
 	const created = Date.now();
 	const expires = req.body.expires;
-	const name = req.bod.name;
+	const name = req.body.name;
 	const token = Math.random().toString(36).substring(2, 8); // 6 chars
 
 	const access_token = await access_token_dao.create(user_id, created, expires, name, token);
