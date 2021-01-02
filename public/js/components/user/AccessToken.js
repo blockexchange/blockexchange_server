@@ -1,5 +1,5 @@
 import { get_all, create, remove } from '../../api/access_token.js';
-
+import store from '../../store/login.js';
 
 const CreateForm = {
 	data: function(){
@@ -41,6 +41,11 @@ const CreateForm = {
 
 const List = {
 	props: ["list"],
+	data: function() {
+		return {
+			username: store.claims.username
+		};
+	},
 	methods: {
 		remove: function(id){
 			remove(id)
@@ -52,9 +57,9 @@ const List = {
 		<thead>
 			<tr>
 				<th>Name</th>
-				<th>Token</th>
 				<th>Created</th>
 				<th>Expires</th>
+				<th>Usage</th>
 				<th>Use-count</th>
 				<th>Action</th>
 			</tr>
@@ -62,12 +67,12 @@ const List = {
 		<tbody>
 			<tr v-for="token in list">
 				<td>{{ token.name }}</td>
-				<td>{{ token.token }}</td>
 				<td>{{ new Date(+token.created).toLocaleString() }}</td>
 				<td>{{ new Date(+token.expires).toLocaleString() }}</td>
+				<td><pre>/bx_login {{username}} {{ token.token }}</pre></td>
 				<td>{{ token.usecount }}</td>
 				<td>
-					<button class="btn btn-danger" v-on:click="remove(token.id)">
+					<button class="btn btn-sm btn-danger" v-on:click="remove(token.id)">
 						<i class="fa fa-times"/> Remove
 					</button>
 				</td>

@@ -63,7 +63,9 @@ app.get('/api/oauth_callback/mesehub', function(req, res){
  	 }
   })
   .then(user => {
- 	 const token = createjwt(user);
+		const token = createjwt(user, {
+			audience: "management"
+		});
  	 res.redirect(process.env.BASE_URL + "/#/oauth/" + token);
   })
   .catch(e => {
