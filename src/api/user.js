@@ -4,8 +4,10 @@ const jsonParser = bodyParser.json();
 const app = require("../app");
 const user_dao = require("../dao/user");
 const logger = require("../logger");
+
+const { MANAGEMENT } = require("../permissions");
 const tokenmiddleware = require("../middleware/token");
-const tokencheck = tokenmiddleware();
+const permissioncheck = require("../middleware/permissioncheck");
 
 // get all users
 app.get('/api/user', async function(req, res){
@@ -17,7 +19,6 @@ app.get('/api/user', async function(req, res){
 			name: user.name,
 			id: user.id,
 			type: user.type,
-			role: user.role,
 			created: user.created
 		};
 	});
@@ -50,17 +51,12 @@ app.post("/api/validate_username", jsonParser, async function(req, res){
 });
 
 // modify user (only name change allowed)
-app.post("/api/user/:user_id", jsonParser, tokencheck, async function(req, res){
+app.post("/api/user/:user_id", tokenmiddleware, permissioncheck(MANAGEMENT), jsonParser, async function(req, res){
 	logger.debug("POST /api/user", req.params.user_id, req.body);
 
-	if (req.claims.role !== "ADMIN" && req.claims.user_id != +req.params.user_id){
-		// not an admin and not your own user
+	if (req.claims.user_id != +req.params.user_id){
+		// not your own user
 		return res.status(403).json({ message: "change not allowed" });
-	}
-
-	if (req.claims.role === "UPLOAD_ONLY"){
-		// static account, no changes happen here
-		return res.status(403).json({ message: "change not allowed (static account)" });
 	}
 
 	if (!req.body.name){

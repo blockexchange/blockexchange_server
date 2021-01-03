@@ -5,11 +5,11 @@ const logger = require("../logger");
 const app = require("../app");
 const schema_dao = require("../dao/schema");
 
+const { MANAGEMENT } = require("../permissions");
 const tokenmiddleware = require("../middleware/token");
-const rolecheck = require("../util/rolecheck");
-const tokencheck = tokenmiddleware(claims => rolecheck.can_edit(claims.role));
+const permissioncheck = require("../middleware/permissioncheck");
 
-app.put("/api/schema/:id", tokencheck, jsonParser, function(req, res){
+app.put("/api/schema/:id", tokenmiddleware, permissioncheck(MANAGEMENT), jsonParser, function(req, res){
   logger.debug("PUT /api/schema/:id", req.params.id, req.body);
   const new_schema = req.body;
 

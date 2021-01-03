@@ -6,10 +6,11 @@ const logger = require("../logger");
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json({limit: '20mb'});
 
+const { MANAGEMENT } = require("../permissions");
 const tokenmiddleware = require("../middleware/token");
-const tokencheck = tokenmiddleware();
+const permissioncheck = require("../middleware/permissioncheck");
 
-app.get('/api/access_token', tokencheck, async function(req, res){
+app.get('/api/access_token', tokenmiddleware, permissioncheck(MANAGEMENT), async function(req, res){
 	logger.debug("GET /api/access_token");
 
 	const user_id = req.claims.user_id;
@@ -17,7 +18,7 @@ app.get('/api/access_token', tokencheck, async function(req, res){
 	res.json(tokens);
 });
 
-app.delete('/api/access_token/:id', tokencheck, async function(req, res){
+app.delete('/api/access_token/:id', tokenmiddleware, permissioncheck(MANAGEMENT), async function(req, res){
 	logger.debug("DELETE /api/access_token/:id", req.params.id);
 
 	const user_id = req.claims.user_id;
@@ -25,7 +26,7 @@ app.delete('/api/access_token/:id', tokencheck, async function(req, res){
 	res.end();
 });
 
-app.post('/api/access_token', tokencheck, jsonParser, async function(req, res){
+app.post('/api/access_token', tokenmiddleware, permissioncheck(MANAGEMENT), jsonParser, async function(req, res){
 	logger.debug("POST /api/access_token", req.body);
 
 	if (!req.body.name){
@@ -37,7 +38,7 @@ app.post('/api/access_token', tokencheck, jsonParser, async function(req, res){
 	const created = Date.now();
 	const expires = req.body.expires;
 	const name = req.body.name;
-	const token = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 chars
+	const token = access_token_dao.generateToken();
 
 	const access_token = await access_token_dao.create(user_id, created, expires, name, token);
 

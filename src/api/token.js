@@ -2,7 +2,9 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
+const { MANAGEMENT, UPLOAD, OVERWRITE } = require("../permissions");
 const createjwt = require("../util/createjwt");
+
 const logger = require("../logger");
 const app = require("../app");
 
@@ -29,9 +31,7 @@ app.post('/api/token', jsonParser, async function(req, res){
 				message: "Invalid password"
 			});
 		}
-		const token = createjwt(user, {
-			audience: "management"
-		});
+		const token = createjwt(user, [UPLOAD, OVERWRITE, MANAGEMENT]);
 		res.send(token);
 
 	} else if (req.body.access_token){
@@ -51,8 +51,8 @@ app.post('/api/token', jsonParser, async function(req, res){
 		}
 
 		// valid token and expiration time
-		const token = createjwt(user, {
-			audience: "minetest",
+		// only give out needed permissions to ingame user
+		const token = createjwt(user, [UPLOAD, OVERWRITE], {
 			expiresIn: parseInt((access_token.expires - Date.now()) / 1000)
 		});
 		res.send(token);

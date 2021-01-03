@@ -2,12 +2,11 @@ const app = require("../app");
 const schema_dao = require("../dao/schema");
 const logger = require("../logger");
 
+const { MANAGEMENT } = require("../permissions");
 const tokenmiddleware = require("../middleware/token");
-const rolecheck = require("../util/rolecheck");
-const tokencheck = tokenmiddleware(claims => rolecheck.can_delete(claims.role));
+const permissioncheck = require("../middleware/permissioncheck");
 
-
-app.delete("/api/schema/:id", tokencheck, async function(req, res){
+app.delete("/api/schema/:id", tokenmiddleware, permissioncheck(MANAGEMENT), async function(req, res){
 	logger.debug("DELETE /api/schema/:id", req.params.id, req.body);
 
 	const schema = schema_dao.get_by_id(req.params.id);

@@ -17,7 +17,6 @@ export default {
 						<th>Name</th>
 						<th>Created</th>
 						<th>Type</th>
-						<th>Role</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -25,7 +24,6 @@ export default {
 						<td>{{ user.name }}</td>
 						<td>{{ new Date(+user.created).toDateString() }}</td>
 						<td>{{ user.type }}</td>
-						<td>{{ user.role }}</td>
 					</tr>
 				</tbody>
 			</table>

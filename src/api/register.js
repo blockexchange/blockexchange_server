@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 const logger = require("../logger");
+const setupuser = require("../util/setupuser");
 
 const bcrypt = require('bcryptjs');
 
@@ -38,13 +39,14 @@ app.post('/api/register', jsonParser, function(req, res){
     } else {
       var salt = bcrypt.genSaltSync(10);
       var hash = bcrypt.hashSync(req.body.password, salt);
+			// create new user
       return user_dao.create({
-          role: "MEMBER",
 					type: "LOCAL",
           name: req.body.name,
           hash: hash,
           mail: req.body.mail
       })
+			.then(setupuser)
       .then(() => res.json({ success: true }));
     }
   })

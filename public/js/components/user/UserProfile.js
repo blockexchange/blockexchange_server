@@ -39,9 +39,6 @@ export default {
 								Mail: <b>{{ store.claims.mail }}</b>
 							</li>
 							<li>
-								Role: <span class="badge badge-success">{{ store.claims.role }}</span>
-							</li>
-							<li>
 								Type: <span class="badge badge-success">{{ store.claims.type }}</span>
 							</li>
 						</ul>

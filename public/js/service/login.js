@@ -23,7 +23,6 @@ export default {
 		const payload = JSON.parse(atob(token.split(".")[1]));
 		loginstore.token = token;
 		loginstore.loggedIn = true;
-		loginstore.username = payload.username;
 		loginstore.claims = payload;
 		this.persist();
 	},
@@ -31,7 +30,6 @@ export default {
 	logout(){
 		loginstore.token = null;
 		loginstore.loggedIn = false;
-		loginstore.username = "";
 		loginstore.claims = null;
 		this.persist();
 	},

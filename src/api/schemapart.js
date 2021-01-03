@@ -7,11 +7,11 @@ const schemapart_dao = require("../dao/schemapart");
 const schema_dao = require("../dao/schema");
 const serializer = require("../util/serializer");
 
+const { UPLOAD } = require("../permissions");
 const tokenmiddleware = require("../middleware/token");
-const rolecheck = require("../util/rolecheck");
-const tokencheck = tokenmiddleware(claims => rolecheck.can_upload(claims.role));
+const permissioncheck = require("../middleware/permissioncheck");
 
-app.post('/api/schemapart', tokencheck, jsonParser, async function(req, res){
+app.post('/api/schemapart', tokenmiddleware, permissioncheck(UPLOAD), jsonParser, async function(req, res){
 	logger.debug("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
 
 	const schema = await schema_dao.get_by_id(req.body.schema_id);

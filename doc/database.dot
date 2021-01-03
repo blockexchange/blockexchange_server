@@ -11,7 +11,6 @@ digraph {
 	  <tr><td port="3">name (varchar)</td></tr>
 	  <tr><td port="4">hash (varchar)</td></tr>
 	  <tr><td port="5">mail (varchar)</td></tr>
-		<tr><td port="5a">role (varchar(16))</td></tr>
 		<tr><td port="5b">type (varchar(16))</td></tr>
 		<tr><td port="5c">external_id (varchar(63))</td></tr>
 	</table>>];

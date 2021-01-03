@@ -6,7 +6,6 @@ create table public.user(
   created bigint not null,
   name varchar not null,
   hash varchar not null,
-  role varchar(16) not null default 'MEMBER',
   type varchar(16) not null default 'LOCAL',
   external_id varchar(63),
   mail varchar
@@ -26,15 +25,6 @@ create table access_token(
 	token varchar not null,
 	usecount int not null default 0
 );
-
--- create temporary user with default password "temp"
-insert into public.user(created, name, role, hash)
-  values(
-    extract(epoch from now()) * 1000,
-    'temp',
-    'UPLOAD_ONLY',
-    '$2a$10$g.6pRR93BwXfsMnPLWIKgOfIBDOcc48wJPCDtfNfzJbD/7zE2xgtm'
-  );
 
 -- SCHEMA
 

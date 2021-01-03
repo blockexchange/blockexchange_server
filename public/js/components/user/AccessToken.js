@@ -21,7 +21,7 @@ const CreateForm = {
 		<input type="text"
 			class="form-control"
 			v-model="name"
-			placeholder="Token name"/>
+			placeholder="Token name (usually the name of the server you are using it on)"/>
 		<input type="text"
 			class="form-control"
 			v-model="expires"
@@ -43,7 +43,7 @@ const List = {
 	props: ["list"],
 	data: function() {
 		return {
-			username: store.claims.username
+			store: store
 		};
 	},
 	methods: {
@@ -69,7 +69,7 @@ const List = {
 				<td>{{ token.name }}</td>
 				<td>{{ new Date(+token.created).toLocaleString() }}</td>
 				<td>{{ new Date(+token.expires).toLocaleString() }}</td>
-				<td><pre>/bx_login {{username}} {{ token.token }}</pre></td>
+				<td><pre>/bx_login {{store.claims.username}} {{ token.token }}</pre></td>
 				<td>{{ token.usecount }}</td>
 				<td>
 					<button class="btn btn-sm btn-danger" v-on:click="remove(token.id)">

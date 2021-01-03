@@ -1,5 +1,9 @@
 const executor = require("./executor");
 
+module.exports.generateToken = function(){
+	return Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 chars
+};
+
 module.exports.create = function(user_id, created, expires, name, token) {
   const query = `
     insert into

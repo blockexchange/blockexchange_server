@@ -1,8 +1,7 @@
 
 export default Vue.observable({
 	loggedIn: false,
-  username: "",
-	/* { username, user_id, role, type, mail } */
+	/* { username, user_id, type, mail, permissions } */
 	claims: null,
 	token: null
 });

@@ -6,10 +6,9 @@ const app = require("../app");
 const schemamod_dao = require("../dao/schemamod");
 const schema_dao = require("../dao/schema");
 
+const { UPLOAD } = require("../permissions");
 const tokenmiddleware = require("../middleware/token");
-const rolecheck = require("../util/rolecheck");
-const tokencheck = tokenmiddleware(claims => rolecheck.can_upload(claims.role));
-
+const permissioncheck = require("../middleware/permissioncheck");
 
 app.get('/api/schema/:id/mods', function(req, res){
   logger.debug("GET /api/schema/:id/mods", req.params.id);
@@ -30,7 +29,7 @@ app.get('/api/schema/:id/mods', function(req, res){
 });
 
 
-app.post('/api/schema/:id/mods', tokencheck, jsonParser, function(req, res){
+app.post('/api/schema/:id/mods', tokenmiddleware, permissioncheck(UPLOAD), jsonParser, function(req, res){
   logger.debug("POST /api/schema/:id/mods", req.params.id, req.body);
 
   return schema_dao.get_by_id(req.params.id)

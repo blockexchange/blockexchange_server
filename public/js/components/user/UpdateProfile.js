@@ -45,7 +45,11 @@ export default {
 				name: this.username,
 				mail: this.mail
 			})
-			.then(() => loginservice.refresh());
+			.then(() => {
+				store.claims.mail = this.mail,
+				store.claims.username = this.username;
+				loginservice.persist();
+			});
 		}
 	},
 	template: /*html*/`

@@ -3,6 +3,9 @@ const axios = require('axios');
 const app = require("../app");
 const logger = require("../logger");
 const user_dao = require("../dao/user");
+const setupuser = require("../util/setupuser");
+
+const { MANAGEMENT, UPLOAD, OVERWRITE } = require("../permissions");
 const createjwt = require("../util/createjwt");
 
 app.get('/api/oauth_callback/github', function(req, res){
@@ -51,18 +54,16 @@ app.get('/api/oauth_callback/github', function(req, res){
 			// create new user
 			return user_dao.create({
 				name: user_info.login,
-				role: "MEMBER",
 				type: "GITHUB",
 				hash: "", // no local password
 				mail: user_info.email,
 				external_id: user_info.id
-			});
+			})
+			.then(setupuser);
 		}
 	})
 	.then(user => {
-		const token = createjwt(user, {
-			audience: "management"
-		});
+		const token = createjwt(user, [UPLOAD, OVERWRITE, MANAGEMENT]);
 		res.redirect(process.env.BASE_URL + "/#/oauth/" + token);
 	})
   .catch(e => {

@@ -6,11 +6,12 @@ const events = require("../events");
 
 const app = require("../app");
 const schema_dao = require("../dao/schema");
-const tokenmiddleware = require("../middleware/token");
-const rolecheck = require("../util/rolecheck");
-const tokencheck = tokenmiddleware(claims => rolecheck.can_upload(claims.role));
 
-app.post('/api/schema', tokencheck, jsonParser, async function(req, res){
+const { UPLOAD } = require("../permissions");
+const tokenmiddleware = require("../middleware/token");
+const permissioncheck = require("../middleware/permissioncheck");
+
+app.post('/api/schema', tokenmiddleware, permissioncheck(UPLOAD), jsonParser, async function(req, res){
 	logger.debug("POST /api/schema", req.body);
 
 	const inserted_data = await schema_dao.create({
@@ -28,7 +29,7 @@ app.post('/api/schema', tokencheck, jsonParser, async function(req, res){
 
 
 
-app.post('/api/schema/:id/complete', tokencheck, jsonParser, async function(req, res){
+app.post('/api/schema/:id/complete', tokenmiddleware, permissioncheck(UPLOAD), jsonParser, async function(req, res){
 	logger.debug("POST /api/schema/id/complete", req.params.id, req.body);
 
 	const schema = await schema_dao.get_by_id(req.params.id);

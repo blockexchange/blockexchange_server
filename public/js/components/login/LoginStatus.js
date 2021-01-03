@@ -11,7 +11,7 @@ export default {
 			<router-link to="/profile">
 				<i class="fas fa-user"></i>
 				<span>
-					Logged in as <b>{{ store.username }}</b>
+					Logged in as <b>{{ store.claims.username }}</b>
 				</span>
 			</router-link>
 		</div>
