@@ -30,6 +30,10 @@ require("./api/schema_screenshot");
 require("./api/schemamods");
 require("./api/schemapart");
 
+// collections
+require("./api/collection");
+require("./api/collection_schema");
+
 // static page
 require("./api/static");
 

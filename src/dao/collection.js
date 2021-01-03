@@ -39,5 +39,15 @@ module.exports.find_all_by_userid = function(user_id){
 	`;
 
 	const values = [user_id];
+	return executor(query, values);
+};
+
+module.exports.find_by_collectionid = function(collection_id){
+	const query = `
+		select * from collection
+		where id = $1
+	`;
+
+	const values = [collection_id];
 	return executor(query, values, { single_row: true });
 };
