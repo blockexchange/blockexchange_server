@@ -52,6 +52,7 @@ app.post('/api/token', jsonParser, async function(req, res){
 
 		// valid token and expiration time
 		// only give out needed permissions to ingame user
+		await access_token_dao.increment_usecount(access_token.id);
 		const token = createjwt(user, [UPLOAD, OVERWRITE], {
 			expiresIn: parseInt((access_token.expires - Date.now()) / 1000)
 		});
