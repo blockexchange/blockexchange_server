@@ -1,6 +1,10 @@
 
 export default {
 	nav: {
-		about: "About"
+		about: "About",
+		login: "Login",
+		mod: "Mod/Installation",
+		users: "Users",
+		search: "Search"
 	}
 };

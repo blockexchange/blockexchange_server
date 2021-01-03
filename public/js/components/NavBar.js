@@ -15,22 +15,22 @@ export default {
 				</li>
 				<li class="nav-item">
 					<router-link to="/login" class="nav-link">
-						<i class="fa fa-sign-in"></i> Login
+						<i class="fa fa-sign-in"></i> {{ $t("nav.login") }}
 					</router-link>
 				</li>
 				<li class="nav-item">
 					<router-link to="/mod" class="nav-link">
-						<i class="fa fa-download"></i> Mod/Installation
+						<i class="fa fa-download"></i> {{ $t("nav.mod") }}
 					</router-link>
 				</li>
 				<li class="nav-item">
 					<router-link to="/users" class="nav-link">
-						<i class="fa fa-users"></i> Users
+						<i class="fa fa-users"></i> {{ $t("nav.users" )}}
 					</router-link>
 				</li>
 				<li class="nav-item">
 					<router-link to="/search" class="nav-link">
-						<i class="fa fa-search"></i> Search
+						<i class="fa fa-search"></i> {{ $t("nav.search") }}
 					</router-link>
 				</li>
 			</ul>
