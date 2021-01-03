@@ -46,7 +46,7 @@ export default {
 				mail: this.mail
 			})
 			.then(() => {
-				store.claims.mail = this.mail,
+				store.claims.mail = this.mail;
 				store.claims.username = this.username;
 				loginservice.persist();
 			});
