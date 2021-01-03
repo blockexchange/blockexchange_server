@@ -86,6 +86,24 @@ digraph {
 	  <tr><td port="39">type (varchar(64))</td></tr>
 	</table>>];
 
+	collection [label=<
+	<table border="0" cellborder="1" cellspacing="0">
+	  <tr><td><i>collection</i></td></tr>
+		<tr><td port="50">id (serial)</td></tr>
+	  <tr><td port="51">user_id (serial)</td></tr>
+		<tr><td port="52">name (varchar)</td></tr>
+	</table>>];
+
+	collection_schema [label=<
+	<table border="0" cellborder="1" cellspacing="0">
+	  <tr><td><i>collection_schema</i></td></tr>
+		<tr><td port="61">collection_id (serial)</td></tr>
+		<tr><td port="62">schema_id (serial)</td></tr>
+	</table>>];
+
+	collection_schema:62 -> schema:6;
+	collection_schema:61 -> collection:50;
+	collection:51 -> user:1;
 	schema:8 -> user:1;
 	access_token:41 -> user:1
 	schemapart:23 -> schema:6;
