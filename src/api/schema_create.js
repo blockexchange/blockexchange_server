@@ -19,9 +19,17 @@ app.post('/api/schema', tokenmiddleware, permissioncheck(UPLOAD), jsonParser, as
 		return res.status(405).json({ message: "Schema already exists" });
 	}
 
+	if (req.body.replaces){
+		const replaces_schema = await schema_dao.get_by_schemaname_and_username(req.body.replaces, req.claims.username);
+		if (!replaces_schema){
+			return res.status(403).json({ message: "Schema to replace not found" });
+		}
+	}
+
 	const inserted_data = await schema_dao.create({
 		user_id: +req.claims.user_id,
 		name: req.body.name,
+		replaces: req.body.replaces,
 		description: req.body.description,
 		max_x: req.body.max_x,
 		max_y: req.body.max_y,
@@ -50,6 +58,18 @@ app.post('/api/schema/:id/complete', tokenmiddleware, permissioncheck(UPLOAD), j
 	}
 
 	await schema_dao.finalize(schema.id);
+
+	if (schema.replaces){
+		//uploaded schema replaces existing schema
+		const replaces_schema = await schema_dao.get_by_schemaname_and_username(req.body.replaces, req.claims.username);
+
+		if (replaces_schema){
+			//TODO: rewire schema_parts, stars, etc
+		} else {
+			// to-replace schema vanished, leave it as-is
+		}
+	}
+
 	res.end();
 	events.emit("new-schema", schema);
 });
