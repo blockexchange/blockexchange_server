@@ -44,7 +44,7 @@ require("./events/render_schema");
 const discord_feed = require("./feed/discord");
 discord_feed();
 
-const cleanupjob = require("./jobs/temp_schema_cleanup");
+const cleanupjob = require("./jobs/schema_cleanup");
 
 migrate().then(() => {
 	logger.info("DB Migration done");
