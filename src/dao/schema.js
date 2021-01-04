@@ -1,5 +1,9 @@
 const executor = require("./executor");
 
+function sanitizeName(name){
+	return name.replace(/[^a-zA-Z0-9]/gm,"_");
+}
+
 module.exports.update = function(data) {
   const query = `
     update schema
@@ -10,17 +14,19 @@ module.exports.update = function(data) {
       user_id = $5,
       license = $6
     where id = $1
+		returning *
   `;
 
+	const name = sanitizeName(data.name);
   const values = [
     data.id,
-    data.name, data.description,
-    data.name + " " + data.description,
+    name, data.description,
+    name + " " + data.description,
     data.user_id,
     data.license
   ];
 
-  return executor(query, values);
+  return executor(query, values, { single_row: true });
 };
 
 module.exports.create = function(data) {
@@ -41,11 +47,13 @@ module.exports.create = function(data) {
     returning *
   `;
 
+	const name = sanitizeName(data.name);
+
   const values = [
-    false, data.user_id, data.name, data.description || "",
+    false, data.user_id, name, data.description || "",
     data.max_x, data.max_y, data.max_z, data.part_length,
     0, 0, Date.now(), data.license || "CC0",
-    data.name + " " + data.description
+    name + " " + data.description
   ];
 
   return executor(query, values, { single_row: true });

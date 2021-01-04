@@ -7,6 +7,7 @@ import SchemaPreview from './SchemaPreview.js';
 import SchemaDownload from './SchemaDownload.js';
 import SchemaDescription from './SchemaDescription.js';
 import SchemaDelete from './SchemaDelete.js';
+import SchemaTitle from './SchemaTitle.js';
 
 export default {
 	components: {
@@ -15,7 +16,8 @@ export default {
 		"schema-preview": SchemaPreview,
 		"schema-download": SchemaDownload,
 		"schema-description": SchemaDescription,
-		"schema-delete": SchemaDelete
+		"schema-delete": SchemaDelete,
+		"schema-title": SchemaTitle
 	},
 	props: ["user_name", "schema_name"],
 	data: function(){
@@ -39,7 +41,7 @@ export default {
 			<div class="row">
 				<div class="col-md-10">
 					<h3>
-					  {{ schema_name }}
+					  <schema-title :schema="schema"/>
 					  <small class="text-muted">by {{ user_name }}</small>
 						<span v-if="!schema.complete" class="badge badge-danger">
 							Incomplete

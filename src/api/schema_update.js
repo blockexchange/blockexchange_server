@@ -22,6 +22,6 @@ app.put("/api/schema/:id", tokenmiddleware, permissioncheck(MANAGEMENT), jsonPar
 
     // update schema
     return schema_dao.update(new_schema)
-    .then(() => res.json(new_schema));
+    .then(s => res.json(s));
   });
 });
