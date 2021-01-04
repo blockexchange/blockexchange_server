@@ -7,7 +7,7 @@ const logger = require("../logger");
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json({limit: '20mb'});
 
-const { MANAGEMENT } = require("../permissions");
+const { MANAGEMENT, UPLOAD } = require("../permissions");
 const tokenmiddleware = require("../middleware/token");
 const permissioncheck = require("../middleware/permissioncheck");
 
@@ -18,7 +18,7 @@ app.get('/api/collection_schema/by-collectionid/:collection_id', async function(
 	res.json(collection_schemas);
 });
 
-app.post('/api/collection_schema', tokenmiddleware, permissioncheck(MANAGEMENT), jsonParser, async function(req, res){
+app.post('/api/collection_schema', tokenmiddleware, permissioncheck(UPLOAD), jsonParser, async function(req, res){
 	logger.debug("POST /api/collection_schema", req.body);
 
 	const user_id = req.claims.user_id;
