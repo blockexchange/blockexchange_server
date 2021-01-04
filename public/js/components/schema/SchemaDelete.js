@@ -12,9 +12,9 @@ export default {
 	},
 	methods: {
 		do_remove: function(){
-			// delete and route to profile page
+			// delete and route to search page
 			remove(this.schema.id)
-			.then(() => this.$router.push("/profile"));
+			.then(() => this.$router.push("/search"));
 		}
 	},
 	template: /*html*/`
