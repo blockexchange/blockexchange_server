@@ -14,6 +14,11 @@ const permissioncheck = require("../middleware/permissioncheck");
 app.post('/api/schema', tokenmiddleware, permissioncheck(UPLOAD), jsonParser, async function(req, res){
 	logger.debug("POST /api/schema", req.body);
 
+	const existing_schema = await schema_dao.get_by_schemaname_and_username(req.body.name, req.claims.username);
+	if (existing_schema) {
+		return res.status(405).json({ message: "Schema already exists" });
+	}
+
 	const inserted_data = await schema_dao.create({
 		user_id: +req.claims.user_id,
 		name: req.body.name,
