@@ -64,7 +64,12 @@ app.post('/api/schema/:id/complete', tokenmiddleware, permissioncheck(UPLOAD), j
 		const replaces_schema = await schema_dao.get_by_schemaname_and_username(req.body.replaces, req.claims.username);
 
 		if (replaces_schema){
-			//TODO: rewire schema_parts, stars, etc
+			// TODO: rewire stars to new schema_id
+			// TODO: rewire collection_schema to new schema id
+			// TODO: rename old schema to random string + oldname
+			// TODO: archive old schema
+			// TODO: rename new schema
+
 		} else {
 			// to-replace schema vanished, leave it as-is
 		}

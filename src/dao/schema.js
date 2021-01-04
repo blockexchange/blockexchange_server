@@ -84,7 +84,7 @@ module.exports.get_by_id = function(id) {
 };
 
 module.exports.find_by_user_id = function(user_id) {
-  return executor("select * from schema where user_id = $1", [user_id]);
+  return executor("select * from schema where user_id = $1 and archived = false", [user_id]);
 };
 
 module.exports.find_by_user_name = function(user_name) {
@@ -95,22 +95,20 @@ module.exports.find_by_user_name = function(user_name) {
       from public.user
       where name = $1
     )
+		and archived = false
   `;
 
   return executor(query, [user_name]);
 };
 
-module.exports.delete_old_temp_schemas = function(before_timestamp) {
+module.exports.delete_archived_schemas = function(before_timestamp) {
   const query = `
     delete from schema
-    where user_id = (
-      select id
-      from public.user
-      where name = $1
-    ) and created < $2
+    where archived = true
+		and created < $1
   `;
 
-  return executor(query, ["temp", before_timestamp]);
+  return executor(query, [before_timestamp]);
 };
 
 module.exports.find_by_keywords = function(keywords) {
@@ -118,6 +116,7 @@ module.exports.find_by_keywords = function(keywords) {
     select *
     from schema
     where search_tokens @@ to_tsquery($1)
+		and archived = false
     limit 1000
   `;
 
@@ -129,6 +128,7 @@ module.exports.find_recent = function(count) {
   const query = `
     select *
     from schema
+		where archived = false
 		order by created desc
     limit $1
   `;
@@ -142,6 +142,7 @@ module.exports.get_by_schemaname_and_username = function(schema_name, user_name)
     from schema
     where user_id = (select id from public.user where name = $1)
     and name = $2
+		and archived = false
     limit 1
   `;
 
@@ -154,6 +155,20 @@ module.exports.increment_downloads = function(schema_id) {
   const query = `
     update schema
     set downloads = downloads + 1
+    where id = $1
+  `;
+
+  const values = [schema_id];
+
+  return executor(query, values, { single_row: true });
+};
+
+module.exports.archive_by_id = function(schema_id) {
+	//https://stackoverflow.com/questions/12505158/generating-a-uuid-in-postgres-for-insert-statement
+  const query = `
+    update schema
+    set archived = true,
+		name = concat(name, '_archived_', uuid_in(md5(random()::text || clock_timestamp()::text)::cstring))
     where id = $1
   `;
 

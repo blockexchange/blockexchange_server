@@ -46,7 +46,8 @@ digraph {
 	  <tr><td port="17">total_parts (int)</td></tr>
 	  <tr><td port="18">search_tokens (tsvector)</td></tr>
 	  <tr><td port="19">downloads (int)</td></tr>
-	  <tr><td port="20">license (varchar)</td></tr>
+		<tr><td port="20">license (varchar)</td></tr>
+		<tr><td port="20a">archived (boolean)</td></tr>
 	</table>>];
 
 	schemapart [label=<

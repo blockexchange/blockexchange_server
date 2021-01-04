@@ -92,6 +92,7 @@ app.get("/api/search/schema/byname/:username/:name", function(req, res){
 
 	schema_dao.get_by_schemaname_and_username(req.params.name, req.params.username)
 	.then(schema => {
+		console.log(req.params, schema);
 		if (!schema) {
 			res.status(404).end();
 			return;

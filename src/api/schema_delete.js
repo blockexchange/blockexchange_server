@@ -16,6 +16,6 @@ app.delete("/api/schema/:id", tokenmiddleware, permissioncheck(MANAGEMENT), asyn
 	}
 
 	// delete schema
-	await schema_dao.delete_by_id(req.params.id);
+	await schema_dao.archive_by_id(req.params.id);
 	res.end();
 });
