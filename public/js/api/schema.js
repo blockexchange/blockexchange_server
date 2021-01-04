@@ -10,3 +10,7 @@ export const update = schema => securefetch(`api/schema/${schema.id}`, {
 	body: JSON.stringify(schema)
 })
 .then(r => r.json());
+
+export const remove = schema_id => securefetch(`api/schema/${schema_id}`, {
+	method: "DELETE"
+});

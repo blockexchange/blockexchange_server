@@ -6,6 +6,7 @@ import SchemaMods from './SchemaMods.js';
 import SchemaPreview from './SchemaPreview.js';
 import SchemaDownload from './SchemaDownload.js';
 import SchemaDescription from './SchemaDescription.js';
+import SchemaDelete from './SchemaDelete.js';
 
 export default {
 	components: {
@@ -13,7 +14,8 @@ export default {
 		"schema-mods": SchemaMods,
 		"schema-preview": SchemaPreview,
 		"schema-download": SchemaDownload,
-		"schema-description": SchemaDescription
+		"schema-description": SchemaDescription,
+		"schema-delete": SchemaDelete
 	},
 	props: ["user_name", "schema_name"],
 	data: function(){
@@ -34,13 +36,20 @@ export default {
 	},
 	template: /*html*/`
 		<div v-if="schema">
-			<h3>
-			  {{ schema_name }}
-			  <small class="text-muted">by {{ user_name }}</small>
-				<span v-if="!schema.complete" class="badge badge-danger">
-					Incomplete
-				</span>
-			</h3>
+			<div class="row">
+				<div class="col-md-10">
+					<h3>
+					  {{ schema_name }}
+					  <small class="text-muted">by {{ user_name }}</small>
+						<span v-if="!schema.complete" class="badge badge-danger">
+							Incomplete
+						</span>
+					</h3>
+				</div>
+				<div class="col-md-2">
+					<schema-delete :schema="schema" class="float-right"/>
+				</div>
+			</div>
 			<div class="row">
 				<div class="col-md-4">
 					<div class="card">

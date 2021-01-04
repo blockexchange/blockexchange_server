@@ -7,9 +7,9 @@ const tokenmiddleware = require("../middleware/token");
 const permissioncheck = require("../middleware/permissioncheck");
 
 app.delete("/api/schema/:id", tokenmiddleware, permissioncheck(MANAGEMENT), async function(req, res){
-	logger.debug("DELETE /api/schema/:id", req.params.id, req.body);
+	logger.debug("DELETE /api/schema/:id", req.params.id);
 
-	const schema = schema_dao.get_by_id(req.params.id);
+	const schema = await schema_dao.get_by_id(req.params.id);
 	if (schema.user_id != req.claims.user_id){
 		res.status(403).end();
 		return;
