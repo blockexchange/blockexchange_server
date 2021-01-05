@@ -5,6 +5,7 @@ export default {
 		login: "Login",
 		mod: "Mod/Installation",
 		users: "Users",
-		search: "Search"
+		search: "Search",
+		collections: "Collections"
 	}
 };

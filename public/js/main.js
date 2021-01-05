@@ -17,7 +17,8 @@ function start(){
 	});
 
 	const i18n = new VueI18n({
-	  messages: messages
+		fallbackLocale: 'en',
+		messages: messages
 	});
 
 	// start vue

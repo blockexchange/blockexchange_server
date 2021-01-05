@@ -1,8 +1,14 @@
 import LoginStatus from './login/LoginStatus.js';
+import store from '../store/login.js';
 
 export default {
 	components: {
 		"login-status": LoginStatus
+	},
+	data: function(){
+		return {
+			store: store
+		};
 	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -31,6 +37,11 @@ export default {
 				<li class="nav-item">
 					<router-link to="/search" class="nav-link">
 						<i class="fa fa-search"></i> {{ $t("nav.search") }}
+					</router-link>
+				</li>
+				<li class="nav-item" v-if="store.loggedIn">
+					<router-link to="/collections" class="nav-link">
+						<i class="fa fa-list"></i> {{ $t("nav.collections") }}
 					</router-link>
 				</li>
 			</ul>
