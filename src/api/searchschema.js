@@ -8,76 +8,60 @@ const schemamod_dao = require("../dao/schemamod");
 const user_dao = require("../dao/user");
 const user_schema_star_dao = require("../dao/userschemastar");
 
-// TODO: maybe optimize with subqueries
-function enrich(schema){
-	return Promise.all([
-		schemamod_dao.find_all(schema.id),
-		user_dao.get_by_id(schema.user_id),
-		user_schema_star_dao.count_by_schema_id(schema.id)
-	])
-	.then(results => {
-		const mods = {};
-		results[0].forEach(mod => mods[mod.mod_name] = mod.node_count);
+async function enrich(schema){
+	const schemamods = await schemamod_dao.find_all(schema.id);
+	const user = await user_dao.get_by_id(schema.user_id);
+	const schema_stars = await user_schema_star_dao.count_by_schema_id(schema.id);
 
-		return Object.assign({}, schema, {
-			search_tokens: null,
-			mods: mods,
-			user: {
-				name: results[1].name
-			},
-			stars: +results[2].stars
-		});
+	const mods = {};
+	schemamods.forEach(mod => mods[mod.mod_name] = mod.node_count);
+
+	return Object.assign({}, schema, {
+		search_tokens: null,
+		mods: mods,
+		user: {
+			name: user.name
+		},
+		stars: schema_stars.stars
 	});
 }
 
 // data='{"keywords": "description"}'
 // curl -X POST 127.0.0.1:8080/api/searchschema --data "${data}" -H "Content-Type: application/json"
-app.post('/api/searchschema', jsonParser, function(req, res){
+app.post('/api/searchschema', jsonParser, async function(req, res){
   logger.debug("POST /api/searchschema", req.body);
 
-	var q;
+	let schemas = [];
 
 	// select proper query
 	if (req.body.user_id) {
 		// just by user_id
-		q = schema_dao.find_by_user_id(req.body.user_id);
+		schemas = await schema_dao.find_by_user_id(req.body.user_id);
 
 	} else if (req.body.user_name) {
 		// by username
-		q = schema_dao.find_by_user_name(req.body.user_name);
+		schemas = await schema_dao.find_by_user_name(req.body.user_name);
 
 	} else if (req.body.keywords) {
 		// by keywords
-		q = schema_dao.find_by_keywords(req.body.keywords);
+		schemas = await schema_dao.find_by_keywords(req.body.keywords);
 
 	} else if (req.body.schema_id) {
 		// by unique id
-		q = schema_dao.get_by_id(req.body.schema_id).then(schema => [schema]);
+		const schema = await schema_dao.get_by_id(req.body.schema_id);
+		schemas.push(schema);
 
 	} else if (req.body.schema_name && req.body.user_name) {
 		// by schema name and user name (unique)
-		q = schema_dao.get_by_schemaname_and_username(req.body.schema_name, req.body.user_name)
-		.then(schema => [schema]);
-
-	} else {
-		// nothing to search for
-		res.json([]);
-		return;
+		const schema = await schema_dao.get_by_schemaname_and_username(req.body.schema_name, req.body.user_name);
+		schemas.push(schema);
 	}
 
 	// TODO: sorting { sorting: { field: "created", desc: false }}
 	// TODO: paging { paging: { page: 1, items: 20 }}
 
-  q.then(rows => {
-		// enrich with additional data and return
-		return Promise.all(rows.map(enrich))
-		.then(enriched_rows => res.json(enriched_rows));
-	})
-  .catch(e => {
-    console.error(e);
-    res.status(500).end();
-  });
-
+	const enriched_schemas = await Promise.all(schemas.map(enrich));
+	res.json(enriched_schemas);
 });
 
 app.get("/api/searchrecent/:count", async function(req, res){
@@ -87,29 +71,20 @@ app.get("/api/searchrecent/:count", async function(req, res){
 });
 
 
-app.get("/api/search/schema/byname/:username/:name", function(req, res){
+app.get("/api/search/schema/byname/:username/:name", async function(req, res){
 	logger.debug("POST /api/search/schema/byname/:username/:name", req.params);
 
-	schema_dao.get_by_schemaname_and_username(req.params.name, req.params.username)
-	.then(schema => {
-		if (!schema) {
-			res.status(404).end();
-			return;
-		}
+	const schema = await schema_dao.get_by_schemaname_and_username(req.params.name, req.params.username);
+	if (!schema) {
+		res.status(404).end();
+		return;
+	}
 
-		if (req.query.download === "true") {
-	    // increment download counter
-	    schema_dao.increment_downloads(schema.id);
-	  }
+	if (req.query.download === "true") {
+    // increment download counter
+    schema_dao.increment_downloads(schema.id);
+  }
 
-		return enrich(schema)
-		.then(enriched_schema => {
-			res.json(enriched_schema);
-		});
-	})
-	.catch(e => {
-		console.error(e);
-		res.status(500).end();
-	});
-
+	const enriched_schema = await enrich(schema);
+	res.json(enriched_schema);
 });
