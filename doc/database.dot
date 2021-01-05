@@ -35,7 +35,6 @@ digraph {
 	  <tr><td port="7">created (bigint)</td></tr>
 	  <tr><td port="8">user_id (serial)</td></tr>
 		<tr><td port="9">name (varchar)</td></tr>
-		<tr><td port="9a">replaces (varchar, nullable)</td></tr>
 	  <tr><td port="10">description (text)</td></tr>
 	  <tr><td port="11">complete (boolean)</td></tr>
 	  <tr><td port="12">max_x (smallint)</td></tr>
