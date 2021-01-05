@@ -3,6 +3,7 @@ import routes from './routes.js';
 import infoStore from './store/info.js';
 import loginService from './service/login.js';
 import messages from './messages.js';
+import { get_info } from './api/info.js';
 
 import './util/prettysize-filter.js';
 
@@ -27,9 +28,7 @@ function start(){
 	});
 }
 
-fetch("api/info")
-.then(r => r.json())
-.then(info => {
+get_info().then(info => {
 	Object.keys(info).forEach(key => {
 		infoStore[key] = info[key];
 	});
