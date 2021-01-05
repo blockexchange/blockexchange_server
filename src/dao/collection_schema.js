@@ -43,4 +43,4 @@ module.exports.change_schemaid = function(from_id, to_id){
 	`, [
 			to_id, from_id
 	]);
-}
+};
