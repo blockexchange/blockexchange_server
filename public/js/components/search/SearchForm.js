@@ -30,7 +30,6 @@ export default {
 	},
 	template: /*html*/`
 		<div>
-			SearchForm
 			<search-params v-on:search="search" :term="term"/>
 			<search-result :list="list"/>
 		</div>
