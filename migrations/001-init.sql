@@ -43,7 +43,8 @@ create table schema(
   total_parts int not null,
   search_tokens tsvector not null,
 	downloads int not null default 0,
-	license varchar not null default 'CC0'
+	license varchar not null default 'CC0',
+	archived boolean not null default false
 );
 
 alter table schema add unique(user_id, name);
@@ -90,4 +91,18 @@ create table schema_screenshot (
 	type varchar(64) not null,
   title varchar(128) not null,
   data bytea not null
+);
+
+-- COLLECTION
+
+create table collection (
+	id serial primary key not null,
+  user_id serial references public.user(id) on delete cascade,
+  name varchar not null
+);
+
+create table collection_schema (
+	collection_id bigint not null references collection(id) on delete cascade,
+	schema_id bigint not null references schema(id) on delete cascade,
+	primary key (collection_id, schema_id)
 );
