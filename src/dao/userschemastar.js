@@ -56,3 +56,13 @@ module.exports.count_by_schema_id = function(schema_id) {
 
   return executor(query, values, { single_row: true });
 };
+
+module.exports.change_schemaid = function(from_id, to_id){
+	return executor(`
+		update user_schema_star
+		set schema_id = $1
+		where schema_id = $2
+	`, [
+			to_id, from_id
+	]);
+}

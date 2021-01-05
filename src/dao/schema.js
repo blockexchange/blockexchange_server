@@ -164,15 +164,16 @@ module.exports.increment_downloads = function(schema_id) {
 };
 
 module.exports.archive_by_id = function(schema_id) {
-	//https://stackoverflow.com/questions/12505158/generating-a-uuid-in-postgres-for-insert-statement
+	const new_name = "archived_" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
   const query = `
     update schema
     set archived = true,
-		name = concat(name, '_archived_', uuid_in(md5(random()::text || clock_timestamp()::text)::cstring))
-    where id = $1
+		name = $1
+    where id = $2
   `;
 
-  const values = [schema_id];
+  const values = [new_name, schema_id];
 
   return executor(query, values, { single_row: true });
 };

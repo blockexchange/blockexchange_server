@@ -34,3 +34,13 @@ module.exports.find_all_by_collectionid = function(collection_id){
 	const values = [collection_id];
 	return executor(query, values);
 };
+
+module.exports.change_schemaid = function(from_id, to_id){
+	return executor(`
+		update collection_schema
+		set schema_id = $1
+		where schema_id = $2
+	`, [
+			to_id, from_id
+	]);
+}

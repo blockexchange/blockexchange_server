@@ -6,6 +6,8 @@ const events = require("../events");
 
 const app = require("../app");
 const schema_dao = require("../dao/schema");
+const collection_schema_dao = require("../dao/collection_schema");
+const user_schema_star_dao = require("../dao/userschemastar");
 
 const { UPLOAD } = require("../permissions");
 const tokenmiddleware = require("../middleware/token");
@@ -59,16 +61,24 @@ app.post('/api/schema/:id/complete', tokenmiddleware, permissioncheck(UPLOAD), j
 
 	await schema_dao.finalize(schema.id);
 
-	if (schema.replaces){
+	if (req.body.replaces){
 		//uploaded schema replaces existing schema
 		const replaces_schema = await schema_dao.get_by_schemaname_and_username(req.body.replaces, req.claims.username);
 
 		if (replaces_schema){
-			// TODO: rewire stars to new schema_id
-			// TODO: rewire collection_schema to new schema id
-			// TODO: rename old schema to random string + oldname
-			// TODO: archive old schema
-			// TODO: rename new schema
+			// rewire stars to new schema_id
+			user_schema_star_dao.change_schemaid(replaces_schema.id, schema.id);
+			// rewire collection_schema to new schema id
+			collection_schema_dao.change_schemaid(replaces_schema.id, schema.id);
+
+			// archive old schema
+			schema_dao.archive_by_id(replaces_schema.id);
+
+			// rename old/new schema
+			schema.name = replaces_schema.name;
+			replaces_schema.name = "replaced_" + Math.random().toString(36).substring(2, 8).toUpperCase();
+			schema_dao.update(replaces_schema);
+			schema_dao.update(schema);
 
 		} else {
 			// to-replace schema vanished, leave it as-is
