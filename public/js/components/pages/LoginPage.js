@@ -40,15 +40,21 @@ export default {
 						External login
 					</div>
 					<div class="card-body">
-						<a v-bind:href="'https://discord.com/api/oauth2/authorize?client_id=' + info.oauth.discord_id + '&redirect_uri=' + encodeURIComponent(info.oauth.base_url + '/api/oauth_callback/discord') + '&response_type=code&scope=identify%20email'" class="btn btn-secondary">
+						<a v-if="info.oauth.discord_id"
+							v-bind:href="'https://discord.com/api/oauth2/authorize?client_id=' + info.oauth.discord_id + '&redirect_uri=' + encodeURIComponent(info.oauth.base_url + '/api/oauth_callback/discord') + '&response_type=code&scope=identify%20email'"
+							class="btn btn-secondary">
 							<i class="fab fa-discord"></i>
 							Login with Discord
 						</a>
-						<a v-bind:href="'https://github.com/login/oauth/authorize?client_id=' + info.oauth.github_id" class="btn btn-secondary">
+						<a v-if="info.oauth.github_id"
+							v-bind:href="'https://github.com/login/oauth/authorize?client_id=' + info.oauth.github_id"
+							class="btn btn-secondary">
 							<i class="fab fa-github"></i>
 							Login with Github
 						</a>
-						<a v-bind:href="'https://git.minetest.land/login/oauth/authorize?client_id=' + info.oauth.mesehub_id + '&redirect_uri=' + encodeURIComponent(info.oauth.base_url + '/api/oauth_callback/mesehub') + '&response_type=code&state=STATE'" class="btn btn-secondary">
+						<a v-if="info.oauth.mesehub_id"
+							v-bind:href="'https://git.minetest.land/login/oauth/authorize?client_id=' + info.oauth.mesehub_id + '&redirect_uri=' + encodeURIComponent(info.oauth.base_url + '/api/oauth_callback/mesehub') + '&response_type=code&state=STATE'"
+							class="btn btn-secondary">
 							<img src="pics/default_mese_crystal.png"/>
 							Login with Mesehub
 						</a>
