@@ -35,7 +35,7 @@ export default {
 							<li>
 								Name: <b>{{ store.claims.username }}</b>
 							</li>
-							<li>
+							<li v-if="store.claims.mail">
 								Mail: <b>{{ store.claims.mail }}</b>
 							</li>
 							<li>
