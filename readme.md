@@ -41,6 +41,8 @@ Optional:
 * **DISCORD_APP_ID** Discord app ID
 * **MESEHUB_APP_SECRET** Mesehub app secret key
 * **MESEHUB_APP_ID** Mesehub app ID
+* **MATOMO_URL** Matomo tracker url
+* **MATOMO_ID** Matomo tracker id
 
 ## Docker usage
 
