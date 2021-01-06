@@ -18,11 +18,7 @@ function start(info){
 
 	if (info.matomo.url){
 		// Enable analytics
-		Vue.use(VueMatomo, {
-			host: info.matomo.url,
-			siteId: info.matomo.id,
-			router: router
-		});
+		//TODO
 	}
 
 	const i18n = new VueI18n({

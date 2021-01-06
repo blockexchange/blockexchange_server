@@ -7,7 +7,6 @@
     "Vue": true,
     "VueRouter": true,
 		"VueI18n": true,
-		"VueMatomo": true,
     "console": true
   }
 }
