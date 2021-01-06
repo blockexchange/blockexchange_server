@@ -76,7 +76,7 @@ app.get("/api/search/schema/byname/:username/:name", async function(req, res){
 
 	const schema = await schema_dao.get_by_schemaname_and_username(req.params.name, req.params.username);
 	if (!schema) {
-		res.status(404).end();
+		res.status(204).end();
 		return;
 	}
 
