@@ -23,7 +23,7 @@
     "jsonwebtoken": "^8.5.1",
     "luaparse": "^0.3.0",
     "pg": "^8.3.2",
-    "postgres-migrations": "^5.0.0",
+    "postgres-migrations": "^5.1.1",
     "prom-client": "^13.0.0",
     "querystring": "^0.2.0",
     "vue": "^2.6.12",
