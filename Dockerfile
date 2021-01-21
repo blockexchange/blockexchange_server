@@ -1,5 +1,5 @@
 # Stage 1 testing
-FROM node:15.5.1-alpine as builder
+FROM node:15.6.0-alpine as builder
 
 # deps
 RUN apk add alpine-sdk cairo-dev pango-dev jpeg-dev
@@ -16,7 +16,7 @@ RUN cd /data &&\
   npm run bundle
 
 # Stage 2 package
-FROM node:15.5.1-alpine
+FROM node:15.6.0-alpine
 
 COPY . /data
 
