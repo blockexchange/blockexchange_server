@@ -24,7 +24,7 @@
     "luaparse": "^0.3.0",
     "pg": "^8.3.2",
     "postgres-migrations": "^5.1.1",
-    "prom-client": "^13.0.0",
+    "prom-client": "^13.1.0",
     "querystring": "^0.2.0",
     "vue": "^2.6.12",
     "vue-i18n": "^8.22.4",
