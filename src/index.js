@@ -27,6 +27,7 @@ require("./api/schema_update");
 require("./api/schema_create");
 require("./api/schema_delete");
 require("./api/schema_screenshot");
+require("./api/schema_export");
 require("./api/schemamods");
 require("./api/schemapart");
 
