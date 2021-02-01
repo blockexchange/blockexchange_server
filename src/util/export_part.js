@@ -1,5 +1,4 @@
 
-
 module.exports = function export_part(data, offset_x, offset_y, offset_z){
 	let mts = "";
 	console.log(data);
@@ -30,7 +29,33 @@ module.exports = function export_part(data, offset_x, offset_y, offset_z){
 					if (data.param2[index] > 0){
 						mts += `,["param2"]=${data.param2[index]}`;
 					}
-					//TODO: metadata
+					//metadata
+					const pos_str = `(${x},${y},${z})`;
+					const meta = data.metadata.meta[pos_str];
+					if (meta) {
+						//TODO: handle "delimiter": \u001b(T@default)\"\u001bFtest 123\u001bE\"\u001bE
+						mts += `,["meta"]={`;
+						if (meta.fields){
+							mts += `["fields"]={`;
+							Object.keys(meta.fields).forEach(key => {
+								mts += `["${key}"]="${meta.fields[key]}",`;
+							});
+							mts += `},`;
+						}
+						if (meta.inventory){
+							mts += `["inventory"]={`;
+							Object.keys(meta.inventory).forEach(inv_name => {
+								mts += `["${inv_name}"]={`;
+								const inv_size = Object.keys(meta.inventory[inv_name]).length;
+								for (let j=0; j<inv_size; j++){
+									mts += `"${meta.inventory[inv_name][j]}",`;
+								}
+								mts += `},`;
+							});
+							mts += `}`;
+						}
+						mts += `}`;
+					}
 					mts += `},`;
 				}
 
