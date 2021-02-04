@@ -1,4 +1,4 @@
-FROM node:15.7.0-alpine as builder
+FROM node:15.8.0-alpine as builder
 
 COPY . /data
 
