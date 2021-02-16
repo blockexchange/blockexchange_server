@@ -8,6 +8,7 @@ import SchemaDownload from './SchemaDownload.js';
 import SchemaDescription from './SchemaDescription.js';
 import SchemaDelete from './SchemaDelete.js';
 import SchemaTitle from './SchemaTitle.js';
+import SchemaExport from './SchemaExport.js';
 
 export default {
 	components: {
@@ -17,7 +18,8 @@ export default {
 		"schema-download": SchemaDownload,
 		"schema-description": SchemaDescription,
 		"schema-delete": SchemaDelete,
-		"schema-title": SchemaTitle
+		"schema-title": SchemaTitle,
+		"schema-export": SchemaExport
 	},
 	props: ["user_name", "schema_name"],
 	data: function(){
@@ -49,6 +51,7 @@ export default {
 					</h3>
 				</div>
 				<div class="col-md-2">
+					<schema-export :schema="schema"/>
 					<schema-delete :schema="schema" class="float-right"/>
 				</div>
 			</div>

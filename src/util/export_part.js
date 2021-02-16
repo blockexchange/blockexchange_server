@@ -1,7 +1,6 @@
 
 module.exports = function export_part(data, offset_x, offset_y, offset_z){
 	let mts = "";
-	console.log(data);
 
 	// reverse node-id mapping for lookup
 	const nodeid_to_name_mapping = {};
@@ -9,8 +8,6 @@ module.exports = function export_part(data, offset_x, offset_y, offset_z){
 		.map(name => nodeid_to_name_mapping[data.node_mapping[name]] = name);
 
 	const air_nodeid = data.node_mapping.air;
-	console.log("air_nodeid", air_nodeid);
-
 	const data_size = data.size.x * data.size.y * data.size.z;
 	if (data_size != data.node_ids.length){
 		throw new Error("unexpected data-size: " + data.node_ids.length);
@@ -30,6 +27,10 @@ module.exports = function export_part(data, offset_x, offset_y, offset_z){
 						mts += `,["param2"]=${data.param2[index]}`;
 					}
 					//metadata
+					if (!data.metadata || !data.metadata.meta){
+						mts += `},`;
+						continue;
+					}
 					const pos_str = `(${x},${y},${z})`;
 					const meta = data.metadata.meta[pos_str];
 					if (meta) {
@@ -37,20 +38,20 @@ module.exports = function export_part(data, offset_x, offset_y, offset_z){
 						mts += `,["meta"]={`;
 						if (meta.fields){
 							mts += `["fields"]={`;
-							Object.keys(meta.fields).forEach(key => {
-								mts += `["${key}"]="${meta.fields[key]}",`;
+							mts += Object.keys(meta.fields).reduce((all, key) => {
+								all += `["${key}"]="${meta.fields[key]}",`;
 							});
 							mts += `},`;
 						}
 						if (meta.inventory){
 							mts += `["inventory"]={`;
-							Object.keys(meta.inventory).forEach(inv_name => {
-								mts += `["${inv_name}"]={`;
+							mts += Object.keys(meta.inventory).reduce((all, inv_name) => {
+								all += `["${inv_name}"]={`;
 								const inv_size = Object.keys(meta.inventory[inv_name]).length;
 								for (let j=0; j<inv_size; j++){
-									mts += `"${meta.inventory[inv_name][j]}",`;
+									all += `"${meta.inventory[inv_name][j]}",`;
 								}
-								mts += `},`;
+								all += `},`;
 							});
 							mts += `}`;
 						}

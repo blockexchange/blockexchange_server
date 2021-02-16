@@ -33,5 +33,6 @@ app.get('/api/export/:id/:name', async function(req, res){
 		res.header("Content-Type", "text/plain").send(mts);
 	} catch (e) {
 		res.status(500).send(e.message);
+		console.error(e);
 	}
 });
