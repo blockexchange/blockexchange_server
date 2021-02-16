@@ -25,7 +25,7 @@
     "pg": "^8.3.2",
     "postgres-migrations": "^5.1.1",
     "prom-client": "^13.1.0",
-    "querystring": "^0.2.0",
+    "querystring": "^0.2.1",
     "vue": "^2.6.12",
     "vue-i18n": "^8.22.4",
     "vue-router": "^3.5.1",
