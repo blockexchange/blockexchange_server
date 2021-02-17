@@ -12,6 +12,9 @@ app.get('/api/export/:id/:name', async function(req, res){
 
 	try {
 		const schema = await schema_dao.get_by_id(req.params.id);
+		if (schema.total_parts > 50){
+			return res.status(500).send("WE export is limited to 50 parts!");
+		}
 		// open table
 		let mts = "5:return {";
 
