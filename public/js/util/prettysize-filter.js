@@ -1,7 +1,7 @@
 
 const ranges = [{
 	size: 1000*1000,
-	siffix: "mb"
+	suffix: "mb"
 },{
 	size: 1000,
 	suffix: "kb"
