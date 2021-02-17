@@ -24,9 +24,13 @@ export default {
 					<i class="fa fa-download"></i>
 					Mod/Installation
 				</router-link>
-					<a href="https://github.com/blockexchange" class="btn btn-secondary">
+				<a href="https://github.com/blockexchange" class="btn btn-secondary">
 					<i class="fab fa-github"></i>
-				Source
+					Browse the source
+				</a>
+				<a href="https://discord.gg/ye9aCUJPdB" class="btn btn-secondary">
+					<i class="fab fa-discord"></i>
+					Join the discord community
 				</a>
 		</div>
 	</div>
