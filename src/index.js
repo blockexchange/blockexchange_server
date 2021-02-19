@@ -13,6 +13,7 @@ require("./api/oauth_callback_mesehub");
 
 // stats / info
 require("./api/info");
+require("./api/metrics");
 require("./api/preview");
 
 // search
