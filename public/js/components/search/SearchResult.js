@@ -1,4 +1,11 @@
+import store from '../../store/login.js';
+
 export default {
+	data: function(){
+		return {
+			store: store
+		};
+	},
 	props: ["list"],
 	template: /*html*/`
 		<table class="table table-striped table-condensed">
@@ -19,7 +26,12 @@ export default {
 							{{ entry.name }}
 						</router-link>
 					</td>
-					<td>{{ entry.user.name }}</td>
+					<td>
+						{{ entry.user.name }}
+						<span v-if="store.claims.username == entry.user.name" class="badge badge-secondary">
+							owner
+						</span>
+					</td>
 					<td>{{ entry.description }}</td>
 					<td>
 						{{ entry.total_parts }}
