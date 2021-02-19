@@ -7,7 +7,7 @@ export default {
 		};
 	},
 	template: /*html*/`
-		<div v-if="store.loggedIn">
+		<div v-if="store.loggedIn" class="btn btn-light">
 			<router-link to="/profile">
 				<i class="fas fa-user"></i>
 				<span>
