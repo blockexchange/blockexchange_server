@@ -31,6 +31,9 @@ require("./api/schema_export");
 require("./api/schemamods");
 require("./api/schemapart");
 
+// tags
+require("./api/tag");
+
 // collections
 require("./api/collection");
 require("./api/collection_schema");
