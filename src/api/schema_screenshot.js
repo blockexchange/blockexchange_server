@@ -1,7 +1,7 @@
 var Canvas = require('canvas');
 
 const logger = require("../logger");
-
+const cache = require("../util/cache");
 const app = require("../app");
 const schema_screenshot_dao = require("../dao/schema_screenshot");
 
@@ -18,35 +18,50 @@ app.get('/api/schema/:id/screenshot', function(req, res){
 app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
   logger.debug("GET /api/schema/:id/screenshot/:screenshot_id", req.params.id, req.params.screenshot_id);
 
-  schema_screenshot_dao.get_by_id(+req.params.id, +req.params.screenshot_id)
-  .then(screenshot => {
-		if (req.query.width && req.query.height){
-			// resize
-			var img = new Canvas.Image();
-			img.onerror = function(e){
-				console.error(e);
-			};
-			img.onload = function(){
-				const width = +req.query.width;
-				const height = +req.query.height;
-				//console.log(img.height);
+	const cache_key = `screenshot/${+req.params.id}/${+req.params.screenshot_id}/` +
+		`${+(req.query.height || 0)}/${+(req.query.width || 0)}`;
 
-				const canvas = Canvas.createCanvas(width, height);
-				var ctx = canvas.getContext('2d');
- 				ctx.drawImage(img, 0, 0, width, height);
+	cache.get(new Buffer(cache_key))
+	.then(image => {
+		if (image){
+			// cached
+			res.header("Content-type", "image/png").send(image);
 
-				res.header("Content-type", "image/png")
-		    .send(canvas.toBuffer("image/png"));
-			};
-
-			img.src = "data:image/png;base64," + screenshot.data.toString("base64");
 		} else {
-			// original size
-			res.header("Content-type", screenshot.type)
-	    .send(screenshot.data);
-		}
+			// uncached
+			return schema_screenshot_dao.get_by_id(+req.params.id, +req.params.screenshot_id)
+		  .then(screenshot => {
+				if (req.query.width && req.query.height){
+					// resize
+					var img = new Canvas.Image();
+					img.onerror = function(e){
+						console.error(e);
+					};
+					img.onload = function(){
+						const width = +req.query.width;
+						const height = +req.query.height;
+						//console.log(img.height);
 
-  })
+						const canvas = Canvas.createCanvas(width, height);
+						var ctx = canvas.getContext('2d');
+		 				ctx.drawImage(img, 0, 0, width, height);
+
+						const buf = canvas.toBuffer("image/png");
+						res.header("Content-type", "image/png")
+				    .send(buf);
+
+						cache.set(cache_key, buf);
+					};
+
+					img.src = "data:image/png;base64," + screenshot.data.toString("base64");
+				} else {
+					// original size
+					res.header("Content-type", screenshot.type)
+			    .send(screenshot.data);
+				}
+		  });
+		}
+	})
   .catch(e => {
 		console.error(e);
 		res.status(500).end();

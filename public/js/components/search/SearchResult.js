@@ -28,7 +28,7 @@ export default {
 					</td>
 					<td>
 						{{ entry.user.name }}
-						<span v-if="store.claims.username == entry.user.name" class="badge badge-secondary">
+						<span v-if="store.claims && store.claims.username == entry.user.name" class="badge badge-secondary">
 							owner
 						</span>
 					</td>

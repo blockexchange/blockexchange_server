@@ -8,7 +8,8 @@
     "bundle": "cd public/js && rollup -c rollup.config.js",
     "jshint_frontend": "cd public/js && jshint .",
     "test": "mocha",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "watch": "nodemon"
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +27,7 @@
     "postgres-migrations": "^5.1.1",
     "prom-client": "^13.1.0",
     "querystring": "^0.2.1",
+    "redis": "^3.0.2",
     "vue": "^2.6.12",
     "vue-i18n": "^8.23.0",
     "vue-router": "^3.5.1",
@@ -34,6 +36,7 @@
   "devDependencies": {
     "jshint": "^2.12.0",
     "mocha": "^8.3.0",
+    "nodemon": "^2.0.7",
     "rollup": "^2.39.1"
   }
 }
