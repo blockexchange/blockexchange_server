@@ -11,8 +11,8 @@ const sqrt3div2 = 2 / Math.sqrt(3);
 
 module.exports.render = async function(schemaid){
 
-	const img_size_x = 1280;
-	const img_size_y = 1024;
+	const img_size_x = 1024;
+	const img_size_y = 768;
 
 	const canvas = createCanvas(img_size_x, img_size_y);
 	const ctx = canvas.getContext('2d');
@@ -64,5 +64,7 @@ module.exports.render = async function(schemaid){
 		}
 	}
 
-	return canvas.toBuffer("image/png");
+	return canvas.toBuffer("image/png", {
+		compressionLevel: 9
+	});
 };

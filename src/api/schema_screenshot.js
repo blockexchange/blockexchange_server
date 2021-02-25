@@ -46,7 +46,10 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
 						var ctx = canvas.getContext('2d');
 		 				ctx.drawImage(img, 0, 0, width, height);
 
-						const buf = canvas.toBuffer("image/png");
+						const buf = canvas.toBuffer("image/png", {
+							compressionLevel: 9,
+							filters: canvas.PNG_ALL_FILTERS
+						});
 						res.header("Content-type", "image/png")
 				    .send(buf);
 
