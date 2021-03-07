@@ -129,6 +129,7 @@ module.exports.find_recent = function(count) {
     select *
     from schema
 		where archived = false
+		and complete = true
 		order by created desc
     limit $1
   `;
