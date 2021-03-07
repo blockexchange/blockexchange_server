@@ -9,6 +9,7 @@ import SchemaDescription from './SchemaDescription.js';
 import SchemaDelete from './SchemaDelete.js';
 import SchemaTitle from './SchemaTitle.js';
 import SchemaExport from './SchemaExport.js';
+import SchemaTags from './SchemaTags.js';
 
 export default {
 	components: {
@@ -19,7 +20,8 @@ export default {
 		"schema-description": SchemaDescription,
 		"schema-delete": SchemaDelete,
 		"schema-title": SchemaTitle,
-		"schema-export": SchemaExport
+		"schema-export": SchemaExport,
+		"schema-tags": SchemaTags
 	},
 	props: ["user_name", "schema_name"],
 	data: function(){
@@ -75,6 +77,13 @@ export default {
 						<div class="card-body">
 							<h5 class="card-title">Used nodes</h5>
 							<schema-mods :schema="schema"/>
+						</div>
+					</div>
+					<br>
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Tags</h5>
+							<schema-tags :schema="schema"/>
 						</div>
 					</div>
 				</div>
