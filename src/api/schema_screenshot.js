@@ -25,7 +25,10 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
 	.then(image => {
 		if (image){
 			// cached
-			res.header("Content-type", "image/png").send(image);
+			res
+			.header("Content-type", "image/png")
+			.header("Cache-Control", "public, max-age=31536000")
+			.send(image);
 
 		} else {
 			// uncached
@@ -50,8 +53,10 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
 							compressionLevel: 9,
 							filters: canvas.PNG_ALL_FILTERS
 						});
-						res.header("Content-type", "image/png")
-				    .send(buf);
+						res
+						.header("Content-type", "image/png")
+						.header("Cache-Control", "public, max-age=31536000")
+						.send(buf);
 
 						cache.set(cache_key, buf);
 					};
@@ -59,7 +64,9 @@ app.get('/api/schema/:id/screenshot/:screenshot_id', function(req, res){
 					img.src = "data:image/png;base64," + screenshot.data.toString("base64");
 				} else {
 					// original size
-					res.header("Content-type", screenshot.type)
+					res
+					.header("Content-type", screenshot.type)
+					.header("Cache-Control", "public, max-age=31536000")
 			    .send(screenshot.data);
 				}
 		  });
