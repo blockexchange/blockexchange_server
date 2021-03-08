@@ -16,6 +16,6 @@ app.delete("/api/schema/:id",
 	logger.debug("DELETE /api/schema/:id", req.params.id);
 
 	// delete schema
-	await schema_dao.archive_by_id(req.params.id);
+	await schema_dao.remove(req.params.id);
 	res.end();
 });

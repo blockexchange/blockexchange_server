@@ -84,7 +84,7 @@ module.exports.get_by_id = function(id) {
 };
 
 module.exports.find_by_user_id = function(user_id) {
-  return executor("select * from schema where user_id = $1 and archived = false", [user_id]);
+  return executor("select * from schema where user_id = $1", [user_id]);
 };
 
 module.exports.find_by_user_name = function(user_name) {
@@ -95,16 +95,15 @@ module.exports.find_by_user_name = function(user_name) {
       from public.user
       where name = $1
     )
-		and archived = false
   `;
 
   return executor(query, [user_name]);
 };
 
-module.exports.delete_archived_schemas = function(before_timestamp) {
+module.exports.delete_incomplete_schemas = function(before_timestamp) {
   const query = `
     delete from schema
-    where archived = true
+    where complete = false
 		and created < $1
   `;
 
@@ -116,7 +115,6 @@ module.exports.find_by_keywords = function(keywords) {
     select *
     from schema
     where search_tokens @@ to_tsquery($1)
-		and archived = false
     limit 1000
   `;
 
@@ -128,8 +126,7 @@ module.exports.find_recent = function(count) {
   const query = `
     select *
     from schema
-		where archived = false
-		and complete = true
+		where complete = true
 		order by created desc
     limit $1
   `;
@@ -143,7 +140,6 @@ module.exports.get_by_schemaname_and_username = function(schema_name, user_name)
     from schema
     where user_id = (select id from public.user where name = $1)
     and name = $2
-		and archived = false
     limit 1
   `;
 
@@ -164,17 +160,13 @@ module.exports.increment_downloads = function(schema_id) {
   return executor(query, values, { single_row: true });
 };
 
-module.exports.archive_by_id = function(schema_id) {
-	const new_name = "archived_" + Math.random().toString(36).substring(2, 8).toUpperCase();
-
+module.exports.remove = function(schema_id) {
   const query = `
-    update schema
-    set archived = true,
-		name = $1
-    where id = $2
+    delete from schema
+    where id = $1
   `;
 
-  const values = [new_name, schema_id];
+  const values = [schema_id];
 
   return executor(query, values, { single_row: true });
 };
