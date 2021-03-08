@@ -10,7 +10,7 @@ describe('mapblockrenderer', function() {
 		const img_size_y = 1024;
 		const size = 10;
 
-		const data_str = fs.readFileSync("./test/random_mapblock.json");
+		const data_str = fs.readFileSync("./test/testdata/random_mapblock.json");
 		const mapblock = JSON.parse(data_str);
 
 		const canvas = createCanvas(img_size_x, img_size_y);

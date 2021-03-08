@@ -33,7 +33,7 @@ app.get('/api/export/:id/:name', async function(req, res){
 		// close outer table
 		mts += "}";
 
-		res.header("Content-Type", "text/plain").send(mts);
+		res.header("Content-Type", "application/binary").send(mts);
 	} catch (e) {
 		res.status(500).send(e.message);
 		console.error(e);

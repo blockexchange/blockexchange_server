@@ -49,7 +49,7 @@ describe('serializer', function() {
     });
 
 		it('matches real-life in/output', function() {
-			const data_str = fs.readFileSync("./test/testcube.json");
+			const data_str = fs.readFileSync("./test/testdata/testcube.json");
 			const mapblock = JSON.parse(data_str);
 			const schemapart = serializer.serialize(mapblock.data);
 			const out_data = serializer.deserialize(schemapart);
