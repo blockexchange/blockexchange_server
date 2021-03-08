@@ -5,15 +5,15 @@ const logger = require("../logger");
 const { MANAGEMENT } = require("../permissions");
 const tokenmiddleware = require("../middleware/token");
 const permissioncheck = require("../middleware/permissioncheck");
+const schemaownercheck = require("../middleware/schemaownercheck");
 
-app.delete("/api/schema/:id", tokenmiddleware, permissioncheck(MANAGEMENT), async function(req, res){
+app.delete("/api/schema/:id",
+	tokenmiddleware,
+	permissioncheck(MANAGEMENT),
+	schemaownercheck("id"),
+	async function(req, res){
+
 	logger.debug("DELETE /api/schema/:id", req.params.id);
-
-	const schema = await schema_dao.get_by_id(req.params.id);
-	if (schema.user_id != req.claims.user_id){
-		res.status(403).end();
-		return;
-	}
 
 	// delete schema
 	await schema_dao.archive_by_id(req.params.id);

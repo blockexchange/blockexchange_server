@@ -1,13 +1,13 @@
 const axios = require('axios');
 const qs = require('querystring');
 
-const app = require("../app");
-const logger = require("../logger");
-const user_dao = require("../dao/user");
-const setupuser = require("../util/setupuser");
+const app = require("../../app");
+const logger = require("../../logger");
+const user_dao = require("../../dao/user");
+const setupuser = require("../../util/setupuser");
 
-const { MANAGEMENT, UPLOAD, OVERWRITE } = require("../permissions");
-const createjwt = require("../util/createjwt");
+const { MANAGEMENT, UPLOAD, OVERWRITE } = require("../../permissions");
+const createjwt = require("../../util/createjwt");
 
 app.get('/api/oauth_callback/discord', function(req, res){
   logger.debug("GET /api/oauth_callback/discord", req.query);
