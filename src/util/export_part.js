@@ -35,7 +35,9 @@ function export_node(buf, nodename, data, index, x, y, z){
 				buf.add(`["${inv_name}"]={`);
 				const inv_size = Object.keys(meta.inventory[inv_name]).length;
 				for (let j=0; j<inv_size; j++){
-					buf.add(`"${meta.inventory[inv_name][j]}",`);
+					buf.add(`"`);
+					buf.add(meta.inventory[inv_name][j]);
+					buf.add(`",`);
 				}
 				buf.add(`},`);
 			});
@@ -43,7 +45,7 @@ function export_node(buf, nodename, data, index, x, y, z){
 		}
 		buf.add(`}`);
 	}
-	buf.add(`},\n`);
+	buf.add(`},`);
 }
 
 module.exports = function export_part(data, offset_x, offset_y, offset_z){
