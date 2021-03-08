@@ -88,6 +88,5 @@ module.exports = function export_part(data, offset_x, offset_y, offset_z){
 	}
 
 	const all_parts = [].concat(...buf);
-	console.log(all_parts);
 	return Buffer.from(all_parts);
 };
