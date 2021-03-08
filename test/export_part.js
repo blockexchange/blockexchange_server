@@ -10,10 +10,12 @@ describe('export_part', function() {
 			const data_str = fs.readFileSync("./test/testdata/metadata_mapblock.json");
 			const mapblock = JSON.parse(data_str);
 
-			const mts = export_part(mapblock.data, 0, 0, 0)
-			//console.log(mts);
-			assert.ok(mts);
-			//const ast = luaparse.parse(`return {${mts}}`);
+			const buf = export_part(mapblock.data, 0, 0, 0);
+			assert.ok(buf);
+			console.log(buf);
+			const stmt = `return {${buf.toString()}}`;
+			console.log(stmt);
+			//const ast = luaparse.parse(stmt);
 			//assert.ok(ast);
 		});
 	});
