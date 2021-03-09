@@ -30,7 +30,8 @@ app.post('/api/schemapart', tokenmiddleware, permissioncheck(UPLOAD), jsonParser
 		offset_y: req.body.offset_y,
 		offset_z: req.body.offset_z,
 		data: serialized_data.data,
-		metadata: serialized_data.metadata
+		metadata: serialized_data.metadata,
+		mtime: Date.now()
 	});
 	res.json(id_obj);
 });
@@ -55,6 +56,7 @@ app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', async functi
 			offset_x: req.params.offset_x,
 			offset_y: req.params.offset_y,
 			offset_z: req.params.offset_z,
+			mtime: data.mtime,
 			data: {
 				node_ids: data.node_ids,
 				param1: data.param1,

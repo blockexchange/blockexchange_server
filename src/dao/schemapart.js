@@ -3,8 +3,8 @@ const executor = require("./executor");
 module.exports.create = function(schemapart) {
 	const query = `
 		insert into
-		schemapart(schema_id, offset_x, offset_y, offset_z, data, metadata)
-		values($1, $2, $3, $4, $5, $6)
+		schemapart(schema_id, offset_x, offset_y, offset_z, mtime, data, metadata)
+		values($1, $2, $3, $4, $5, $6, $7)
 		on conflict on constraint schemapart_unique_coords
 		do
 		update set data = EXCLUDED.data, metadata = EXCLUDED.metadata;
@@ -15,6 +15,7 @@ module.exports.create = function(schemapart) {
 		schemapart.offset_x,
 		schemapart.offset_y,
 		schemapart.offset_z,
+		schemapart.mtime,
 		schemapart.data,
 		schemapart.metadata
 	];
