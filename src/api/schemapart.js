@@ -73,3 +73,14 @@ app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', async functi
 		res.status(204).end();
 	}
 });
+
+app.get('/api/schemapart_next/:schema_id/:offset_x/:offset_y/:offset_z', async function(req, res){
+	const next_parts = await schemapart_dao.get_next_by_id_and_offset(
+		req.params.schema_id,
+		req.params.offset_x,
+		req.params.offset_y,
+		req.params.offset_z
+	);
+
+	res.json(next_parts);
+});
