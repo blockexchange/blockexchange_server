@@ -1,15 +1,15 @@
 const executor = require("./executor");
 
-module.exports.create = function(schema_id, mod_name, node_count) {
+module.exports.create = function(schema_id, mod_name) {
   const query = `
     insert into
-    schemamod(schema_id, mod_name, node_count)
-    values($1, $2, $3)
+    schemamod(schema_id, mod_name)
+    values($1, $2)
     returning *
   `;
 
   const values = [
-    schema_id, mod_name, node_count
+    schema_id, mod_name
   ];
 
   return executor(query, values, { single_row: true });

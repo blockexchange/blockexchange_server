@@ -75,7 +75,7 @@ export default {
 					<br>
 					<div class="card">
 						<div class="card-body">
-							<h5 class="card-title">Used nodes</h5>
+							<h5 class="card-title">Used mods</h5>
 							<schema-mods :schema="schema"/>
 						</div>
 					</div>

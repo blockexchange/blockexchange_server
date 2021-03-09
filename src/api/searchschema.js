@@ -13,8 +13,7 @@ async function enrich(schema){
 	const user = await user_dao.get_by_id(schema.user_id);
 	const schema_stars = await user_schema_star_dao.count_by_schema_id(schema.id);
 
-	const mods = {};
-	schemamods.forEach(mod => mods[mod.mod_name] = mod.node_count);
+	const mods = schemamods.map(sm => sm.mod_name);
 
 	return Object.assign({}, schema, {
 		search_tokens: null,
