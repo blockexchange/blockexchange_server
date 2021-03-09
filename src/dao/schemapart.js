@@ -1,23 +1,25 @@
 const executor = require("./executor");
 
 module.exports.create = function(schemapart) {
-  const query = `
-    insert into
-    schemapart(schema_id, offset_x, offset_y, offset_z, data, metadata)
-    values($1, $2, $3, $4, $5, $6)
-    returning id
-  `;
+	const query = `
+		insert into
+		schemapart(schema_id, offset_x, offset_y, offset_z, data, metadata)
+		values($1, $2, $3, $4, $5, $6)
+		on conflict on constraint schemapart_unique_coords
+		do
+		update set data = EXCLUDED.data, metadata = EXCLUDED.metadata;
+	`;
 
-  const values = [
-    schemapart.schema_id,
-    schemapart.offset_x,
-    schemapart.offset_y,
-    schemapart.offset_z,
-    schemapart.data,
-    schemapart.metadata
-  ];
+	const values = [
+		schemapart.schema_id,
+		schemapart.offset_x,
+		schemapart.offset_y,
+		schemapart.offset_z,
+		schemapart.data,
+		schemapart.metadata
+	];
 
-  return executor(query, values, { single_row: true });
+	return executor(query, values, { single_row: true });
 };
 
 module.exports.get_by_id_and_offset = function(schema_id, x, y, z) {

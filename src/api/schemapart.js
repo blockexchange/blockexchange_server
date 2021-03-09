@@ -22,11 +22,6 @@ app.post('/api/schemapart', tokenmiddleware, permissioncheck(UPLOAD), jsonParser
 		return;
 	}
 
-	if (schema.completed) {
-		res.status(500).end();
-		return;
-	}
-
 	const serialized_data = serializer.serialize(req.body.data);
 
 	const id_obj = await schemapart_dao.create({
