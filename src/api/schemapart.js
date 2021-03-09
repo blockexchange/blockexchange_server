@@ -10,6 +10,7 @@ const serializer = require("../util/serializer");
 const { UPLOAD } = require("../permissions");
 const tokenmiddleware = require("../middleware/token");
 const permissioncheck = require("../middleware/permissioncheck");
+const schemaownercheck = require("../middleware/schemaownercheck");
 
 app.post('/api/schemapart', tokenmiddleware, permissioncheck(UPLOAD), jsonParser, async function(req, res){
 	logger.debug("POST /api/schemapart", req.body.schema_id, req.body.offset_x, req.body.offset_y, req.body.offset_z);
@@ -36,6 +37,23 @@ app.post('/api/schemapart', tokenmiddleware, permissioncheck(UPLOAD), jsonParser
 	res.json(id_obj);
 });
 
+app.delete('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z',
+	tokenmiddleware,
+	permissioncheck(UPLOAD),
+	schemaownercheck("schema_id"),
+	async function(req, res){
+
+	logger.debug("DELETE /api/schemapart", req.params);
+
+	await schemapart_dao.remove_by_id_and_offset(
+		req.params.schema_id,
+		req.params.offset_x,
+		req.params.offset_y,
+		req.params.offset_z
+	);
+
+	res.end();
+});
 
 // curl 127.0.0.1:8080/api/schemapart/1/0/0/0
 app.get('/api/schemapart/:schema_id/:offset_x/:offset_y/:offset_z', async function(req, res){
