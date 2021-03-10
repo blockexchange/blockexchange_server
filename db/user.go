@@ -19,10 +19,7 @@ func mapFromDB(row *sql.Row) (*types.User, error) {
 }
 
 func GetUserById(id int64) (*types.User, error) {
-	query := `
-		select ` + fields + `
-		from public.user where id = $1
-	`
+	query := "select " + fields + " from public.user where id = $1"
 	row := DB.QueryRow(query, id)
 	if row.Err() != nil {
 		return nil, row.Err()
