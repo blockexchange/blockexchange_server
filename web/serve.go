@@ -10,8 +10,11 @@ import (
 
 func Serve(content embed.FS) {
 
+	// webdev flag
+	useLocalfs := os.Getenv("WEBDEV") == "true"
 	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(getFileSystem(false, content)))
+	mux.Handle("/", http.FileServer(getFileSystem(useLocalfs, content)))
+	mux.HandleFunc("/api/info", InfoEndpoint)
 	http.Handle("/", mux)
 
 	err := http.ListenAndServe(":8080", nil)
@@ -20,8 +23,8 @@ func Serve(content embed.FS) {
 	}
 }
 
-func getFileSystem(useOS bool, content embed.FS) http.FileSystem {
-	if useOS {
+func getFileSystem(useLocalfs bool, content embed.FS) http.FileSystem {
+	if useLocalfs {
 		log.Print("using live mode")
 		return http.FS(os.DirFS("public"))
 	}
