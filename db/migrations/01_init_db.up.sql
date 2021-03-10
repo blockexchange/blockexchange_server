@@ -57,7 +57,7 @@ create table schemapart(
   offset_x smallint not null,
   offset_y smallint not null,
   offset_z smallint not null,
-	mtime bigint not null default 0;
+	mtime bigint not null default 0,
   data bytea not null,
   metadata bytea not null
 );
