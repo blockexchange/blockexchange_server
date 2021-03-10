@@ -1,6 +1,7 @@
 package main
 
 import (
+	"blockexchange/db"
 	"blockexchange/web"
 	"embed"
 )
@@ -10,5 +11,6 @@ var content embed.FS
 
 func main() {
 	println("Starting")
+	db.Init()
 	web.Serve(content)
 }
