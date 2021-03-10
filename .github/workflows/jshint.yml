@@ -1,0 +1,20 @@
+name: jshint
+
+on:
+  push:
+    paths:
+      - "public/**"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: apt
+      run: sudo apt-get install -y nodejs npm
+    - name: install
+      run: npm i
+    - name: jshint
+      run: cd public && npm run jshint
