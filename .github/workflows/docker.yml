@@ -4,13 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "src/**"
-      - "public/**"
-      - "migrations/**"
-      - "package.json"
-      - "package-lock.json"
-      - "Dockerfile"
 
 jobs:
   build:
