@@ -1,31 +1,9 @@
-# Stage 1 testing
-FROM node:15.11.0-alpine as builder
-
-# deps
-RUN apk add alpine-sdk cairo-dev pango-dev jpeg-dev
-
-# files
+FROM golang:1.16.0 as builder
 COPY . /data
+RUN cd /data && go build .
 
-# compile / install
-RUN cd /data &&\
-  npm ci &&\
-  npm test &&\
-  npm run jshint_backend &&\
-  npm run jshint_frontend &&\
-  npm run bundle
-
-# Stage 2 package
-FROM node:15.11.0-alpine
-
-COPY . /data
-
-RUN apk add cairo pango jpeg
-COPY --from=builder /data/node_modules /data/node_modules
-COPY --from=builder /data/public /data/public
-
-WORKDIR /data
-
+FROM alpine:3.13.2
+COPY --from=builder /data/blockexchange /blockexchange
 EXPOSE 8080
 
-CMD ["npm", "start"]
+CMD ["/blockexchange"]

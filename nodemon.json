@@ -1,5 +1,0 @@
-{
-  "verbose": true,
-  "watch": ["src", "test"],
-	"exec": "npm i && npm test && npm run jshint_frontend && npm run jshint_backend && npm run bundle && npm start"
-}

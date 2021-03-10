@@ -5,7 +5,7 @@ requiredLabels:
  - dependencies
 
 rules:
-  - requiredTitleRegex: '\brollup|blockexchange|node|axios|mesecons\b'
+  - requiredTitleRegex: '\bblockexchange|node|mesecons\b'
 
 mergeMethod: rebase
 reportStatus: true
