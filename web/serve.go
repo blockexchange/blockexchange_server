@@ -6,16 +6,19 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
 )
 
 func Serve(content embed.FS) {
 
 	// webdev flag
 	useLocalfs := os.Getenv("WEBDEV") == "true"
-	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(getFileSystem(useLocalfs, content)))
-	mux.HandleFunc("/api/info", InfoEndpoint)
-	http.Handle("/", mux)
+	r := mux.NewRouter()
+	r.HandleFunc("/api/info", InfoEndpoint)
+	r.HandleFunc("/api/schema/{id}", GetSchema)
+	r.PathPrefix("/").Handler(http.FileServer(getFileSystem(useLocalfs, content)))
+	http.Handle("/", r)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

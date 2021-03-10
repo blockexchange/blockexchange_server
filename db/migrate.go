@@ -1,12 +1,10 @@
 package db
 
 import (
-	"database/sql"
 	"embed"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -36,21 +34,8 @@ func (d *driver) Open(rawURL string) (source.Driver, error) {
 }
 
 func Migrate() {
-	connStr := fmt.Sprintf(
-		"user=%s password=%s port=%s host=%s dbname=%s sslmode=disable",
-		os.Getenv("PGUSER"),
-		os.Getenv("PGPASSWORD"),
-		os.Getenv("PGPORT"),
-		os.Getenv("PGHOST"),
-		os.Getenv("PGDATABASE"))
 
-	log.Printf("Connecting to %s", connStr)
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	driver, err := postgres.WithInstance(DB, &postgres.Config{})
 	m, err := migrate.NewWithDatabaseInstance("embed://", "postgres", driver)
 	if err != nil {
 		log.Fatal(err)
@@ -64,7 +49,7 @@ func Migrate() {
 	v, _, _ := m.Version()
 	log.Printf("DB-Version: %d", v)
 
-	rows, err := db.Query("SELECT true")
+	rows, err := DB.Query("SELECT true")
 	if err != nil {
 		log.Fatal(err)
 	}
