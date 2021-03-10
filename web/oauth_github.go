@@ -41,6 +41,7 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		sendError(w, err.Error())
 		return
+
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
