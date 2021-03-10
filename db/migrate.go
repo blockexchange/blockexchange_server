@@ -2,7 +2,6 @@ package db
 
 import (
 	"embed"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -48,10 +47,4 @@ func Migrate() {
 
 	v, _, _ := m.Version()
 	log.Printf("DB-Version: %d", v)
-
-	rows, err := DB.Query("SELECT true")
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Rows: %s", fmt.Sprint(rows))
 }

@@ -1,0 +1,32 @@
+{
+  "name": "blockexchange_server",
+  "version": "1.0.0",
+  "description": "minetest blockexchange server software",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "jshint": "jshint js/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blockexchange/blockexchange_server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blockexchange/blockexchange_server/issues"
+  },
+  "homepage": "https://github.com/blockexchange/blockexchange_server#readme",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.2",
+    "bootstrap": "^4.6.0",
+    "vue": "^2.6.12",
+    "vue-i18n": "^8.24.0",
+    "vue-router": "^3.5.1"
+  },
+  "devDependencies": {
+    "jshint": "^2.12.0"
+  }
+}

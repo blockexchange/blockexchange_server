@@ -7,7 +7,7 @@ import { get_info } from './api/info.js';
 
 import './util/prettysize-filter.js';
 
-function start(info){
+function start(){
 	// try to restore state
 	loginService.restoreState();
 
@@ -15,11 +15,6 @@ function start(info){
 	const router = new VueRouter({
 	  routes: routes
 	});
-
-	if (info.matomo.url){
-		// Enable analytics
-		//TODO
-	}
 
 	const i18n = new VueI18n({
 		fallbackLocale: 'en',
