@@ -15,8 +15,13 @@ func Serve(content embed.FS) {
 	// webdev flag
 	useLocalfs := os.Getenv("WEBDEV") == "true"
 	r := mux.NewRouter()
+
+	// api surface
 	r.HandleFunc("/api/info", InfoEndpoint)
 	r.HandleFunc("/api/schema/{id}", GetSchema)
+	r.HandleFunc("/api/oauth_callback/github", OauthGithub)
+
+	// static files
 	r.PathPrefix("/").Handler(http.FileServer(getFileSystem(useLocalfs, content)))
 	http.Handle("/", r)
 
