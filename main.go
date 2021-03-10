@@ -11,6 +11,6 @@ var content embed.FS
 
 func main() {
 	println("Starting")
-	db.Init()
+	db.Migrate()
 	web.Serve(content)
 }

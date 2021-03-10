@@ -57,12 +57,12 @@ func Migrate() {
 	}
 
 	err = m.Up()
-	if err != nil {
+	if err != nil && err != migrate.ErrNoChange {
 		log.Fatal(err)
 	}
 
 	v, _, _ := m.Version()
-	log.Printf("Version: %d", v)
+	log.Printf("DB-Version: %d", v)
 
 	rows, err := db.Query("SELECT true")
 	if err != nil {
