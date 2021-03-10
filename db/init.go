@@ -2,12 +2,16 @@ package db
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
 	"log"
 	"os"
 
 	_ "github.com/lib/pq"
 )
+
+//go:embed migrations/*.sql
+var migrations embed.FS
 
 func Init() {
 	connStr := fmt.Sprintf(

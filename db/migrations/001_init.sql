@@ -43,8 +43,7 @@ create table schema(
   total_parts int not null,
   search_tokens tsvector not null,
 	downloads int not null default 0,
-	license varchar not null default 'CC0',
-	archived boolean not null default false
+	license varchar not null default 'CC0'
 );
 
 alter table schema add unique(user_id, name);
@@ -58,19 +57,25 @@ create table schemapart(
   offset_x smallint not null,
   offset_y smallint not null,
   offset_z smallint not null,
+	mtime bigint not null default 0;
   data bytea not null,
   metadata bytea not null
 );
 
-create index schemapart_coords on schemapart(schema_id, offset_x, offset_y, offset_z);
+create unique index schemapart_coords on schemapart(schema_id, offset_x, offset_y, offset_z);
+
+alter table schemapart
+add constraint schemapart_unique_coords
+unique using index schemapart_coords;
+
+create index schemapart_id_mtime on schemapart(schema_id, mtime);
 
 -- SCHEMAMOD
 
 create table schemamod(
   id serial primary key not null,
   schema_id bigint not null references schema(id) on delete cascade,
-  mod_name varchar(64) not null,
-  node_count int not null
+  mod_name varchar(64) not null
 );
 
 create index schemamod_schema_id on schemamod(schema_id);
@@ -105,4 +110,18 @@ create table collection_schema (
 	collection_id bigint not null references collection(id) on delete cascade,
 	schema_id bigint not null references schema(id) on delete cascade,
 	primary key (collection_id, schema_id)
+);
+
+-- TAG
+
+create table tag(
+	id serial primary key not null,
+  name varchar(128) not null,
+	description varchar not null
+);
+
+create table schematag(
+  id serial primary key not null,
+	tag_id bigint not null references tag(id) on delete cascade,
+  schema_id bigint not null references schema(id) on delete cascade
 );
