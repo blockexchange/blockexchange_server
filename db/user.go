@@ -7,6 +7,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var userRepo = NewRepository("public.user")
+
 var fields = "id, created, name, hash, type, external_id, mail"
 
 func mapFromDB(row Scanner) (*types.User, error) {
@@ -29,18 +31,18 @@ func mapFromDB(row Scanner) (*types.User, error) {
 	return &user, err
 }
 
-func GetUserById(id int64) (*types.User, error) {
-	logrus.Trace("db.GetUserById", id)
-	query := "select " + fields + " from public.user where id = $1"
-	row := DB.QueryRow(query, id)
+func fetchUser(wherepart string, args ...interface{}) (*types.User, error) {
+	query := "select " + fields + " from public.user " + wherepart
+	row := DB.QueryRow(query, args...)
 	return mapFromDB(row)
 }
 
+func GetUserById(id int64) (*types.User, error) {
+	return fetchUser("where id = $1", id)
+}
+
 func GetUserByExternalId(external_id string) (*types.User, error) {
-	logrus.Trace("db.GetUserByExternalId", external_id)
-	query := "select " + fields + " from public.user where external_id = $1"
-	row := DB.QueryRow(query, external_id)
-	return mapFromDB(row)
+	return fetchUser("where external_id = $1", external_id)
 }
 
 func GetUsers() ([]*types.User, error) {
@@ -88,9 +90,9 @@ func CreateUser(user *types.User) error {
 func UpdateUser(user *types.User) error {
 	logrus.Trace("db.UpdateUser", user)
 	query := `
-	update public.user
-	where id = $1
-	set name = $2, mail = $3
+		update public.user
+		where id = $1
+		set name = $2, mail = $3
 	`
 	_, err := DB.Exec(query, user.ID, user.Name, user.Mail)
 	return err
