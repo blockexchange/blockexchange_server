@@ -2,15 +2,16 @@ package web
 
 import (
 	"embed"
-	"io/fs"
 	"log"
 	"net/http"
 	"os"
 
+	"blockexchange/public"
+
 	"github.com/gorilla/mux"
 )
 
-func Serve(content embed.FS) {
+func Serve() {
 
 	// webdev flag
 	useLocalfs := os.Getenv("WEBDEV") == "true"
@@ -22,7 +23,7 @@ func Serve(content embed.FS) {
 	r.HandleFunc("/api/oauth_callback/github", OauthGithub)
 
 	// static files
-	r.PathPrefix("/").Handler(http.FileServer(getFileSystem(useLocalfs, content)))
+	r.PathPrefix("/").Handler(http.FileServer(getFileSystem(useLocalfs, public.Webapp)))
 	http.Handle("/", r)
 
 	err := http.ListenAndServe(":8080", nil)
@@ -38,10 +39,5 @@ func getFileSystem(useLocalfs bool, content embed.FS) http.FileSystem {
 	}
 
 	log.Print("using embed mode")
-	fsys, err := fs.Sub(content, "public")
-	if err != nil {
-		panic(err)
-	}
-
-	return http.FS(fsys)
+	return http.FS(content)
 }
