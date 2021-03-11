@@ -26,12 +26,12 @@ func GetUserByExternalId(external_id string) (*types.User, error) {
 
 func GetUsers() ([]types.User, error) {
 	logrus.Trace("db.GetUsers")
-	user := []types.User{}
-	err := DB.Select(&user, "select * from public.user")
+	list := []types.User{}
+	err := DB.Select(&list, "select * from public.user")
 	if err != nil {
 		return nil, err
 	} else {
-		return user, nil
+		return list, nil
 	}
 }
 
