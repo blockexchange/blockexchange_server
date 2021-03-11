@@ -33,8 +33,7 @@ func (d *driver) Open(rawURL string) (source.Driver, error) {
 }
 
 func Migrate() {
-
-	driver, err := postgres.WithInstance(DB, &postgres.Config{})
+	driver, err := postgres.WithInstance(DB.DB, &postgres.Config{})
 	m, err := migrate.NewWithDatabaseInstance("embed://", "postgres", driver)
 	if err != nil {
 		log.Fatal(err)

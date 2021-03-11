@@ -2,68 +2,37 @@ package db
 
 import (
 	"blockexchange/types"
-	"database/sql"
 
 	"github.com/sirupsen/logrus"
 )
 
-var userRepo = NewRepository("public.user")
-
-var fields = "id, created, name, hash, type, external_id, mail"
-
-func mapFromDB(row Scanner) (*types.User, error) {
-	if row.Err() != nil {
-		logrus.Error(row.Err())
-		return nil, row.Err()
-	}
-
+func GetUserById(id int64) (*types.User, error) {
 	user := types.User{}
-
-	err := row.Scan(
-		&user.ID, &user.Created, &user.Name,
-		&user.Hash, &user.Type, &user.ExternalID, &user.Mail,
-	)
-
-	if err == sql.ErrNoRows {
-		return nil, nil
-	}
-
+	err := DB.Select(&user, "select * from public.user where id = $1", id)
 	return &user, err
 }
 
-func fetchUser(wherepart string, args ...interface{}) (*types.User, error) {
-	query := "select " + fields + " from public.user " + wherepart
-	row := DB.QueryRow(query, args...)
-	return mapFromDB(row)
-}
-
-func GetUserById(id int64) (*types.User, error) {
-	return fetchUser("where id = $1", id)
-}
-
 func GetUserByExternalId(external_id string) (*types.User, error) {
-	return fetchUser("where external_id = $1", external_id)
-}
-
-func GetUsers() ([]*types.User, error) {
-	logrus.Trace("db.GetUsers")
-	query := "select " + fields + " from public.user"
-	rows, err := DB.Query(query)
+	user := []types.User{}
+	err := DB.Select(&user, "select * from public.user where external_id = $1", external_id)
 	if err != nil {
 		return nil, err
+	} else if len(user) == 1 {
+		return &user[0], nil
+	} else {
+		return nil, nil
 	}
+}
 
-	defer rows.Close()
-	users := make([]*types.User, 0)
-	for rows.Next() {
-		user, err := mapFromDB(rows)
-		if err != nil {
-			return nil, err
-		}
-		users = append(users, user)
+func GetUsers() ([]types.User, error) {
+	logrus.Trace("db.GetUsers")
+	user := []types.User{}
+	err := DB.Select(&user, "select * from public.user")
+	if err != nil {
+		return nil, err
+	} else {
+		return user, nil
 	}
-
-	return users, nil
 }
 
 func CreateUser(user *types.User) error {

@@ -1,15 +1,15 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
-var DB *sql.DB
+var DB *sqlx.DB
 
 func Init() {
 	connStr := fmt.Sprintf(
@@ -22,7 +22,7 @@ func Init() {
 
 	log.Printf("Connecting to %s", connStr)
 	var err error
-	DB, err = sql.Open("postgres", connStr)
+	DB, err = sqlx.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
 	}
