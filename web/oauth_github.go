@@ -1,6 +1,7 @@
 package web
 
 import (
+	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/types"
 	"bytes"
@@ -114,9 +115,17 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	fmt.Println(user)
-	//TODO
+	permissions := []string{
+		types.JWTPermissionUpload,
+		types.JWTPermissionOverwrite,
+		types.JWTPermissionManagement,
+	}
+	token, err := core.CreateJWT(user, permissions)
+	if err != nil {
+		sendError(w, err.Error())
+		return
+	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+	target := os.Getenv("BASE_URL") + "/#/oauth/" + token
+	http.Redirect(w, r, target, http.StatusTemporaryRedirect)
 }
