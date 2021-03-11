@@ -1,12 +1,17 @@
 package web
 
 import (
+	"blockexchange/db"
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 func sendError(w http.ResponseWriter, message string) {
@@ -85,6 +90,30 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println(userData)
+	user, err := db.GetUserByExternalId(strconv.Itoa(userData.ID))
+	if err != nil {
+		sendError(w, err.Error())
+		return
+	}
+
+	if user == nil {
+		logrus.Debug("creating new user")
+		user = &types.User{
+			Created:    time.Now().Unix() * 1000,
+			Name:       userData.Login,
+			Type:       types.UserTypeGithub,
+			Hash:       "",
+			Mail:       userData.Email,
+			ExternalID: strconv.Itoa(userData.ID),
+		}
+		err = db.CreateUser(user)
+		// TODO: create default access token
+		if err != nil {
+			sendError(w, err.Error())
+			return
+		}
+	}
+	fmt.Println(user)
 	//TODO
 
 	w.WriteHeader(http.StatusOK)

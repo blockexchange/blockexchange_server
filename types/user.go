@@ -1,5 +1,12 @@
 package types
 
+const (
+	UserTypeGithub  = "GITHUB"
+	UserTypeLocal   = "LOCAL"
+	UserTypeDiscord = "DISCORD"
+	UserTypeMesehub = "MESEHUB"
+)
+
 type User struct {
 	ID         int64  `json:"id"`
 	Created    int64  `json:"created"`
