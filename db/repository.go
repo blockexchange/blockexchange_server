@@ -1,12 +1,14 @@
 package db
 
+import "database/sql"
+
 type Processor func()
 
 type Repository struct {
 	table string
 }
 
-func (r Repository) GetBy(wherepart string, target interface{}) {
+func (r Repository) GetBy(db sql.DB, wherepart string, target interface{}) {
 
 }
 
