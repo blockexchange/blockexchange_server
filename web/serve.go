@@ -21,6 +21,7 @@ func Serve() {
 	r.HandleFunc("/api/info", InfoEndpoint)
 	r.HandleFunc("/api/schema/{id}", GetSchema)
 	r.HandleFunc("/api/oauth_callback/github", OauthGithub)
+	r.HandleFunc("/api/access_token/{id}", Secure(GetAccessTokens))
 
 	// static files
 	r.PathPrefix("/").Handler(http.FileServer(getFileSystem(useLocalfs, public.Webapp)))
