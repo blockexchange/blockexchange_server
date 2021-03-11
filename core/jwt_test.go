@@ -4,8 +4,6 @@ import (
 	"blockexchange/types"
 	"fmt"
 	"testing"
-
-	jwt "github.com/dgrijalva/jwt-go"
 )
 
 func TestCreateJWT(t *testing.T) {
@@ -14,7 +12,7 @@ func TestCreateJWT(t *testing.T) {
 		ID:   123,
 		Type: types.UserTypeGithub,
 	}
-	permissions := []string{"ADMIN"}
+	permissions := []types.JWTPermission{types.JWTPermissionUpload}
 	token, err := CreateJWT(&user, permissions)
 	if err != nil {
 		t.Fatal(err)
@@ -22,14 +20,16 @@ func TestCreateJWT(t *testing.T) {
 
 	fmt.Println(token)
 
-	parsedtoken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
-		return []byte{}, nil
-	})
-
+	info, err := ParseJWT(token)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !parsedtoken.Valid {
-		t.Fatal("invalid token")
+
+	fmt.Println(info)
+
+	if info.Username != "dummy" {
+		t.Fatal("username mismatch")
 	}
+
+	//TODO: check permissions, etc
 }

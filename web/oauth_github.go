@@ -115,7 +115,7 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	fmt.Println(user)
-	permissions := []string{
+	permissions := []types.JWTPermission{
 		types.JWTPermissionUpload,
 		types.JWTPermissionOverwrite,
 		types.JWTPermissionManagement,
