@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"blockexchange/db"
 	"blockexchange/public"
 
 	"github.com/gorilla/mux"
@@ -17,14 +18,29 @@ func Serve() {
 	useLocalfs := os.Getenv("WEBDEV") == "true"
 	r := mux.NewRouter()
 
+	accessTokenRepo := db.AccessTokenRepository{DB: db.DB}
+	userRepo := db.UserRepository{DB: db.DB}
+	schemaRepo := db.SchemaRepository{DB: db.DB}
+
+	access_token_api := AccessTokenApi{Repo: &accessTokenRepo}
+	token_api := TokenApi{
+		AccessTokenRepo: &accessTokenRepo,
+		UserRepo:        &userRepo,
+	}
+	schemaApi := SchemaApi{SchemaRepo: &schemaRepo}
+	oauthApi := OauthGithubApi{
+		AccessTokenRepo: &accessTokenRepo,
+		UserRepo:        &userRepo,
+	}
+
 	// api surface
 	r.HandleFunc("/api/info", InfoEndpoint)
-	r.HandleFunc("/api/oauth_callback/github", OauthGithub)
-	r.HandleFunc("/api/token", PostLogin).Methods("POST")
-	r.HandleFunc("/api/schema/{id}", GetSchema).Methods("GET")
-	r.HandleFunc("/api/access_token", Secure(GetAccessTokens)).Methods("GET")
-	r.HandleFunc("/api/access_token", Secure(PostAccessToken)).Methods("POST")
-	r.HandleFunc("/api/access_token/{id}", Secure(DeleteAccessToken)).Methods("DELETE")
+	r.HandleFunc("/api/oauth_callback/github", oauthApi.OauthGithub)
+	r.HandleFunc("/api/token", token_api.PostLogin).Methods("POST")
+	r.HandleFunc("/api/schema/{id}", schemaApi.GetSchema).Methods("GET")
+	r.HandleFunc("/api/access_token", Secure(access_token_api.GetAccessTokens)).Methods("GET")
+	r.HandleFunc("/api/access_token", Secure(access_token_api.PostAccessToken)).Methods("POST")
+	r.HandleFunc("/api/access_token/{id}", Secure(access_token_api.DeleteAccessToken)).Methods("DELETE")
 
 	// static files
 	r.PathPrefix("/").Handler(http.FileServer(getFileSystem(useLocalfs, public.Webapp)))

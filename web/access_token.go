@@ -12,11 +12,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func GetAccessTokens(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+type AccessTokenApi struct {
+	Repo *db.AccessTokenRepository
+}
+
+func (api AccessTokenApi) GetAccessTokens(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	if !ctx.CheckPermission(w, types.JWTPermissionManagement) {
 		return
 	}
-	tokens, err := db.GetAccessTokensByUserID(ctx.Token.UserID)
+	tokens, err := api.Repo.GetAccessTokensByUserID(ctx.Token.UserID)
 	if err != nil {
 		SendError(w, err.Error())
 		return
@@ -27,7 +31,7 @@ func GetAccessTokens(w http.ResponseWriter, r *http.Request, ctx *SecureContext)
 	json.NewEncoder(w).Encode(tokens)
 }
 
-func PostAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+func (api AccessTokenApi) PostAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	if !ctx.CheckPermission(w, types.JWTPermissionManagement) {
 		return
 	}
@@ -42,7 +46,7 @@ func PostAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext)
 	accessToken.Token = core.CreateToken(6)
 	accessToken.Created = time.Now().Unix() * 1000
 
-	err = db.CreateAccessToken(&accessToken)
+	err = api.Repo.CreateAccessToken(&accessToken)
 	if err != nil {
 		SendError(w, err.Error())
 		return
@@ -53,7 +57,7 @@ func PostAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext)
 	json.NewEncoder(w).Encode(accessToken)
 }
 
-func DeleteAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+func (api AccessTokenApi) DeleteAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	if !ctx.CheckPermission(w, types.JWTPermissionManagement) {
 		return
 	}
@@ -65,6 +69,6 @@ func DeleteAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContex
 		return
 	}
 
-	db.RemoveAccessToken(int64(id), ctx.Token.UserID)
+	api.Repo.RemoveAccessToken(int64(id), ctx.Token.UserID)
 	w.WriteHeader(http.StatusOK)
 }

@@ -3,12 +3,17 @@ package db
 import (
 	"blockexchange/types"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )
 
-func GetUserById(id int64) (*types.User, error) {
+type UserRepository struct {
+	DB *sqlx.DB
+}
+
+func (repo UserRepository) GetUserById(id int64) (*types.User, error) {
 	user := []types.User{}
-	err := DB.Select(&user, "select * from public.user where id = $1", id)
+	err := repo.DB.Select(&user, "select * from public.user where id = $1", id)
 	if err != nil {
 		return nil, err
 	} else if len(user) == 1 {
@@ -18,9 +23,9 @@ func GetUserById(id int64) (*types.User, error) {
 	}
 }
 
-func GetUserByName(name string) (*types.User, error) {
+func (repo UserRepository) GetUserByName(name string) (*types.User, error) {
 	user := []types.User{}
-	err := DB.Select(&user, "select * from public.user where name = $1", name)
+	err := repo.DB.Select(&user, "select * from public.user where name = $1", name)
 	if err != nil {
 		return nil, err
 	} else if len(user) == 1 {
@@ -30,9 +35,9 @@ func GetUserByName(name string) (*types.User, error) {
 	}
 }
 
-func GetUserByExternalId(external_id string) (*types.User, error) {
+func (repo UserRepository) GetUserByExternalId(external_id string) (*types.User, error) {
 	user := []types.User{}
-	err := DB.Select(&user, "select * from public.user where external_id = $1", external_id)
+	err := repo.DB.Select(&user, "select * from public.user where external_id = $1", external_id)
 	if err != nil {
 		return nil, err
 	} else if len(user) == 1 {
@@ -42,10 +47,10 @@ func GetUserByExternalId(external_id string) (*types.User, error) {
 	}
 }
 
-func GetUsers() ([]types.User, error) {
+func (repo UserRepository) GetUsers() ([]types.User, error) {
 	logrus.Trace("db.GetUsers")
 	list := []types.User{}
-	err := DB.Select(&list, "select * from public.user")
+	err := repo.DB.Select(&list, "select * from public.user")
 	if err != nil {
 		return nil, err
 	} else {
@@ -53,7 +58,7 @@ func GetUsers() ([]types.User, error) {
 	}
 }
 
-func CreateUser(user *types.User) error {
+func (repo UserRepository) CreateUser(user *types.User) error {
 	logrus.Trace("db.CreateUser", user)
 	query := `
 		insert into
@@ -67,20 +72,20 @@ func CreateUser(user *types.User) error {
 		)
 		returning id
 	`
-	row := DB.QueryRow(query,
+	row := repo.DB.QueryRow(query,
 		user.Created, user.Name, user.Hash, user.Type,
 		user.ExternalID, user.Mail,
 	)
 	return row.Scan(&user.ID)
 }
 
-func UpdateUser(user *types.User) error {
+func (repo UserRepository) UpdateUser(user *types.User) error {
 	logrus.Trace("db.UpdateUser", user)
 	query := `
 		update public.user
 		where id = $1
 		set name = $2, mail = $3
 	`
-	_, err := DB.Exec(query, user.ID, user.Name, user.Mail)
+	_, err := repo.DB.Exec(query, user.ID, user.Name, user.Mail)
 	return err
 }

@@ -11,7 +11,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func PostLogin(w http.ResponseWriter, r *http.Request) {
+type TokenApi struct {
+	AccessTokenRepo *db.AccessTokenRepository
+	UserRepo        *db.UserRepository
+}
+
+func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
 	login := types.Login{}
 	err := json.NewDecoder(r.Body).Decode(&login)
 	if err != nil {
@@ -19,7 +24,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := db.GetUserByName(login.Username)
+	user, err := api.UserRepo.GetUserByName(login.Username)
 	if err != nil {
 		SendError(w, "user: "+err.Error())
 		return
@@ -56,7 +61,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	} else if login.Token != "" {
 		// login with token
-		access_token, err := db.GetAccessTokenByTokenAndUserID(login.Token, user.ID)
+		access_token, err := api.AccessTokenRepo.GetAccessTokenByTokenAndUserID(login.Token, user.ID)
 		if err != nil {
 			SendError(w, err.Error())
 			return
@@ -81,7 +86,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 			SendError(w, err.Error())
 			return
 		}
-		db.IncrementAccessTokenUseCount(access_token.ID)
+		api.AccessTokenRepo.IncrementAccessTokenUseCount(access_token.ID)
 
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)

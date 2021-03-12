@@ -15,7 +15,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func OauthGithub(w http.ResponseWriter, r *http.Request) {
+type OauthGithubApi struct {
+	AccessTokenRepo *db.AccessTokenRepository
+	UserRepo        *db.UserRepository
+}
+
+func (api OauthGithubApi) OauthGithub(w http.ResponseWriter, r *http.Request) {
 	list := r.URL.Query()["code"]
 	if len(list) == 0 {
 		SendError(w, "no code found")
@@ -85,7 +90,7 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println(userData)
-	user, err := db.GetUserByExternalId(strconv.Itoa(userData.ID))
+	user, err := api.UserRepo.GetUserByExternalId(strconv.Itoa(userData.ID))
 	if err != nil {
 		SendError(w, err.Error())
 		return
@@ -101,13 +106,13 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 			Mail:       userData.Email,
 			ExternalID: strconv.Itoa(userData.ID),
 		}
-		err = db.CreateUser(user)
+		err = api.UserRepo.CreateUser(user)
 		if err != nil {
 			SendError(w, err.Error())
 			return
 		}
 
-		err = db.CreateAccessToken(&types.AccessToken{
+		err = api.AccessTokenRepo.CreateAccessToken(&types.AccessToken{
 			Name:    "default",
 			Created: time.Now().Unix() * 1000,
 			Expires: (time.Now().Unix() + (3600 * 24 * 7 * 4)) * 1000,

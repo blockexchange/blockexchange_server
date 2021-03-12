@@ -9,14 +9,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func GetSchema(w http.ResponseWriter, r *http.Request) {
+type SchemaApi struct {
+	SchemaRepo *db.SchemaRepository
+}
+
+func (api SchemaApi) GetSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	schema, err := db.GetSchemaById(int64(id))
+	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

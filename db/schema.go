@@ -2,9 +2,15 @@ package db
 
 import (
 	"blockexchange/types"
+
+	"github.com/jmoiron/sqlx"
 )
 
-func GetSchemaById(id int64) (*types.Schema, error) {
+type SchemaRepository struct {
+	DB *sqlx.DB
+}
+
+func (repo SchemaRepository) GetSchemaById(id int64) (*types.Schema, error) {
 	schema := types.Schema{}
 	query := `
 		select
@@ -12,7 +18,7 @@ func GetSchemaById(id int64) (*types.Schema, error) {
 			max_x, max_y, max_z
 		from schema where id = $1
 	`
-	row := DB.QueryRow(query, id)
+	row := repo.DB.QueryRow(query, id)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
