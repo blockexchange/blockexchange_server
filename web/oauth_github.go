@@ -16,7 +16,7 @@ import (
 )
 
 type OauthGithubApi struct {
-	AccessTokenRepo *db.AccessTokenRepository
+	AccessTokenRepo db.AccessTokenRepository
 	UserRepo        *db.UserRepository
 }
 

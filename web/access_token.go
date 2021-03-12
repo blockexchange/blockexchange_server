@@ -13,7 +13,7 @@ import (
 )
 
 type AccessTokenApi struct {
-	Repo *db.AccessTokenRepository
+	Repo db.AccessTokenRepository
 }
 
 func (api AccessTokenApi) GetAccessTokens(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {

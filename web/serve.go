@@ -18,7 +18,7 @@ func Serve() {
 	useLocalfs := os.Getenv("WEBDEV") == "true"
 	r := mux.NewRouter()
 
-	accessTokenRepo := db.AccessTokenRepository{DB: db.DB}
+	accessTokenRepo := db.DBAccessTokenRepository{DB: db.DB}
 	userRepo := db.UserRepository{DB: db.DB}
 	schemaRepo := db.SchemaRepository{DB: db.DB}
 

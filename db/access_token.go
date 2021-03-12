@@ -6,11 +6,19 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type AccessTokenRepository struct {
+type AccessTokenRepository interface {
+	GetAccessTokensByUserID(user_id int64) ([]types.AccessToken, error)
+	GetAccessTokenByTokenAndUserID(token string, user_id int64) (*types.AccessToken, error)
+	CreateAccessToken(access_token *types.AccessToken) error
+	IncrementAccessTokenUseCount(id int64) error
+	RemoveAccessToken(id, user_id int64) error
+}
+
+type DBAccessTokenRepository struct {
 	DB *sqlx.DB
 }
 
-func (r AccessTokenRepository) GetAccessTokensByUserID(user_id int64) ([]types.AccessToken, error) {
+func (r DBAccessTokenRepository) GetAccessTokensByUserID(user_id int64) ([]types.AccessToken, error) {
 	list := []types.AccessToken{}
 	err := r.DB.Select(&list, "select * from access_token where user_id = $1", user_id)
 	if err != nil {
@@ -20,7 +28,7 @@ func (r AccessTokenRepository) GetAccessTokensByUserID(user_id int64) ([]types.A
 	}
 }
 
-func (r AccessTokenRepository) GetAccessTokenByTokenAndUserID(token string, user_id int64) (*types.AccessToken, error) {
+func (r DBAccessTokenRepository) GetAccessTokenByTokenAndUserID(token string, user_id int64) (*types.AccessToken, error) {
 	list := []types.AccessToken{}
 	err := r.DB.Select(&list, "select * from access_token where token = $1 and user_id = $2", token, user_id)
 	if err != nil {
@@ -32,7 +40,7 @@ func (r AccessTokenRepository) GetAccessTokenByTokenAndUserID(token string, user
 	}
 }
 
-func (r AccessTokenRepository) CreateAccessToken(access_token *types.AccessToken) error {
+func (r DBAccessTokenRepository) CreateAccessToken(access_token *types.AccessToken) error {
 	query := `
 		insert into
 		access_token(
@@ -52,12 +60,12 @@ func (r AccessTokenRepository) CreateAccessToken(access_token *types.AccessToken
 	return row.Scan(&access_token.ID)
 }
 
-func (r AccessTokenRepository) IncrementAccessTokenUseCount(id int64) error {
+func (r DBAccessTokenRepository) IncrementAccessTokenUseCount(id int64) error {
 	_, err := r.DB.Exec("update access_token set usecount = usecount + 1 where id = $1", id)
 	return err
 }
 
-func (r AccessTokenRepository) RemoveAccessToken(id, user_id int64) error {
+func (r DBAccessTokenRepository) RemoveAccessToken(id, user_id int64) error {
 	_, err := r.DB.Exec("delete from access_token where id = $1 and user_id = $2", id, user_id)
 	return err
 }

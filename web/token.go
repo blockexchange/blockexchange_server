@@ -12,7 +12,7 @@ import (
 )
 
 type TokenApi struct {
-	AccessTokenRepo *db.AccessTokenRepository
+	AccessTokenRepo db.AccessTokenRepository
 	UserRepo        *db.UserRepository
 }
 
