@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func PostLogin(w http.ResponseWriter, r *http.Request) {
@@ -24,6 +26,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	if login.Password != "" {
 		// login with username / password
+		bcrypt.CompareHashAndPassword(nil, nil)
 		// TODO
 	} else if login.Token != "" {
 		// login with token
