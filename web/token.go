@@ -15,12 +15,17 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 	login := types.Login{}
 	err := json.NewDecoder(r.Body).Decode(&login)
 	if err != nil {
-		SendError(w, err.Error())
+		SendError(w, "decode: "+err.Error())
+		return
 	}
 
 	user, err := db.GetUserByName(login.Username)
 	if err != nil {
-		SendError(w, err.Error())
+		SendError(w, "user: "+err.Error())
+		return
+	}
+	if user == nil {
+		SendError(w, "User not found")
 		return
 	}
 

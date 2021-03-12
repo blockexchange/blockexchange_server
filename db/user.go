@@ -7,15 +7,27 @@ import (
 )
 
 func GetUserById(id int64) (*types.User, error) {
-	user := types.User{}
+	user := []types.User{}
 	err := DB.Select(&user, "select * from public.user where id = $1", id)
-	return &user, err
+	if err != nil {
+		return nil, err
+	} else if len(user) == 1 {
+		return &user[0], nil
+	} else {
+		return nil, nil
+	}
 }
 
 func GetUserByName(name string) (*types.User, error) {
-	user := types.User{}
+	user := []types.User{}
 	err := DB.Select(&user, "select * from public.user where name = $1", name)
-	return &user, err
+	if err != nil {
+		return nil, err
+	} else if len(user) == 1 {
+		return &user[0], nil
+	} else {
+		return nil, nil
+	}
 }
 
 func GetUserByExternalId(external_id string) (*types.User, error) {

@@ -13,9 +13,15 @@ func GetAccessTokensByUserID(user_id int64) ([]types.AccessToken, error) {
 }
 
 func GetAccessTokenByTokenAndUserID(token string, user_id int64) (*types.AccessToken, error) {
-	access_token := types.AccessToken{}
-	err := DB.Select(&access_token, "select * from access_token where token = $1 and user_id = $2", token, user_id)
-	return &access_token, err
+	list := []types.AccessToken{}
+	err := DB.Select(&list, "select * from access_token where token = $1 and user_id = $2", token, user_id)
+	if err != nil {
+		return nil, err
+	} else if len(list) == 1 {
+		return &list[0], nil
+	} else {
+		return nil, nil
+	}
 }
 
 func CreateAccessToken(access_token *types.AccessToken) error {
