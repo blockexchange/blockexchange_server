@@ -20,6 +20,7 @@ func Serve() {
 	// api surface
 	r.HandleFunc("/api/info", InfoEndpoint)
 	r.HandleFunc("/api/oauth_callback/github", OauthGithub)
+	r.HandleFunc("/api/token", PostLogin).Methods("POST")
 	r.HandleFunc("/api/schema/{id}", GetSchema).Methods("GET")
 	r.HandleFunc("/api/access_token", Secure(GetAccessTokens)).Methods("GET")
 	r.HandleFunc("/api/access_token", Secure(PostAccessToken)).Methods("POST")

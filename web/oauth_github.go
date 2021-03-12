@@ -15,16 +15,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func sendError(w http.ResponseWriter, message string) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusInternalServerError)
-	json.NewEncoder(w).Encode(types.ErrorResponse{Message: message})
-}
-
 func OauthGithub(w http.ResponseWriter, r *http.Request) {
 	list := r.URL.Query()["code"]
 	if len(list) == 0 {
-		sendError(w, "no code found")
+		SendError(w, "no code found")
 		return
 	}
 
@@ -39,13 +33,13 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 
 	data, err := json.Marshal(accessTokenReq)
 	if err != nil {
-		sendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 
 	req, err := http.NewRequest("POST", "https://github.com/login/oauth/access_token", bytes.NewBuffer(data))
 	if err != nil {
-		sendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 
 	}
@@ -55,14 +49,14 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		sendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 
 	tokenData := types.GithubAccessTokenRespone{}
 	err = json.NewDecoder(resp.Body).Decode(&tokenData)
 	if err != nil {
-		sendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 
@@ -70,7 +64,7 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 
 	req, err = http.NewRequest("GET", "https://api.github.com/user", nil)
 	if err != nil {
-		sendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 
@@ -79,21 +73,21 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 
 	resp, err = client.Do(req)
 	if err != nil {
-		sendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 
 	userData := types.GithubUserResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&userData)
 	if err != nil {
-		sendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 
 	fmt.Println(userData)
 	user, err := db.GetUserByExternalId(strconv.Itoa(userData.ID))
 	if err != nil {
-		sendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 
@@ -109,7 +103,7 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 		}
 		err = db.CreateUser(user)
 		if err != nil {
-			sendError(w, err.Error())
+			SendError(w, err.Error())
 			return
 		}
 
@@ -121,7 +115,7 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 			UserID:  user.ID,
 		})
 		if err != nil {
-			sendError(w, err.Error())
+			SendError(w, err.Error())
 			return
 		}
 	}
@@ -133,7 +127,7 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 	}
 	token, err := core.CreateJWT(user, permissions)
 	if err != nil {
-		sendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 

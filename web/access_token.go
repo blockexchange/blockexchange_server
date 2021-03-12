@@ -18,7 +18,7 @@ func GetAccessTokens(w http.ResponseWriter, r *http.Request, ctx *SecureContext)
 	}
 	tokens, err := db.GetAccessTokensByUserID(ctx.Token.UserID)
 	if err != nil {
-		ctx.SendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 
@@ -34,7 +34,7 @@ func PostAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext)
 	accessToken := types.AccessToken{}
 	err := json.NewDecoder(r.Body).Decode(&accessToken)
 	if err != nil {
-		ctx.SendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 
@@ -44,7 +44,7 @@ func PostAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext)
 
 	err = db.CreateAccessToken(&accessToken)
 	if err != nil {
-		ctx.SendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 
@@ -61,7 +61,7 @@ func DeleteAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContex
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		ctx.SendError(w, err.Error())
+		SendError(w, err.Error())
 		return
 	}
 

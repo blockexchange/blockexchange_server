@@ -12,6 +12,12 @@ func GetUserById(id int64) (*types.User, error) {
 	return &user, err
 }
 
+func GetUserByName(name string) (*types.User, error) {
+	user := types.User{}
+	err := DB.Select(&user, "select * from public.user where name = $1", name)
+	return &user, err
+}
+
 func GetUserByExternalId(external_id string) (*types.User, error) {
 	user := []types.User{}
 	err := DB.Select(&user, "select * from public.user where external_id = $1", external_id)
