@@ -2,39 +2,11 @@ package web
 
 import (
 	"blockexchange/types"
+	"blockexchange/web/testdata"
 	"encoding/json"
 	"net/http/httptest"
 	"testing"
 )
-
-type MockAccessTokenRepository struct {
-}
-
-func (r MockAccessTokenRepository) GetAccessTokensByUserID(user_id int64) ([]types.AccessToken, error) {
-	if user_id == 1 {
-		return []types.AccessToken{
-			types.AccessToken{
-				Token:   "abc",
-				UserID:  1,
-				Expires: 1800,
-			},
-		}, nil
-	} else {
-		return []types.AccessToken{}, nil
-	}
-}
-func (r MockAccessTokenRepository) GetAccessTokenByTokenAndUserID(token string, user_id int64) (*types.AccessToken, error) {
-	return nil, nil
-}
-func (r MockAccessTokenRepository) CreateAccessToken(access_token *types.AccessToken) error {
-	return nil
-}
-func (r MockAccessTokenRepository) IncrementAccessTokenUseCount(id int64) error {
-	return nil
-}
-func (r MockAccessTokenRepository) RemoveAccessToken(id, user_id int64) error {
-	return nil
-}
 
 func TestGetAccessTokensNoToken(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://", nil)
@@ -42,7 +14,7 @@ func TestGetAccessTokensNoToken(t *testing.T) {
 	tokenInfo := types.TokenInfo{}
 	ctx := SecureContext{Token: &tokenInfo}
 
-	repo := MockAccessTokenRepository{}
+	repo := testdata.MockAccessTokenRepository{}
 	api := AccessTokenApi{Repo: &repo}
 
 	api.GetAccessTokens(w, r, &ctx)
@@ -59,7 +31,7 @@ func TestGetAccessTokensInvalidUser(t *testing.T) {
 	}
 	ctx := SecureContext{Token: &tokenInfo}
 
-	repo := MockAccessTokenRepository{}
+	repo := testdata.MockAccessTokenRepository{}
 	api := AccessTokenApi{Repo: &repo}
 
 	api.GetAccessTokens(w, r, &ctx)
@@ -81,7 +53,7 @@ func TestGetAccessTokensValidUser(t *testing.T) {
 	}
 	ctx := SecureContext{Token: &tokenInfo}
 
-	repo := MockAccessTokenRepository{}
+	repo := testdata.MockAccessTokenRepository{}
 	api := AccessTokenApi{Repo: &repo}
 
 	api.GetAccessTokens(w, r, &ctx)
