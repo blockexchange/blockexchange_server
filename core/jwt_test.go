@@ -3,6 +3,7 @@ package core
 import (
 	"blockexchange/types"
 	"testing"
+	"time"
 )
 
 func TestCreateJWT(t *testing.T) {
@@ -12,7 +13,9 @@ func TestCreateJWT(t *testing.T) {
 		Type: types.UserTypeGithub,
 	}
 	permissions := []types.JWTPermission{types.JWTPermissionUpload}
-	token, err := CreateJWT(&user, permissions)
+	exp := time.Now().Unix() + (3600 * 24 * 180)
+
+	token, err := CreateJWT(&user, permissions, exp)
 	if err != nil {
 		t.Fatal(err)
 	}

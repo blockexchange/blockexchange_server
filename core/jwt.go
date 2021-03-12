@@ -9,7 +9,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-func CreateJWT(user *types.User, permissions []types.JWTPermission) (string, error) {
+func CreateJWT(user *types.User, permissions []types.JWTPermission, exp int64) (string, error) {
 	secret := os.Getenv("BLOCKEXCHANGE_KEY")
 	claims := jwt.MapClaims{}
 	claims["username"] = user.Name
@@ -17,6 +17,7 @@ func CreateJWT(user *types.User, permissions []types.JWTPermission) (string, err
 	claims["type"] = user.Type
 	claims["mail"] = user.Mail
 	claims["permissions"] = permissions
+	claims["exp"] = exp
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), claims)
 	return token.SignedString([]byte(secret))
 }

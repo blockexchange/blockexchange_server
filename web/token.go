@@ -1,6 +1,7 @@
 package web
 
 import (
+	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/types"
 	"encoding/json"
@@ -42,10 +43,23 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		//TODO
+		permissions := []types.JWTPermission{
+			types.JWTPermissionUpload,
+			types.JWTPermissionOverwrite,
+		}
+		token, err := core.CreateJWT(user, permissions, int64(access_token.Expires/1000))
+		if err != nil {
+			SendError(w, err.Error())
+			return
+		}
+		db.IncrementAccessTokenUseCount(access_token.ID)
+
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(token))
 
 	} else {
-		SendError(w, "Specify a username, password or access_token")
+		SendError(w, "Empty password/access_token not allowed")
 	}
 
 }

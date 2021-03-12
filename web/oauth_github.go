@@ -119,13 +119,13 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	fmt.Println(user)
 	permissions := []types.JWTPermission{
 		types.JWTPermissionUpload,
 		types.JWTPermissionOverwrite,
 		types.JWTPermissionManagement,
 	}
-	token, err := core.CreateJWT(user, permissions)
+	exp := time.Now().Unix() + (3600 * 24 * 180)
+	token, err := core.CreateJWT(user, permissions, exp)
 	if err != nil {
 		SendError(w, err.Error())
 		return
