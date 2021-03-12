@@ -2,7 +2,6 @@ package core
 
 import (
 	"blockexchange/types"
-	"fmt"
 	"testing"
 )
 
@@ -18,14 +17,10 @@ func TestCreateJWT(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	fmt.Println(token)
-
 	info, err := ParseJWT(token)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	fmt.Println(info)
 
 	if info.Username != "dummy" {
 		t.Fatal("username mismatch")

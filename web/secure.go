@@ -1,12 +1,34 @@
 package web
 
 import (
+	"blockexchange/core"
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
 )
 
 type SecureContext struct {
+	Token *types.TokenInfo
+}
+
+func (ctx *SecureContext) SendError(w http.ResponseWriter, message string) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusInternalServerError)
+	json.NewEncoder(w).Encode(types.ErrorResponse{Message: message})
+}
+
+func (ctx *SecureContext) CheckPermission(w http.ResponseWriter, permission types.JWTPermission) bool {
+	for _, p := range ctx.Token.Permissions {
+		if p == permission {
+			return true
+		}
+	}
+
+	// no permission found
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusForbidden)
+	json.NewEncoder(w).Encode(types.ErrorResponse{Message: "permission require: " + string(permission)})
+	return false
 }
 
 type Handler func(w http.ResponseWriter, r *http.Request)
@@ -22,7 +44,18 @@ func Secure(h SecureHandler) Handler {
 			return
 		}
 
-		// TODO
-		h(w, r, nil)
+		token, err := core.ParseJWT(authorization)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(types.ErrorResponse{Message: err.Error()})
+			return
+		}
+
+		ctx := SecureContext{
+			Token: token,
+		}
+
+		h(w, r, &ctx)
 	}
 }

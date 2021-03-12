@@ -108,7 +108,18 @@ func OauthGithub(w http.ResponseWriter, r *http.Request) {
 			ExternalID: strconv.Itoa(userData.ID),
 		}
 		err = db.CreateUser(user)
-		// TODO: create default access token
+		if err != nil {
+			sendError(w, err.Error())
+			return
+		}
+
+		err = db.CreateAccessToken(&types.AccessToken{
+			Name:    "default",
+			Created: time.Now().Unix() * 1000,
+			Expires: (time.Now().Unix() + (3600 * 24 * 7 * 4)) * 1000,
+			Token:   core.CreateToken(6),
+			UserID:  user.ID,
+		})
 		if err != nil {
 			sendError(w, err.Error())
 			return

@@ -37,7 +37,7 @@ func IncrementAccessTokenUseCount(id int64) error {
 	return err
 }
 
-func RemoveAccessToken(id int64) error {
-	_, err := DB.Exec("delete from access_token where id = $1", id)
+func RemoveAccessToken(id, user_id int64) error {
+	_, err := DB.Exec("delete from access_token where id = $1 and user_id = $2", id, user_id)
 	return err
 }

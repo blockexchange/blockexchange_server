@@ -37,7 +37,7 @@ func ParseJWT(token string) (*types.TokenInfo, error) {
 	}
 
 	info.Username = claims["username"].(string)
-	info.ID = int(claims["user_id"].(float64))
+	info.UserID = int64(claims["user_id"].(float64))
 	info.Type = claims["type"].(string)
 	info.Mail = claims["mail"].(string)
 	info.Permissions = make([]types.JWTPermission, 0)
