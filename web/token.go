@@ -26,8 +26,29 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	if login.Password != "" {
 		// login with username / password
-		bcrypt.CompareHashAndPassword(nil, nil)
-		// TODO
+		err = bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(login.Password))
+		if err != nil {
+			SendError(w, err.Error())
+			return
+		}
+
+		permissions := []types.JWTPermission{
+			types.JWTPermissionUpload,
+			types.JWTPermissionOverwrite,
+			types.JWTPermissionManagement,
+		}
+
+		exp := time.Now().Unix() + (3600 * 24 * 180)
+		token, err := core.CreateJWT(user, permissions, exp)
+		if err != nil {
+			SendError(w, err.Error())
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(token))
+
 	} else if login.Token != "" {
 		// login with token
 		access_token, err := db.GetAccessTokenByTokenAndUserID(login.Token, user.ID)
