@@ -17,7 +17,7 @@ import (
 
 type OauthGithubApi struct {
 	AccessTokenRepo db.AccessTokenRepository
-	UserRepo        *db.UserRepository
+	UserRepo        db.UserRepository
 }
 
 func (api OauthGithubApi) OauthGithub(w http.ResponseWriter, r *http.Request) {

@@ -28,6 +28,7 @@ services:
    - BLOCKEXCHANGE_OWNER=yourname
    - BLOCKEXCHANGE_KEY=abcdefSecretKey
    - BASE_URL=http://localhost:8080
+   - WEBDEV=true
   ports:
    - "8080:8080"
   working_dir: /data

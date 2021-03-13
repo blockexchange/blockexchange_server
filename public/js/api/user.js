@@ -17,6 +17,6 @@ export const validate_username = username => securefetch(`api/validate_username`
 	headers: {
 		'Content-Type': 'application/json'
 	},
-	body: JSON.stringify({ username: username })
+	body: JSON.stringify({ name: username })
 })
 .then(r => r.json());

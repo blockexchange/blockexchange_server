@@ -14,7 +14,7 @@ import (
 
 type TokenApi struct {
 	AccessTokenRepo db.AccessTokenRepository
-	UserRepo        *db.UserRepository
+	UserRepo        db.UserRepository
 }
 
 func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
