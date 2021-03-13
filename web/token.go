@@ -27,7 +27,9 @@ func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	logrus.WithFields(logrus.Fields{
 		"Username": login.Username,
-	}).Trace("POST /api/token")
+		"Password": login.Password,
+		"Token":    login.Token,
+	}).Debug("POST /api/token")
 
 	user, err := api.UserRepo.GetUserByName(login.Username)
 	if err != nil {
