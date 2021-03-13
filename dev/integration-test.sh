@@ -38,20 +38,13 @@ sleep 10
 docker exec -i blockexchange_pg psql -U postgres -c "insert into public.user(id,created,name,hash,type) values(666,0,'test','','LOCAL');"
 docker exec -i blockexchange_pg psql -U postgres -c "insert into access_token(user_id,created,expires,name,token) values(666,0,2925191383506,'default','xyz');"
 
-CFG=/tmp/minetest.conf
 MTDIR=/tmp/mt
 WORLDDIR=${MTDIR}/worlds/world
-
-cat <<EOF > ${CFG}
- blockexchange.url = http://blockexchange_server:8080
- blockexchange.enable_integration_test = true
- secure.http_mods = blockexchange
-EOF
 
 mkdir -p ${WORLDDIR}
 chmod 777 ${MTDIR} -R
 docker run --rm -i \
-	-v ${CFG}:/etc/minetest/minetest.conf:ro \
+	-v $(pwd)/dev/minetest-test.conf:/etc/minetest/minetest.conf:ro \
 	-v ${MTDIR}:/var/lib/minetest/.minetest \
   -v $(pwd)/dev/worldmods:/var/lib/minetest/.minetest/worlds/world/worldmods \
   --network bx_net \

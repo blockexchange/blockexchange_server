@@ -43,6 +43,15 @@ services:
   ports:
    - "30000:30000/udp"
 
+ integration-test:
+  image: registry.gitlab.com/minetest/minetest/server:5.4.0
+  user: root
+  volumes:
+   - "./dev/minetest-test.conf:/etc/minetest/minetest.conf:ro"
+   - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
+  ports:
+   - "30000:30000/udp"
+
 volumes:
   postgres: {}
   world_data: {}
