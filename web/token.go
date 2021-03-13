@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,6 +24,10 @@ func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
 		SendError(w, "decode: "+err.Error())
 		return
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"Username": login.Username,
+	}).Trace("POST /api/token")
 
 	user, err := api.UserRepo.GetUserByName(login.Username)
 	if err != nil {

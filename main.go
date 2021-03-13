@@ -9,6 +9,7 @@ import (
 
 func main() {
 	logrus.SetLevel(logrus.TraceLevel)
+	logrus.SetReportCaller(true)
 	logrus.Info("Starting")
 	db.Init()
 	db.Migrate()
