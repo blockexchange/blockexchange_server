@@ -12,9 +12,11 @@ services:
    - "postgres:/var/lib/postgresql/data"
 
  blockexchange:
-  build: .
+  image: golang:1.16.0-alpine
   depends_on:
    - postgres
+  volumes:
+   - ".:/data"
   environment:
    - PGUSER=postgres
    - PGPASSWORD=enter
@@ -28,6 +30,8 @@ services:
    - BASE_URL=http://localhost:8080
   ports:
    - "8080:8080"
+  working_dir: /data
+  command: ["go", "run", "."]
 
  minetest:
   image: registry.gitlab.com/minetest/minetest/server:5.4.0
