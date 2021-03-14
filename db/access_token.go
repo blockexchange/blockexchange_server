@@ -48,16 +48,16 @@ func (r DBAccessTokenRepository) CreateAccessToken(access_token *types.AccessTok
 			created, expires
 		)
 		values(
-			$1, $2, $3,
-			$4, $5
+			:name, :token, :user_id,
+			:created, :expires
 		)
 		returning id
 	`
-	row := r.DB.QueryRow(query,
-		access_token.Name, access_token.Token, access_token.UserID,
-		access_token.Created, access_token.Expires,
-	)
-	return row.Scan(&access_token.ID)
+	stmt, err := r.DB.PrepareNamed(query)
+	if err != nil {
+		return err
+	}
+	return stmt.Get(&access_token.ID, access_token)
 }
 
 func (r DBAccessTokenRepository) IncrementAccessTokenUseCount(id int64) error {

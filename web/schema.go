@@ -10,7 +10,7 @@ import (
 )
 
 type SchemaApi struct {
-	SchemaRepo *db.SchemaRepository
+	SchemaRepo db.SchemaRepository
 }
 
 func (api SchemaApi) GetSchema(w http.ResponseWriter, r *http.Request) {

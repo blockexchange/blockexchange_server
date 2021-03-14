@@ -20,7 +20,7 @@ func Serve() {
 
 	accessTokenRepo := db.DBAccessTokenRepository{DB: db.DB}
 	userRepo := db.DBUserRepository{DB: db.DB}
-	schemaRepo := db.SchemaRepository{DB: db.DB}
+	schemaRepo := db.DBSchemaRepository{DB: db.DB}
 
 	access_token_api := AccessTokenApi{Repo: &accessTokenRepo}
 	token_api := TokenApi{

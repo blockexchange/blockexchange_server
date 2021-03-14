@@ -68,7 +68,7 @@ func (repo DBUserRepository) GetUsers() ([]types.User, error) {
 }
 
 func (repo DBUserRepository) CreateUser(user *types.User) error {
-	logrus.Trace("db.CreateUser", user)
+	logrus.Trace("db.CreateUser: ", user)
 	query := `
 		insert into
 		public.user(
@@ -76,25 +76,25 @@ func (repo DBUserRepository) CreateUser(user *types.User) error {
 			external_id, mail
 		)
 		values(
-			$1, $2, $3, $4,
-			$5, $6
+			:created, :name, :hash, :type,
+			:external_id, :mail
 		)
 		returning id
 	`
-	row := repo.DB.QueryRow(query,
-		user.Created, user.Name, user.Hash, user.Type,
-		user.ExternalID, user.Mail,
-	)
-	return row.Scan(&user.ID)
+	stmt, err := repo.DB.PrepareNamed(query)
+	if err != nil {
+		return err
+	}
+	return stmt.Get(&user.ID, user)
 }
 
 func (repo DBUserRepository) UpdateUser(user *types.User) error {
 	logrus.Trace("db.UpdateUser", user)
 	query := `
 		update public.user
-		set name = $2, mail = $3
-		where id = $1
+		set name = :name, mail = :mail
+		where id = :id
 	`
-	_, err := repo.DB.Exec(query, user.ID, user.Name, user.Mail)
+	_, err := repo.DB.NamedExec(query, user)
 	return err
 }
