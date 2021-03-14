@@ -4,6 +4,7 @@ import (
 	"blockexchange/db"
 	"blockexchange/types"
 	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -13,6 +14,18 @@ import (
 
 type SchemaApi struct {
 	SchemaRepo db.SchemaRepository
+}
+
+func DecodeSchema(rc io.ReadCloser) *types.Schema {
+	m := make(map[string]interface{})
+	json.NewDecoder(rc).Decode(&m)
+	schema := types.Schema{}
+
+	schema.Name = m["name"].(string)
+	schema.Description = m["description"].(string)
+	schema.MaxX = int(m["max_x"].(float64))
+
+	return &schema
 }
 
 func (api SchemaApi) GetSchema(w http.ResponseWriter, r *http.Request) {
@@ -40,16 +53,11 @@ func (api SchemaApi) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *S
 	if !ctx.CheckPermission(w, types.JWTPermissionUpload) {
 		return
 	}
-	schema := types.Schema{}
-	err := json.NewDecoder(r.Body).Decode(&schema)
-	if err != nil {
-		SendError(w, err.Error())
-		return
-	}
+	schema := DecodeSchema(r.Body)
 
 	schema.UserID = ctx.Token.UserID
 
-	err = api.SchemaRepo.CreateSchema(&schema)
+	err := api.SchemaRepo.CreateSchema(schema)
 	if err != nil {
 		SendError(w, err.Error())
 		return
