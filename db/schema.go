@@ -10,6 +10,8 @@ import (
 type SchemaRepository interface {
 	GetSchemaById(id int64) (*types.Schema, error)
 	CreateSchema(schema *types.Schema) error
+	UpdateSchema(schema *types.Schema) error
+	DeleteSchema(id int64) error
 }
 
 type DBSchemaRepository struct {
@@ -49,4 +51,24 @@ func (repo DBSchemaRepository) CreateSchema(schema *types.Schema) error {
 		return err
 	}
 	return stmt.Get(&schema.ID, schema)
+}
+
+func (repo DBSchemaRepository) UpdateSchema(schema *types.Schema) error {
+	query := `
+		update schema
+		set
+			name = :name,
+			description = :description,
+			search_tokens = to_tsvector(concat(:name, ' ', :description)),
+			user_id = :user_id,
+			license = :license
+		where id = :id
+	`
+	_, err := repo.DB.NamedExec(query, schema)
+	return err
+}
+
+func (repo DBSchemaRepository) DeleteSchema(id int64) error {
+	_, err := repo.DB.Exec("delete from schema where id = $1", id)
+	return err
 }

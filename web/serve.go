@@ -44,6 +44,7 @@ func Serve() {
 	r.HandleFunc("/api/user/{id}", Secure(userApi.UpdateUser)).Methods("POST")
 
 	r.HandleFunc("/api/schema/{id}", schemaApi.GetSchema).Methods("GET")
+	r.HandleFunc("/api/schema", Secure(schemaApi.CreateSchema)).Methods("POST")
 
 	r.HandleFunc("/api/access_token", Secure(access_token_api.GetAccessTokens)).Methods("GET")
 	r.HandleFunc("/api/access_token", Secure(access_token_api.PostAccessToken)).Methods("POST")

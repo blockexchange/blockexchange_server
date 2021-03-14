@@ -40,7 +40,9 @@ func ParseJWT(token string) (*types.TokenInfo, error) {
 	info.Username = claims["username"].(string)
 	info.UserID = int64(claims["user_id"].(float64))
 	info.Type = claims["type"].(string)
-	info.Mail = claims["mail"].(string)
+	if claims["mail"] != nil {
+		info.Mail = claims["mail"].(string)
+	}
 	info.Permissions = make([]types.JWTPermission, 0)
 	permissions := claims["permissions"].([]interface{})
 	for _, permission := range permissions {

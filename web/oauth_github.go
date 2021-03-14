@@ -98,13 +98,14 @@ func (api OauthGithubApi) OauthGithub(w http.ResponseWriter, r *http.Request) {
 
 	if user == nil {
 		logrus.Debug("creating new user")
+		external_id := strconv.Itoa(userData.ID)
 		user = &types.User{
 			Created:    time.Now().Unix() * 1000,
 			Name:       userData.Login,
 			Type:       types.UserTypeGithub,
 			Hash:       "",
-			Mail:       userData.Email,
-			ExternalID: strconv.Itoa(userData.ID),
+			Mail:       &userData.Email,
+			ExternalID: &external_id,
 		}
 		err = api.UserRepo.CreateUser(user)
 		if err != nil {

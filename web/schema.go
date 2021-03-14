@@ -2,11 +2,13 @@ package web
 
 import (
 	"blockexchange/db"
+	"blockexchange/types"
 	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 )
 
 type SchemaApi struct {
@@ -29,4 +31,29 @@ func (api SchemaApi) GetSchema(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	json.NewEncoder(w).Encode(schema)
+}
+
+func (api SchemaApi) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	logrus.WithFields(logrus.Fields{
+		"body": r.Body,
+	}).Trace("POST /api/schema")
+	if !ctx.CheckPermission(w, types.JWTPermissionUpload) {
+		return
+	}
+	schema := types.Schema{}
+	err := json.NewDecoder(r.Body).Decode(&schema)
+	if err != nil {
+		SendError(w, err.Error())
+		return
+	}
+
+	schema.UserID = ctx.Token.UserID
+
+	err = api.SchemaRepo.CreateSchema(&schema)
+	if err != nil {
+		SendError(w, err.Error())
+		return
+	}
+
+	SendJson(w, schema)
 }
