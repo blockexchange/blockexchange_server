@@ -40,13 +40,17 @@ func (api SchemaApi) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *S
 	if !ctx.CheckPermission(w, types.JWTPermissionUpload) {
 		return
 	}
-	jsonschema := types.JsonSchema{}
-	json.NewDecoder(r.Body).Decode(&jsonschema)
-	schema := types.MapSchema(jsonschema)
+	schema := types.Schema{}
+	err := json.NewDecoder(r.Body).Decode(&schema)
+	if err != nil {
+		SendError(w, err.Error())
+		return
+	}
 
 	schema.UserID = ctx.Token.UserID
 
-	err := api.SchemaRepo.CreateSchema(&schema)
+	//TODO: remove incomplete schema with same name
+	err = api.SchemaRepo.CreateSchema(&schema)
 	if err != nil {
 		SendError(w, err.Error())
 		return
