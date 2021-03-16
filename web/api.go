@@ -6,4 +6,5 @@ type Api struct {
 	AccessTokenRepo db.AccessTokenRepository
 	UserRepo        db.UserRepository
 	SchemaRepo      db.SchemaRepository
+	SchemaPartRepo  db.SchemaPartRepository
 }

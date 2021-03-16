@@ -18,14 +18,18 @@ type DBSchemaPartRepository struct {
 	DB *sqlx.DB
 }
 
-func (repo *DBSchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
-	logrus.Trace("db.CreateOrUpdateSchemaPart", part)
+func (repo DBSchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
+	logrus.WithFields(logrus.Fields{
+		"schema_id": part.SchemaID,
+	}).Trace("db.CreateOrUpdateSchemaPart")
+
 	query := `
 		insert into
 		schemapart(schema_id, offset_x, offset_y, offset_z, mtime, data, metadata)
 		values(:schema_id, :offset_x, :offset_y, :offset_z, :mtime, :data, :metadata)
 		on conflict on constraint schemapart_unique_coords
-		do update set data = EXCLUDED.data, metadata = EXCLUDED.metadata;
+		do update set data = EXCLUDED.data, metadata = EXCLUDED.metadata
+		returning id
 	`
 	stmt, err := repo.DB.PrepareNamed(query)
 	if err != nil {
@@ -34,7 +38,7 @@ func (repo *DBSchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaP
 	return stmt.Get(&part.ID, part)
 }
 
-func (repo *DBSchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
+func (repo DBSchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
 	list := []types.SchemaPart{}
 	query := `
 		select *
@@ -54,7 +58,7 @@ func (repo *DBSchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offs
 	}
 }
 
-func (repo *DBSchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {
+func (repo DBSchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {
 	query := `
 		delete
 		from schemapart
@@ -67,7 +71,7 @@ func (repo *DBSchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, o
 	return err
 }
 
-func (repo *DBSchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
+func (repo DBSchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
 	list := []types.SchemaPart{}
 	query := `
 		select *

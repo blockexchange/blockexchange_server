@@ -18,14 +18,11 @@ func Serve() {
 	useLocalfs := os.Getenv("WEBDEV") == "true"
 	r := mux.NewRouter()
 
-	accessTokenRepo := db.DBAccessTokenRepository{DB: db.DB}
-	userRepo := db.DBUserRepository{DB: db.DB}
-	schemaRepo := db.DBSchemaRepository{DB: db.DB}
-
 	api := Api{
-		AccessTokenRepo: accessTokenRepo,
-		UserRepo:        userRepo,
-		SchemaRepo:      schemaRepo,
+		AccessTokenRepo: db.DBAccessTokenRepository{DB: db.DB},
+		UserRepo:        db.DBUserRepository{DB: db.DB},
+		SchemaRepo:      db.DBSchemaRepository{DB: db.DB},
+		SchemaPartRepo:  db.DBSchemaPartRepository{DB: db.DB},
 	}
 
 	// api surface
@@ -39,6 +36,10 @@ func Serve() {
 
 	r.HandleFunc("/api/schema/{id}", api.GetSchema).Methods("GET")
 	r.HandleFunc("/api/schema", Secure(api.CreateSchema)).Methods("POST")
+
+	r.HandleFunc("/api/schemapart", Secure(api.CreateSchemaPart)).Methods("POST")
+	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", api.GetSchemaPart)
+	r.HandleFunc("/api/schemapart_next/{schema_id}/{x}/{y}/{z}", api.GetNextSchemaPart)
 
 	r.HandleFunc("/api/access_token", Secure(api.GetAccessTokens)).Methods("GET")
 	r.HandleFunc("/api/access_token", Secure(api.PostAccessToken)).Methods("POST")

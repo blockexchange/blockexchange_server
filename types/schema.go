@@ -4,20 +4,21 @@ import "encoding/json"
 
 // used for the database and GET requests
 type Schema struct {
-	ID          int64  `db:"id" json:"id"`
-	Created     int64  `db:"created" json:"created"`
-	UserID      int64  `db:"user_id" json:"user_id"`
-	Name        string `db:"name" json:"name"`
-	Description string `db:"description" json:"description"`
-	Complete    bool   `db:"complete" json:"complete"`
-	MaxX        int    `db:"max_x" json:"max_x"`
-	MaxY        int    `db:"max_y" json:"max_y"`
-	MaxZ        int    `db:"max_z" json:"max_z"`
-	PartLength  int    `db:"part_length" json:"part_length"`
-	TotalSize   int    `db:"total_size" json:"total_size"`
-	TotalParts  int    `db:"total_parts" json:"total_parts"`
-	Downloads   int    `db:"downloads" json:"downloads"`
-	License     string `db:"license" json:"license"`
+	ID           int64  `db:"id" json:"id"`
+	Created      int64  `db:"created" json:"created"`
+	UserID       int64  `db:"user_id" json:"user_id"`
+	Name         string `db:"name" json:"name"`
+	Description  string `db:"description" json:"description"`
+	Complete     bool   `db:"complete" json:"complete"`
+	MaxX         int    `db:"max_x" json:"max_x"`
+	MaxY         int    `db:"max_y" json:"max_y"`
+	MaxZ         int    `db:"max_z" json:"max_z"`
+	PartLength   int    `db:"part_length" json:"part_length"`
+	TotalSize    int    `db:"total_size" json:"total_size"`
+	TotalParts   int    `db:"total_parts" json:"total_parts"`
+	Downloads    int    `db:"downloads" json:"downloads"`
+	License      string `db:"license" json:"license"`
+	SearchTokens string `db:"search_tokens"`
 }
 
 func (s *Schema) UnmarshalJSON(data []byte) error {

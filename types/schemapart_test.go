@@ -1,11 +1,20 @@
 package types
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestSanityBase64(t *testing.T) {
+	data := "eJztwQENAAAMAqAHekijm8MNyEdVVVVVVVVVHX8AAAAAAAAAwLwCfjrAlw"
+	_, err := base64.RawStdEncoding.DecodeString(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestSchemaPartSerialization(t *testing.T) {
 	part := SchemaPart{

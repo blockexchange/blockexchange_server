@@ -29,11 +29,11 @@ func (s *SchemaPart) UnmarshalJSON(data []byte) error {
 	s.OffsetY = getInt(m["offset_y"])
 	s.OffsetZ = getInt(m["offset_z"])
 	s.Mtime = getInt64(m["mtime"])
-	s.Data, err = base64.StdEncoding.DecodeString(getString(m["data"]))
+	s.Data, err = base64.RawStdEncoding.DecodeString(getString(m["data"]))
 	if err != nil {
 		return err
 	}
-	s.MetaData, err = base64.StdEncoding.DecodeString(getString(m["metadata"]))
+	s.MetaData, err = base64.RawStdEncoding.DecodeString(getString(m["metadata"]))
 	if err != nil {
 		return err
 	}
@@ -49,8 +49,8 @@ func (s SchemaPart) MarshalJSON() ([]byte, error) {
 	m["offset_y"] = s.OffsetY
 	m["offset_z"] = s.OffsetZ
 	m["mtime"] = s.Mtime
-	m["data"] = base64.StdEncoding.EncodeToString(s.Data)
-	m["metadata"] = base64.StdEncoding.EncodeToString(s.MetaData)
+	m["data"] = base64.RawStdEncoding.EncodeToString(s.Data)
+	m["metadata"] = base64.RawStdEncoding.EncodeToString(s.MetaData)
 
 	return json.Marshal(m)
 }
