@@ -69,12 +69,7 @@ func (api *Api) GetSchemaPart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	schemapart, err := api.SchemaPartRepo.GetBySchemaIDAndOffset(int64(schema_id), x, y, z)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	SendJson(w, schemapart)
+	Send(w, schemapart, err)
 }
 
 func (api *Api) GetNextSchemaPart(w http.ResponseWriter, r *http.Request) {
@@ -85,10 +80,5 @@ func (api *Api) GetNextSchemaPart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	schemapart, err := api.SchemaPartRepo.GetNextBySchemaIDAndOffset(int64(schema_id), x, y, z)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	SendJson(w, schemapart)
+	Send(w, schemapart, err)
 }

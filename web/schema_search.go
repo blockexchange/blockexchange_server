@@ -52,11 +52,7 @@ func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 	if search.Keywords != nil {
 		// search by keywords
 		list, err := api.SchemaSearchRepo.FindByKeywords(*search.Keywords)
-		if err != nil {
-			SendError(w, 500, err.Error())
-		} else {
-			SendJson(w, list)
-		}
+		Send(w, list, err)
 		return
 	}
 
