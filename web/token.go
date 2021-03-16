@@ -2,7 +2,6 @@ package web
 
 import (
 	"blockexchange/core"
-	"blockexchange/db"
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
@@ -12,16 +11,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type TokenApi struct {
-	AccessTokenRepo db.AccessTokenRepository
-	UserRepo        db.UserRepository
-}
-
-func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
+func (api Api) PostLogin(w http.ResponseWriter, r *http.Request) {
 	login := types.Login{}
 	err := json.NewDecoder(r.Body).Decode(&login)
 	if err != nil {
-		SendError(w, "decode: "+err.Error())
+		SendError(w, 500, err.Error())
 		return
 	}
 
@@ -33,11 +27,11 @@ func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	user, err := api.UserRepo.GetUserByName(login.Username)
 	if err != nil {
-		SendError(w, "user: "+err.Error())
+		SendError(w, 500, err.Error())
 		return
 	}
 	if user == nil {
-		SendError(w, "User not found")
+		SendError(w, 404, "User not found")
 		return
 	}
 
@@ -45,7 +39,7 @@ func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
 		// login with username / password
 		err = bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(login.Password))
 		if err != nil {
-			SendError(w, err.Error())
+			SendError(w, 401, err.Error())
 			return
 		}
 
@@ -58,7 +52,7 @@ func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
 		exp := time.Now().Unix() + (3600 * 24 * 180)
 		token, err := core.CreateJWT(user, permissions, exp)
 		if err != nil {
-			SendError(w, err.Error())
+			SendError(w, 500, err.Error())
 			return
 		}
 
@@ -70,17 +64,17 @@ func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
 		// login with token
 		access_token, err := api.AccessTokenRepo.GetAccessTokenByTokenAndUserID(login.Token, user.ID)
 		if err != nil {
-			SendError(w, err.Error())
+			SendError(w, 500, err.Error())
 			return
 		}
 
 		if access_token == nil {
-			SendError(w, "access token not found")
+			SendError(w, 404, "access token not found")
 			return
 		}
 
 		if access_token.Expires < (time.Now().Unix() * 1000) {
-			SendError(w, "token expired")
+			SendError(w, 401, "token expired")
 			return
 		}
 
@@ -90,7 +84,7 @@ func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		token, err := core.CreateJWT(user, permissions, int64(access_token.Expires/1000))
 		if err != nil {
-			SendError(w, err.Error())
+			SendError(w, 500, err.Error())
 			return
 		}
 		api.AccessTokenRepo.IncrementAccessTokenUseCount(access_token.ID)
@@ -100,7 +94,7 @@ func (api TokenApi) PostLogin(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(token))
 
 	} else {
-		SendError(w, "Empty password/access_token not allowed")
+		SendError(w, 405, "Empty password/access_token not allowed")
 	}
 
 }

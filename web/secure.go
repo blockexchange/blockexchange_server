@@ -32,17 +32,13 @@ func Secure(h SecureHandler) Handler {
 	return func(w http.ResponseWriter, r *http.Request) {
 		authorization := r.Header.Get("Authorization")
 		if authorization == "" {
-			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(types.ErrorResponse{Message: "no jwt found"})
+			SendError(w, http.StatusUnauthorized, "no jwt found")
 			return
 		}
 
 		token, err := core.ParseJWT(authorization)
 		if err != nil {
-			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-			w.WriteHeader(http.StatusForbidden)
-			json.NewEncoder(w).Encode(types.ErrorResponse{Message: err.Error()})
+			SendError(w, http.StatusForbidden, err.Error())
 			return
 		}
 

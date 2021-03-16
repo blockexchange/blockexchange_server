@@ -1,7 +1,6 @@
 package web
 
 import (
-	"blockexchange/db"
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
@@ -11,14 +10,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type UserApi struct {
-	UserRepo db.UserRepository
-}
-
-func (api UserApi) GetUsers(w http.ResponseWriter, r *http.Request) {
+func (api Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := api.UserRepo.GetUsers()
 	if err != nil {
-		SendError(w, err.Error())
+		SendError(w, 500, err.Error())
 		return
 	}
 	sanitizedUsers := make([]types.User, len(users))
@@ -36,35 +31,35 @@ func (api UserApi) GetUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&sanitizedUsers)
 }
 
-func (api UserApi) UpdateUser(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+func (api Api) UpdateUser(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
-		SendError(w, err.Error())
+		SendError(w, 500, err.Error())
 		return
 	}
 
 	if id != ctx.Token.UserID {
-		SendError(w, "user mismatch")
+		SendError(w, 405, "user mismatch")
 		return
 	}
 
 	sentuser := types.User{}
 	err = json.NewDecoder(r.Body).Decode(&sentuser)
 	if err != nil {
-		SendError(w, err.Error())
+		SendError(w, 500, err.Error())
 		return
 	}
 
 	valid, _, err := api.ValidateUsername(sentuser.Name)
 	if err != nil {
-		SendError(w, err.Error())
+		SendError(w, 500, err.Error())
 		return
 	}
 
 	user, err := api.UserRepo.GetUserById(id)
 	if err != nil {
-		SendError(w, err.Error())
+		SendError(w, 500, err.Error())
 		return
 	}
 
@@ -76,7 +71,7 @@ func (api UserApi) UpdateUser(w http.ResponseWriter, r *http.Request, ctx *Secur
 
 	err = api.UserRepo.UpdateUser(user)
 	if err != nil {
-		SendError(w, err.Error())
+		SendError(w, 500, err.Error())
 		return
 	}
 
@@ -85,17 +80,17 @@ func (api UserApi) UpdateUser(w http.ResponseWriter, r *http.Request, ctx *Secur
 	json.NewEncoder(w).Encode(&user)
 }
 
-func (api UserApi) PostValidateUsername(w http.ResponseWriter, r *http.Request) {
+func (api Api) PostValidateUsername(w http.ResponseWriter, r *http.Request) {
 	sentuser := types.User{}
 	err := json.NewDecoder(r.Body).Decode(&sentuser)
 	if err != nil {
-		SendError(w, err.Error())
+		SendError(w, 500, err.Error())
 		return
 	}
 
 	valid, msg, err := api.ValidateUsername(sentuser.Name)
 	if err != nil {
-		SendError(w, err.Error())
+		SendError(w, 500, err.Error())
 		return
 	}
 
@@ -107,7 +102,7 @@ func (api UserApi) PostValidateUsername(w http.ResponseWriter, r *http.Request) 
 
 var username_regex = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
 
-func (api UserApi) ValidateUsername(username string) (bool, string, error) {
+func (api Api) ValidateUsername(username string) (bool, string, error) {
 	if !username_regex.MatchString(username) {
 		return false, "Username can only contain characters,numbers,dashes and underlines", nil
 	}

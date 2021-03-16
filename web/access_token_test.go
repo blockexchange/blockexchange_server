@@ -15,7 +15,9 @@ func TestGetAccessTokensNoToken(t *testing.T) {
 	ctx := SecureContext{Token: &tokenInfo}
 
 	repo := testdata.MockAccessTokenRepository{}
-	api := AccessTokenApi{Repo: &repo}
+	api := Api{
+		AccessTokenRepo: &repo,
+	}
 
 	api.GetAccessTokens(w, r, &ctx)
 }
@@ -32,7 +34,9 @@ func TestGetAccessTokensInvalidUser(t *testing.T) {
 	ctx := SecureContext{Token: &tokenInfo}
 
 	repo := testdata.MockAccessTokenRepository{}
-	api := AccessTokenApi{Repo: &repo}
+	api := Api{
+		AccessTokenRepo: &repo,
+	}
 
 	api.GetAccessTokens(w, r, &ctx)
 	result := []types.AccessToken{}
@@ -54,7 +58,9 @@ func TestGetAccessTokensValidUser(t *testing.T) {
 	ctx := SecureContext{Token: &tokenInfo}
 
 	repo := testdata.MockAccessTokenRepository{}
-	api := AccessTokenApi{Repo: &repo}
+	api := Api{
+		AccessTokenRepo: &repo,
+	}
 
 	api.GetAccessTokens(w, r, &ctx)
 	result := []types.AccessToken{}

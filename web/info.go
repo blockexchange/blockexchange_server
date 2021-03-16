@@ -1,7 +1,6 @@
 package web
 
 import (
-	"encoding/json"
 	"net/http"
 	"os"
 )
@@ -37,6 +36,5 @@ func InfoEndpoint(w http.ResponseWriter, req *http.Request) {
 		Oauth:        &oauth,
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	json.NewEncoder(w).Encode(info)
+	SendJson(w, info)
 }

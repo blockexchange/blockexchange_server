@@ -1,6 +1,9 @@
 package types
 
-import "encoding/json"
+import (
+	"encoding/base64"
+	"encoding/json"
+)
 
 type SchemaPart struct {
 	ID       int64  `json:"id" db:"id"`
@@ -26,7 +29,28 @@ func (s *SchemaPart) UnmarshalJSON(data []byte) error {
 	s.OffsetY = getInt(m["offset_y"])
 	s.OffsetZ = getInt(m["offset_z"])
 	s.Mtime = getInt64(m["mtime"])
-	//data/metadata
+	s.Data, err = base64.StdEncoding.DecodeString(getString(m["data"]))
+	if err != nil {
+		return err
+	}
+	s.MetaData, err = base64.StdEncoding.DecodeString(getString(m["metadata"]))
+	if err != nil {
+		return err
+	}
 
 	return nil
+}
+
+func (s SchemaPart) MarshalJSON() ([]byte, error) {
+	m := make(map[string]interface{})
+	m["id"] = s.ID
+	m["schema_id"] = s.SchemaID
+	m["offset_x"] = s.OffsetX
+	m["offset_y"] = s.OffsetY
+	m["offset_z"] = s.OffsetZ
+	m["mtime"] = s.Mtime
+	m["data"] = base64.StdEncoding.EncodeToString(s.Data)
+	m["metadata"] = base64.StdEncoding.EncodeToString(s.MetaData)
+
+	return json.Marshal(m)
 }

@@ -177,7 +177,7 @@ Serialized example as json, byte-array is encoded as base64 over the wire:
 ```json
 {
 	"data":"eJztwQENAAAMAqAHekijm8MNyEdVVVVVVVVVHX8AAAAAAAAAwLwCfjrAlw",
-	"metadata":"eJw1ylsKgCAQRuG9M8RBdLDbCYGnUJQk9Lognsvid4+OOeGl8SGE4NuJOtl3UAhO1cahMXI6DlGG+aajUycXSLNu4xWC0iptnvHzV5ShwPUD23X4PxxfSjlAYnOIYs",
+	"metadata":"eJw1ylsKgCAQRuG9/M8RBdLDbCYGnUJQk9Lognsvid4+OOeGl8SGE4NuJOtl3UAhO1cahMXI6DlGG+aajUycXSLNu4xWC0iptnvHzV5ShwPUD23X4PxxfSjlAYnOIYs",
 	"offset_x":0.0,
 	"offset_y":0.0,
 	"offset_z":0.0,

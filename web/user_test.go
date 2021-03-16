@@ -12,20 +12,20 @@ func TestGetUsers(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	repo := testdata.MockUserRepository{}
-	api := UserApi{UserRepo: &repo}
+	api := Api{UserRepo: &repo}
 
 	api.GetUsers(w, r)
 	//TODO: stub
 }
 
-func assertValidUsername(t *testing.T, api *UserApi, username string) {
+func assertValidUsername(t *testing.T, api *Api, username string) {
 	valid, msg, err := api.ValidateUsername(username)
 	if !valid || err != nil || msg != "" {
 		t.Fail()
 	}
 }
 
-func assertInvalidUsername(t *testing.T, api *UserApi, username string) {
+func assertInvalidUsername(t *testing.T, api *Api, username string) {
 	valid, msg, err := api.ValidateUsername(username)
 	if valid || err != nil || msg == "" {
 		t.Fail()
@@ -40,7 +40,7 @@ func TestValidateUsername(t *testing.T) {
 			},
 		},
 	}
-	api := UserApi{UserRepo: &repo}
+	api := Api{UserRepo: &repo}
 
 	assertValidUsername(t, &api, "nonexistentuser")
 	assertValidUsername(t, &api, "SomeOne")
