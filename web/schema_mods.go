@@ -9,6 +9,28 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func (api *Api) GetSchemaMods(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	list, err := api.SchemaModRepo.GetSchemaModsBySchemaID(int64(id))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	modlist := make([]string, len(list))
+	for i, mod := range list {
+		modlist[i] = mod.ModName
+	}
+
+	SendJson(w, modlist)
+}
+
 func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -41,6 +42,7 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 
 	schema.UserID = ctx.Token.UserID
+	schema.Created = time.Now().Unix() * 1000
 
 	//TODO: remove incomplete schema with same name
 	err = api.SchemaRepo.CreateSchema(&schema)
@@ -74,6 +76,12 @@ func (api Api) CompleteSchema(w http.ResponseWriter, r *http.Request, ctx *Secur
 	schema.Complete = true
 
 	err = api.SchemaRepo.UpdateSchema(schema)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	err = api.SchemaRepo.CalculateStats(schema.ID)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

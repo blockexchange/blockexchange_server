@@ -13,6 +13,7 @@ type SchemaRepository interface {
 	CreateSchema(schema *types.Schema) error
 	UpdateSchema(schema *types.Schema) error
 	DeleteSchema(id int64) error
+	CalculateStats(id int64) error
 }
 
 type DBSchemaRepository struct {
@@ -74,5 +75,16 @@ func (repo DBSchemaRepository) UpdateSchema(schema *types.Schema) error {
 
 func (repo DBSchemaRepository) DeleteSchema(id int64) error {
 	_, err := repo.DB.Exec("delete from schema where id = $1", id)
+	return err
+}
+
+func (repo DBSchemaRepository) CalculateStats(id int64) error {
+	q := `
+		update schema s
+		set total_size = (select sum(length(data)) + sum(length(metadata)) from schemapart sp where sp.schema_id = s.id),
+		total_parts = (select count(*) from schemapart sp where sp.schema_id = s.id)
+		where id = $1
+	`
+	_, err := repo.DB.Exec(q, id)
 	return err
 }
