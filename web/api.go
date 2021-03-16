@@ -7,4 +7,5 @@ type Api struct {
 	UserRepo        db.UserRepository
 	SchemaRepo      db.SchemaRepository
 	SchemaPartRepo  db.SchemaPartRepository
+	SchemaModRepo   db.SchemaModRepository
 }
