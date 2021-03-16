@@ -51,3 +51,33 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 	SendJson(w, schema)
 }
+
+func (api Api) CompleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	if schema.UserID != ctx.Token.UserID {
+		SendError(w, 403, "you are not the owner of the schema")
+		return
+	}
+
+	schema.Complete = true
+
+	err = api.SchemaRepo.UpdateSchema(schema)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

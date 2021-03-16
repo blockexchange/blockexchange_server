@@ -63,7 +63,8 @@ func (repo DBSchemaRepository) UpdateSchema(schema *types.Schema) error {
 			description = :description,
 			search_tokens = to_tsvector(:description),
 			user_id = :user_id,
-			license = :license
+			license = :license,
+			complete = :complete
 		where id = :id
 	`
 	_, err := repo.DB.NamedExec(query, schema)

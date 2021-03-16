@@ -38,6 +38,7 @@ func Serve() {
 	r.HandleFunc("/api/schema/{id}", api.GetSchema).Methods("GET")
 	r.HandleFunc("/api/schema", Secure(api.CreateSchema)).Methods("POST")
 	r.HandleFunc("/api/schema/{id}/mods", Secure(api.CreateSchemaMods)).Methods("POST")
+	r.HandleFunc("/api/schema/{id}/complete", Secure(api.CompleteSchema)).Methods("POST")
 
 	r.HandleFunc("/api/schemapart", Secure(api.CreateSchemaPart)).Methods("POST")
 	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", api.GetSchemaPart)
