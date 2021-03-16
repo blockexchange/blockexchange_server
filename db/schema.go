@@ -2,6 +2,7 @@ package db
 
 import (
 	"blockexchange/types"
+	"database/sql"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
@@ -19,14 +20,14 @@ type DBSchemaRepository struct {
 }
 
 func (repo DBSchemaRepository) GetSchemaById(id int64) (*types.Schema, error) {
-	list := []types.Schema{}
-	err := repo.DB.Select(&list, "select * from schema where id = $1", id)
-	if err != nil {
-		return nil, err
-	} else if len(list) == 1 {
-		return &list[0], nil
-	} else {
+	schema := types.Schema{}
+	err := repo.DB.Get(&schema, "select * from schema where id = $1", id)
+	if err == sql.ErrNoRows {
 		return nil, nil
+	} else if err != nil {
+		return nil, err
+	} else {
+		return &schema, nil
 	}
 }
 
