@@ -133,6 +133,58 @@ Database model:
 
 <img src="./doc/database.png"/>
 
+## Serialized mapblock format
+
+The on-disk format
+
+```lua
+-- examplary metadata
+metadata = {
+	size = {x=16,y=16,z=16},
+	node_mapping = {
+		["air"] = 126,
+		["default:stone"] = 127
+	},
+	-- block metadata
+	metadata = {
+		meta = {
+			["(0,0,0)"] = {
+				inventory = {},
+				fields = {}
+			}
+		},
+		timers = {
+			["(0,0,0)"] = {
+				timeout = 2.0,
+				elapsed = 1.4
+			}
+		}
+	}
+}
+
+-- node_id's (2 bytes) / param1 (1 byte) / param2 (1 byte)
+data = {
+	0,0,0,0
+	-- etc
+}
+
+-- database format
+serialized_metadata = minetest.compress(minetest.write_json(metadata), "deflate")
+serialized_data = minetest.compress(data, "deflate")
+```
+
+Serialized example as json, byte-array is encoded as base64 over the wire:
+```json
+{
+	"data":"eJztwQENAAAMAqAHekijm8MNyEdVVVVVVVVVHX8AAAAAAAAAwLwCfjrAlw",
+	"metadata":"eJw1ylsKgCAQRuG9M8RBdLDbCYGnUJQk9Lognsvid4+OOeGl8SGE4NuJOtl3UAhO1cahMXI6DlGG+aajUycXSLNu4xWC0iptnvHzV5ShwPUD23X4PxxfSjlAYnOIYs",
+	"offset_x":0.0,
+	"offset_y":0.0,
+	"offset_z":0.0,
+	"schema_id":9.0
+}
+```
+
 # License
 
 Code: MIT
