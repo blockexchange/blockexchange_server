@@ -9,10 +9,22 @@ import (
 
 type SchemaModRepository interface {
 	CreateSchemaMod(schema_mod *types.SchemaMod) error
+	GetSchemaModsBySchemaID(schema_id int64) ([]types.SchemaMod, error)
 }
 
 type DBSchemaModRepository struct {
 	DB *sqlx.DB
+}
+
+func (repo DBSchemaModRepository) GetSchemaModsBySchemaID(schema_id int64) ([]types.SchemaMod, error) {
+	list := []types.SchemaMod{}
+	query := `select * from schemamod where schema_id = $1`
+	err := repo.DB.Select(&list, query, schema_id)
+	if err != nil {
+		return nil, err
+	} else {
+		return list, nil
+	}
 }
 
 func (repo DBSchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {

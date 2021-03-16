@@ -4,23 +4,27 @@ import (
 	"blockexchange/types"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
 type SchemaSearchRepository interface {
 	FindByKeywords(keywords string) ([]types.SchemaSearchResult, error)
 	FindRecent(count int) ([]types.SchemaSearchResult, error)
+	FindByUsernameAndSchemaname(schema_name, user_name string) (*types.SchemaSearchResult, error)
 }
 
 func NewSchemaSearchRepository(db *sqlx.DB) SchemaSearchRepository {
 	return &DBSchemaSearchRepository{
-		DB:       db,
-		UserRepo: DBUserRepository{DB: db},
+		DB:            db,
+		UserRepo:      DBUserRepository{DB: db},
+		SchemaModRepo: DBSchemaModRepository{DB: db},
 	}
 }
 
 type DBSchemaSearchRepository struct {
-	DB       *sqlx.DB
-	UserRepo UserRepository
+	DB            *sqlx.DB
+	UserRepo      UserRepository
+	SchemaModRepo SchemaModRepository
 }
 
 func (repo DBSchemaSearchRepository) enhance(list []types.Schema) ([]types.SchemaSearchResult, error) {
@@ -31,6 +35,14 @@ func (repo DBSchemaSearchRepository) enhance(list []types.Schema) ([]types.Schem
 		if err != nil {
 			return nil, err
 		}
+		mods, err := repo.SchemaModRepo.GetSchemaModsBySchemaID(schema.ID)
+		if err != nil {
+			return nil, err
+		}
+		mod_list := make([]string, len(mods))
+		for i, mod := range mods {
+			mod_list[i] = mod.ModName
+		}
 
 		result[i] = types.SchemaSearchResult{
 			Schema: schema,
@@ -40,6 +52,7 @@ func (repo DBSchemaSearchRepository) enhance(list []types.Schema) ([]types.Schem
 				Created: user.Created,
 				Type:    user.Type,
 			},
+			Mods: mod_list,
 		}
 	}
 
@@ -47,7 +60,14 @@ func (repo DBSchemaSearchRepository) enhance(list []types.Schema) ([]types.Schem
 }
 
 func (repo DBSchemaSearchRepository) findSingle(where string, params ...interface{}) (*types.SchemaSearchResult, error) {
-	return nil, nil
+	list, err := repo.findMulti(where, params...)
+	if err != nil {
+		return nil, err
+	} else if len(list) == 1 {
+		return &list[0], nil
+	} else {
+		return nil, nil
+	}
 }
 
 func (repo DBSchemaSearchRepository) findMulti(where string, params ...interface{}) ([]types.SchemaSearchResult, error) {
@@ -66,4 +86,14 @@ func (repo DBSchemaSearchRepository) FindByKeywords(keywords string) ([]types.Sc
 
 func (repo DBSchemaSearchRepository) FindRecent(count int) ([]types.SchemaSearchResult, error) {
 	return repo.findMulti("complete = true order by created desc limit $1", count)
+}
+
+func (repo DBSchemaSearchRepository) FindByUsernameAndSchemaname(schema_name, user_name string) (*types.SchemaSearchResult, error) {
+	logrus.WithFields(logrus.Fields{
+		"schema_name": schema_name,
+		"user_name":   user_name,
+	}).Trace("DBSchemaSearchRepository::FindByUsernameAndSchemaname")
+
+	where := `name = $1 and user_id = (select id from public.user where name = $2)`
+	return repo.findSingle(where, schema_name, user_name)
 }

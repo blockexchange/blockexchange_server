@@ -26,6 +26,15 @@ func (api *Api) SearchRecentSchemas(w http.ResponseWriter, r *http.Request) {
 	SendJson(w, list)
 }
 
+func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	schema_name := vars["schema_name"]
+	user_name := vars["user_name"]
+
+	schema, err := api.SchemaSearchRepo.FindByUsernameAndSchemaname(schema_name, user_name)
+	Send(w, schema, err)
+}
+
 func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 	search := types.SchemaSearch{}
 	err := json.NewDecoder(r.Body).Decode(&search)
