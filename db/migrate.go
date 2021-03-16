@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"embed"
 	"log"
 	"net/http"
@@ -32,8 +33,8 @@ func (d *driver) Open(rawURL string) (source.Driver, error) {
 	return d, nil
 }
 
-func Migrate() {
-	driver, err := postgres.WithInstance(DB.DB, &postgres.Config{})
+func Migrate(db *sql.DB) {
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	m, err := migrate.NewWithDatabaseInstance("embed://", "postgres", driver)
 	if err != nil {
 		log.Fatal(err)

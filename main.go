@@ -11,7 +11,10 @@ func main() {
 	logrus.SetLevel(logrus.TraceLevel)
 	logrus.SetReportCaller(true)
 	logrus.Info("Starting")
-	db.Init()
-	db.Migrate()
-	web.Serve()
+	db_, err := db.Init()
+	if err != nil {
+		panic(err)
+	}
+	db.Migrate(db_.DB)
+	web.Serve(db_)
 }

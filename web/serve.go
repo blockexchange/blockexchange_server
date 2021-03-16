@@ -6,19 +6,19 @@ import (
 	"net/http"
 	"os"
 
-	"blockexchange/db"
 	"blockexchange/public"
 
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 )
 
-func Serve() {
+func Serve(db_ *sqlx.DB) {
 
 	// webdev flag
 	useLocalfs := os.Getenv("WEBDEV") == "true"
 	r := mux.NewRouter()
 
-	api := NewApi(db.DB)
+	api := NewApi(db_)
 
 	// api surface
 	r.HandleFunc("/api/info", InfoEndpoint)

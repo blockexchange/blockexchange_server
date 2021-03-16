@@ -14,15 +14,15 @@ import (
 
 func TestSomething(t *testing.T) {
 	//go test ./... -tags=integration
-	db.Init()
+	_db, err := db.Init()
+	assert.NoError(t, err)
+	api := NewApi(_db)
 
 	r := httptest.NewRequest("GET", "http://", nil)
 	w := httptest.NewRecorder()
 
-	api := NewApi(db.DB)
-
 	api.GetUsers(w, r)
 	var users []types.User
-	err := json.NewDecoder(w.Body).Decode(&users)
+	err = json.NewDecoder(w.Body).Decode(&users)
 	assert.NoError(t, err)
 }
