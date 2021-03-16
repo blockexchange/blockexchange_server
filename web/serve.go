@@ -18,14 +18,7 @@ func Serve() {
 	useLocalfs := os.Getenv("WEBDEV") == "true"
 	r := mux.NewRouter()
 
-	api := Api{
-		AccessTokenRepo:  db.DBAccessTokenRepository{DB: db.DB},
-		UserRepo:         db.DBUserRepository{DB: db.DB},
-		SchemaRepo:       db.DBSchemaRepository{DB: db.DB},
-		SchemaPartRepo:   db.DBSchemaPartRepository{DB: db.DB},
-		SchemaModRepo:    db.DBSchemaModRepository{DB: db.DB},
-		SchemaSearchRepo: db.NewSchemaSearchRepository(db.DB),
-	}
+	api := NewApi(db.DB)
 
 	// api surface
 	r.HandleFunc("/api/info", InfoEndpoint)

@@ -26,9 +26,7 @@ func (api Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	json.NewEncoder(w).Encode(&sanitizedUsers)
+	SendJson(w, sanitizedUsers)
 }
 
 func (api Api) UpdateUser(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {

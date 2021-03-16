@@ -44,7 +44,7 @@ services:
   ports:
    - "30000:30000/udp"
 
- integration-test:
+ mod-integration-test:
   image: registry.gitlab.com/minetest/minetest/server:5.4.0
   user: root
   volumes:
@@ -52,6 +52,22 @@ services:
    - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
   ports:
    - "30000:30000/udp"
+
+ integration-test:
+  image: golang:1.16.0
+  depends_on:
+   - postgres
+  volumes:
+   - ".:/data"
+  environment:
+   - PGUSER=postgres
+   - PGPASSWORD=enter
+   - PGHOST=postgres
+   - PGDATABASE=postgres
+   - PGPORT=5432
+   - LOGLEVEL=debug
+  working_dir: /data
+  command: ["go", "test", "./...", "-tags=integration"]
 
 volumes:
   postgres: {}
