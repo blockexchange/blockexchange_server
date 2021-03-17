@@ -8,16 +8,18 @@ import (
 
 type Renderer struct {
 	SchemaPartRepo db.SchemaPartRepository
+	Colormapping   map[string]*Color
 }
 
-func NewRenderer(spr db.SchemaPartRepository) *Renderer {
+func NewRenderer(spr db.SchemaPartRepository, cm map[string]*Color) *Renderer {
 	return &Renderer{
 		SchemaPartRepo: spr,
+		Colormapping:   cm,
 	}
 }
 
 func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
-	//TODO
+	//TODO: create canvas
 	start_block_x := int(math.Ceil(float64(schema.MaxX)/16)) - 1
 	start_block_z := int(math.Ceil(float64(schema.MaxZ)/16)) - 1
 	end_block_y := int(math.Ceil(float64(schema.MaxY)/16)) - 1
@@ -38,7 +40,15 @@ func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
 					continue
 				}
 
-				r.RenderSchemaPart(schemapart)
+				mapblock, err := ParseSchemaPart(schemapart)
+				if err != nil {
+					return nil, err
+				}
+
+				pr := NewPartRenderer(schemapart, mapblock, r.Colormapping)
+				//TODO: paint onto canvas
+				//TODO: calculate canvas-offset
+				pr.RenderSchemaPart()
 			}
 		}
 	}

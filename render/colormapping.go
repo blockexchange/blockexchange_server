@@ -14,13 +14,13 @@ type Color struct {
 	Blue  int `json:"b"`
 }
 
-func GetColorMapping() (map[string]Color, error) {
+func GetColorMapping() (map[string]*Color, error) {
 	file, err := fs.Open("colormapping.json")
 	if err != nil {
 		return nil, err
 	}
 
-	m := make(map[string]Color)
+	m := make(map[string]*Color)
 	err = json.NewDecoder(file).Decode(&m)
 	return m, err
 }

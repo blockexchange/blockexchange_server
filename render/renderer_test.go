@@ -46,7 +46,10 @@ func TestRenderer(t *testing.T) {
 	logrus.SetLevel(logrus.TraceLevel)
 
 	repo := MockSchemaPartRepository{}
-	renderer := NewRenderer(&repo)
+	cm, err := GetColorMapping()
+	assert.NoError(t, err)
+
+	renderer := NewRenderer(&repo, cm)
 	schema := types.Schema{
 		MaxX: 32,
 		MaxY: 32,
