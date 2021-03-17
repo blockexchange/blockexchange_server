@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"blockexchange/public"
+	"blockexchange/web/oauth"
 
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -20,10 +21,12 @@ func Serve(db_ *sqlx.DB) {
 
 	api := NewApi(db_)
 
+	github_oauth := oauth.NewHandler(&oauth.GithubOauth{}, api.UserRepo, api.AccessTokenRepo)
+
 	// api surface
 	r.HandleFunc("/api/info", InfoEndpoint)
 	r.HandleFunc("/api/token", api.PostLogin).Methods("POST")
-	r.HandleFunc("/api/oauth_callback/github", api.OauthGithub)
+	r.HandleFunc("/api/oauth_callback/github", github_oauth.Handle)
 
 	r.HandleFunc("/api/validate_username", api.PostValidateUsername).Methods("POST")
 	r.HandleFunc("/api/user", api.GetUsers).Methods("GET")
