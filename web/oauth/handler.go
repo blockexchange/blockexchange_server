@@ -12,6 +12,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type AccessTokenRespone struct {
+	AccessToken string `json:"access_token"`
+}
+
 type OauthUserInfo struct {
 	Name       string
 	Email      string
