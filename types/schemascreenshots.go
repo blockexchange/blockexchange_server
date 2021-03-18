@@ -1,6 +1,6 @@
 package types
 
-type SchemaScreenshots struct {
+type SchemaScreenshot struct {
 	ID       int64  `json:"id" db:"id"`
 	SchemaID int64  `json:"schema_id" db:"schema_id"`
 	Type     string `json:"type" db:"type"`
