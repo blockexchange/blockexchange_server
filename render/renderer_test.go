@@ -58,4 +58,10 @@ func TestRenderer(t *testing.T) {
 	png, err := renderer.RenderSchema(&schema)
 	assert.NoError(t, err)
 	assert.NotNil(t, png)
+
+	file, err := os.Create("/tmp/render.png")
+	assert.NoError(t, err)
+
+	file.Write(png)
+	fmt.Println(file.Name())
 }

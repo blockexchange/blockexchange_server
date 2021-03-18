@@ -3,7 +3,10 @@ package render
 import (
 	"blockexchange/db"
 	"blockexchange/types"
+	"bytes"
 	"math"
+
+	"github.com/fogleman/gg"
 )
 
 type Renderer struct {
@@ -18,8 +21,19 @@ func NewRenderer(spr db.SchemaPartRepository, cm map[string]*Color) *Renderer {
 	}
 }
 
+const img_size_x = 800
+const img_size_y = 600
+
 func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
-	//TODO: create canvas
+
+	img_center_x := img_size_x / (schema.MaxZ + schema.MaxX) * schema.MaxZ
+	img_center_y := img_size_y
+
+	max_size := Max(schema.MaxX, Max(schema.MaxY, schema.MaxZ))
+	size := float64(img_size_x) / float64(max_size) / 2.5
+
+	dc := gg.NewContext(img_size_x, img_size_y)
+
 	start_block_x := int(math.Ceil(float64(schema.MaxX)/16)) - 1
 	start_block_z := int(math.Ceil(float64(schema.MaxZ)/16)) - 1
 	end_block_y := int(math.Ceil(float64(schema.MaxY)/16)) - 1
@@ -44,14 +58,17 @@ func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
 				if err != nil {
 					return nil, err
 				}
+				x_offset := float64(img_center_x) + (size * float64(x)) - (size * float64(z))
+				y_offset := float64(img_center_y) - (size * tan30 * float64(x)) - (size * tan30 * float64(z)) - (size * sqrt3div2 * float64(y))
 
-				pr := NewPartRenderer(schemapart, mapblock, r.Colormapping)
-				//TODO: paint onto canvas
-				//TODO: calculate canvas-offset
-				pr.RenderSchemaPart()
+				pr := NewPartRenderer(schemapart, mapblock, r.Colormapping, size, x_offset, y_offset)
+				pr.RenderSchemaPart(dc)
 			}
 		}
 	}
 
-	return nil, nil
+	buf := bytes.NewBuffer([]byte{})
+	err := dc.EncodePNG(buf)
+
+	return buf.Bytes(), err
 }
