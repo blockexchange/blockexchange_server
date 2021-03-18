@@ -1,6 +1,7 @@
 package web
 
 import (
+	"blockexchange/render"
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
@@ -74,8 +75,33 @@ func (api Api) CompleteSchema(w http.ResponseWriter, r *http.Request, ctx *Secur
 	}
 
 	schema.Complete = true
-
 	err = api.SchemaRepo.UpdateSchema(schema)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	cm, err := render.GetColorMapping()
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	renderer := render.NewRenderer(api.SchemaPartRepo, cm)
+	png, err := renderer.RenderSchema(schema)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	screenshot := types.SchemaScreenshot{
+		SchemaID: schema.ID,
+		Type:     "image/png",
+		Title:    "Isometric preview",
+		Data:     png,
+	}
+
+	err = api.SchemaScreenshotRepo.Create(&screenshot)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

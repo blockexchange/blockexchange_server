@@ -54,6 +54,7 @@ func TestRenderer(t *testing.T) {
 		MaxX: 32,
 		MaxY: 32,
 		MaxZ: 32,
+		ID:   0,
 	}
 	png, err := renderer.RenderSchema(&schema)
 	assert.NoError(t, err)

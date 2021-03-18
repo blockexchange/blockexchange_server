@@ -45,7 +45,7 @@ func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
 				y := block_y * 16
 				z := block_z * 16
 
-				schemapart, err := r.SchemaPartRepo.GetBySchemaIDAndOffset(0, x, y, z)
+				schemapart, err := r.SchemaPartRepo.GetBySchemaIDAndOffset(schema.ID, x, y, z)
 				if err != nil {
 					return nil, err
 				}
