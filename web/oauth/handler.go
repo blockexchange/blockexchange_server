@@ -86,7 +86,20 @@ func (h *OauthHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.UserRepo.GetUserByExternalId(info.ExternalID)
+	// check if there is already a user by that name
+	user, err := h.UserRepo.GetUserByName(info.Name)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	if user != nil && user.Type != info.Type {
+		// assign pseudo-random alternative name
+		info.Name = info.Name + "_" + core.CreateToken(6)
+	}
+
+	// fetch by external id
+	user, err = h.UserRepo.GetUserByExternalId(info.ExternalID)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

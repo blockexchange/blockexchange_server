@@ -23,12 +23,14 @@ func Serve(db_ *sqlx.DB) {
 
 	github_oauth := oauth.NewHandler(&oauth.GithubOauth{}, api.UserRepo, api.AccessTokenRepo)
 	discord_oauth := oauth.NewHandler(&oauth.DiscordOauth{}, api.UserRepo, api.AccessTokenRepo)
+	mesehub_oauth := oauth.NewHandler(&oauth.MesehubOauth{}, api.UserRepo, api.AccessTokenRepo)
 
 	// api surface
 	r.HandleFunc("/api/info", InfoEndpoint)
 	r.HandleFunc("/api/token", api.PostLogin).Methods("POST")
 	r.HandleFunc("/api/oauth_callback/github", github_oauth.Handle)
 	r.HandleFunc("/api/oauth_callback/discord", discord_oauth.Handle)
+	r.HandleFunc("/api/oauth_callback/mesehub", mesehub_oauth.Handle)
 
 	r.HandleFunc("/api/validate_username", api.PostValidateUsername).Methods("POST")
 	r.HandleFunc("/api/user", api.GetUsers).Methods("GET")
