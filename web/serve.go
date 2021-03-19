@@ -27,6 +27,7 @@ func Serve(db_ *sqlx.DB) {
 
 	// api surface
 	r.HandleFunc("/api/info", InfoEndpoint)
+	r.HandleFunc("/api/register", api.Register).Methods("POST")
 	r.HandleFunc("/api/token", api.PostLogin).Methods("POST")
 	r.HandleFunc("/api/oauth_callback/github", github_oauth.Handle)
 	r.HandleFunc("/api/oauth_callback/discord", discord_oauth.Handle)
