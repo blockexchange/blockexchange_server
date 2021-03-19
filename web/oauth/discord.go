@@ -6,12 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
-	"strconv"
 )
 
 type DiscordResponse struct {
-	ID       int    `json:"id"`
+	ID       string `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
 }
@@ -20,34 +20,32 @@ type DiscordOauth struct {
 }
 
 func (o *DiscordOauth) RequestAccessToken(code string) (string, error) {
-	accessTokenReq := make(map[string]interface{})
-	accessTokenReq["client_id"] = os.Getenv("DISCORD_APP_ID")
-	accessTokenReq["client_secret"] = os.Getenv("DISCORD_APP_SECRET")
-	accessTokenReq["redirect_uri"] = os.Getenv("BASE_URL") + "/api/oauth_callback/discord"
-	accessTokenReq["code"] = code
-	accessTokenReq["grant_type"] = "authorization_code"
-	accessTokenReq["scope"] = "identify email connections"
+	q := url.Values{}
+	q.Add("client_id", os.Getenv("DISCORD_APP_ID"))
+	q.Add("client_secret", os.Getenv("DISCORD_APP_SECRET"))
+	q.Add("redirect_uri", os.Getenv("BASE_URL")+"/api/oauth_callback/discord")
+	q.Add("code", code)
+	q.Add("grant_type", "authorization_code")
+	q.Add("scope", "identify email connections")
+	fmt.Println(q.Encode())
 
-	data, err := json.Marshal(accessTokenReq)
+	buf := bytes.NewBufferString(q.Encode())
+
+	req, err := http.NewRequest("POST", "https://discord.com/api/oauth2/token", buf)
 	if err != nil {
 		return "", err
 	}
 
-	req, err := http.NewRequest("POST", "https://discord.com/api/oauth2/token", bytes.NewBuffer(data))
-	if err != nil {
-		return "", err
-	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	//TODO: query string shenanigans
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}
 
-	tokenData := AccessTokenRespone{}
+	tokenData := AccessTokenResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&tokenData)
 	if err != nil {
 		return "", err
@@ -79,12 +77,11 @@ func (o *DiscordOauth) RequestUserInfo(access_token string) (*OauthUserInfo, err
 	}
 
 	fmt.Println(userData)
-	external_id := strconv.Itoa(userData.ID)
 	info := OauthUserInfo{
 		Name:       userData.Username,
 		Type:       types.UserTypeDiscord,
 		Email:      userData.Email,
-		ExternalID: external_id,
+		ExternalID: userData.ID,
 	}
 
 	return &info, nil

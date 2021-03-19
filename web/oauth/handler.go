@@ -12,7 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type AccessTokenRespone struct {
+type AccessTokenResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
@@ -73,6 +73,16 @@ func (h *OauthHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	info, err := h.Impl.RequestUserInfo(access_token)
 	if err != nil {
 		SendError(w, 500, err.Error())
+		return
+	}
+
+	if info.Name == "" {
+		SendError(w, 500, "empty username")
+		return
+	}
+
+	if info.ExternalID == "" {
+		SendError(w, 500, "empty externalid")
 		return
 	}
 
