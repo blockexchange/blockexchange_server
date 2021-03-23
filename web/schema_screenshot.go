@@ -2,9 +2,11 @@ package web
 
 import (
 	"bytes"
+	"fmt"
 	"image/png"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/nfnt/resize"
@@ -43,6 +45,21 @@ func (api Api) GetSchemaScreenshotByID(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		cache_key := fmt.Sprintf("screenshot_%d_%d_%d", id, height, width)
+		data, err := api.Cache.Get(cache_key)
+		if err != nil {
+			// cache error
+			SendJson(w, err.Error())
+			return
+		}
+
+		if data != nil {
+			// cached data
+			w.Header().Set("Content-Type", "image/png")
+			w.Write(data)
+			return
+		}
+
 		logrus.WithFields(logrus.Fields{
 			"width":  width,
 			"height": height,
@@ -55,13 +72,23 @@ func (api Api) GetSchemaScreenshotByID(w http.ResponseWriter, r *http.Request) {
 		}
 
 		newImage := resize.Resize(uint(width), uint(height), img, resize.Bilinear)
-		w.Header().Set("Content-Type", "image/png")
-		err = png.Encode(w, newImage)
+
+		buf := bytes.NewBuffer([]byte{})
+		err = png.Encode(buf, newImage)
 		if err != nil {
 			SendError(w, 500, err.Error())
 			return
 		}
 
+		// cache result
+		err = api.Cache.Set(cache_key, buf.Bytes(), 10*time.Minute)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		w.Header().Set("Content-Type", "image/png")
+		w.Write(buf.Bytes())
 		return
 	}
 

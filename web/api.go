@@ -1,6 +1,7 @@
 package web
 
 import (
+	"blockexchange/core"
 	"blockexchange/db"
 
 	"github.com/jmoiron/sqlx"
@@ -14,9 +15,10 @@ type Api struct {
 	SchemaModRepo        db.SchemaModRepository
 	SchemaSearchRepo     db.SchemaSearchRepository
 	SchemaScreenshotRepo db.SchemaScreenshotRepository
+	Cache                core.Cache
 }
 
-func NewApi(db_ *sqlx.DB) *Api {
+func NewApi(db_ *sqlx.DB, cache core.Cache) *Api {
 	return &Api{
 		AccessTokenRepo:      db.DBAccessTokenRepository{DB: db_},
 		UserRepo:             db.DBUserRepository{DB: db_},
@@ -25,5 +27,6 @@ func NewApi(db_ *sqlx.DB) *Api {
 		SchemaModRepo:        db.DBSchemaModRepository{DB: db_},
 		SchemaSearchRepo:     db.NewSchemaSearchRepository(db_),
 		SchemaScreenshotRepo: db.DBSchemaScreenshotRepository{DB: db_},
+		Cache:                cache,
 	}
 }

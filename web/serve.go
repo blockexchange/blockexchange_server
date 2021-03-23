@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"blockexchange/core"
 	"blockexchange/public"
 	"blockexchange/web/oauth"
 
@@ -19,7 +20,17 @@ func Serve(db_ *sqlx.DB) {
 	useLocalfs := os.Getenv("WEBDEV") == "true"
 	r := mux.NewRouter()
 
-	api := NewApi(db_)
+	// cache
+	redis_host := os.Getenv("REDIS_HOST")
+	redis_port := os.Getenv("REDIS_PORT")
+	var cache core.Cache
+	if redis_host != "" && redis_port != "" {
+		cache = core.NewRedisCache(redis_host + ":" + redis_port)
+	} else {
+		cache = core.NewNoOpCache()
+	}
+
+	api := NewApi(db_, cache)
 
 	github_oauth := oauth.NewHandler(&oauth.GithubOauth{}, api.UserRepo, api.AccessTokenRepo)
 	discord_oauth := oauth.NewHandler(&oauth.DiscordOauth{}, api.UserRepo, api.AccessTokenRepo)
