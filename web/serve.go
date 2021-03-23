@@ -12,6 +12,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func Serve(db_ *sqlx.DB) {
@@ -72,6 +74,9 @@ func Serve(db_ *sqlx.DB) {
 	// static files
 	r.PathPrefix("/").Handler(http.FileServer(getFileSystem(useLocalfs, public.Webapp)))
 	http.Handle("/", r)
+
+	// metrics
+	http.Handle("/metrics", promhttp.Handler())
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

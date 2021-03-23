@@ -7,7 +7,19 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
+
+var partsUploaded = promauto.NewCounter(prometheus.CounterOpts{
+	Name: "bx_schemaparts_uploaded",
+	Help: "The total number of uploaded schemaparts",
+})
+
+var partsDownloaded = promauto.NewCounter(prometheus.CounterOpts{
+	Name: "bx_schemaparts_downloaded",
+	Help: "The total number of downloaded schemaparts",
+})
 
 func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	schemapart := types.SchemaPart{}
@@ -33,6 +45,8 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		SendError(w, 500, err.Error())
 		return
 	}
+
+	partsUploaded.Inc()
 
 	SendJson(w, schemapart)
 }
@@ -68,6 +82,8 @@ func (api *Api) GetSchemaPart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	partsDownloaded.Inc()
+
 	schemapart, err := api.SchemaPartRepo.GetBySchemaIDAndOffset(int64(schema_id), x, y, z)
 	Send(w, schemapart, err)
 }
@@ -78,6 +94,8 @@ func (api *Api) GetNextSchemaPart(w http.ResponseWriter, r *http.Request) {
 		SendError(w, 500, err.Error())
 		return
 	}
+
+	partsDownloaded.Inc()
 
 	schemapart, err := api.SchemaPartRepo.GetNextBySchemaIDAndOffset(int64(schema_id), x, y, z)
 	Send(w, schemapart, err)
