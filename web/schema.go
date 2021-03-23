@@ -25,6 +25,15 @@ func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.URL.Query().Get("download") == "true" {
+		schema.Downloads++
+		err = api.SchemaRepo.UpdateSchema(schema)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+	}
+
 	SendJson(w, schema)
 }
 
