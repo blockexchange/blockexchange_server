@@ -7,6 +7,7 @@ import SchemaPreview from './SchemaPreview.js';
 import SchemaDownload from './SchemaDownload.js';
 import SchemaDescription from './SchemaDescription.js';
 import SchemaDelete from './SchemaDelete.js';
+import SchemaUpdateInfo from './SchemaUpdateInfo.js';
 import SchemaTitle from './SchemaTitle.js';
 import SchemaExport from './SchemaExport.js';
 import SchemaTags from './SchemaTags.js';
@@ -21,7 +22,8 @@ export default {
 		"schema-delete": SchemaDelete,
 		"schema-title": SchemaTitle,
 		"schema-export": SchemaExport,
-		"schema-tags": SchemaTags
+		"schema-tags": SchemaTags,
+		"schema-updateinfo": SchemaUpdateInfo
 	},
 	props: ["user_name", "schema_name"],
 	data: function(){
@@ -43,7 +45,7 @@ export default {
 	template: /*html*/`
 		<div v-if="schema">
 			<div class="row">
-				<div class="col-md-10">
+				<div class="col-md-8">
 					<h3>
 					  <schema-title :schema="schema"/>
 					  <small class="text-muted">by {{ user_name }}</small>
@@ -52,8 +54,9 @@ export default {
 						</span>
 					</h3>
 				</div>
-				<div class="col-md-2">
+				<div class="col-md-4">
 					<schema-export :schema="schema"/>
+					<schema-updateinfo :schema="schema"/>
 					<schema-delete :schema="schema" class="float-right"/>
 				</div>
 			</div>

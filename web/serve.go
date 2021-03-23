@@ -54,7 +54,7 @@ func Serve(db_ *sqlx.DB) {
 	r.HandleFunc("/api/schema", Secure(api.CreateSchema)).Methods("POST")
 	r.HandleFunc("/api/schema/{id}/mods", api.GetSchemaMods).Methods("GET")
 	r.HandleFunc("/api/schema/{id}/mods", Secure(api.CreateSchemaMods)).Methods("POST")
-	r.HandleFunc("/api/schema/{id}/complete", Secure(api.CompleteSchema)).Methods("POST")
+	r.HandleFunc("/api/schema/{id}/update", Secure(api.UpdateSchemaInfo)).Methods("POST")
 
 	r.HandleFunc("/api/schema/{schema_id}/screenshot/{id}", api.GetSchemaScreenshotByID)
 	r.HandleFunc("/api/schema/{schema_id}/screenshot", api.GetSchemaScreenshots)

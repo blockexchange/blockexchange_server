@@ -11,6 +11,7 @@ type SchemaScreenshotRepository interface {
 	GetBySchemaID(schema_id int64) ([]types.SchemaScreenshot, error)
 	GetByID(id int64) (*types.SchemaScreenshot, error)
 	Create(screenshot *types.SchemaScreenshot) error
+	Update(screenshot *types.SchemaScreenshot) error
 	//Delete(id int64) error
 }
 
@@ -56,5 +57,17 @@ func (r DBSchemaScreenshotRepository) Create(screenshot *types.SchemaScreenshot)
 		return err
 	}
 	return stmt.Get(&screenshot.ID, screenshot)
+}
 
+func (r DBSchemaScreenshotRepository) Update(screenshot *types.SchemaScreenshot) error {
+	query := `
+		update schema_screenshot
+		set
+			type = :type,
+			title = :title,
+			data = :data
+		where id = :id
+	`
+	_, err := r.DB.NamedExec(query, screenshot)
+	return err
 }

@@ -64,7 +64,7 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	SendJson(w, schema)
 }
 
-func (api Api) CompleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -84,6 +84,7 @@ func (api Api) CompleteSchema(w http.ResponseWriter, r *http.Request, ctx *Secur
 	}
 
 	schema.Complete = true
+	schema.Created = time.Now().Unix() * 1000
 	err = api.SchemaRepo.UpdateSchema(schema)
 	if err != nil {
 		SendError(w, 500, err.Error())
@@ -103,17 +104,37 @@ func (api Api) CompleteSchema(w http.ResponseWriter, r *http.Request, ctx *Secur
 		return
 	}
 
-	screenshot := types.SchemaScreenshot{
-		SchemaID: schema.ID,
-		Type:     "image/png",
-		Title:    "Isometric preview",
-		Data:     png,
-	}
-
-	err = api.SchemaScreenshotRepo.Create(&screenshot)
+	screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(schema.ID)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
+	}
+
+	var screenshot types.SchemaScreenshot
+
+	if len(screenshots) >= 1 {
+		// update existing
+		screenshot = screenshots[0]
+
+		err = api.SchemaScreenshotRepo.Update(&screenshot)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+	} else {
+		// create a new one
+		screenshot = types.SchemaScreenshot{
+			SchemaID: schema.ID,
+			Type:     "image/png",
+			Title:    "Isometric preview",
+			Data:     png,
+		}
+
+		err = api.SchemaScreenshotRepo.Create(&screenshot)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
 	}
 
 	err = api.SchemaRepo.CalculateStats(schema.ID)

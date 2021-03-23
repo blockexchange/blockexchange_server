@@ -11,6 +11,11 @@ export const update = schema => securefetch(`api/schema/${schema.id}`, {
 })
 .then(r => r.json());
 
+export const updateInfo = schema_id => securefetch(`api/schema/${schema_id}/update`, {
+	method: "POST"
+})
+.then(r => r.text());
+
 export const remove = schema_id => securefetch(`api/schema/${schema_id}`, {
 	method: "DELETE"
 });
