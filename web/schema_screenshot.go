@@ -54,7 +54,7 @@ func (api Api) GetSchemaScreenshotByID(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		newImage := resize.Resize(uint(width), uint(height), img, resize.Lanczos2)
+		newImage := resize.Resize(uint(width), uint(height), img, resize.Bilinear)
 		w.Header().Set("Content-Type", "image/png")
 		err = png.Encode(w, newImage)
 		if err != nil {
