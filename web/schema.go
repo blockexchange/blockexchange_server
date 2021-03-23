@@ -64,6 +64,34 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	SendJson(w, schema)
 }
 
+func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	logrus.WithFields(logrus.Fields{
+		"body": r.Body,
+	}).Trace("PUT /api/schema")
+
+	if !ctx.CheckPermission(w, types.JWTPermissionManagement) {
+		return
+	}
+
+	schema := types.Schema{}
+	err := json.NewDecoder(r.Body).Decode(&schema)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	schema.UserID = ctx.Token.UserID
+	schema.Created = time.Now().Unix() * 1000
+
+	err = api.SchemaRepo.UpdateSchema(&schema)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	SendJson(w, schema)
+}
+
 func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
