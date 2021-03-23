@@ -22,8 +22,8 @@ jobs:
         tag_names: true
         cache: true
 
-    - name: deploy central
-      run: curl -X POST -F token=6e0aa9d77b43c78c268a0c7e7fabb6 -F ref=master https://dev.rudin.io/api/v4/projects/68/trigger/pipeline
+#    - name: deploy central
+#      run: curl -X POST -F token=6e0aa9d77b43c78c268a0c7e7fabb6 -F ref=master https://dev.rudin.io/api/v4/projects/68/trigger/pipeline
 
     - name: 📧 Discord success notification
       env:
