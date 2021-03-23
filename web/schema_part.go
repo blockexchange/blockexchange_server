@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
@@ -40,6 +41,7 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
+	schemapart.Mtime = time.Now().Unix() * 1000
 	err = api.SchemaPartRepo.CreateOrUpdateSchemaPart(&schemapart)
 	if err != nil {
 		SendError(w, 500, err.Error())
@@ -98,5 +100,19 @@ func (api *Api) GetNextSchemaPart(w http.ResponseWriter, r *http.Request) {
 	partsDownloaded.Inc()
 
 	schemapart, err := api.SchemaPartRepo.GetNextBySchemaIDAndOffset(int64(schema_id), x, y, z)
+	Send(w, schemapart, err)
+}
+
+func (api *Api) GetFirstSchemaPart(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	schema_id, err := strconv.Atoi(vars["schema_id"])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	partsDownloaded.Inc()
+
+	schemapart, err := api.SchemaPartRepo.GetFirstBySchemaID(int64(schema_id))
 	Send(w, schemapart, err)
 }

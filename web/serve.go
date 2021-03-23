@@ -66,6 +66,7 @@ func Serve(db_ *sqlx.DB) {
 	r.HandleFunc("/api/schemapart", Secure(api.CreateSchemaPart)).Methods("POST")
 	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", api.GetSchemaPart)
 	r.HandleFunc("/api/schemapart_next/{schema_id}/{x}/{y}/{z}", api.GetNextSchemaPart)
+	r.HandleFunc("/api/schemapart_first/{schema_id}", api.GetFirstSchemaPart)
 
 	r.HandleFunc("/api/access_token", Secure(api.GetAccessTokens)).Methods("GET")
 	r.HandleFunc("/api/access_token", Secure(api.PostAccessToken)).Methods("POST")
