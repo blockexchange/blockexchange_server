@@ -31,7 +31,7 @@ export default {
 					<small class="text-muted">by {{ schema.user.name }}</small>
 				</h5>
 				<p>
-					{{ schema.total_size | prettysize }}; {{ schema.max_x }} / {{ schema.max_y }} / {{ schema.max_z }} nodes
+					{{ schema.total_size | prettysize }}; {{ schema.size_x }} / {{ schema.size_y }} / {{ schema.size_z }} nodes
 				</p>
 				<pre>{{ schema.description }}</pre>
 			</div>

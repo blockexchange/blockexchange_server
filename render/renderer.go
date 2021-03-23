@@ -26,17 +26,17 @@ const img_size_y = 600
 
 func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
 
-	img_center_x := img_size_x / (schema.MaxZ + schema.MaxX) * schema.MaxZ
+	img_center_x := img_size_x / (schema.SizeZ + schema.SizeX) * schema.SizeZ
 	img_center_y := img_size_y
 
-	max_size := Max(schema.MaxX, Max(schema.MaxY, schema.MaxZ))
+	max_size := Max(schema.SizeX, Max(schema.SizeY, schema.SizeZ))
 	size := float64(img_size_x) / float64(max_size) / 2.5
 
 	dc := gg.NewContext(img_size_x, img_size_y)
 
-	start_block_x := int(math.Ceil(float64(schema.MaxX)/16)) - 1
-	start_block_z := int(math.Ceil(float64(schema.MaxZ)/16)) - 1
-	end_block_y := int(math.Ceil(float64(schema.MaxY)/16)) - 1
+	start_block_x := int(math.Ceil(float64(schema.SizeX)/16)) - 1
+	start_block_z := int(math.Ceil(float64(schema.SizeZ)/16)) - 1
+	end_block_y := int(math.Ceil(float64(schema.SizeY)/16)) - 1
 
 	for block_x := start_block_x; block_x >= 0; block_x-- {
 		for block_z := start_block_z; block_z >= 0; block_z-- {

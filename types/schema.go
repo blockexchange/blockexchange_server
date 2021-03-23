@@ -10,9 +10,9 @@ type Schema struct {
 	Name         string `db:"name" json:"name"`
 	Description  string `db:"description" json:"description"`
 	Complete     bool   `db:"complete" json:"complete"`
-	MaxX         int    `db:"max_x" json:"max_x"`
-	MaxY         int    `db:"max_y" json:"max_y"`
-	MaxZ         int    `db:"max_z" json:"max_z"`
+	SizeX        int    `db:"size_x" json:"size_x"`
+	SizeY        int    `db:"size_y" json:"size_y"`
+	SizeZ        int    `db:"size_z" json:"size_z"`
 	PartLength   int    `db:"part_length" json:"part_length"`
 	TotalSize    int    `db:"total_size" json:"total_size"`
 	TotalParts   int    `db:"total_parts" json:"total_parts"`
@@ -35,9 +35,9 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	s.Description = getString(m["description"])
 	s.License = getString(m["license"])
 	s.Complete = getBool(m["complete"])
-	s.MaxX = getInt(m["max_x"])
-	s.MaxY = getInt(m["max_y"])
-	s.MaxZ = getInt(m["max_z"])
+	s.SizeX = getInt(m["size_x"])
+	s.SizeY = getInt(m["size_y"])
+	s.SizeZ = getInt(m["size_z"])
 	s.PartLength = getInt(m["part_length"])
 	s.TotalSize = getInt(m["total_size"])
 	s.TotalParts = getInt(m["total_parts"])

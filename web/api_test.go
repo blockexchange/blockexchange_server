@@ -3,6 +3,7 @@
 package web
 
 import (
+	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/types"
 	"encoding/json"
@@ -16,7 +17,7 @@ func TestSomething(t *testing.T) {
 	//go test ./... -tags=integration
 	_db, err := db.Init()
 	assert.NoError(t, err)
-	api := NewApi(_db)
+	api := NewApi(_db, core.NewNoOpCache())
 
 	r := httptest.NewRequest("GET", "http://", nil)
 	w := httptest.NewRecorder()

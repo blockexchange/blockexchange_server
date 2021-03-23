@@ -3,6 +3,7 @@
 package web
 
 import (
+	"blockexchange/core"
 	"blockexchange/db"
 	"testing"
 
@@ -26,7 +27,7 @@ func assertInvalidUsername(t *testing.T, api *Api, username string) {
 func TestValidateUsername(t *testing.T) {
 	db_, err := db.Init()
 	assert.NoError(t, err)
-	api := NewApi(db_)
+	api := NewApi(db_, core.NewNoOpCache())
 
 	assertValidUsername(t, api, "nonexistentuser")
 	assertValidUsername(t, api, "SomeOne")
