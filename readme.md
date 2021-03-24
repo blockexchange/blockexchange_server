@@ -3,6 +3,7 @@ minetest blockexchange server software
 ![](https://github.com/blockexchange/blockexchange_server/workflows/docker/badge.svg)
 ![](https://github.com/blockexchange/blockexchange_server/workflows/test/badge.svg)
 ![](https://github.com/blockexchange/blockexchange_server/workflows/jshint/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/blockexchange/blockexchange_server/badge.svg)](https://coveralls.io/github/blockexchange/blockexchange_server)
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/blockexchange/blockexchange)
 ![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/blockexchange/blockexchange)
