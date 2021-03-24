@@ -51,10 +51,16 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		return
 	}
 
+	// remove incomplete schema with same name if it exists
+	err = api.SchemaRepo.DeleteIncompleteSchema(ctx.Token.UserID, schema.Name)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
 	schema.UserID = ctx.Token.UserID
 	schema.Created = time.Now().Unix() * 1000
 
-	//TODO: remove incomplete schema with same name
 	err = api.SchemaRepo.CreateSchema(&schema)
 	if err != nil {
 		SendError(w, 500, err.Error())

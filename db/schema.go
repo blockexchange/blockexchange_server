@@ -13,6 +13,7 @@ type SchemaRepository interface {
 	CreateSchema(schema *types.Schema) error
 	UpdateSchema(schema *types.Schema) error
 	DeleteSchema(id int64) error
+	DeleteIncompleteSchema(user_id int64, name string) error
 	CalculateStats(id int64) error
 }
 
@@ -76,6 +77,17 @@ func (repo DBSchemaRepository) UpdateSchema(schema *types.Schema) error {
 
 func (repo DBSchemaRepository) DeleteSchema(id int64) error {
 	_, err := repo.DB.Exec("delete from schema where id = $1", id)
+	return err
+}
+
+func (repo DBSchemaRepository) DeleteIncompleteSchema(user_id int64, name string) error {
+	q := `
+		delete from schema where
+			user_id = $1 and
+			name = $2 and
+			complete = false
+	`
+	_, err := repo.DB.Exec(q, user_id, name)
 	return err
 }
 
