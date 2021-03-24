@@ -1,0 +1,13 @@
+name: jshint
+
+on: [push, pull_request]
+
+jobs:
+  jshint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: run jshint
+        uses: moneyforward/jshint-action@v0
+        with:
+          working_directory: ./public/js
