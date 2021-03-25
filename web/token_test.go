@@ -72,6 +72,7 @@ func TestValidUserLogin(t *testing.T) {
 	info, err := core.ParseJWT(w.Body.String())
 	assert.NoError(t, err)
 	assert.NotNil(t, info)
+	assert.NotNil(t, info.String())
 	assert.Equal(t, "user", info.Username)
 }
 
