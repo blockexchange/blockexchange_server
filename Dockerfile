@@ -11,7 +11,7 @@ COPY . /data
 COPY --from=stage1 /public /data/public
 RUN cd /data && \
 	go vet && \
-	go test . && \
+	go test ./... && \
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
 
 FROM alpine:3.13.2
