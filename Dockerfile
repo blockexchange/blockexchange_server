@@ -5,8 +5,7 @@ RUN cd /public && \
 	npm run jshint && \
 	npm run bundle
 
-FROM golang:1.16.2-alpine as stage2
-RUN apk --no-cache add ca-certificates gcc libc-dev
+FROM golang:1.16.2 as stage2
 COPY . /data
 COPY --from=stage1 /public /data/public
 RUN cd /data && \
