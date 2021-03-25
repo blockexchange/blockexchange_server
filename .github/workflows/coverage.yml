@@ -5,6 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-20.04
+
     services:
       postgres:
         image: postgres:12
@@ -12,6 +13,12 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: enter
           POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
       PGUSER: postgres
       PGPASSWORD: enter
@@ -19,6 +26,7 @@ jobs:
       PGDATABASE: postgres
       PGPORT: 5432
       LOGLEVEL: debug
+
     steps:
     - name: Install Go
       uses: actions/setup-go@v2
