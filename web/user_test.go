@@ -1,4 +1,4 @@
-// +build integration
+// // +build integration
 
 package web
 
@@ -26,6 +26,7 @@ func assertInvalidUsername(t *testing.T, api *Api, username string) {
 
 func TestValidateUsername(t *testing.T) {
 	db_, err := db.Init()
+	db.Migrate(db_.DB)
 	assert.NoError(t, err)
 	api := NewApi(db_, core.NewNoOpCache())
 
