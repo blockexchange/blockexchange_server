@@ -84,5 +84,29 @@ func (api *Api) UpdateCollection(w http.ResponseWriter, r *http.Request, ctx *Se
 }
 
 func (api *Api) DeleteCollection(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
-	//TODO
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	collection, err := api.CollectionRepo.GetByID(int64(id))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	if collection.UserID != ctx.Token.UserID {
+		SendError(w, 403, "Userid does not match")
+		return
+	}
+
+	err = api.CollectionRepo.Delete(int64(id))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
