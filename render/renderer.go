@@ -7,6 +7,8 @@ import (
 	"math"
 
 	"github.com/fogleman/gg"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 type Renderer struct {
@@ -24,7 +26,15 @@ func NewRenderer(spr db.SchemaPartRepository, cm map[string]*Color) *Renderer {
 const img_size_x = 800
 const img_size_y = 600
 
+var renderHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
+	Name:    "bx_renderschema_hist",
+	Help:    "Histogram for the schema render time",
+	Buckets: []float64{0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10, 30, 60},
+})
+
 func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
+	timer := prometheus.NewTimer(renderHistogram)
+	defer timer.ObserveDuration()
 
 	img_center_x := img_size_x / (schema.SizeZ + schema.SizeX) * schema.SizeZ
 	img_center_y := img_size_y
