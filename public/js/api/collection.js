@@ -1,6 +1,6 @@
 import securefetch from './securefetch.js';
 
-export const get_by_userid = user_id => fetch(`api/collection/by-userid/${user_id}`).then(r => r.json());
+export const get_by_userid = user_id => fetch(`api/collection/by-user_id/${user_id}`).then(r => r.json());
 
 export const remove = collection_id => securefetch(`api/collection/${collection_id}`, {
 	method: "DELETE"

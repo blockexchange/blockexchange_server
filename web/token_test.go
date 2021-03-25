@@ -2,6 +2,7 @@ package web
 
 import (
 	"blockexchange/core"
+	"blockexchange/testutils"
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
@@ -47,17 +48,25 @@ func (r MockUserRepo) UpdateUser(user *types.User) error {
 	return nil
 }
 
-func createTestApi() *Api {
-	return &Api{
-		UserRepo: &MockUserRepo{},
-	}
+func createTestApi(t *testing.T) *Api {
+	db_ := testutils.CreateTestDatabase(t)
+	api := NewApi(db_, core.NewNoOpCache())
+	return api
 }
 
 func TestValidUserLogin(t *testing.T) {
-	api := createTestApi()
+	api := createTestApi(t)
+
+	hash, err := bcrypt.GenerateFromPassword([]byte("pw"), bcrypt.DefaultCost)
+	assert.NoError(t, err)
+	user := &types.User{
+		Hash: string(hash),
+		Type: types.UserTypeLocal,
+	}
+	testutils.CreateUser(api.UserRepo, t, user)
 
 	login := types.Login{}
-	login.Username = "user"
+	login.Username = user.Name
 	login.Password = "pw"
 	data, err := json.Marshal(login)
 	assert.NoError(t, err)
@@ -73,11 +82,19 @@ func TestValidUserLogin(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, info)
 	assert.NotNil(t, info.String())
-	assert.Equal(t, "user", info.Username)
+	assert.Equal(t, user.Name, info.Username)
 }
 
 func TestInvalidUserLogin(t *testing.T) {
-	api := createTestApi()
+	api := createTestApi(t)
+
+	hash, err := bcrypt.GenerateFromPassword([]byte("pw"), bcrypt.DefaultCost)
+	assert.NoError(t, err)
+	user := &types.User{
+		Hash: string(hash),
+		Type: types.UserTypeLocal,
+	}
+	testutils.CreateUser(api.UserRepo, t, user)
 
 	login := types.Login{}
 	login.Username = "user"

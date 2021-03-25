@@ -39,7 +39,7 @@ export default {
 						<i class="fa fa-search"></i> {{ $t("nav.search") }}
 					</router-link>
 				</li>
-				<li class="nav-item" v-if="false && store.loggedIn">
+				<li class="nav-item" v-if="store.loggedIn">
 					<router-link to="/collections" class="nav-link">
 						<i class="fa fa-list"></i> {{ $t("nav.collections") }}
 					</router-link>

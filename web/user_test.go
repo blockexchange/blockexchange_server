@@ -1,13 +1,10 @@
-// +build integration
-
 package web
 
 import (
 	"blockexchange/core"
-	"blockexchange/db"
+	"blockexchange/testutils"
+	"blockexchange/types"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func assertValidUsername(t *testing.T, api *Api, username string) {
@@ -25,15 +22,15 @@ func assertInvalidUsername(t *testing.T, api *Api, username string) {
 }
 
 func TestValidateUsername(t *testing.T) {
-	db_, err := db.Init()
-	db.Migrate(db_.DB)
-	assert.NoError(t, err)
+	db_ := testutils.CreateTestDatabase(t)
 	api := NewApi(db_, core.NewNoOpCache())
+	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 
 	assertValidUsername(t, api, "nonexistentuser")
 	assertValidUsername(t, api, "SomeOne")
 	assertValidUsername(t, api, "someone_else123-99")
 	assertInvalidUsername(t, api, "")
+	assertInvalidUsername(t, api, user.Name)
 	assertInvalidUsername(t, api, "invalid username")
 	assertInvalidUsername(t, api, "invalid_username??")
 	assertInvalidUsername(t, api, "invalid_username/")
