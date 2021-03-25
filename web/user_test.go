@@ -13,14 +13,14 @@ import (
 func assertValidUsername(t *testing.T, api *Api, username string) {
 	valid, msg, err := api.ValidateUsername(username)
 	if !valid || err != nil || msg != "" {
-		t.Fail()
+		t.Fatal(err)
 	}
 }
 
 func assertInvalidUsername(t *testing.T, api *Api, username string) {
 	valid, msg, err := api.ValidateUsername(username)
 	if valid || err != nil || msg == "" {
-		t.Fail()
+		t.Fatal(err)
 	}
 }
 
