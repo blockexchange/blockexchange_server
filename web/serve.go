@@ -60,6 +60,7 @@ func Serve(db_ *sqlx.DB) {
 	r.HandleFunc("/api/collection/by-user_id/{user_id}", api.GetCollectionsByUserID).Methods("GET")
 	r.HandleFunc("/api/collection", Secure(api.CreateCollection)).Methods("POST")
 	r.HandleFunc("/api/collection/{id}", Secure(api.UpdateCollection)).Methods("PUT")
+	r.HandleFunc("/api/collection/{id}", Secure(api.DeleteCollection)).Methods("DELETE")
 
 	r.HandleFunc("/api/schema/{schema_id}/screenshot/{id}", api.GetSchemaScreenshotByID)
 	r.HandleFunc("/api/schema/{schema_id}/screenshot", api.GetSchemaScreenshots)

@@ -82,3 +82,7 @@ func (api *Api) UpdateCollection(w http.ResponseWriter, r *http.Request, ctx *Se
 	SendJson(w, collection)
 
 }
+
+func (api *Api) DeleteCollection(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	//TODO
+}
