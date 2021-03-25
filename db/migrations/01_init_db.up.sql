@@ -17,13 +17,13 @@ create index user_created on public.user(created);
 -- access_token
 
 create table access_token(
-	id serial primary key not null,
-	user_id bigint not null references public.user(id) on delete cascade,
-	created bigint not null,
-	expires bigint not null,
-	name varchar not null,
-	token varchar not null,
-	usecount int not null default 0
+  id serial primary key not null,
+  user_id bigint not null references public.user(id) on delete cascade,
+  created bigint not null,
+  expires bigint not null,
+  name varchar not null,
+  token varchar not null,
+  usecount int not null default 0
 );
 
 -- SCHEMA
@@ -42,8 +42,8 @@ create table schema(
   total_size int not null,
   total_parts int not null,
   search_tokens tsvector not null,
-	downloads int not null default 0,
-	license varchar not null default 'CC0'
+  downloads int not null default 0,
+  license varchar not null default 'CC0'
 );
 
 alter table schema add unique(user_id, name);
@@ -57,7 +57,7 @@ create table schemapart(
   offset_x smallint not null,
   offset_y smallint not null,
   offset_z smallint not null,
-	mtime bigint not null default 0,
+  mtime bigint not null default 0,
   data bytea not null,
   metadata bytea not null
 );
@@ -93,7 +93,7 @@ create table user_schema_star (
 create table schema_screenshot (
   id serial primary key not null,
   schema_id serial references schema(id) on delete cascade,
-	type varchar(64) not null,
+  type varchar(64) not null,
   title varchar(128) not null,
   data bytea not null
 );
@@ -101,27 +101,27 @@ create table schema_screenshot (
 -- COLLECTION
 
 create table collection (
-	id serial primary key not null,
+  id serial primary key not null,
   user_id serial references public.user(id) on delete cascade,
   name varchar not null
 );
 
 create table collection_schema (
-	collection_id bigint not null references collection(id) on delete cascade,
-	schema_id bigint not null references schema(id) on delete cascade,
-	primary key (collection_id, schema_id)
+  collection_id bigint not null references collection(id) on delete cascade,
+  schema_id bigint not null references schema(id) on delete cascade,
+  primary key (collection_id, schema_id)
 );
 
 -- TAG
 
 create table tag(
-	id serial primary key not null,
+  id serial primary key not null,
   name varchar(128) not null,
-	description varchar not null
+  description varchar not null
 );
 
 create table schematag(
   id serial primary key not null,
-	tag_id bigint not null references tag(id) on delete cascade,
+  tag_id bigint not null references tag(id) on delete cascade,
   schema_id bigint not null references schema(id) on delete cascade
 );

@@ -94,12 +94,30 @@ digraph {
 	</table>>];
 
 	collection_schema [label=<
-	<table border="0" cellborder="1" cellspacing="0">
-	  <tr><td><i>collection_schema</i></td></tr>
+		<table border="0" cellborder="1" cellspacing="0">
+		<tr><td><i>collection_schema</i></td></tr>
 		<tr><td port="61">collection_id (serial)</td></tr>
 		<tr><td port="62">schema_id (serial)</td></tr>
 	</table>>];
 
+	tag [label=<
+	<table border="0" cellborder="1" cellspacing="0">
+		<tr><td><i>tag</i></td></tr>
+		<tr><td port="70">id (serial)</td></tr>
+		<tr><td port="71">name (varchar)</td></tr>
+		<tr><td port="72">description (varchar)</td></tr>
+	</table>>];
+
+	schematag [label=<
+	<table border="0" cellborder="1" cellspacing="0">
+		<tr><td><i>schematag</i></td></tr>
+		<tr><td port="80">id (serial)</td></tr>
+		<tr><td port="81">tag_id (serial)</td></tr>
+		<tr><td port="82">schema_id (serial)</td></tr>
+	</table>>];
+
+	schematag:81 -> tag:70;
+	schematag:82 -> schema:6;
 	collection_schema:62 -> schema:6;
 	collection_schema:61 -> collection:50;
 	collection:51 -> user:1;
