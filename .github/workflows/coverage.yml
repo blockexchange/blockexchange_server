@@ -9,6 +9,8 @@ jobs:
     services:
       postgres:
         image: postgres:12
+        ports:
+          - 5432:5432
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: enter
@@ -22,7 +24,7 @@ jobs:
     env:
       PGUSER: postgres
       PGPASSWORD: enter
-      PGHOST: postgres
+      PGHOST: localhost
       PGDATABASE: postgres
       PGPORT: 5432
       LOGLEVEL: debug
