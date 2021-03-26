@@ -1,9 +1,11 @@
 package testutils
 
 import (
+	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/types"
 	"math/rand"
+	"net/http"
 	"testing"
 	"time"
 
@@ -50,4 +52,15 @@ func CreateAccessToken(repo db.AccessTokenRepository, t *testing.T, token *types
 	assert.NoError(t, repo.CreateAccessToken(token))
 
 	return token
+}
+
+func Login(t *testing.T, r *http.Request, user *types.User) {
+	permissions := []types.JWTPermission{
+		types.JWTPermissionUpload,
+		types.JWTPermissionManagement,
+		types.JWTPermissionOverwrite,
+	}
+	token, err := core.CreateJWT(user, permissions, (time.Now().Unix()+3600)+1000)
+	assert.NoError(t, err)
+	r.Header.Set("Authorization", token)
 }
