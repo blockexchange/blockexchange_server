@@ -24,8 +24,8 @@ func (repo DBCollectionRepository) Create(collection *types.Collection) error {
 	logrus.Trace("db.CreateCollection", collection)
 	query := `
 		insert into
-		collection(user_id, name)
-		values(:user_id, :name)
+		collection(user_id, name, description)
+		values(:user_id, :name, :description)
 		returning id
 	`
 	stmt, err := repo.DB.PrepareNamed(query)
@@ -45,7 +45,7 @@ func (repo DBCollectionRepository) Update(collection *types.Collection) error {
 	update collection
 	set
 		name = :name,
-		user_id = :user_id
+		description = :description
 	where id = :id
 `
 	_, err := repo.DB.NamedExec(query, collection)

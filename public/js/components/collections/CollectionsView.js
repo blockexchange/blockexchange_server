@@ -2,13 +2,15 @@ import { get_by_userid } from '../../api/collection.js';
 import store from '../../store/login.js';
 
 const List = {
-	created: function(){
+	created: function () {
 		get_by_userid(store.claims.user_id)
-		.then(c => this.collections = c);
+			.then(c => this.collections = c);
 	},
-	data: function(){
+	data: function () {
 		return {
-			collections: []
+			collections: [],
+			new_name: "",
+			new_description: ""
 		};
 	},
 	template: /*html*/`
@@ -16,12 +18,33 @@ const List = {
 			<table class="table table-condensed table-striped">
 				<thead>
 					<tr>
-						<th></th>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Actions</th>
 					</tr>
 				</thead>
 				<tbody>
+					<tr v-for="collection in collections">
+						<td>{{ collection.name }}</td>
+						<td>{{ collection.description }}</td>
+						<td>
+							<button class="btn btn-danger">
+								Delete
+							</button>
+						</td>
+					</tr>
 					<tr>
-						<td></td>
+						<td>
+							<input type="text" class="form-control" placeholder="Name" v-model="new_name"/>
+						</td>
+						<td>
+							<input type="text" class="form-control" placeholder="Description" v-model="new_description"/>
+						</td>
+						<td>
+							<button class="btn btn-success" v-bind:disabled="!new_name || !new_description">
+								Add
+							</button>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -32,9 +55,6 @@ const List = {
 const Add = {
 	template: /*html*/`
 		<div>
-			<input type="text"
-				class="form-control"
-				placeholder="Collection-name">
 		</div>
 	`
 };

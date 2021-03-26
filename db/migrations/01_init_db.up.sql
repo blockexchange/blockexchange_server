@@ -103,7 +103,8 @@ create table schema_screenshot (
 create table collection (
   id serial primary key not null,
   user_id serial references public.user(id) on delete cascade,
-  name varchar not null
+  name varchar not null,
+  description varchar not null
 );
 
 create table collection_schema (
