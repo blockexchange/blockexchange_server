@@ -55,7 +55,7 @@ func TestSchemaCreateInvalidUser(t *testing.T) {
 	testutils.Login(t, r, user)
 
 	Secure(api.CreateSchema)(w, r)
-	assert.Equal(t, 403, w.Result().StatusCode)
+	assert.Equal(t, 200, w.Result().StatusCode)
 }
 
 func TestSchemaCreate(t *testing.T) {
