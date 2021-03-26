@@ -7,6 +7,7 @@ create table public.user(
   name varchar not null,
   hash varchar not null,
   type varchar(16) not null default 'LOCAL',
+  role varchar(16) not null default 'DEFAULT',
   external_id varchar(63),
   mail varchar
 );

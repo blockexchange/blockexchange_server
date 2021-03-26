@@ -23,6 +23,7 @@ func (api Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 			Created: user.Created,
 			Name:    user.Name,
 			Type:    user.Type,
+			Role:    user.Role,
 		}
 	}
 
