@@ -1,17 +1,20 @@
-import { get_by_userid, create } from '../../api/collection.js';
+import { get_by_userid, create, remove } from '../../api/collection.js';
 import loginstore from '../../store/login.js';
 
-const ListRows = {
-	props: ["collections"],
-	created: function(){
-		console.log("ListRows::created", this.collections);
+const ListRow = {
+	props: ["collection"],
+	methods: {
+		remove: function(){
+			remove(this.collection.id)
+			.then(() => this.$emit("removed", this.collection.id));
+		}
 	},
 	template: /*html*/`
-	<tr v-for="collection in collections" :key="collection.id">
+	<tr>
 		<td>{{ collection.name }}</td>
 		<td>{{ collection.description }}</td>
 		<td>
-			<button class="btn btn-danger">
+			<button class="btn btn-danger" v-on:click="remove">
 				Delete
 			</button>
 		</td>
@@ -59,7 +62,7 @@ const AddRow = {
 
 export default {
 	components: {
-		"list-rows": ListRows,
+		"list-row": ListRow,
 		"add-row": AddRow
 	},
 	created: function () {
@@ -73,10 +76,7 @@ export default {
 	methods: {
 		update: function(){
 			get_by_userid(loginstore.claims.user_id)
-			.then(c => {
-				this.$set(this, "collections", c);
-				console.log(this.collections);
-			});
+			.then(c => this.collections = c);
 		}
 	},
 	template: /*html*/`
@@ -90,7 +90,10 @@ export default {
 				</tr>
 			</thead>
 			<tbody>
-				<list-rows :collections="collections"></list-rows>
+				<list-row v-for="collection in collections"
+					:key="collection.id"
+					:collection="collection"
+					v-on:removed="update"/>
 				<add-row v-on:added="update"/>
 			</tbody>
 		</table>
