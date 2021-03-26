@@ -5,10 +5,13 @@ import (
 	"blockexchange/testutils"
 	"blockexchange/types"
 	"encoding/json"
+	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -46,9 +49,9 @@ func TestAccessTokenFullAccess(t *testing.T) {
 
 	r := httptest.NewRequest("GET", "http://", nil)
 	w := httptest.NewRecorder()
-
 	testutils.Login(t, r, user)
 
+	// List tokens
 	Secure(api.GetAccessTokens)(w, r)
 
 	list := []types.AccessToken{}
@@ -56,4 +59,17 @@ func TestAccessTokenFullAccess(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, list)
 	assert.Equal(t, 1, len(list))
+
+	r, err = http.NewRequest("GET", "/foo", nil)
+	assert.NoError(t, err)
+
+	w = httptest.NewRecorder()
+	testutils.Login(t, r, user)
+	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(token.ID))})
+
+	//Delete token
+	Secure(api.DeleteAccessToken)(w, r)
+
+	assert.Equal(t, 200, w.Result().StatusCode)
+
 }
