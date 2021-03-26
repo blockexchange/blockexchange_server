@@ -1,5 +1,5 @@
 import LoginStatus from './login/LoginStatus.js';
-import store from '../store/login.js';
+import store, { hasPermission } from '../store/login.js';
 
 export default {
 	components: {
@@ -9,6 +9,9 @@ export default {
 		return {
 			store: store
 		};
+	},
+	methods: {
+		hasPermission: hasPermission
 	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -42,6 +45,11 @@ export default {
 				<li class="nav-item" v-if="store.loggedIn">
 					<router-link to="/collections" class="nav-link">
 						<i class="fa fa-list"></i> {{ $t("nav.collections") }}
+					</router-link>
+				</li>
+				<li class="nav-item" v-if="hasPermission('ADMIN')">
+					<router-link to="/tags" class="nav-link">
+						<i class="fa fa-list"></i> {{ $t("nav.tags") }}
 					</router-link>
 				</li>
 			</ul>

@@ -9,6 +9,23 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
+func GetPermissions(user *types.User, management bool) []types.JWTPermission {
+	permissions := []types.JWTPermission{
+		types.JWTPermissionUpload,
+		types.JWTPermissionOverwrite,
+	}
+
+	if management {
+		permissions = append(permissions, types.JWTPermissionManagement)
+	}
+
+	if user.Role == types.UserRoleAdmin && management {
+		permissions = append(permissions, types.JWTPermissionAdmin)
+	}
+
+	return permissions
+}
+
 func CreateJWT(user *types.User, permissions []types.JWTPermission, exp int64) (string, error) {
 	secret := os.Getenv("BLOCKEXCHANGE_KEY")
 	claims := jwt.MapClaims{}

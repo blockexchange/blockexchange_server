@@ -134,11 +134,7 @@ func (h *OauthHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	permissions := []types.JWTPermission{
-		types.JWTPermissionUpload,
-		types.JWTPermissionOverwrite,
-		types.JWTPermissionManagement,
-	}
+	permissions := core.GetPermissions(user, true)
 	exp := time.Now().Unix() + (3600 * 24 * 180)
 	token, err := core.CreateJWT(user, permissions, exp)
 	if err != nil {

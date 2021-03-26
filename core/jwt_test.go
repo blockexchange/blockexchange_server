@@ -4,7 +4,56 @@ import (
 	"blockexchange/types"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
+
+func contains(s []types.JWTPermission, e types.JWTPermission) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+func TestGetPermissions(t *testing.T) {
+	permissions := GetPermissions(&types.User{
+		Role: types.UserRoleDefault,
+	}, true)
+
+	assert.True(t, contains(permissions, types.JWTPermissionManagement))
+	assert.True(t, contains(permissions, types.JWTPermissionUpload))
+	assert.True(t, contains(permissions, types.JWTPermissionOverwrite))
+	assert.False(t, contains(permissions, types.JWTPermissionAdmin))
+
+	permissions = GetPermissions(&types.User{
+		Role: types.UserRoleDefault,
+	}, false)
+
+	assert.False(t, contains(permissions, types.JWTPermissionManagement))
+	assert.True(t, contains(permissions, types.JWTPermissionUpload))
+	assert.True(t, contains(permissions, types.JWTPermissionOverwrite))
+	assert.False(t, contains(permissions, types.JWTPermissionAdmin))
+
+	permissions = GetPermissions(&types.User{
+		Role: types.UserRoleAdmin,
+	}, true)
+
+	assert.True(t, contains(permissions, types.JWTPermissionManagement))
+	assert.True(t, contains(permissions, types.JWTPermissionUpload))
+	assert.True(t, contains(permissions, types.JWTPermissionOverwrite))
+	assert.True(t, contains(permissions, types.JWTPermissionAdmin))
+
+	permissions = GetPermissions(&types.User{
+		Role: types.UserRoleAdmin,
+	}, false)
+
+	assert.False(t, contains(permissions, types.JWTPermissionManagement))
+	assert.True(t, contains(permissions, types.JWTPermissionUpload))
+	assert.True(t, contains(permissions, types.JWTPermissionOverwrite))
+	assert.False(t, contains(permissions, types.JWTPermissionAdmin))
+}
 
 func TestCreateJWT(t *testing.T) {
 	user := types.User{

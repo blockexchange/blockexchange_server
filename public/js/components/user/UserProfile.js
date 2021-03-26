@@ -41,6 +41,13 @@ export default {
 							<li>
 								Type: <span class="badge badge-success">{{ store.claims.type }}</span>
 							</li>
+							<li>
+								Permissions:
+								<span v-for="p in store.claims.permissions"
+									class="badge badge-primary">
+									{{ p }}
+								</span>
+							</li>
 						</ul>
 				  </div>
 				</div>

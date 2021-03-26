@@ -43,12 +43,7 @@ func (api Api) PostLogin(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		permissions := []types.JWTPermission{
-			types.JWTPermissionUpload,
-			types.JWTPermissionOverwrite,
-			types.JWTPermissionManagement,
-		}
-
+		permissions := core.GetPermissions(user, true)
 		if user.Role == types.UserRoleAdmin {
 			// admin user
 			permissions = append(permissions, types.JWTPermissionAdmin)
@@ -83,10 +78,7 @@ func (api Api) PostLogin(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		permissions := []types.JWTPermission{
-			types.JWTPermissionUpload,
-			types.JWTPermissionOverwrite,
-		}
+		permissions := core.GetPermissions(user, false)
 		token, err := core.CreateJWT(user, permissions, int64(access_token.Expires/1000))
 		if err != nil {
 			SendError(w, 500, err.Error())

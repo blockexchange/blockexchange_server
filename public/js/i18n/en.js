@@ -6,6 +6,7 @@ export default {
 		mod: "Mod/Installation",
 		users: "Users",
 		search: "Search",
-		collections: "Collections"
+		collections: "Collections",
+		tags: "Tags"
 	}
 };
