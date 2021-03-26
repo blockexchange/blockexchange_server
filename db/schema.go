@@ -12,7 +12,7 @@ type SchemaRepository interface {
 	GetSchemaById(id int64) (*types.Schema, error)
 	CreateSchema(schema *types.Schema) error
 	UpdateSchema(schema *types.Schema) error
-	DeleteSchema(id int64) error
+	DeleteSchema(id, user_id int64) error
 	DeleteIncompleteSchema(user_id int64, name string) error
 	CalculateStats(id int64) error
 }
@@ -75,8 +75,8 @@ func (repo DBSchemaRepository) UpdateSchema(schema *types.Schema) error {
 	return err
 }
 
-func (repo DBSchemaRepository) DeleteSchema(id int64) error {
-	_, err := repo.DB.Exec("delete from schema where id = $1", id)
+func (repo DBSchemaRepository) DeleteSchema(id, user_id int64) error {
+	_, err := repo.DB.Exec("delete from schema where id = $1 and user_id = $2", id, user_id)
 	return err
 }
 
@@ -94,7 +94,11 @@ func (repo DBSchemaRepository) DeleteIncompleteSchema(user_id int64, name string
 func (repo DBSchemaRepository) CalculateStats(id int64) error {
 	q := `
 		update schema s
-		set total_size = (select sum(length(data)) + sum(length(metadata)) from schemapart sp where sp.schema_id = s.id),
+		set total_size = (
+			select
+			coalesce(0, sum(length(data)) + sum(length(metadata)))
+			from schemapart sp where sp.schema_id = s.id
+		),
 		total_parts = (select count(*) from schemapart sp where sp.schema_id = s.id)
 		where id = $1
 	`

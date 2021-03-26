@@ -39,7 +39,7 @@ jobs:
     - name: Test
       run: |
         cd public && npm ci && cd ..
-        go test ./... -tags=integration -coverprofile=profile.cov
+        go test ./... -coverprofile=profile.cov
     - uses: shogo82148/actions-goveralls@v1
       with:
         path-to-profile: profile.cov

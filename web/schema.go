@@ -37,6 +37,23 @@ func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 	SendJson(w, schema)
 }
 
+func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	err = api.SchemaRepo.DeleteSchema(int64(id), ctx.Token.UserID)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
 func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	logrus.WithFields(logrus.Fields{
 		"body": r.Body,

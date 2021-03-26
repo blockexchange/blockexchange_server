@@ -67,7 +67,7 @@ services:
    - PGPORT=5432
    - LOGLEVEL=debug
   working_dir: /data
-  command: ["go", "test", "./...", "-tags=integration"]
+  command: ["go", "test", "./..."]
 
 volumes:
   postgres: {}
