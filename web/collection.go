@@ -34,10 +34,8 @@ func (api *Api) CreateCollection(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	if collection.UserID != ctx.Token.UserID {
-		SendError(w, 403, "Userid does not match")
-		return
-	}
+	// set userid of current user
+	collection.UserID = ctx.Token.UserID
 
 	err = api.CollectionRepo.Create(&collection)
 	if err != nil {

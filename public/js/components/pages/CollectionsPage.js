@@ -6,7 +6,7 @@ export default {
 	},
 	template: /*html*/`
 	<div>
-		<h4>Collections</h4>
+		<h4>Manage collections</h4>
 		<collections-view/>
 	</div>
 	`
