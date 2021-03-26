@@ -20,7 +20,7 @@ type OauthUserInfo struct {
 	Name       string
 	Email      string
 	ExternalID string
-	Type       string
+	Type       types.UserType
 }
 
 type OauthImplementation interface {
