@@ -4,6 +4,7 @@ import (
 	"blockexchange/core"
 	"blockexchange/testutils"
 	"blockexchange/types"
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -45,17 +46,25 @@ func TestAccessTokenFullAccess(t *testing.T) {
 		Created: time.Now().Unix() * 1000,
 		Token:   "abcdef",
 	}
-	testutils.CreateAccessToken(api.AccessTokenRepo, t, token)
 
-	r := httptest.NewRequest("GET", "http://", nil)
+	data, err := json.Marshal(token)
+	assert.NoError(t, err)
+	r := httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
+	testutils.Login(t, r, user)
+
+	Secure(api.PostAccessToken)(w, r)
+	assert.Equal(t, 200, w.Result().StatusCode)
+
+	r = httptest.NewRequest("GET", "http://", nil)
+	w = httptest.NewRecorder()
 	testutils.Login(t, r, user)
 
 	// List tokens
 	Secure(api.GetAccessTokens)(w, r)
 
 	list := []types.AccessToken{}
-	err := json.NewDecoder(w.Body).Decode(&list)
+	err = json.NewDecoder(w.Body).Decode(&list)
 	assert.NoError(t, err)
 	assert.NotNil(t, list)
 	assert.Equal(t, 1, len(list))

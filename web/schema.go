@@ -51,6 +51,11 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		return
 	}
 
+	if schema.UserID != ctx.Token.UserID {
+		SendError(w, 403, "Userid does not match")
+		return
+	}
+
 	// remove incomplete schema with same name if it exists
 	err = api.SchemaRepo.DeleteIncompleteSchema(ctx.Token.UserID, schema.Name)
 	if err != nil {
