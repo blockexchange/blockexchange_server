@@ -8,6 +8,7 @@ const (
 	JWTPermissionUpload     JWTPermission = "UPLOAD"
 	JWTPermissionOverwrite  JWTPermission = "OVERWRITE"
 	JWTPermissionManagement JWTPermission = "MANAGEMENT"
+	JWTPermissionAdmin      JWTPermission = "ADMIN"
 )
 
 type TokenInfo struct {

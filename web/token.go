@@ -49,6 +49,11 @@ func (api Api) PostLogin(w http.ResponseWriter, r *http.Request) {
 			types.JWTPermissionManagement,
 		}
 
+		if user.Role == types.UserRoleAdmin {
+			// admin user
+			permissions = append(permissions, types.JWTPermissionAdmin)
+		}
+
 		exp := time.Now().Unix() + (3600 * 24 * 180)
 		token, err := core.CreateJWT(user, permissions, exp)
 		if err != nil {
