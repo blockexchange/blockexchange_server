@@ -18,8 +18,6 @@ import (
 
 func Serve(db_ *sqlx.DB) {
 
-	// webdev flag
-	useLocalfs := os.Getenv("WEBDEV") == "true"
 	r := mux.NewRouter()
 
 	// cache
@@ -33,6 +31,20 @@ func Serve(db_ *sqlx.DB) {
 	}
 
 	api := NewApi(db_, cache)
+	SetupRoutes(r, api)
+
+	http.Handle("/", r)
+
+	// metrics
+	http.Handle("/metrics", promhttp.Handler())
+
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func SetupRoutes(r *mux.Router, api *Api) {
 
 	github_oauth := oauth.NewHandler(&oauth.GithubOauth{}, api.UserRepo, api.AccessTokenRepo)
 	discord_oauth := oauth.NewHandler(&oauth.DiscordOauth{}, api.UserRepo, api.AccessTokenRepo)
@@ -88,17 +100,10 @@ func Serve(db_ *sqlx.DB) {
 	r.HandleFunc("/api/access_token", Secure(api.PostAccessToken)).Methods("POST")
 	r.HandleFunc("/api/access_token/{id}", Secure(api.DeleteAccessToken)).Methods("DELETE")
 
+	// webdev flag
+	useLocalfs := os.Getenv("WEBDEV") == "true"
 	// static files
 	r.PathPrefix("/").Handler(http.FileServer(getFileSystem(useLocalfs, public.Webapp)))
-	http.Handle("/", r)
-
-	// metrics
-	http.Handle("/metrics", promhttp.Handler())
-
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		panic(err)
-	}
 }
 
 func getFileSystem(useLocalfs bool, content embed.FS) http.FileSystem {
