@@ -48,3 +48,9 @@ func TestSchemaPartSerialization(t *testing.T) {
 	assert.Equal(t, part.Mtime, part2.Mtime)
 	assert.Equal(t, part.MetaData, part2.MetaData)
 }
+
+func TestSchemaPartInvalidData(t *testing.T) {
+	part := SchemaPart{}
+	err := part.UnmarshalJSON([]byte{})
+	assert.Error(t, err)
+}
