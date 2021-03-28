@@ -16,6 +16,7 @@ type Api struct {
 	SchemaSearchRepo     db.SchemaSearchRepository
 	SchemaScreenshotRepo db.SchemaScreenshotRepository
 	CollectionRepo       db.CollectionRepsoitory
+	TagRepo              db.TagRepository
 	Cache                core.Cache
 }
 
@@ -29,6 +30,7 @@ func NewApi(db_ *sqlx.DB, cache core.Cache) *Api {
 		SchemaSearchRepo:     db.NewSchemaSearchRepository(db_),
 		SchemaScreenshotRepo: db.DBSchemaScreenshotRepository{DB: db_},
 		CollectionRepo:       db.DBCollectionRepository{DB: db_},
+		TagRepo:              db.DBTagRepository{DB: db_},
 		Cache:                cache,
 	}
 }
