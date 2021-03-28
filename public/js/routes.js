@@ -8,6 +8,7 @@ import SchemaPage from './components/pages/SchemaPage.js';
 import ProfilePage from './components/pages/ProfilePage.js';
 import ModPage from './components/pages/ModPage.js';
 import CollectionsPage from './components/pages/CollectionsPage.js';
+import TagsPage from './components/pages/TagsPage.js';
 
 export default [{
   path: "/", component: StartPage
@@ -29,4 +30,6 @@ export default [{
 	path: "/schema/:user_name/:schema_name", name: "schemapage", component: SchemaPage
 },{
 	path: "/collections", component: CollectionsPage
+},{
+	path: "/tags", component: TagsPage
 }];

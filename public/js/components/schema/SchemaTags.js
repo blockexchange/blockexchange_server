@@ -1,4 +1,4 @@
-import { get_tags } from '../../api/tag.js';
+import { get_all } from '../../api/tag.js';
 
 export default {
 	props: ["schema"],
@@ -8,7 +8,7 @@ export default {
 		};
 	},
 	created: function(){
-		get_tags().then(t => this.tags = t);
+		get_all().then(t => this.tags = t);
 	},
 	template: /*html*/`
 		<div>
