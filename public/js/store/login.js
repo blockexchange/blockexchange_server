@@ -9,5 +9,5 @@ const store = Vue.observable({
 export default store;
 
 export function hasPermission(permission){
-	return store.claims.permissions.find(p => p == permission);
+	return store.claims && store.claims.permissions.find(p => p == permission);
 }
