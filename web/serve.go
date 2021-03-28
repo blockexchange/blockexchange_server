@@ -60,6 +60,7 @@ func Serve(db_ *sqlx.DB) {
 
 	r.HandleFunc("/api/schema/{schema_id}/tag/{tag_id}", Secure(api.CreateSchemaTag)).Methods("PUT")
 	r.HandleFunc("/api/schema/{schema_id}/tag/{tag_id}", Secure(api.DeleteSchemaTag)).Methods("DELETE")
+	r.HandleFunc("/api/schema/{schema_id}/tag", api.GetSchemaTags).Methods("GET")
 
 	r.HandleFunc("/api/collection/by-user_id/{user_id}", api.GetCollectionsByUserID).Methods("GET")
 	r.HandleFunc("/api/collection", Secure(api.CreateCollection)).Methods("POST")
