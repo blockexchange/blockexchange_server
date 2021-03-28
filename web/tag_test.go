@@ -4,7 +4,9 @@ import (
 	"blockexchange/core"
 	"blockexchange/testutils"
 	"blockexchange/types"
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http/httptest"
 	"testing"
 
@@ -39,4 +41,27 @@ func TestGetTags(t *testing.T) {
 
 	err = api.TagRepo.Delete(tag.ID)
 	assert.NoError(t, err)
+}
+
+func TestCreateTag(t *testing.T) {
+	db_ := testutils.CreateTestDatabase(t)
+	api := NewApi(db_, core.NewNoOpCache())
+
+	tag := types.Tag{
+		Name:        "test",
+		Description: "123",
+	}
+
+	data, err := json.Marshal(tag)
+	assert.NoError(t, err)
+	r := httptest.NewRequest("GET", "http://", bytes.NewReader(data))
+	w := httptest.NewRecorder()
+	testutils.Login(t, r, &types.User{
+		Name: "admin",
+		Role: types.UserRoleAdmin,
+	})
+
+	Secure(api.CreateTag)(w, r)
+	assert.Equal(t, 200, w.Result().StatusCode)
+	fmt.Println(w.Result())
 }

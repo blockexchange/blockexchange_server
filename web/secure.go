@@ -21,7 +21,7 @@ func (ctx *SecureContext) CheckPermission(w http.ResponseWriter, permission type
 	// no permission found
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusForbidden)
-	json.NewEncoder(w).Encode(types.ErrorResponse{Message: "permission require: " + string(permission)})
+	json.NewEncoder(w).Encode(types.ErrorResponse{Message: "permission required: " + string(permission)})
 	return false
 }
 
