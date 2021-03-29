@@ -96,7 +96,7 @@ func (repo DBSchemaRepository) CalculateStats(id int64) error {
 		update schema s
 		set total_size = (
 			select
-			coalesce(0, sum(length(data)) + sum(length(metadata)))
+			coalesce(sum(length(data)) + sum(length(metadata)), 0)
 			from schemapart sp where sp.schema_id = s.id
 		),
 		total_parts = (select count(*) from schemapart sp where sp.schema_id = s.id)
