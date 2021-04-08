@@ -18,6 +18,7 @@ func NewSchemaSearchRepository(db *sqlx.DB) SchemaSearchRepository {
 		DB:            db,
 		UserRepo:      DBUserRepository{DB: db},
 		SchemaModRepo: DBSchemaModRepository{DB: db},
+		SchemaTagRepo: DBSchemaTagRepository{DB: db},
 	}
 }
 
@@ -25,6 +26,7 @@ type DBSchemaSearchRepository struct {
 	DB            *sqlx.DB
 	UserRepo      UserRepository
 	SchemaModRepo SchemaModRepository
+	SchemaTagRepo SchemaTagRepository
 }
 
 func (repo DBSchemaSearchRepository) enhance(list []types.Schema) ([]types.SchemaSearchResult, error) {
@@ -35,13 +37,20 @@ func (repo DBSchemaSearchRepository) enhance(list []types.Schema) ([]types.Schem
 		if err != nil {
 			return nil, err
 		}
+
 		mods, err := repo.SchemaModRepo.GetSchemaModsBySchemaID(schema.ID)
 		if err != nil {
 			return nil, err
 		}
+
 		mod_list := make([]string, len(mods))
 		for i, mod := range mods {
 			mod_list[i] = mod.ModName
+		}
+
+		tag_list, err := repo.SchemaTagRepo.GetBySchemaID(schema.ID)
+		if err != nil {
+			return nil, err
 		}
 
 		result[i] = types.SchemaSearchResult{
@@ -53,6 +62,7 @@ func (repo DBSchemaSearchRepository) enhance(list []types.Schema) ([]types.Schem
 				Type:    user.Type,
 			},
 			Mods: mod_list,
+			Tags: tag_list,
 		}
 	}
 

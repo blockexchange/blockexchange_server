@@ -49,7 +49,7 @@ export default {
 				</li>
 				<li class="nav-item" v-if="hasPermission('ADMIN')">
 					<router-link to="/tags" class="nav-link">
-						<i class="fa fa-list"></i> {{ $t("nav.tags") }}
+						<i class="fas fa-tags"></i> {{ $t("nav.tags") }}
 					</router-link>
 				</li>
 			</ul>

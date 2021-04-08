@@ -10,6 +10,7 @@ type SchemaSearch struct {
 
 type SchemaSearchResult struct {
 	Schema
-	User *User    `json:"user"`
-	Mods []string `json:"mods"`
+	User *User       `json:"user"`
+	Mods []string    `json:"mods"`
+	Tags []SchemaTag `json:"tags"`
 }

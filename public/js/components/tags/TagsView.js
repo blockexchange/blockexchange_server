@@ -1,6 +1,10 @@
 import { get_all, create, remove } from '../../api/tag.js';
+import Tag from './Tag.js';
 
 const ListRow = {
+	components: {
+		"tag-label": Tag
+	},
 	props: ["tag"],
 	methods: {
 		remove: function(){
@@ -10,7 +14,9 @@ const ListRow = {
 	},
 	template: /*html*/`
 	<tr>
-		<td>{{ tag.name }}</td>
+		<td>
+			<tag-label :tag="tag"/>
+		</td>
 		<td>{{ tag.description }}</td>
 		<td>
 			<button class="btn btn-danger" v-on:click="remove">
