@@ -87,6 +87,8 @@ func SetupRoutes(r *mux.Router, api *Api) {
 	r.HandleFunc("/api/schema/{schema_id}/screenshot/{id}", api.GetSchemaScreenshotByID)
 	r.HandleFunc("/api/schema/{schema_id}/screenshot", api.GetSchemaScreenshots)
 
+	r.HandleFunc("/api/static/schema/{user_name}/{schema_name}", api.GetStaticView)
+
 	r.HandleFunc("/api/search/schema/byname/{user_name}/{schema_name}", api.SearchSchemaByNameAndUser)
 	r.HandleFunc("/api/searchschema", api.SearchSchema).Methods("POST")
 	r.HandleFunc("/api/searchrecent/{count}", api.SearchRecentSchemas)
