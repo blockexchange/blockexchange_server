@@ -52,8 +52,13 @@ func (api *Api) GetStaticView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(schema.ID)
-	if err != nil || len(screenshots) < 1 {
+	if err != nil {
 		SendError(w, 500, err.Error())
+		return
+	}
+
+	if screenshots == nil || len(screenshots) < 1 {
+		SendError(w, 500, "no screenshots found")
 		return
 	}
 

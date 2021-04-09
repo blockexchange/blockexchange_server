@@ -177,6 +177,24 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, schema.Downloads+1, schema2.Downloads)
 
+	// update
+
+	schema2.Description = "another description"
+	data, err = json.Marshal(schema2)
+	assert.NoError(t, err)
+
+	r = httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
+	w = httptest.NewRecorder()
+	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
+	testutils.Login(t, r, user)
+
+	Secure(api.UpdateSchema)(w, r)
+
+	schema3, err := api.SchemaRepo.GetSchemaById(schema2.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, schema3)
+	assert.Equal(t, schema2.Description, schema3.Description)
+
 	// delete
 
 	r = httptest.NewRequest("DELETE", "http://", nil)

@@ -44,13 +44,34 @@ func CreateUser(repo db.UserRepository, t *testing.T, user *types.User) *types.U
 	return user
 }
 
+func CreateSchema(repo db.SchemaRepository, t *testing.T, user *types.User, schema *types.Schema) *types.Schema {
+	if schema == nil {
+		schema = &types.Schema{
+			Name: CreateName(10),
+		}
+	}
+
+	schema.UserID = user.ID
+	assert.NoError(t, repo.CreateSchema(schema))
+	return schema
+}
+
+func CreateSchemaScreenshot(repo db.SchemaScreenshotRepository, t *testing.T, schema *types.Schema, screenshot *types.SchemaScreenshot) *types.SchemaScreenshot {
+	if screenshot == nil {
+		screenshot = &types.SchemaScreenshot{}
+	}
+
+	screenshot.SchemaID = schema.ID
+	assert.NoError(t, repo.Create(screenshot))
+	return screenshot
+}
+
 func CreateAccessToken(repo db.AccessTokenRepository, t *testing.T, token *types.AccessToken) *types.AccessToken {
 	if token == nil {
 		token = &types.AccessToken{}
 	}
 
 	assert.NoError(t, repo.CreateAccessToken(token))
-
 	return token
 }
 
