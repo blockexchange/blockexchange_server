@@ -56,17 +56,23 @@ func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 
 	if search.UserName != nil && search.SchemaName != nil {
 		// direct search by username and schema name
-		//TODO
+		schema, err := api.SchemaSearchRepo.FindByUsernameAndSchemaname(*search.SchemaName, *search.UserName)
+		Send(w, []types.SchemaSearchResult{*schema}, err)
+		return
 	}
 
 	if search.UserID != nil {
 		// search by user_id
-		//TODO
+		list, err := api.SchemaSearchRepo.FindByUserID(int64(*search.UserID))
+		Send(w, list, err)
+		return
 	}
 
 	if search.UserName != nil {
 		// search by user_name
-		//TODO
+		list, err := api.SchemaSearchRepo.FindByUsername(*search.UserName)
+		Send(w, list, err)
+		return
 	}
 
 	if search.Keywords != nil {
@@ -78,7 +84,16 @@ func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 
 	if search.SchemaID != nil {
 		// search by schema id
-		//TODO
+		list, err := api.SchemaSearchRepo.FindBySchemaID(int64(*search.SchemaID))
+		Send(w, list, err)
+		return
+	}
+
+	if search.TagID != nil {
+		// search by tag id
+		list, err := api.SchemaSearchRepo.FindByTagID(int64(*search.TagID))
+		Send(w, list, err)
+		return
 	}
 
 }

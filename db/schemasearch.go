@@ -10,6 +10,10 @@ import (
 type SchemaSearchRepository interface {
 	FindByKeywords(keywords string) ([]types.SchemaSearchResult, error)
 	FindRecent(count int) ([]types.SchemaSearchResult, error)
+	FindByTagID(tag_id int64) ([]types.SchemaSearchResult, error)
+	FindByUserID(tag_id int64) ([]types.SchemaSearchResult, error)
+	FindBySchemaID(schema_id int64) ([]types.SchemaSearchResult, error)
+	FindByUsername(user_name string) ([]types.SchemaSearchResult, error)
 	FindByUsernameAndSchemaname(schema_name, user_name string) (*types.SchemaSearchResult, error)
 }
 
@@ -106,4 +110,21 @@ func (repo DBSchemaSearchRepository) FindByUsernameAndSchemaname(schema_name, us
 
 	where := `name = $1 and user_id = (select id from public.user where name = $2)`
 	return repo.findSingle(where, schema_name, user_name)
+}
+
+func (repo DBSchemaSearchRepository) FindByUsername(user_name string) ([]types.SchemaSearchResult, error) {
+	where := `user_id = (select id from public.user where name = $1)`
+	return repo.findMulti(where, user_name)
+}
+
+func (repo DBSchemaSearchRepository) FindByTagID(tag_id int64) ([]types.SchemaSearchResult, error) {
+	return repo.findMulti("complete = true and id in (select schema_id from schematag where tag_id = $1)", tag_id)
+}
+
+func (repo DBSchemaSearchRepository) FindByUserID(tag_id int64) ([]types.SchemaSearchResult, error) {
+	return repo.findMulti("complete = true and user_id = $1", tag_id)
+}
+
+func (repo DBSchemaSearchRepository) FindBySchemaID(schema_id int64) ([]types.SchemaSearchResult, error) {
+	return repo.findMulti("complete = true and id = $1", schema_id)
 }
