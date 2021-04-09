@@ -1,6 +1,7 @@
 package web
 
 import (
+	"blockexchange/core"
 	"blockexchange/render"
 	"blockexchange/types"
 	"encoding/json"
@@ -188,10 +189,29 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 		}
 	}
 
+	// let the database calculate the size/count stats
 	err = api.SchemaRepo.CalculateStats(schema.ID)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
+	}
+
+	// retrieve updated schema data from the db (size, count)
+	schema, err = api.SchemaRepo.GetSchemaById(schema.ID)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	if r.URL.Query().Get("initial") == "true" {
+		user, err := api.UserRepo.GetUserById(schema.UserID)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		// initial schema upload, send it to the feed
+		core.UpdateSchemaFeed(schema, user, &screenshot)
 	}
 
 	w.WriteHeader(http.StatusOK)
