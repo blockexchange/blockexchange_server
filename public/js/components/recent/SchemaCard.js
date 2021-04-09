@@ -1,4 +1,5 @@
 import { get_by_schemaid } from '../../api/screenshot.js';
+import Tag from '../../components/tags/Tag.js';
 
 export default {
 	props: ["schema"],
@@ -6,6 +7,9 @@ export default {
 		return {
 			screenshot: null
 		};
+	},
+	components: {
+		"tag-label": Tag
 	},
 	created: function(){
 		get_by_schemaid(this.schema.id)
@@ -30,6 +34,9 @@ export default {
 					</router-link>
 					<small class="text-muted">by {{ schema.user.name }}</small>
 				</h5>
+				<p>
+					<tag-label v-for="tag in schema.tags" :tag_id="tag.tag_id"/>
+				</p>
 				<p>
 					{{ schema.total_size | prettysize }}; {{ schema.size_x }} / {{ schema.size_y }} / {{ schema.size_z }} nodes
 				</p>

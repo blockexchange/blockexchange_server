@@ -1,10 +1,14 @@
 import store from '../../store/login.js';
+import Tag from '../tags/Tag.js';
 
 export default {
 	data: function(){
 		return {
 			store: store
 		};
+	},
+	components: {
+		"tag-label": Tag
 	},
 	props: ["list"],
 	template: /*html*/`
@@ -25,6 +29,7 @@ export default {
 						<router-link :to="{ name: 'schemapage', params: { schema_name: entry.name, user_name: entry.user.name }}">
 							{{ entry.name }}
 						</router-link>
+						<tag-label v-for="tag in entry.tags" :tag_id="tag.tag_id"/>
 					</td>
 					<td>
 						{{ entry.user.name }}
