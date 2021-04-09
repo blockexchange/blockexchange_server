@@ -1,6 +1,8 @@
 import { search_by_user_and_schemaname } from '../../api/searchschema.js';
 import { get_by_schemaid } from '../../api/screenshot.js';
 
+import loginStore from '../../store/login.js';
+
 import SchemaDetail from './SchemaDetail.js';
 import SchemaMods from './SchemaMods.js';
 import SchemaPreview from './SchemaPreview.js';
@@ -29,18 +31,25 @@ export default {
 	data: function(){
 		return {
 			schema: null,
-			screenshots: []
+			screenshots: [],
+			is_owner: false
 		};
 	},
+	methods: {
+		update: function(){
+			search_by_user_and_schemaname(this.user_name, this.schema_name)
+			.then(schema => {
+				this.schema = schema;
+				this.is_owner = loginStore.claims && loginStore.claims.user_id == schema.user_id;
+				return get_by_schemaid(schema.id);
+			})
+			.then(screenshots => {
+				this.screenshots = screenshots;
+			});
+		}
+	},
 	created: function(){
-		search_by_user_and_schemaname(this.user_name, this.schema_name)
-		.then(schema => {
-			this.schema = schema;
-			return get_by_schemaid(schema.id);
-		})
-		.then(screenshots => {
-			this.screenshots = screenshots;
-		});
+		this.update();
 	},
 	template: /*html*/`
 		<div v-if="schema">
@@ -86,7 +95,7 @@ export default {
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">Tags</h5>
-							<schema-tags :schema="schema"/>
+							<schema-tags :schema="schema" :is_owner="is_owner" v-on:updated="update"/>
 						</div>
 					</div>
 				</div>

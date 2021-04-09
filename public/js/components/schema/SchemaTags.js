@@ -1,34 +1,39 @@
-import { get_all } from '../../api/tag.js';
+import TagStore from '../../store/tag.js';
+
 import { add } from '../../api/schematag.js';
 import Tag from '../tags/Tag.js';
 
 export default {
-	props: ["schema"],
+	props: ["schema", "is_owner"],
 	components: {
 		"tag-label": Tag
 	},
 	data: function(){
 		return {
-			tags: [],
+			tags: TagStore.tags,
 			selected_tag: null
 		};
 	},
-	created: function(){
-		get_all().then(t => this.tags = t);
+	methods: {
+		tags_updated: function(){
+			this.$emit("updated");
+		}
 	},
 	watch: {
 		"selected_tag": function(tag){
-			console.log("tag::select", tag);
 			add(this.schema.id, tag.id)
-			.then(function() {
-				console.log("tag added");
-			});
+			.then(() => this.tags_updated());
 		}
 	},
 	template: /*html*/`
 		<div>
-			<tag-label v-for="tag in schema.tags" :tag="tag"/>
-			<select class="form-control" v-model="selected_tag">
+			<tag-label v-for="tag in schema.tags"
+				:tag_id="tag.tag_id"
+				:schema_id="schema.id"
+				:user_id="schema.user_id"
+				v-on:removed="tags_updated"
+			/>
+			<select class="form-control" v-if="is_owner" v-model="selected_tag">
 				<option></option>
 				<option v-for="tag in tags" :value="tag">
 					{{ tag.name }}

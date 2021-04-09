@@ -1,4 +1,6 @@
 import { get_all, create, remove } from '../../api/tag.js';
+
+import TagStore from '../../store/tag.js';
 import Tag from './Tag.js';
 
 const ListRow = {
@@ -70,13 +72,8 @@ export default {
 		"list-row": ListRow,
 		"add-row": AddRow
 	},
-	created: function () {
-		this.update();
-	},
 	data: function () {
-		return {
-			tags: []
-		};
+		return TagStore;
 	},
 	methods: {
 		update: function(){
