@@ -7,6 +7,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 func (api *Api) SearchRecentSchemas(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +37,16 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 	Send(w, schema, err)
 }
 
+var schemaSearchHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
+	Name:    "bx_schema_search_hist",
+	Help:    "Histogram for the schema render time",
+	Buckets: []float64{0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10},
+})
+
 func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
+	timer := prometheus.NewTimer(schemaSearchHistogram)
+	defer timer.ObserveDuration()
+
 	search := types.SchemaSearch{}
 	err := json.NewDecoder(r.Body).Decode(&search)
 	if err != nil {
