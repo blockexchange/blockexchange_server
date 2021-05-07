@@ -34,6 +34,12 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 	user_name := vars["user_name"]
 
 	schema, err := api.SchemaSearchRepo.FindByUsernameAndSchemaname(schema_name, user_name)
+
+	if r.URL.Query().Get("download") == "true" {
+		// increment downloads and ignore error
+		api.SchemaRepo.IncrementDownloads(schema.ID)
+	}
+
 	Send(w, schema, err)
 }
 

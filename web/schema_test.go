@@ -194,6 +194,33 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, schema3)
 	assert.Equal(t, schema2.Description, schema3.Description)
+	assert.Equal(t, 1, schema3.Downloads)
+
+	// download by username and schemaname
+	r = httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
+	w = httptest.NewRecorder()
+	r = mux.SetURLVars(r, map[string]string{
+		"schema_name": schema.Name,
+		"user_name":   user.Name,
+	})
+	q = r.URL.Query()
+	q.Add("download", "true")
+	r.URL.RawQuery = q.Encode()
+
+	api.SearchSchemaByNameAndUser(w, r)
+	assert.Equal(t, 200, w.Result().StatusCode)
+
+	schema4 := types.Schema{}
+	err = json.NewDecoder(w.Body).Decode(&schema4)
+	assert.NoError(t, err)
+	// counter not updated yet
+	assert.Equal(t, 1, schema4.Downloads)
+
+	// counter updated
+	schema3, err = api.SchemaRepo.GetSchemaById(schema2.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, schema3)
+	assert.Equal(t, 2, schema3.Downloads)
 
 	// delete
 

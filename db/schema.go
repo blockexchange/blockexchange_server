@@ -13,6 +13,7 @@ type SchemaRepository interface {
 	CreateSchema(schema *types.Schema) error
 	UpdateSchema(schema *types.Schema) error
 	DeleteSchema(id, user_id int64) error
+	IncrementDownloads(id int64) error
 	DeleteIncompleteSchema(user_id int64, name string) error
 	DeleteOldIncompleteSchema(time_before int64) error
 	CalculateStats(id int64) error
@@ -77,6 +78,16 @@ func (repo DBSchemaRepository) UpdateSchema(schema *types.Schema) error {
 		where id = :id
 	`
 	_, err := repo.DB.NamedExec(query, schema)
+	return err
+}
+
+func (repo DBSchemaRepository) IncrementDownloads(id int64) error {
+	query := `
+		update schema
+		set downloads = downloads + 1
+		where id = $1
+	`
+	_, err := repo.DB.Exec(query, id)
 	return err
 }
 
