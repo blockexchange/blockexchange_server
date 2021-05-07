@@ -84,6 +84,7 @@ func (repo DBSchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, o
 			and offset_y = $3
 			and offset_z = $4
 		)
+		and schema_id = $1
 		order by id asc
 		limit 1
 	`
@@ -106,6 +107,7 @@ func (repo DBSchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.S
 			select min(id) from schemapart
 			where schema_id = $1
 		)
+		and schema_id = $1
 		limit 1
 	`
 	err := repo.DB.Select(&list, query, schema_id)
