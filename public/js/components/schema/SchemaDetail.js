@@ -14,7 +14,10 @@ export default {
 			<b>Size: </b>{{ schema.total_size | prettysize }}
 		</li>
 		<li>
-			<b>Dimensions: </b>{{ schema.size_x }} / {{ schema.size_y }} / {{ schema.size_z }} nodes
+			<b>Dimensions: </b>
+			{{ schema.size_x_plus+schema.size_x_minus }} / 
+			{{ schema.size_y_plus+schema.size_y_minus }} / 
+			{{ schema.size_z_plus+schema.size_z_minus }} nodes
 		</li>
 		<li>
 			<b>Parts: </b>{{ schema.total_parts }}

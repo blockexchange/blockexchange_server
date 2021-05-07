@@ -15,7 +15,7 @@ const template_str = `
 Schema created: **{{.Schema.Name}}** by **{{.User.Name}}**
 Link: {{.BaseURL}}/api/static/schema/{{.User.Name}}/{{.Schema.Name}}
 License: **{{.Schema.License}}**
-Size: {{.Schema.SizeX}}/{{.Schema.SizeY}}/{{.Schema.SizeZ}} Blocks / {{.Schema.TotalSize}} bytes
+Size: {{sizex .Schema}}/{{sizey .Schema}}/{{sizez .Schema}} Blocks / {{.Schema.TotalSize}} bytes
 Download:
 {{.CodeMarker}}
 /bx_load {{.User.Name}} {{.Schema.Name}}
@@ -29,7 +29,18 @@ Description:
 Preview: {{.BaseURL}}/api/schema/{{.Schema.ID}}/screenshot/{{.Screenshot.ID}}
 `
 
-var feed_template = template.Must(template.New("main").Parse(template_str))
+var funcMap = template.FuncMap{
+	"sizex": func(schema types.Schema) int {
+		return schema.SizeXMinus + schema.SizeXPlus
+	},
+	"sizey": func(schema types.Schema) int {
+		return schema.SizeYMinus + schema.SizeYPlus
+	},
+	"sizez": func(schema types.Schema) int {
+		return schema.SizeZMinus + schema.SizeZPlus
+	},
+}
+var feed_template = template.Must(template.New("main").Funcs(funcMap).Parse(template_str))
 
 type TemplateData struct {
 	Schema     *types.Schema

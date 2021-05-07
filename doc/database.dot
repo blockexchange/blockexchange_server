@@ -37,9 +37,12 @@ digraph {
 		<tr><td port="9">name (varchar)</td></tr>
 	  <tr><td port="10">description (text)</td></tr>
 	  <tr><td port="11">complete (boolean)</td></tr>
-	  <tr><td port="12">size_x (smallint)</td></tr>
-	  <tr><td port="13">size_y (smallint)</td></tr>
-	  <tr><td port="14">size_z (smallint)</td></tr>
+	  <tr><td port="12">size_x_plus (smallint)</td></tr>
+	  <tr><td port="12a">size_x_minus (smallint)</td></tr>
+	  <tr><td port="13">size_y_plus (smallint)</td></tr>
+	  <tr><td port="13a">size_y_minus (smallint)</td></tr>
+	  <tr><td port="14">size_z_plus (smallint)</td></tr>
+	  <tr><td port="14a">size_z_minus (smallint)</td></tr>
 	  <tr><td port="15">part_length (smallint)</td></tr>
 	  <tr><td port="16">total_size (int)</td></tr>
 	  <tr><td port="17">total_parts (int)</td></tr>

@@ -22,9 +22,9 @@ func TestSchemaCreateNoUser(t *testing.T) {
 		UserID:      -1,
 		Name:        "my-schema",
 		Description: "something",
-		SizeX:       16,
-		SizeY:       16,
-		SizeZ:       16,
+		SizeXPlus:   16,
+		SizeYPlus:   16,
+		SizeZPlus:   16,
 		License:     "CC0",
 	}
 
@@ -45,9 +45,9 @@ func TestSchemaCreateInvalidUser(t *testing.T) {
 		UserID:      -1,
 		Name:        "my-schema",
 		Description: "something",
-		SizeX:       16,
-		SizeY:       16,
-		SizeZ:       16,
+		SizeXPlus:   16,
+		SizeYPlus:   16,
+		SizeZPlus:   16,
 		License:     "CC0",
 	}
 
@@ -69,9 +69,9 @@ func TestSchemaCreate(t *testing.T) {
 		UserID:      user.ID,
 		Name:        "my-schema",
 		Description: "something",
-		SizeX:       16,
-		SizeY:       16,
-		SizeZ:       16,
+		SizeXPlus:   16,
+		SizeYPlus:   16,
+		SizeZPlus:   16,
 		License:     "CC0",
 	}
 
@@ -122,9 +122,9 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 		UserID:      user.ID,
 		Name:        "my-schema",
 		Description: "something",
-		SizeX:       16,
-		SizeY:       16,
-		SizeZ:       16,
+		SizeXPlus:   16,
+		SizeYPlus:   16,
+		SizeZPlus:   16,
 		License:     "CC0",
 	}
 

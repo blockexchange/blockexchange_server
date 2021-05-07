@@ -38,7 +38,10 @@ export default {
 					<tag-label v-for="tag in schema.tags" :tag_id="tag.tag_id"/>
 				</p>
 				<p>
-					{{ schema.total_size | prettysize }}; {{ schema.size_x }} / {{ schema.size_y }} / {{ schema.size_z }} nodes
+					{{ schema.total_size | prettysize }};
+					{{ schema.size_x_plus+schema.size_x_minus }} / 
+					{{ schema.size_y_plus+schema.size_y_minus }} / 
+					{{ schema.size_z_plus+schema.size_z_minus }} nodes
 				</p>
 				<pre>{{ schema.description }}</pre>
 			</div>
