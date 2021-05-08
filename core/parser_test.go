@@ -1,4 +1,4 @@
-package render
+package core
 
 import (
 	"blockexchange/types"
@@ -19,7 +19,7 @@ func TestIntConversion(t *testing.T) {
 }
 
 func TestParseSchemaPart(t *testing.T) {
-	f, err := os.Open("testdata/0_0_0.json")
+	f, err := os.Open("testdata/schemapart_1.json")
 	assert.NoError(t, err)
 	assert.NotNil(t, f)
 

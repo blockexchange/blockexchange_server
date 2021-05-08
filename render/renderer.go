@@ -1,6 +1,7 @@
 package render
 
 import (
+	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/types"
 	"bytes"
@@ -68,7 +69,7 @@ func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
 					continue
 				}
 
-				mapblock, err := ParseSchemaPart(schemapart)
+				mapblock, err := core.ParseSchemaPart(schemapart)
 				if err != nil {
 					return nil, err
 				}

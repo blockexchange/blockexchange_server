@@ -62,6 +62,8 @@ func SetupRoutes(r *mux.Router, api *Api) {
 	r.HandleFunc("/api/user", api.GetUsers).Methods("GET")
 	r.HandleFunc("/api/user/{id}", Secure(api.UpdateUser)).Methods("POST")
 
+	r.HandleFunc("/api/export/{id}/{filename}", api.ExportSchema).Methods("GET")
+
 	r.HandleFunc("/api/schema/{id}", api.GetSchema).Methods("GET")
 	r.HandleFunc("/api/schema", Secure(api.CreateSchema)).Methods("POST")
 	r.HandleFunc("/api/schema/{id}", Secure(api.UpdateSchema)).Methods("PUT")

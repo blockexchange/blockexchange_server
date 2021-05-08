@@ -1,6 +1,7 @@
 package render
 
 import (
+	"blockexchange/core"
 	"blockexchange/types"
 	"sort"
 
@@ -17,21 +18,19 @@ type Block struct {
 
 type PartRenderer struct {
 	Schemapart          *types.SchemaPart
-	Mapblock            *ParsedSchemaPart
+	Mapblock            *core.ParsedSchemaPart
 	Colormapping        map[string]*Color
 	NodeIDStringMapping map[int]string
 	Blocks              []*Block
 	MaxX                int
 	MaxY                int
 	MaxZ                int
-	YMultiplier         int
-	XMultiplier         int
 	Size                float64
 	OffsetX             float64
 	OffsetY             float64
 }
 
-func NewPartRenderer(schemapart *types.SchemaPart, mapblock *ParsedSchemaPart, cm map[string]*Color, size, offset_x, offset_y float64) *PartRenderer {
+func NewPartRenderer(schemapart *types.SchemaPart, mapblock *core.ParsedSchemaPart, cm map[string]*Color, size, offset_x, offset_y float64) *PartRenderer {
 	// reverse index
 	idm := make(map[int]string)
 	for k, v := range mapblock.Meta.NodeMapping {
@@ -46,8 +45,6 @@ func NewPartRenderer(schemapart *types.SchemaPart, mapblock *ParsedSchemaPart, c
 		MaxX:                mapblock.Meta.Size.X - 1,
 		MaxY:                mapblock.Meta.Size.Y - 1,
 		MaxZ:                mapblock.Meta.Size.Z - 1,
-		YMultiplier:         mapblock.Meta.Size.Z,
-		XMultiplier:         mapblock.Meta.Size.Y * mapblock.Meta.Size.Z,
 		Size:                size,
 		OffsetX:             offset_x,
 		OffsetY:             offset_y,
@@ -66,7 +63,7 @@ func (r *PartRenderer) GetColorAtPos(x, y, z int) *Color {
 		return nil
 	}
 
-	index := z + (y * r.YMultiplier) + (x * r.XMultiplier)
+	index := r.Mapblock.GetIndex(x, y, z)
 	nodeid := int(r.Mapblock.NodeIDS[index])
 	nodename := r.NodeIDStringMapping[nodeid]
 	color := r.Colormapping[nodename]
