@@ -30,7 +30,7 @@ func TestExportSchema(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer([]byte{})
-	err := ExportSchema(buf, it)
+	err := ExportWorldeditSchema(buf, it)
 	assert.NoError(t, err)
 	assert.True(t, buf.Len() > 0)
 	fmt.Println(buf.String())

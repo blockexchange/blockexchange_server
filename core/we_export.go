@@ -9,7 +9,7 @@ import (
 
 type SchemaPartIterator func() (*types.SchemaPart, error)
 
-func ExportSchema(w io.Writer, it SchemaPartIterator) error {
+func ExportWorldeditSchema(w io.Writer, it SchemaPartIterator) error {
 	// add header
 	_, err := w.Write([]byte("5:return {"))
 	if err != nil {

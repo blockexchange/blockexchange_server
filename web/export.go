@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (api *Api) ExportSchema(w http.ResponseWriter, r *http.Request) {
+func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -28,7 +28,7 @@ func (api *Api) ExportSchema(w http.ResponseWriter, r *http.Request) {
 		return schemapart, err
 	}
 
-	err = core.ExportSchema(w, it)
+	err = core.ExportWorldeditSchema(w, it)
 	if err != nil {
 		SendError(w, 500, err.Error())
 	}
