@@ -70,11 +70,13 @@ func exportNode(w io.Writer, x, y, z int, mapblock *ParsedSchemaPart, schemapart
 	// TODO: account for negative schema offset (size_n_minus)
 	index := mapblock.GetIndex(x, y, z)
 	nodeid := mapblock.NodeIDS[index]
+	if int(nodeid) == mapblock.Meta.NodeMapping["air"] {
+		return false, nil
+	}
+
 	nodename := nodeid_names[int(nodeid)]
 	if nodename == "" {
 		return false, errors.New("Nodename not found for " + strconv.Itoa(int(nodeid)))
-	} else if nodename == "air" {
-		return false, nil
 	}
 
 	param1 := mapblock.Param1[index]
