@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-type SchemaPartIterator func() (*types.SchemaPart, error)
-
 func ExportWorldeditSchema(w io.Writer, it SchemaPartIterator) error {
 	// add header
 	_, err := w.Write([]byte("5:return {"))
@@ -25,7 +23,10 @@ func ExportWorldeditSchema(w io.Writer, it SchemaPartIterator) error {
 			// done
 			break
 		}
-		exportSchemaPart(w, schemapart)
+		err = exportSchemaPart(w, schemapart)
+		if err != nil {
+			return err
+		}
 	}
 
 	// add footer
