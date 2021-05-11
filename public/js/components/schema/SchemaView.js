@@ -11,7 +11,6 @@ import SchemaDescription from './SchemaDescription.js';
 import SchemaDelete from './SchemaDelete.js';
 import SchemaUpdateInfo from './SchemaUpdateInfo.js';
 import SchemaTitle from './SchemaTitle.js';
-import SchemaExport from './SchemaExport.js';
 import SchemaTags from './SchemaTags.js';
 
 export default {
@@ -23,7 +22,6 @@ export default {
 		"schema-description": SchemaDescription,
 		"schema-delete": SchemaDelete,
 		"schema-title": SchemaTitle,
-		"schema-export": SchemaExport,
 		"schema-tags": SchemaTags,
 		"schema-updateinfo": SchemaUpdateInfo
 	},
@@ -54,7 +52,7 @@ export default {
 	template: /*html*/`
 		<div v-if="schema">
 			<div class="row">
-				<div class="col-md-8">
+				<div class="col-md-6">
 					<h3>
 					  <schema-title :schema="schema"/>
 					  <small class="text-muted">by {{ user_name }}</small>
@@ -63,10 +61,11 @@ export default {
 						</span>
 					</h3>
 				</div>
-				<div class="col-md-4">
-					<schema-export :schema="schema"/>
-					<schema-updateinfo :schema="schema"/>
-					<schema-delete :schema="schema" class="float-right"/>
+				<div class="col-md-6">
+					<div class="btn-group float-right">
+						<schema-updateinfo :schema="schema"/>
+						<schema-delete :schema="schema"/>
+					</div>
 				</div>
 			</div>
 			<div class="row">
