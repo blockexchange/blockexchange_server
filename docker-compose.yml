@@ -27,6 +27,7 @@ services:
    - BLOCKEXCHANGE_NAME=My-Blockexchange
    - BLOCKEXCHANGE_OWNER=yourname
    - BLOCKEXCHANGE_KEY=abcdefSecretKey
+   - BLOCKEXCHANGE_TEST_DATA=true
    - BASE_URL=http://localhost:8080
    - WEBDEV=true
   ports:
