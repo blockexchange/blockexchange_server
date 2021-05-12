@@ -33,8 +33,8 @@ func PopulateTestData(_db *sqlx.DB) error {
 		Name:     "Default",
 		Token:    "default",
 		UserID:   user.ID,
-		Created:  time.Now().Unix(),
-		Expires:  time.Now().Unix() + time.Hour.Microseconds(),
+		Created:  time.Now().Unix() * 1000,
+		Expires:  (time.Now().Unix() * 1000) + (1000 * 3600 * 24 * 30 * 365),
 		UseCount: 0,
 	}
 

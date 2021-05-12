@@ -5,6 +5,10 @@ end
 print("[blockexchange_test] executing integration test")
 
 minetest.register_on_mods_loaded(function()
-    minetest.request_shutdown("test done")
-    -- TODO
+    blockexchange.api.get_token("Testuser", "default", function()
+        minetest.request_shutdown("test done")
+        -- TODO
+end, function(http_code)
+        error("http: " .. http_code)
+    end)
 end)
