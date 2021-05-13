@@ -40,7 +40,11 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 		api.SchemaRepo.IncrementDownloads(schema.ID)
 	}
 
-	Send(w, schema, err)
+	if schema == nil {
+		SendError(w, 404, "not found")
+	} else {
+		Send(w, schema, err)
+	}
 }
 
 var schemaSearchHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
