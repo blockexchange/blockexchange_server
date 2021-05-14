@@ -29,7 +29,7 @@ func (repo DBSchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPa
 		schemapart(schema_id, offset_x, offset_y, offset_z, mtime, data, metadata)
 		values(:schema_id, :offset_x, :offset_y, :offset_z, :mtime, :data, :metadata)
 		on conflict on constraint schemapart_unique_coords
-		do update set data = EXCLUDED.data, metadata = EXCLUDED.metadata
+		do update set data = EXCLUDED.data, metadata = EXCLUDED.metadata, mtime = EXCLUDED.mtime
 		returning id
 	`
 	stmt, err := repo.DB.PrepareNamed(query)

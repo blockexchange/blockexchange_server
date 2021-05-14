@@ -87,7 +87,11 @@ func (api *Api) GetSchemaPart(w http.ResponseWriter, r *http.Request) {
 	partsDownloaded.Inc()
 
 	schemapart, err := api.SchemaPartRepo.GetBySchemaIDAndOffset(int64(schema_id), x, y, z)
-	Send(w, schemapart, err)
+	if err == nil && schemapart == nil {
+		w.WriteHeader(http.StatusNoContent)
+	} else {
+		Send(w, schemapart, err)
+	}
 }
 
 func (api *Api) GetNextSchemaPart(w http.ResponseWriter, r *http.Request) {
