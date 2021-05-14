@@ -1,4 +1,4 @@
-name: test
+name: integration_test
 
 on: [push, pull_request]
 
@@ -6,40 +6,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:12
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: enter
-          POSTGRES_DB: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    env:
-      PGUSER: postgres
-      PGPASSWORD: enter
-      PGHOST: localhost
-      PGDATABASE: postgres
-      PGPORT: 5432
-      LOGLEVEL: debug
-
     steps:
-    - name: Install Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.16.x
-    - name: Checkout code
-      uses: actions/checkout@v2.3.4
-    - name: Test
+    - name: Prepare files
       run: |
         cd public && npm ci && cd ..
-        go test ./... -coverprofile=profile.cov
-    - uses: shogo82148/actions-goveralls@v1.4.4
-      with:
-        path-to-profile: profile.cov
+    - name: Start  services
+      run: |
+        docker-compose up -d postgres
+        sleep 10
+        docker-compose up -d blockexchange
+    - name: Execute tests
+      run: |
+        docker-compose up mod-integration-test
