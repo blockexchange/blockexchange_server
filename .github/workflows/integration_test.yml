@@ -20,5 +20,6 @@ jobs:
         docker-compose up -d postgres
         sleep 10
         docker-compose up -d blockexchange
+        sleep 20
     - name: Execute tests
-      run: docker-compose up mod-integration-test mod-integration-test mod-integration-test
+      run: docker-compose up --exit-code-from mod-integration-test mod-integration-test
