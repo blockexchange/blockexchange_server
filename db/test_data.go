@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func PopulateTestData(_db *sqlx.DB) error {
@@ -19,10 +20,15 @@ func PopulateTestData(_db *sqlx.DB) error {
 		return nil
 	}
 
+	hash, err := bcrypt.GenerateFromPassword([]byte("test"), bcrypt.DefaultCost)
+	if err != nil {
+		return nil
+	}
+
 	user = &types.User{
 		Name: "Testuser",
 		Type: types.UserTypeLocal,
-		Hash: "",
+		Hash: string(hash),
 	}
 	err = userrepo.CreateUser(user)
 	if err != nil {
