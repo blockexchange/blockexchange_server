@@ -9,6 +9,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2.3.4
+      with:
+        fetch-depth: 0
+        submodules: recursive
     - name: Prepare files
       run: |
         cd public && npm ci && cd ..
@@ -18,5 +21,4 @@ jobs:
         sleep 10
         docker-compose up -d blockexchange
     - name: Execute tests
-      run: |
-        docker-compose up mod-integration-test
+      run: docker-compose up mod-integration-test mod-integration-test mod-integration-test
