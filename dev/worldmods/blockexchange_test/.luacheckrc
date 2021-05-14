@@ -1,3 +1,6 @@
+globals = {
+	"blockexchange"
+}
 
 read_globals = {
 	-- Stdlib
@@ -8,6 +11,5 @@ read_globals = {
 	"minetest",
 	"vector", "ItemStack",
 	"dump", "dump2",
-	"VoxelArea",
-	"blockexchange"
+	"VoxelArea"
 }
