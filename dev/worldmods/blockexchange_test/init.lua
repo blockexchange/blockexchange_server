@@ -45,6 +45,7 @@ minetest.register_on_mods_loaded(function()
             if not success then
                 fail("loaded area does not match: " .. msg)
             end
+            return true
         end):next(function()
             return blockexchange.save(playername, pos1, pos2, schemaname, true)
         end):next(function()
@@ -54,6 +55,7 @@ minetest.register_on_mods_loaded(function()
             if not success then
                 fail("local loaded area does not match: " .. msg)
             end
+            return true
         end):next(function()
             minetest.request_shutdown("test done")
         end):catch(function(http_code)
