@@ -1,5 +1,6 @@
 if not minetest.settings:get_bool("blockexchange.enable_integration_test", false) then
     print("[blockexchange_test] skipping integration test")
+    return
 end
 
 -- TODO: make this work :P

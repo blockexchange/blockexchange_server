@@ -51,8 +51,6 @@ services:
   volumes:
    - "./dev/minetest-test.conf:/etc/minetest/minetest.conf:ro"
    - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
-  ports:
-   - "30000:30000/udp"
 
  integration-test:
   image: golang:1.16.0
