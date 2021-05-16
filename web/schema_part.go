@@ -36,6 +36,11 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
+	if schema == nil {
+		SendError(w, 500, "no schema found")
+		return
+	}
+
 	if schema.UserID != ctx.Token.UserID {
 		SendError(w, 403, "you are not the owner of the schema")
 		return
