@@ -2,6 +2,7 @@ package web
 
 import (
 	"blockexchange/types"
+	"bytes"
 	"encoding/json"
 	"net/http"
 
@@ -15,10 +16,19 @@ func SendError(w http.ResponseWriter, code int, message string) {
 	json.NewEncoder(w).Encode(types.ErrorResponse{Message: message})
 }
 
-func SendJson(w http.ResponseWriter, o interface{}) {
+func SendJson(w http.ResponseWriter, o interface{}) []byte {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(o)
+	buf := bytes.NewBuffer([]byte{})
+	json.NewEncoder(buf).Encode(o)
+	w.Write(buf.Bytes())
+	return buf.Bytes()
+}
+
+func SendRawJson(w http.ResponseWriter, data []byte) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 func Send(w http.ResponseWriter, o interface{}, err error) {

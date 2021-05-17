@@ -10,6 +10,7 @@ import (
 type Cache interface {
 	Set(key string, value []byte, expire time.Duration) error
 	Get(key string) ([]byte, error)
+	Remove(key string) error
 }
 
 // No-op
@@ -22,6 +23,10 @@ func (cache *NoOpCache) Set(key string, value []byte, expire time.Duration) erro
 
 func (cache *NoOpCache) Get(key string) ([]byte, error) {
 	return nil, nil
+}
+
+func (cache *NoOpCache) Remove(key string) error {
+	return nil
 }
 
 func NewNoOpCache() Cache {
@@ -59,4 +64,10 @@ func (cache *RedisCache) Get(key string) ([]byte, error) {
 	}
 
 	return []byte(data), nil
+}
+
+func (cache *RedisCache) Remove(key string) error {
+	cmd := cache.RDB.Del(ctx, key)
+	_, err := cmd.Result()
+	return err
 }
