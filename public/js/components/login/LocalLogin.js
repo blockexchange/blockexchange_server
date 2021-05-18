@@ -42,7 +42,7 @@ export default {
 				v-bind:disabled="!username || !password"
 				class="btn btn-secondary btn-block"
 				v-on:click="login(username, password)">
-				Login <span class="badge badge-danger">{{ message }}</span>
+				Login <span class="badge bg-danger">{{ message }}</span>
 			</button>
 			<button v-if="isLoggedIn()"
 				class="btn btn-secondary btn-block"

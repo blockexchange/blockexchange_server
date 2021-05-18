@@ -33,14 +33,14 @@ export default {
 					</td>
 					<td>
 						{{ entry.user.name }}
-						<span v-if="store.claims && store.claims.username == entry.user.name" class="badge badge-secondary">
+						<span v-if="store.claims && store.claims.username == entry.user.name" class="badge bg-secondary">
 							owner
 						</span>
 					</td>
 					<td>{{ entry.description }}</td>
 					<td>
 						{{ entry.total_parts }}
-						<span v-if="!entry.complete" class="badge badge-danger">
+						<span v-if="!entry.complete" class="badge bg-danger">
 							Incomplete
 						</span>
 					</td>

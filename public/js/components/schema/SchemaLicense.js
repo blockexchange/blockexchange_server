@@ -50,7 +50,7 @@ export default {
 			</div>
 			<div v-else>
 				<img v-if="imgsrc" :src="imgsrc"/>
-				<div v-else class="badge badge-primary">
+				<div v-else class="badge bg-primary">
 					{{ license }}
 				</div>
 				<a v-if="can_edit" v-on:click="edit=true" class="btn btn-xs btn-primary">

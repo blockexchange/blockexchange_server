@@ -34,7 +34,7 @@ export default {
         };
     },
     template: `
-        <span class="badge badge-success">
+        <span class="badge bg-success">
             <i class="fas fa-tag"></i>
             {{ name }}
             <i v-if="can_delete" class="fa fa-times" v-on:click="remove"></i>

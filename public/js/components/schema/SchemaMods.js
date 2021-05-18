@@ -3,7 +3,7 @@ export default {
 	template: /*html*/`
 	<ul>
 		<li v-for="mod in schema.mods">
-			<span class="badge badge-primary">
+			<span class="badge bg-primary">
 				{{ mod }}
 			</span>
 		</li>

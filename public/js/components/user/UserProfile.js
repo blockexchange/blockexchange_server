@@ -39,12 +39,12 @@ export default {
 								Mail: <b>{{ store.claims.mail }}</b>
 							</li>
 							<li>
-								Type: <span class="badge badge-success">{{ store.claims.type }}</span>
+								Type: <span class="badge bg-success">{{ store.claims.type }}</span>
 							</li>
 							<li>
 								Permissions:
 								<span v-for="p in store.claims.permissions"
-									class="badge badge-primary">
+									class="badge bg-primary">
 									{{ p }}
 								</span>
 							</li>

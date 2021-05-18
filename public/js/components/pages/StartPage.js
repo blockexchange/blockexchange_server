@@ -24,7 +24,7 @@ export default {
 				<hr/>
 				<h4>Exchange your schemas across worlds with ease</h4>
 				<div v-if="info">
-					Version: <span class="badge badge-primary">
+					Version: <span class="badge bg-primary">
 						{{info.api_version_major}}.{{info.api_version_minor}}
 					</span>
 				</div>

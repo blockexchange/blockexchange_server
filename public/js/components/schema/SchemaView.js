@@ -56,7 +56,7 @@ export default {
 					<h3>
 					  <schema-title :schema="schema"/>
 					  <small class="text-muted">by {{ user_name }}</small>
-						<span v-if="!schema.complete" class="badge badge-danger">
+						<span v-if="!schema.complete" class="badge bg-danger">
 							Incomplete
 						</span>
 					</h3>
