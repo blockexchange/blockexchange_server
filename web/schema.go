@@ -210,8 +210,8 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 			return
 		}
 
-		// initial schema upload, send it to the feed
-		core.UpdateSchemaFeed(schema, user, &screenshot)
+		// initial schema upload, send it to the feed async
+		go core.UpdateSchemaFeed(schema, user, &screenshot)
 	}
 
 	w.WriteHeader(http.StatusOK)
