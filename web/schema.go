@@ -167,6 +167,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 	if len(screenshots) >= 1 {
 		// update existing
 		screenshot = screenshots[0]
+		screenshot.Data = png
 
 		err = api.SchemaScreenshotRepo.Update(&screenshot)
 		if err != nil {
