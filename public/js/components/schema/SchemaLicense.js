@@ -32,6 +32,7 @@ export default {
 		imgsrc: function(){
 			switch (this.license){
 				case "CC0": return "pics/license_cc0.png";
+				case "CC-BY-SA 3.0": return "pics/license_cc-by-sa.png";
 			}
 		}
 	},
