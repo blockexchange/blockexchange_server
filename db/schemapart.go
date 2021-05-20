@@ -12,6 +12,7 @@ type SchemaPartRepository interface {
 	GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
 	RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error
 	GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
+	GetNextBySchemaIDAndMtime(schema_id int64, mtime int64) (*types.SchemaPart, error)
 	GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error)
 }
 
@@ -89,6 +90,26 @@ func (repo DBSchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, o
 		limit 1
 	`
 	err := repo.DB.Select(&list, query, schema_id, offset_x, offset_y, offset_z)
+	if err != nil {
+		return nil, err
+	} else if len(list) == 1 {
+		return &list[0], nil
+	} else {
+		return nil, nil
+	}
+}
+
+func (repo DBSchemaPartRepository) GetNextBySchemaIDAndMtime(schema_id int64, mtime int64) (*types.SchemaPart, error) {
+	list := []types.SchemaPart{}
+	query := `
+		select *
+		from schemapart
+		where mtime > $2
+		and schema_id = $1
+		order by mtime asc
+		limit 1
+	`
+	err := repo.DB.Select(&list, query, schema_id, mtime)
 	if err != nil {
 		return nil, err
 	} else if len(list) == 1 {

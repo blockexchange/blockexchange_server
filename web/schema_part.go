@@ -116,6 +116,31 @@ func (api *Api) GetNextSchemaPart(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (api *Api) GetNextSchemaPartByMtime(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	schema_id, err := strconv.Atoi(vars["schema_id"])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	mtime, err := strconv.Atoi(vars["mtime"])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	partsDownloaded.Inc()
+
+	schemapart, err := api.SchemaPartRepo.GetNextBySchemaIDAndMtime(int64(schema_id), int64(mtime))
+	if err == nil && schemapart == nil {
+		w.WriteHeader(http.StatusNoContent)
+	} else {
+		Send(w, schemapart, err)
+	}
+}
+
 func (api *Api) GetFirstSchemaPart(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	schema_id, err := strconv.Atoi(vars["schema_id"])

@@ -46,6 +46,10 @@ func (r *MockSchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.S
 	return nil, nil
 }
 
+func (r *MockSchemaPartRepository) GetNextBySchemaIDAndMtime(schema_id int64, mtime int64) (*types.SchemaPart, error) {
+	return nil, nil
+}
+
 func TestRenderer(t *testing.T) {
 	logrus.SetLevel(logrus.TraceLevel)
 
