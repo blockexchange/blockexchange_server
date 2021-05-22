@@ -2,6 +2,7 @@ package db
 
 import (
 	"blockexchange/types"
+	"sync"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
@@ -71,16 +72,30 @@ func (repo DBSchemaSearchRepository) enhance_schema(schema *types.Schema) (*type
 
 func (repo DBSchemaSearchRepository) enhance(list []*types.Schema) ([]types.SchemaSearchResult, error) {
 	result := make([]types.SchemaSearchResult, len(list))
+	var wg sync.WaitGroup
+	err_chan := make(chan error)
 
 	for i, schema := range list {
-		enhanced_schema, err := repo.enhance_schema(schema)
-		if err != nil {
-			return nil, err
-		}
-		result[i] = *enhanced_schema
+		wg.Add(1)
+		go func(schema *types.Schema, index int, wg *sync.WaitGroup, err_chan chan error) {
+			enhanced_schema, err := repo.enhance_schema(schema)
+			if err != nil {
+				err_chan <- err
+			} else {
+				result[index] = *enhanced_schema
+			}
+			wg.Done()
+		}(schema, i, &wg, err_chan)
 	}
 
-	return result, nil
+	wg.Wait()
+
+	select {
+	case err := <-err_chan:
+		return nil, err
+	default:
+		return result, nil
+	}
 }
 
 func (repo DBSchemaSearchRepository) findSingle(where string, params ...interface{}) (*types.SchemaSearchResult, error) {
