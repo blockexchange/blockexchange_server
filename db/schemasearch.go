@@ -33,41 +33,51 @@ type DBSchemaSearchRepository struct {
 	SchemaTagRepo SchemaTagRepository
 }
 
-func (repo DBSchemaSearchRepository) enhance(list []types.Schema) ([]types.SchemaSearchResult, error) {
+func (repo DBSchemaSearchRepository) enhance_schema(schema *types.Schema) (*types.SchemaSearchResult, error) {
+	user, err := repo.UserRepo.GetUserById(schema.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	mods, err := repo.SchemaModRepo.GetSchemaModsBySchemaID(schema.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	mod_list := make([]string, len(mods))
+	for i, mod := range mods {
+		mod_list[i] = mod.ModName
+	}
+
+	tag_list, err := repo.SchemaTagRepo.GetBySchemaID(schema.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &types.SchemaSearchResult{
+		Schema: *schema,
+		User: &types.User{
+			Name:    user.Name,
+			ID:      user.ID,
+			Created: user.Created,
+			Type:    user.Type,
+		},
+		Mods: mod_list,
+		Tags: tag_list,
+	}
+
+	return result, nil
+}
+
+func (repo DBSchemaSearchRepository) enhance(list []*types.Schema) ([]types.SchemaSearchResult, error) {
 	result := make([]types.SchemaSearchResult, len(list))
 
 	for i, schema := range list {
-		user, err := repo.UserRepo.GetUserById(schema.UserID)
+		enhanced_schema, err := repo.enhance_schema(schema)
 		if err != nil {
 			return nil, err
 		}
-
-		mods, err := repo.SchemaModRepo.GetSchemaModsBySchemaID(schema.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		mod_list := make([]string, len(mods))
-		for i, mod := range mods {
-			mod_list[i] = mod.ModName
-		}
-
-		tag_list, err := repo.SchemaTagRepo.GetBySchemaID(schema.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		result[i] = types.SchemaSearchResult{
-			Schema: schema,
-			User: &types.User{
-				Name:    user.Name,
-				ID:      user.ID,
-				Created: user.Created,
-				Type:    user.Type,
-			},
-			Mods: mod_list,
-			Tags: tag_list,
-		}
+		result[i] = *enhanced_schema
 	}
 
 	return result, nil
@@ -85,7 +95,7 @@ func (repo DBSchemaSearchRepository) findSingle(where string, params ...interfac
 }
 
 func (repo DBSchemaSearchRepository) findMulti(where string, params ...interface{}) ([]types.SchemaSearchResult, error) {
-	list := []types.Schema{}
+	list := []*types.Schema{}
 	err := repo.DB.Select(&list, "select * from schema where "+where, params...)
 	if err != nil {
 		return nil, err
