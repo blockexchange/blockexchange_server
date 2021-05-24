@@ -22,14 +22,25 @@ export default {
 	computed: {
 		screenshot_url: function(){
 			return `api/schema/${this.schema.id}/screenshot/${this.screenshot.id}?height=240&width=360`;
+		},
+		router_link: function(){
+			return {
+				name: 'schemapage',
+				params: {
+					schema_name: this.schema.name,
+					user_name: this.schema.user.name
+				}
+			};
 		}
 	},
 	template: /*html*/`
 		<div class="card">
-			<img v-if="screenshot" :src="screenshot_url" class="card-img-top img-fluid">
+			<router-link :to="router_link">
+				<img v-if="screenshot" :src="screenshot_url" class="card-img-top img-fluid">
+			</router-link>
 			<div class="card-body">
 				<h5 class="card-title">
-					<router-link :to="{ name: 'schemapage', params: { schema_name: schema.name, user_name: schema.user.name }}">
+					<router-link :to="router_link">
 						{{ schema.name }}
 					</router-link>
 					<small class="text-muted">by {{ schema.user.name }}</small>
