@@ -14,7 +14,10 @@ export default {
 		updateInfo: function(){
 			this.busy = true;
 			updateInfo(this.schema.id)
-			.then(() => this.busy = false);
+			.then(() => {
+				this.busy = false;
+				this.$emit('stats-updated');
+			});
 		}
 	},
 	template: /*html*/`

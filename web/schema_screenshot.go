@@ -53,7 +53,7 @@ func (api Api) GetSchemaScreenshotByID(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if data != nil {
+		if data != nil && r.URL.Query().Get("cache") != "false" {
 			// cached data
 			w.Header().Set("Cache-Control", "max-age=345600")
 			w.Header().Set("Content-Type", "image/png")

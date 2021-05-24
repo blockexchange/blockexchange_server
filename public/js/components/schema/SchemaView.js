@@ -30,7 +30,8 @@ export default {
 		return {
 			schema: null,
 			screenshots: [],
-			is_owner: false
+			is_owner: false,
+			preview_version: 0
 		};
 	},
 	methods: {
@@ -63,7 +64,7 @@ export default {
 				</div>
 				<div class="col-md-6">
 					<div class="btn-group float-right">
-						<schema-updateinfo :schema="schema"/>
+						<schema-updateinfo :schema="schema" v-on:stats-updated="preview_version++"/>
 						<schema-delete :schema="schema"/>
 					</div>
 				</div>
@@ -102,7 +103,7 @@ export default {
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">Preview</h5>
-							<schema-preview :screenshots="screenshots" :schema="schema"/>
+							<schema-preview :screenshots="screenshots" :schema="schema" :version="preview_version"/>
 						</div>
 					</div>
 				</div>
