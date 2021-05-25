@@ -1,8 +1,8 @@
 package main
 
 import (
-	"blockexchange/core"
 	"blockexchange/db"
+	"blockexchange/jobs"
 	"blockexchange/web"
 	"os"
 
@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// start background jobs
-	core.StartJobs()
+	jobs.Start(db_)
 
 	// listen to web requests
 	web.Serve(db_)
