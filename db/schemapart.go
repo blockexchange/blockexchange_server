@@ -10,6 +10,7 @@ import (
 type SchemaPartRepository interface {
 	CreateOrUpdateSchemaPart(part *types.SchemaPart) error
 	GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
+	GetBySchemaIDAndRange(schema_id int64, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error)
 	RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error
 	GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
 	GetNextBySchemaIDAndMtime(schema_id int64, mtime int64) (*types.SchemaPart, error)
@@ -58,6 +59,23 @@ func (repo DBSchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offse
 	} else {
 		return nil, nil
 	}
+}
+
+func (repo DBSchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error) {
+	list := []*types.SchemaPart{}
+	query := `
+		select *
+		from schemapart
+		where schema_id = $1
+		and offset_x >= $2
+		and offset_y >= $3
+		and offset_z >= $4
+		and offset_x <= $5
+		and offset_y <= $6
+		and offset_z <= $7
+	`
+	err := repo.DB.Select(&list, query, schema_id, x1, y1, z1, x2, y2, z2)
+	return list, err
 }
 
 func (repo DBSchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {

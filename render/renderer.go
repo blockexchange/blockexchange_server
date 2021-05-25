@@ -17,6 +17,7 @@ type Renderer struct {
 	Colormapping   map[string]*Color
 }
 
+// TODO: use generic interface
 func NewRenderer(spr db.SchemaPartRepository, cm map[string]*Color) *Renderer {
 	return &Renderer{
 		SchemaPartRepo: spr,

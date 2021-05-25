@@ -34,6 +34,10 @@ func (r *MockSchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offse
 	return &part, err
 }
 
+func (r *MockSchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error) {
+	return nil, nil
+}
+
 func (r *MockSchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {
 	return nil
 }
