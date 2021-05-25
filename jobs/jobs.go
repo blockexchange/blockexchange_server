@@ -3,7 +3,6 @@ package jobs
 import (
 	"blockexchange/core"
 	"blockexchange/db"
-	"fmt"
 	"os"
 	"time"
 
@@ -22,9 +21,6 @@ func Start(db_ *sqlx.DB) {
 	} else {
 		syncmanager = core.NewLocalSyncManager()
 	}
-
-	// TODO: add cleanup/screenshot-update jobs
-	fmt.Println(syncmanager)
 
 	schemarepo := db.DBSchemaRepository{DB: db_}
 
