@@ -2,7 +2,6 @@ package render
 
 import (
 	"blockexchange/core"
-	"blockexchange/types"
 	"sort"
 
 	"github.com/fogleman/gg"
@@ -17,7 +16,6 @@ type Block struct {
 }
 
 type PartRenderer struct {
-	Schemapart          *types.SchemaPart
 	Mapblock            *core.ParsedSchemaPart
 	Colormapping        map[string]*Color
 	NodeIDStringMapping map[int]string
@@ -30,14 +28,13 @@ type PartRenderer struct {
 	OffsetY             float64
 }
 
-func NewPartRenderer(schemapart *types.SchemaPart, mapblock *core.ParsedSchemaPart, cm map[string]*Color, size, offset_x, offset_y float64) *PartRenderer {
+func NewPartRenderer(mapblock *core.ParsedSchemaPart, cm map[string]*Color, size, offset_x, offset_y float64) *PartRenderer {
 	// reverse index
 	idm := make(map[int]string)
 	for k, v := range mapblock.Meta.NodeMapping {
 		idm[v] = k
 	}
 	return &PartRenderer{
-		Schemapart:          schemapart,
 		Mapblock:            mapblock,
 		Blocks:              make([]*Block, 0),
 		Colormapping:        cm,

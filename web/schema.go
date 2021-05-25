@@ -149,7 +149,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 
-	renderer := render.NewRenderer(api.SchemaPartRepo, cm)
+	renderer := render.NewRenderer(api.SchemaPartRepo.GetBySchemaIDAndOffset, cm)
 	png, err := renderer.RenderSchema(schema)
 	if err != nil {
 		SendError(w, 500, err.Error())

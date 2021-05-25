@@ -14,10 +14,6 @@ import (
 type MockSchemaPartRepository struct {
 }
 
-func (r *MockSchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
-	return nil
-}
-
 func (r *MockSchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
 	logrus.WithFields(logrus.Fields{
 		"offset_x": offset_x,
@@ -34,26 +30,6 @@ func (r *MockSchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offse
 	return &part, err
 }
 
-func (r *MockSchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error) {
-	return nil, nil
-}
-
-func (r *MockSchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {
-	return nil
-}
-
-func (r *MockSchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
-	return nil, nil
-}
-
-func (r *MockSchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error) {
-	return nil, nil
-}
-
-func (r *MockSchemaPartRepository) GetNextBySchemaIDAndMtime(schema_id int64, mtime int64) (*types.SchemaPart, error) {
-	return nil, nil
-}
-
 func TestRenderer(t *testing.T) {
 	logrus.SetLevel(logrus.TraceLevel)
 
@@ -61,7 +37,7 @@ func TestRenderer(t *testing.T) {
 	cm, err := GetColorMapping()
 	assert.NoError(t, err)
 
-	renderer := NewRenderer(&repo, cm)
+	renderer := NewRenderer(repo.GetBySchemaIDAndOffset, cm)
 	schema := types.Schema{
 		SizeXPlus: 32,
 		SizeYPlus: 32,

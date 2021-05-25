@@ -2,7 +2,6 @@ package render
 
 import (
 	"blockexchange/core"
-	"blockexchange/db"
 	"blockexchange/types"
 	"bytes"
 	"math"
@@ -13,15 +12,16 @@ import (
 )
 
 type Renderer struct {
-	SchemaPartRepo db.SchemaPartRepository
-	Colormapping   map[string]*Color
+	SchemaPartProvider SchemaPartProvider
+	Colormapping       map[string]*Color
 }
 
-// TODO: use generic interface
-func NewRenderer(spr db.SchemaPartRepository, cm map[string]*Color) *Renderer {
+type SchemaPartProvider func(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
+
+func NewRenderer(spp SchemaPartProvider, cm map[string]*Color) *Renderer {
 	return &Renderer{
-		SchemaPartRepo: spr,
-		Colormapping:   cm,
+		SchemaPartProvider: spp,
+		Colormapping:       cm,
 	}
 }
 
@@ -61,7 +61,7 @@ func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
 				y := block_y * 16
 				z := block_z * 16
 
-				schemapart, err := r.SchemaPartRepo.GetBySchemaIDAndOffset(schema.ID, x, y, z)
+				schemapart, err := r.SchemaPartProvider(schema.ID, x, y, z)
 				if err != nil {
 					return nil, err
 				}
@@ -77,7 +77,7 @@ func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
 				x_offset := float64(img_center_x) + (size * float64(x)) - (size * float64(z))
 				y_offset := float64(img_center_y) - (size * tan30 * float64(x)) - (size * tan30 * float64(z)) - (size * sqrt3div2 * float64(y))
 
-				pr := NewPartRenderer(schemapart, mapblock, r.Colormapping, size, x_offset, y_offset)
+				pr := NewPartRenderer(mapblock, r.Colormapping, size, x_offset, y_offset)
 				pr.RenderSchemaPart(dc)
 			}
 		}
