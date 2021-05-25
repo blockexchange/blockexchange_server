@@ -11,6 +11,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/source"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 )
 
 //go:embed migrations/*.sql
@@ -50,5 +51,5 @@ func Migrate(db *sql.DB) {
 	}
 
 	v, _, _ := m.Version()
-	log.Printf("DB-Version: %d", v)
+	logrus.Infof("DB-Version: %d", v)
 }

@@ -11,7 +11,6 @@ import (
 
 func main() {
 	logrus.SetLevel(logrus.TraceLevel)
-	logrus.SetReportCaller(true)
 	logrus.Info("Starting")
 	db_, err := db.Init()
 	if err != nil {

@@ -2,11 +2,11 @@ package db
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 )
 
 func Init() (*sqlx.DB, error) {
@@ -18,7 +18,7 @@ func Init() (*sqlx.DB, error) {
 		os.Getenv("PGHOST"),
 		os.Getenv("PGDATABASE"))
 
-	log.Printf("Connecting to %s", connStr)
+	logrus.Infof("Connecting to %s", connStr)
 	var err error
 	DB, err := sqlx.Open("postgres", connStr)
 	if err != nil {

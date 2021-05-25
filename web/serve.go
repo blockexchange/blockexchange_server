@@ -2,7 +2,6 @@ package web
 
 import (
 	"embed"
-	"log"
 	"net/http"
 	"os"
 
@@ -12,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -114,10 +114,10 @@ func SetupRoutes(r *mux.Router, api *Api) {
 
 func getFileSystem(useLocalfs bool, content embed.FS) http.FileSystem {
 	if useLocalfs {
-		log.Print("using live mode")
+		logrus.Print("using live mode")
 		return http.FS(os.DirFS("public"))
 	}
 
-	log.Print("using embed mode")
+	logrus.Print("using embed mode")
 	return http.FS(content)
 }
