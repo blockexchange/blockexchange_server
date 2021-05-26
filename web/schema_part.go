@@ -99,6 +99,23 @@ func (api *Api) GetSchemaPart(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (api *Api) GetSchemaPartChunk(w http.ResponseWriter, r *http.Request) {
+	schema_id, x, y, z, err := extractSchemaPartVars(r)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	to_pos_offset := 16 * 4
+	schemaparts, err := api.SchemaPartRepo.GetBySchemaIDAndRange(int64(schema_id), x, y, z, x+to_pos_offset, y+to_pos_offset, z+to_pos_offset)
+	if err == nil && schemaparts == nil {
+		w.WriteHeader(http.StatusNoContent)
+	} else {
+		partsDownloaded.Add(float64(len(schemaparts)))
+		Send(w, schemaparts, err)
+	}
+}
+
 func (api *Api) GetNextSchemaPart(w http.ResponseWriter, r *http.Request) {
 	schema_id, x, y, z, err := extractSchemaPartVars(r)
 	if err != nil {
