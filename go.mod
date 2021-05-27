@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fogleman/gg v1.3.0
-	github.com/go-co-op/gocron v1.5.0
+	github.com/go-co-op/gocron v1.6.0
 	github.com/go-redis/redis/v8 v8.8.3
 	github.com/go-redsync/redsync/v4 v4.3.0
 	github.com/golang-migrate/migrate/v4 v4.14.1
