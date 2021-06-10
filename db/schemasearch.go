@@ -20,22 +20,29 @@ type SchemaSearchRepository interface {
 
 func NewSchemaSearchRepository(db *sqlx.DB) SchemaSearchRepository {
 	return &DBSchemaSearchRepository{
-		DB:            db,
-		UserRepo:      DBUserRepository{DB: db},
-		SchemaModRepo: DBSchemaModRepository{DB: db},
-		SchemaTagRepo: DBSchemaTagRepository{DB: db},
+		DB:             db,
+		UserRepo:       DBUserRepository{DB: db},
+		SchemaModRepo:  DBSchemaModRepository{DB: db},
+		SchemaTagRepo:  DBSchemaTagRepository{DB: db},
+		SchemaStarRepo: DBSchemaStarRepository{DB: db},
 	}
 }
 
 type DBSchemaSearchRepository struct {
-	DB            *sqlx.DB
-	UserRepo      UserRepository
-	SchemaModRepo SchemaModRepository
-	SchemaTagRepo SchemaTagRepository
+	DB             *sqlx.DB
+	UserRepo       UserRepository
+	SchemaModRepo  SchemaModRepository
+	SchemaTagRepo  SchemaTagRepository
+	SchemaStarRepo SchemaStarRepository
 }
 
 func (repo DBSchemaSearchRepository) enhance_schema(schema *types.Schema) (*types.SchemaSearchResult, error) {
 	user, err := repo.UserRepo.GetUserById(schema.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	stars, err := repo.SchemaStarRepo.CountBySchemaID(schema.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -57,6 +64,7 @@ func (repo DBSchemaSearchRepository) enhance_schema(schema *types.Schema) (*type
 
 	result := &types.SchemaSearchResult{
 		Schema: *schema,
+		Stars:  stars,
 		User: &types.User{
 			Name:    user.Name,
 			ID:      user.ID,

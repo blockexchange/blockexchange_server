@@ -75,6 +75,10 @@ func SetupRoutes(r *mux.Router, api *Api) {
 	r.HandleFunc("/api/schema/{id}/mods", Secure(api.CreateSchemaMods)).Methods("POST")
 	r.HandleFunc("/api/schema/{id}/update", Secure(api.UpdateSchemaInfo)).Methods("POST")
 
+	r.HandleFunc("/api/schema/{schema_id}/star", Secure(api.CreateSchemaStar)).Methods("POST")
+	r.HandleFunc("/api/schema/{schema_id}/star", Secure(api.DeleteSchemaStar)).Methods("DELETE")
+	r.HandleFunc("/api/schema/{schema_id}/star", api.GetSchemaStars).Methods("GET")
+
 	r.HandleFunc("/api/schema/{schema_id}/tag/{tag_id}", Secure(api.CreateSchemaTag)).Methods("PUT")
 	r.HandleFunc("/api/schema/{schema_id}/tag/{tag_id}", Secure(api.DeleteSchemaTag)).Methods("DELETE")
 	r.HandleFunc("/api/schema/{schema_id}/tag", api.GetSchemaTags).Methods("GET")

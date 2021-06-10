@@ -40,7 +40,8 @@ func TestSearchSchema(t *testing.T) {
 
 	assert.Equal(t, 200, w.Result().StatusCode)
 
-	response_schema := &types.Schema{}
+	response_schema := &types.SchemaSearchResult{}
 	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), response_schema))
 	assert.Equal(t, schema.ID, response_schema.ID)
+	assert.Equal(t, 0, response_schema.Stars)
 }

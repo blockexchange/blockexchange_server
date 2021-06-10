@@ -12,6 +12,7 @@ import SchemaDelete from './SchemaDelete.js';
 import SchemaUpdateInfo from './SchemaUpdateInfo.js';
 import SchemaTitle from './SchemaTitle.js';
 import SchemaTags from './SchemaTags.js';
+import SchemaStar from './SchemaStar.js';
 
 export default {
 	components: {
@@ -23,7 +24,8 @@ export default {
 		"schema-delete": SchemaDelete,
 		"schema-title": SchemaTitle,
 		"schema-tags": SchemaTags,
-		"schema-updateinfo": SchemaUpdateInfo
+		"schema-updateinfo": SchemaUpdateInfo,
+		"schema-star": SchemaStar
 	},
 	props: ["user_name", "schema_name"],
 	data: function(){
@@ -64,6 +66,7 @@ export default {
 							Incomplete
 						</span>
 					</h3>
+					<schema-star :schema="schema"/>
 				</div>
 				<div class="col-md-6">
 					<div class="btn-group float-end">
