@@ -55,15 +55,18 @@ export default {
 			<div class="row">
 				<div class="col-md-6">
 					<h3>
-					  <schema-title :schema="schema"/>
-					  <small class="text-muted">by {{ user_name }}</small>
+						<schema-title :schema="schema"/>
+						<span class="badge bg-info text-dark">
+							{{ schema.id }}
+						</span>
+						<small class="text-muted">by {{ user_name }}</small>
 						<span v-if="!schema.complete" class="badge bg-danger">
 							Incomplete
 						</span>
 					</h3>
 				</div>
 				<div class="col-md-6">
-					<div class="btn-group float-right">
+					<div class="btn-group float-end">
 						<schema-updateinfo :schema="schema" v-on:stats-updated="preview_version++"/>
 						<schema-delete :schema="schema"/>
 					</div>
