@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -33,7 +34,8 @@ func Serve(db_ *sqlx.DB) {
 	api := NewApi(db_, cache)
 	SetupRoutes(r, api)
 
-	http.Handle("/", r)
+	handler := cors.Default().Handler(r)
+	http.Handle("/", handler)
 
 	// metrics
 	http.Handle("/metrics", promhttp.Handler())
