@@ -15,12 +15,10 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/lib/pq v1.10.2
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
-	github.com/prometheus/client_golang v1.10.0
-	github.com/prometheus/common v0.25.0 // indirect
+	github.com/prometheus/client_golang v1.11.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	golang.org/x/image v0.0.0-20210504121937-7319ad40d33e // indirect
-	golang.org/x/sys v0.0.0-20210521203332-0cec03c779c1 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
