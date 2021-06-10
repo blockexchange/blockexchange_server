@@ -4,8 +4,9 @@ info:
   description: blockexchange cloud schema exchanger api docs
   version: latest
 servers:
-  - url: http://blockexchange.minetest.land/api
+  - url: https://blockexchange.minetest.land/api
     description: blockexchange.minetest.land central server
+
 components:
   schemas:
     Info:
@@ -35,7 +36,7 @@ paths:
       summary: exchange login credentials with a token
       responses:
         '200':
-          description: the resulting jet token
+          description: the resulting jwt token
           content:
             text/plain:
               schema:
