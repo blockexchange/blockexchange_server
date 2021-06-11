@@ -57,7 +57,23 @@ func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
+	current_mod_list, err := api.SchemaModRepo.GetSchemaModsBySchemaID(int64(id))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	// collect existing mod names
+	current_mod_map := make(map[string]bool)
+	for _, mod_name := range current_mod_list {
+		current_mod_map[mod_name.ModName] = true
+	}
+
 	for _, mod_name := range modlist {
+		if current_mod_map[mod_name] {
+			// name already exists, skip
+			continue
+		}
 		err = api.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
 			ModName:  mod_name,
 			SchemaID: int64(id),
