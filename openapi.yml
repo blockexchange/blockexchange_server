@@ -23,6 +23,7 @@ components:
 paths:
   /info:
     get:
+      tags: ["info"]
       summary: Returns some infos about the running blockexchange
       responses:
         '200':    # status code
@@ -33,6 +34,7 @@ paths:
                 $ref: '#/components/schemas/Info'
   /token:
     post:
+      tags: ["token"]
       summary: exchange login credentials with a token
       responses:
         '200':
