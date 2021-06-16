@@ -881,12 +881,13 @@ ul.nav-tabs {
             -->
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
-                  <li class="nav-header" data-group="Default"><a href="#api-Default">API Methods - Default</a></li>
-                    <li data-group="Default" data-name="infoGet" class="">
-                      <a href="#api-Default-infoGet">infoGet</a>
+                  <li class="nav-header" data-group="Info"><a href="#api-Info">API Methods - Info</a></li>
+                    <li data-group="Info" data-name="infoGet" class="">
+                      <a href="#api-Info-infoGet">infoGet</a>
                     </li>
-                    <li data-group="Default" data-name="tokenPost" class="">
-                      <a href="#api-Default-tokenPost">tokenPost</a>
+                  <li class="nav-header" data-group="Token"><a href="#api-Token">API Methods - Token</a></li>
+                    <li data-group="Token" data-name="tokenPost" class="">
+                      <a href="#api-Token-tokenPost">tokenPost</a>
                     </li>
           </ul>
         </nav>
@@ -909,10 +910,10 @@ ul.nav-tabs {
           </div>
         </div>
         <div id="sections">
-                <section id="api-Default">
-                  <h1>Default</h1>
-                    <div id="api-Default-infoGet">
-                      <article id="api-Default-infoGet-0" data-group="User" data-name="infoGet" data-version="0">
+                <section id="api-Info">
+                  <h1>Info</h1>
+                    <div id="api-Info-infoGet">
+                      <article id="api-Info-infoGet-0" data-group="User" data-name="infoGet" data-version="0">
                         <div class="pull-left">
                           <h1>infoGet</h1>
                           <p>Returns some infos about the running blockexchange</p>
@@ -928,46 +929,46 @@ ul.nav-tabs {
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Default-infoGet-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Default-infoGet-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Default-infoGet-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Default-infoGet-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Default-infoGet-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Default-infoGet-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Default-infoGet-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Default-infoGet-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Default-infoGet-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Default-infoGet-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Default-infoGet-0-python">Python</a></li>
-                          <li class=""><a href="#examples-Default-infoGet-0-rust">Rust</a></li>
+                          <li class="active"><a href="#examples-Info-infoGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Info-infoGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Info-infoGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Info-infoGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Info-infoGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Info-infoGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Info-infoGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Info-infoGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Info-infoGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Info-infoGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Info-infoGet-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Info-infoGet-0-rust">Rust</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Default-infoGet-0-curl">
+                          <div class="tab-pane active" id="examples-Info-infoGet-0-curl">
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET\
  -H "Accept: application/json"\
  "https://blockexchange.minetest.land/api/info"</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-Default-infoGet-0-java">
+                          <div class="tab-pane" id="examples-Info-infoGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
 import org.openapitools.client.auth.*;
 import org.openapitools.client.model.*;
-import org.openapitools.client.api.DefaultApi;
+import org.openapitools.client.api.InfoApi;
 
 import java.io.File;
 import java.util.*;
 
-public class DefaultApiExample {
+public class InfoApiExample {
     public static void main(String[] args) {
         
         // Create an instance of the API class
-        DefaultApi apiInstance = new DefaultApi();
+        InfoApi apiInstance = new InfoApi();
         
         try {
             Info result = apiInstance.infoGet();
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling DefaultApi#infoGet");
+            System.err.println("Exception when calling InfoApi#infoGet");
             e.printStackTrace();
         }
     }
@@ -975,32 +976,32 @@ public class DefaultApiExample {
 </code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Default-infoGet-0-android">
-                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.DefaultApi;
+                          <div class="tab-pane" id="examples-Info-infoGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.InfoApi;
 
-public class DefaultApiExample {
+public class InfoApiExample {
     public static void main(String[] args) {
-        DefaultApi apiInstance = new DefaultApi();
+        InfoApi apiInstance = new InfoApi();
         
         try {
             Info result = apiInstance.infoGet();
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling DefaultApi#infoGet");
+            System.err.println("Exception when calling InfoApi#infoGet");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-Default-infoGet-0-groovy">
+  <div class="tab-pane" id="examples-Info-infoGet-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-Default-infoGet-0-objc">
+                            <div class="tab-pane" id="examples-Info-infoGet-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">
 
 // Create an instance of the API class
-DefaultApi *apiInstance = [[DefaultApi alloc] init];
+InfoApi *apiInstance = [[InfoApi alloc] init];
 
 // Returns some infos about the running blockexchange
 [apiInstance infoGetWithCompletionHandler: 
@@ -1015,11 +1016,11 @@ DefaultApi *apiInstance = [[DefaultApi alloc] init];
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Default-infoGet-0-javascript">
+                            <div class="tab-pane" id="examples-Info-infoGet-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var BlockexchangeApi = require('blockexchange_api');
 
 // Create an instance of the API class
-var api = new BlockexchangeApi.DefaultApi()
+var api = new BlockexchangeApi.InfoApi()
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -1031,10 +1032,10 @@ api.infoGet(callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-Default-infoGet-0-angular">
+                            <!--<div class="tab-pane" id="examples-Info-infoGet-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-Default-infoGet-0-csharp">
+                            <div class="tab-pane" id="examples-Info-infoGet-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using Org.OpenAPITools.Api;
@@ -1049,14 +1050,14 @@ namespace Example
         {
             
             // Create an instance of the API class
-            var apiInstance = new DefaultApi();
+            var apiInstance = new InfoApi();
 
             try {
                 // Returns some infos about the running blockexchange
                 Info result = apiInstance.infoGet();
                 Debug.WriteLine(result);
             } catch (Exception e) {
-                Debug.Print("Exception when calling DefaultApi.infoGet: " + e.Message );
+                Debug.Print("Exception when calling InfoApi.infoGet: " + e.Message );
             }
         }
     }
@@ -1064,40 +1065,40 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Default-infoGet-0-php">
+                            <div class="tab-pane" id="examples-Info-infoGet-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
 // Create an instance of the API class
-$api_instance = new OpenAPITools\Client\Api\DefaultApi();
+$api_instance = new OpenAPITools\Client\Api\InfoApi();
 
 try {
     $result = $api_instance->infoGet();
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling DefaultApi->infoGet: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling InfoApi->infoGet: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Default-infoGet-0-perl">
+                            <div class="tab-pane" id="examples-Info-infoGet-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
-use WWW::OPenAPIClient::DefaultApi;
+use WWW::OPenAPIClient::InfoApi;
 
 # Create an instance of the API class
-my $api_instance = WWW::OPenAPIClient::DefaultApi->new();
+my $api_instance = WWW::OPenAPIClient::InfoApi->new();
 
 eval { 
     my $result = $api_instance->infoGet();
     print Dumper($result);
 };
 if ($@) {
-    warn "Exception when calling DefaultApi->infoGet: $@\n";
+    warn "Exception when calling InfoApi->infoGet: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Default-infoGet-0-python">
+                            <div class="tab-pane" id="examples-Info-infoGet-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import openapi_client
@@ -1105,22 +1106,22 @@ from openapi_client.rest import ApiException
 from pprint import pprint
 
 # Create an instance of the API class
-api_instance = openapi_client.DefaultApi()
+api_instance = openapi_client.InfoApi()
 
 try: 
     # Returns some infos about the running blockexchange
     api_response = api_instance.info_get()
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling DefaultApi->infoGet: %s\n" % e)</code></pre>
+    print("Exception when calling InfoApi->infoGet: %s\n" % e)</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Default-infoGet-0-rust">
-                              <pre class="prettyprint"><code class="language-rust">extern crate DefaultApi;
+                            <div class="tab-pane" id="examples-Info-infoGet-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate InfoApi;
 
 pub fn main() {
 
-    let mut context = DefaultApi::Context::default();
+    let mut context = InfoApi::Context::default();
     let result = client.infoGet(&context).wait();
 
     println!("{:?}", result);
@@ -1142,23 +1143,23 @@ pub fn main() {
 
 
                           <h2>Responses</h2>
-                            <h3 id="examples-Default-infoGet-title-200"></h3>
-                            <p id="examples-Default-infoGet-description-200" class="marked"></p>
+                            <h3 id="examples-Info-infoGet-title-200"></h3>
+                            <p id="examples-Info-infoGet-description-200" class="marked"></p>
                             <script>
-                              var responseDefault200_description = `info object`;
-                              var responseDefault200_description_break = responseDefault200_description.indexOf('\n');
-                              if (responseDefault200_description_break == -1) {
-                                $("#examples-Default-infoGet-title-200").text("Status: 200 - " + responseDefault200_description);
+                              var responseInfo200_description = `info object`;
+                              var responseInfo200_description_break = responseInfo200_description.indexOf('\n');
+                              if (responseInfo200_description_break == -1) {
+                                $("#examples-Info-infoGet-title-200").text("Status: 200 - " + responseInfo200_description);
                               } else {
-                                $("#examples-Default-infoGet-title-200").text("Status: 200 - " + responseDefault200_description.substring(0, responseDefault200_description_break));
-                                $("#examples-Default-infoGet-description-200").html(responseDefault200_description.substring(responseDefault200_description_break));
+                                $("#examples-Info-infoGet-title-200").text("Status: 200 - " + responseInfo200_description.substring(0, responseInfo200_description_break));
+                                $("#examples-Info-infoGet-description-200").html(responseInfo200_description.substring(responseInfo200_description_break));
                               }
                             </script>
 
 
-                            <ul id="responses-detail-Default-infoGet-200" class="nav nav-tabs nav-tabs-examples" >
+                            <ul id="responses-detail-Info-infoGet-200" class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-Default-infoGet-200-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-Info-infoGet-200-schema">Schema</a>
                                 </li>
 
 
@@ -1167,9 +1168,9 @@ pub fn main() {
                             </ul>
 
 
-                            <div class="tab-content" id="responses-Default-infoGet-200-wrapper" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-Default-infoGet-200-schema">
-                                  <div id="responses-Default-infoGet-schema-200" class="exampleStyle">
+                            <div class="tab-content" id="responses-Info-infoGet-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Info-infoGet-200-schema">
+                                  <div id="responses-Info-infoGet-schema-200" class="exampleStyle">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
@@ -1198,21 +1199,24 @@ pub fn main() {
                                         }
 
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-Default-infoGet-200-schema-data').val(JSON.stringify(schema));
-                                        var result = $('#responses-Default-infoGet-schema-200');
+                                        $('#responses-Info-infoGet-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Info-infoGet-schema-200');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-Default-infoGet-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-Info-infoGet-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
                         </article>
                       </div>
                       <hr>
-                    <div id="api-Default-tokenPost">
-                      <article id="api-Default-tokenPost-0" data-group="User" data-name="tokenPost" data-version="0">
+                  </section>
+                <section id="api-Token">
+                  <h1>Token</h1>
+                    <div id="api-Token-tokenPost">
+                      <article id="api-Token-tokenPost-0" data-group="User" data-name="tokenPost" data-version="0">
                         <div class="pull-left">
                           <h1>tokenPost</h1>
                           <p>exchange login credentials with a token</p>
@@ -1228,46 +1232,46 @@ pub fn main() {
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Default-tokenPost-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Default-tokenPost-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Default-tokenPost-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Default-tokenPost-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Default-tokenPost-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Default-tokenPost-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Default-tokenPost-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Default-tokenPost-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Default-tokenPost-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Default-tokenPost-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Default-tokenPost-0-python">Python</a></li>
-                          <li class=""><a href="#examples-Default-tokenPost-0-rust">Rust</a></li>
+                          <li class="active"><a href="#examples-Token-tokenPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Token-tokenPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Token-tokenPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Token-tokenPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Token-tokenPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Token-tokenPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Token-tokenPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Token-tokenPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Token-tokenPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Token-tokenPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Token-tokenPost-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Token-tokenPost-0-rust">Rust</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Default-tokenPost-0-curl">
+                          <div class="tab-pane active" id="examples-Token-tokenPost-0-curl">
                             <pre class="prettyprint"><code class="language-bsh">curl -X POST\
  -H "Accept: text/plain"\
  "https://blockexchange.minetest.land/api/token"</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-Default-tokenPost-0-java">
+                          <div class="tab-pane" id="examples-Token-tokenPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
 import org.openapitools.client.auth.*;
 import org.openapitools.client.model.*;
-import org.openapitools.client.api.DefaultApi;
+import org.openapitools.client.api.TokenApi;
 
 import java.io.File;
 import java.util.*;
 
-public class DefaultApiExample {
+public class TokenApiExample {
     public static void main(String[] args) {
         
         // Create an instance of the API class
-        DefaultApi apiInstance = new DefaultApi();
+        TokenApi apiInstance = new TokenApi();
         
         try {
             'String' result = apiInstance.tokenPost();
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling DefaultApi#tokenPost");
+            System.err.println("Exception when calling TokenApi#tokenPost");
             e.printStackTrace();
         }
     }
@@ -1275,32 +1279,32 @@ public class DefaultApiExample {
 </code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Default-tokenPost-0-android">
-                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.DefaultApi;
+                          <div class="tab-pane" id="examples-Token-tokenPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.TokenApi;
 
-public class DefaultApiExample {
+public class TokenApiExample {
     public static void main(String[] args) {
-        DefaultApi apiInstance = new DefaultApi();
+        TokenApi apiInstance = new TokenApi();
         
         try {
             'String' result = apiInstance.tokenPost();
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling DefaultApi#tokenPost");
+            System.err.println("Exception when calling TokenApi#tokenPost");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-Default-tokenPost-0-groovy">
+  <div class="tab-pane" id="examples-Token-tokenPost-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-Default-tokenPost-0-objc">
+                            <div class="tab-pane" id="examples-Token-tokenPost-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">
 
 // Create an instance of the API class
-DefaultApi *apiInstance = [[DefaultApi alloc] init];
+TokenApi *apiInstance = [[TokenApi alloc] init];
 
 // exchange login credentials with a token
 [apiInstance tokenPostWithCompletionHandler: 
@@ -1315,11 +1319,11 @@ DefaultApi *apiInstance = [[DefaultApi alloc] init];
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Default-tokenPost-0-javascript">
+                            <div class="tab-pane" id="examples-Token-tokenPost-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var BlockexchangeApi = require('blockexchange_api');
 
 // Create an instance of the API class
-var api = new BlockexchangeApi.DefaultApi()
+var api = new BlockexchangeApi.TokenApi()
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -1331,10 +1335,10 @@ api.tokenPost(callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-Default-tokenPost-0-angular">
+                            <!--<div class="tab-pane" id="examples-Token-tokenPost-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-Default-tokenPost-0-csharp">
+                            <div class="tab-pane" id="examples-Token-tokenPost-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using Org.OpenAPITools.Api;
@@ -1349,14 +1353,14 @@ namespace Example
         {
             
             // Create an instance of the API class
-            var apiInstance = new DefaultApi();
+            var apiInstance = new TokenApi();
 
             try {
                 // exchange login credentials with a token
                 'String' result = apiInstance.tokenPost();
                 Debug.WriteLine(result);
             } catch (Exception e) {
-                Debug.Print("Exception when calling DefaultApi.tokenPost: " + e.Message );
+                Debug.Print("Exception when calling TokenApi.tokenPost: " + e.Message );
             }
         }
     }
@@ -1364,40 +1368,40 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Default-tokenPost-0-php">
+                            <div class="tab-pane" id="examples-Token-tokenPost-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
 // Create an instance of the API class
-$api_instance = new OpenAPITools\Client\Api\DefaultApi();
+$api_instance = new OpenAPITools\Client\Api\TokenApi();
 
 try {
     $result = $api_instance->tokenPost();
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling DefaultApi->tokenPost: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling TokenApi->tokenPost: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Default-tokenPost-0-perl">
+                            <div class="tab-pane" id="examples-Token-tokenPost-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
-use WWW::OPenAPIClient::DefaultApi;
+use WWW::OPenAPIClient::TokenApi;
 
 # Create an instance of the API class
-my $api_instance = WWW::OPenAPIClient::DefaultApi->new();
+my $api_instance = WWW::OPenAPIClient::TokenApi->new();
 
 eval { 
     my $result = $api_instance->tokenPost();
     print Dumper($result);
 };
 if ($@) {
-    warn "Exception when calling DefaultApi->tokenPost: $@\n";
+    warn "Exception when calling TokenApi->tokenPost: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Default-tokenPost-0-python">
+                            <div class="tab-pane" id="examples-Token-tokenPost-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import openapi_client
@@ -1405,22 +1409,22 @@ from openapi_client.rest import ApiException
 from pprint import pprint
 
 # Create an instance of the API class
-api_instance = openapi_client.DefaultApi()
+api_instance = openapi_client.TokenApi()
 
 try: 
     # exchange login credentials with a token
     api_response = api_instance.token_post()
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling DefaultApi->tokenPost: %s\n" % e)</code></pre>
+    print("Exception when calling TokenApi->tokenPost: %s\n" % e)</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Default-tokenPost-0-rust">
-                              <pre class="prettyprint"><code class="language-rust">extern crate DefaultApi;
+                            <div class="tab-pane" id="examples-Token-tokenPost-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate TokenApi;
 
 pub fn main() {
 
-    let mut context = DefaultApi::Context::default();
+    let mut context = TokenApi::Context::default();
     let result = client.tokenPost(&context).wait();
 
     println!("{:?}", result);
@@ -1442,23 +1446,23 @@ pub fn main() {
 
 
                           <h2>Responses</h2>
-                            <h3 id="examples-Default-tokenPost-title-200"></h3>
-                            <p id="examples-Default-tokenPost-description-200" class="marked"></p>
+                            <h3 id="examples-Token-tokenPost-title-200"></h3>
+                            <p id="examples-Token-tokenPost-description-200" class="marked"></p>
                             <script>
-                              var responseDefault200_description = `the resulting jwt token`;
-                              var responseDefault200_description_break = responseDefault200_description.indexOf('\n');
-                              if (responseDefault200_description_break == -1) {
-                                $("#examples-Default-tokenPost-title-200").text("Status: 200 - " + responseDefault200_description);
+                              var responseToken200_description = `the resulting jwt token`;
+                              var responseToken200_description_break = responseToken200_description.indexOf('\n');
+                              if (responseToken200_description_break == -1) {
+                                $("#examples-Token-tokenPost-title-200").text("Status: 200 - " + responseToken200_description);
                               } else {
-                                $("#examples-Default-tokenPost-title-200").text("Status: 200 - " + responseDefault200_description.substring(0, responseDefault200_description_break));
-                                $("#examples-Default-tokenPost-description-200").html(responseDefault200_description.substring(responseDefault200_description_break));
+                                $("#examples-Token-tokenPost-title-200").text("Status: 200 - " + responseToken200_description.substring(0, responseToken200_description_break));
+                                $("#examples-Token-tokenPost-description-200").html(responseToken200_description.substring(responseToken200_description_break));
                               }
                             </script>
 
 
-                            <ul id="responses-detail-Default-tokenPost-200" class="nav nav-tabs nav-tabs-examples" >
+                            <ul id="responses-detail-Token-tokenPost-200" class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-Default-tokenPost-200-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-Token-tokenPost-200-schema">Schema</a>
                                 </li>
 
 
@@ -1467,9 +1471,9 @@ pub fn main() {
                             </ul>
 
 
-                            <div class="tab-content" id="responses-Default-tokenPost-200-wrapper" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-Default-tokenPost-200-schema">
-                                  <div id="responses-Default-tokenPost-schema-200" class="exampleStyle">
+                            <div class="tab-content" id="responses-Token-tokenPost-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Token-tokenPost-200-schema">
+                                  <div id="responses-Token-tokenPost-schema-200" class="exampleStyle">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
@@ -1499,14 +1503,14 @@ pub fn main() {
                                         }
 
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-Default-tokenPost-200-schema-data').val(JSON.stringify(schema));
-                                        var result = $('#responses-Default-tokenPost-schema-200');
+                                        $('#responses-Token-tokenPost-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Token-tokenPost-schema-200');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-Default-tokenPost-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-Token-tokenPost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
                         </article>
