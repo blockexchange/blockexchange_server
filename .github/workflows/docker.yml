@@ -28,7 +28,7 @@ jobs:
     - name: 📧 Discord success notification
       env:
         DISCORD_WEBHOOK: ${{ secrets.discord_webhook }}
-      uses: Ilshidur/action-discord@0.3.0
+      uses: Ilshidur/action-discord@0.3.2
       with:
         args: '☑️ Deployment triggered for commit `${{ github.sha }}`'
 
@@ -36,6 +36,6 @@ jobs:
       if: failure()
       env:
         DISCORD_WEBHOOK: ${{ secrets.discord_webhook }}
-      uses: Ilshidur/action-discord@0.3.0
+      uses: Ilshidur/action-discord@0.3.2
       with:
         args: '🚫 Build failed for commit `${{ github.sha }}`'
