@@ -1,4 +1,4 @@
-FROM node:16.3.0-alpine as stage1
+FROM node:16.4.0-alpine as stage1
 COPY public /public
 RUN cd /public && \
 	npm ci && \
