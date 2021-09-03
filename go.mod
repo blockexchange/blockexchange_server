@@ -12,7 +12,7 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jmoiron/sqlx v1.3.4
-	github.com/lib/pq v1.10.2
+	github.com/lib/pq v1.10.3
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/prometheus/client_golang v1.11.0
 	github.com/rs/cors v1.8.0
