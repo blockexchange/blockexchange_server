@@ -29,6 +29,6 @@
   },
   "devDependencies": {
     "jshint": "^2.13.1",
-    "rollup": "^2.58.3"
+    "rollup": "^2.59.0"
   }
 }
