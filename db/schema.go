@@ -10,6 +10,7 @@ import (
 
 type SchemaRepository interface {
 	GetSchemaById(id int64) (*types.Schema, error)
+	GetSchemaByUsernameAndName(username, schemaname string) (*types.Schema, error)
 	CreateSchema(schema *types.Schema) error
 	UpdateSchema(schema *types.Schema) error
 	DeleteSchema(id, user_id int64) error
@@ -26,6 +27,18 @@ type DBSchemaRepository struct {
 func (repo DBSchemaRepository) GetSchemaById(id int64) (*types.Schema, error) {
 	schema := types.Schema{}
 	err := repo.DB.Get(&schema, "select * from schema where id = $1", id)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	} else {
+		return &schema, nil
+	}
+}
+
+func (repo DBSchemaRepository) GetSchemaByUsernameAndName(username, schemaname string) (*types.Schema, error) {
+	schema := types.Schema{}
+	err := repo.DB.Get(&schema, "select * from schema where user_id = (select id from public.user where name = $1) and name = $2", username, schemaname)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {

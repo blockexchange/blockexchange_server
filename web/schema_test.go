@@ -89,6 +89,14 @@ func TestSchemaCreate(t *testing.T) {
 	err = json.NewDecoder(w.Body).Decode(&schema)
 	assert.NoError(t, err)
 
+	// get by names
+	schema2, err := api.SchemaRepo.GetSchemaByUsernameAndName(user.Name, schema.Name)
+	assert.NoError(t, err)
+	assert.NotNil(t, schema2)
+	assert.Equal(t, schema.Description, schema2.Description)
+	assert.Equal(t, schema.ID, schema2.ID)
+	assert.Equal(t, schema.Created, schema2.Created)
+
 	// update
 	schema.Name = "something else"
 
