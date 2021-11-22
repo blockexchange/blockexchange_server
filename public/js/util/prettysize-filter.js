@@ -1,10 +1,10 @@
 
 const ranges = [{
 	size: 1000*1000,
-	suffix: "mb"
+	suffix: "MB"
 },{
 	size: 1000,
-	suffix: "kb"
+	suffix: "kB"
 }];
 
 Vue.filter("prettysize", function(value) {
