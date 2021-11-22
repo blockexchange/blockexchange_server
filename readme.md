@@ -139,7 +139,7 @@ Database model:
 The on-disk format
 
 ```lua
--- examplary metadata
+-- exemplary metadata
 metadata = {
 	size = {x=16,y=16,z=16},
 	node_mapping = {
