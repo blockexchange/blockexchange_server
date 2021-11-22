@@ -58,9 +58,6 @@ export default {
 				<div class="col-md-6">
 					<h3>
 						<schema-title :schema="schema"/>
-						<span class="badge bg-info text-dark">
-							{{ schema.id }}
-						</span>
 						<small class="text-muted">by {{ user_name }}</small>
 						<span v-if="!schema.complete" class="badge bg-danger">
 							Incomplete
