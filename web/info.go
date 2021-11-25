@@ -18,6 +18,7 @@ type Info struct {
 	Name         string     `json:"name"`
 	Owner        string     `json:"owner"`
 	Oauth        *OauthInfo `json:"oauth"`
+	EnableSignup bool       `json:"enable_signup"`
 }
 
 type InfoHandler struct {
@@ -47,6 +48,7 @@ func (h InfoHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		Name:         h.Config.Name,
 		Owner:        h.Config.Owner,
 		Oauth:        &oauth,
+		EnableSignup: h.Config.EnableSignup,
 	}
 
 	SendJson(w, info)

@@ -65,8 +65,11 @@ func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {
 
 	// api surface
 	r.Handle("/api/info", InfoHandler{Config: cfg})
-	r.HandleFunc("/api/register", api.Register).Methods("POST")
 	r.HandleFunc("/api/token", api.PostLogin).Methods("POST")
+
+	if cfg.EnableSignup {
+		r.HandleFunc("/api/register", api.Register).Methods("POST")
+	}
 
 	r.HandleFunc("/api/validate_username", api.PostValidateUsername).Methods("POST")
 	r.HandleFunc("/api/user", api.GetUsers).Methods("GET")

@@ -24,7 +24,7 @@ export default {
 				</div>
 			</div>
 			<div class="col-md-4">
-				<div class="card">
+				<div class="card" v-if="info.enable_signup">
 					<div class="card-header">
 						Sign up
 					</div>
@@ -34,7 +34,6 @@ export default {
 						</router-link>
 					</div>
 				</div>
-				<br>
 				<div class="card">
 					<div class="card-header">
 						External login
