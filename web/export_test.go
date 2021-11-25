@@ -4,7 +4,6 @@ import (
 	"blockexchange/core"
 	"blockexchange/testutils"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 
 	"github.com/gorilla/mux"
@@ -21,7 +20,8 @@ func TestWorldEditExport(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://", nil)
 	w := httptest.NewRecorder()
 	r = mux.SetURLVars(r, map[string]string{
-		"id": strconv.Itoa(int(schema.ID)),
+		"username":   user.Name,
+		"schemaname": schema.Name,
 	})
 
 	api.ExportWorldeditSchema(w, r)
@@ -40,7 +40,8 @@ func TestBXExport(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://", nil)
 	w := httptest.NewRecorder()
 	r = mux.SetURLVars(r, map[string]string{
-		"id": strconv.Itoa(int(schema.ID)),
+		"username":   user.Name,
+		"schemaname": schema.Name,
 	})
 
 	api.ExportBXSchema(w, r)

@@ -4,16 +4,20 @@ import (
 	"blockexchange/core"
 	"blockexchange/types"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
 func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	schema, err := api.SchemaRepo.GetSchemaByUsernameAndName(vars["username"], vars["schemaname"])
 	if err != nil {
 		SendError(w, 500, err.Error())
+		return
+	}
+
+	if schema == nil {
+		SendError(w, 404, "Not found")
 		return
 	}
 
@@ -21,9 +25,9 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 	it := func() (*types.SchemaPart, error) {
 		var err error
 		if schemapart == nil {
-			schemapart, err = api.SchemaPartRepo.GetFirstBySchemaID(int64(id))
+			schemapart, err = api.SchemaPartRepo.GetFirstBySchemaID(schema.ID)
 		} else {
-			schemapart, err = api.SchemaPartRepo.GetNextBySchemaIDAndOffset(int64(id), schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
+			schemapart, err = api.SchemaPartRepo.GetNextBySchemaIDAndOffset(schema.ID, schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
 		}
 		return schemapart, err
 	}
@@ -36,23 +40,18 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	schema, err := api.SchemaRepo.GetSchemaByUsernameAndName(vars["username"], vars["schemaname"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
 	if schema == nil {
-		SendError(w, 404, "not found")
+		SendError(w, 404, "Not found")
 		return
 	}
 
-	schemamods, err := api.SchemaModRepo.GetSchemaModsBySchemaID(int64(id))
+	schemamods, err := api.SchemaModRepo.GetSchemaModsBySchemaID(schema.ID)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -62,9 +61,9 @@ func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 	it := func() (*types.SchemaPart, error) {
 		var err error
 		if schemapart == nil {
-			schemapart, err = api.SchemaPartRepo.GetFirstBySchemaID(int64(id))
+			schemapart, err = api.SchemaPartRepo.GetFirstBySchemaID(schema.ID)
 		} else {
-			schemapart, err = api.SchemaPartRepo.GetNextBySchemaIDAndOffset(int64(id), schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
+			schemapart, err = api.SchemaPartRepo.GetNextBySchemaIDAndOffset(schema.ID, schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
 		}
 		return schemapart, err
 	}
