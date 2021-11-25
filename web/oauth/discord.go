@@ -1,13 +1,13 @@
 package oauth
 
 import (
+	"blockexchange/core"
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
-	"os"
 )
 
 type DiscordResponse struct {
@@ -19,11 +19,11 @@ type DiscordResponse struct {
 type DiscordOauth struct {
 }
 
-func (o *DiscordOauth) RequestAccessToken(code string) (string, error) {
+func (o *DiscordOauth) RequestAccessToken(code string, cfg *core.Config) (string, error) {
 	q := url.Values{}
-	q.Add("client_id", os.Getenv("DISCORD_APP_ID"))
-	q.Add("client_secret", os.Getenv("DISCORD_APP_SECRET"))
-	q.Add("redirect_uri", os.Getenv("BASE_URL")+"/api/oauth_callback/discord")
+	q.Add("client_id", cfg.DiscordOAuthConfig.ClientID)
+	q.Add("client_secret", cfg.DiscordOAuthConfig.Secret)
+	q.Add("redirect_uri", cfg.BaseURL+"/api/oauth_callback/discord")
 	q.Add("code", code)
 	q.Add("grant_type", "authorization_code")
 	q.Add("scope", "identify email connections")
@@ -51,11 +51,10 @@ func (o *DiscordOauth) RequestAccessToken(code string) (string, error) {
 		return "", err
 	}
 
-	fmt.Println(fmt.Sprintf("AccessCode: %s", tokenData.AccessToken))
 	return tokenData.AccessToken, nil
 }
 
-func (o *DiscordOauth) RequestUserInfo(access_token string) (*OauthUserInfo, error) {
+func (o *DiscordOauth) RequestUserInfo(access_token string, cfg *core.Config) (*OauthUserInfo, error) {
 	req, err := http.NewRequest("GET", "https://discord.com/api/users/@me", nil)
 	if err != nil {
 		return nil, nil

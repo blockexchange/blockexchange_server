@@ -1,6 +1,7 @@
 package main
 
 import (
+	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/jobs"
 	"blockexchange/web"
@@ -28,9 +29,14 @@ func main() {
 		}
 	}
 
+	cfg, err := core.CreateConfig()
+	if err != nil {
+		panic(err)
+	}
+
 	// start background jobs
 	jobs.Start(db_)
 
 	// listen to web requests
-	web.Serve(db_)
+	web.Serve(db_, cfg)
 }

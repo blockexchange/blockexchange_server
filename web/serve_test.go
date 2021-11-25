@@ -1,6 +1,7 @@
 package web
 
 import (
+	"blockexchange/core"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -16,7 +17,7 @@ func TestServe(t *testing.T) {
 	defer ts.Close()
 
 	api := createTestApi(t)
-	SetupRoutes(r, api)
+	SetupRoutes(r, api, &core.Config{})
 
 	res, err := http.Get(ts.URL + "/api/info")
 	assert.NoError(t, err)

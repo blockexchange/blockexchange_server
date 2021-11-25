@@ -6,7 +6,6 @@ import (
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -24,19 +23,21 @@ type OauthUserInfo struct {
 }
 
 type OauthImplementation interface {
-	RequestAccessToken(code string) (string, error)
-	RequestUserInfo(access_token string) (*OauthUserInfo, error)
+	RequestAccessToken(code string, cfg *core.Config) (string, error)
+	RequestUserInfo(access_token string, cfg *core.Config) (*OauthUserInfo, error)
 }
 
 type OauthHandler struct {
 	Impl            OauthImplementation
+	Config          *core.Config
 	AccessTokenRepo db.AccessTokenRepository
 	UserRepo        db.UserRepository
 }
 
-func NewHandler(impl OauthImplementation, ur db.UserRepository, atr db.AccessTokenRepository) *OauthHandler {
+func NewHandler(impl OauthImplementation, cfg *core.Config, ur db.UserRepository, atr db.AccessTokenRepository) *OauthHandler {
 	return &OauthHandler{
 		Impl:            impl,
+		Config:          cfg,
 		AccessTokenRepo: atr,
 		UserRepo:        ur,
 	}
@@ -64,13 +65,13 @@ func (h *OauthHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	code := list[0]
 
-	access_token, err := h.Impl.RequestAccessToken(code)
+	access_token, err := h.Impl.RequestAccessToken(code, h.Config)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	info, err := h.Impl.RequestUserInfo(access_token)
+	info, err := h.Impl.RequestUserInfo(access_token, h.Config)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -142,6 +143,6 @@ func (h *OauthHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	target := os.Getenv("BASE_URL") + "/#/oauth/" + token
+	target := h.Config.BaseURL + "/#/oauth/" + token
 	http.Redirect(w, r, target, http.StatusTemporaryRedirect)
 }

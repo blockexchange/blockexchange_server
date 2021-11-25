@@ -1,6 +1,7 @@
 package web
 
 import (
+	"blockexchange/core"
 	"encoding/json"
 	"net/http/httptest"
 	"testing"
@@ -12,7 +13,10 @@ func TestInfo(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://", nil)
 	w := httptest.NewRecorder()
 
-	InfoEndpoint(w, r)
+	i := InfoHandler{
+		Config: &core.Config{},
+	}
+	i.ServeHTTP(w, r)
 
 	assert.Equal(t, 200, w.Result().StatusCode)
 

@@ -1,12 +1,12 @@
 package oauth
 
 import (
+	"blockexchange/core"
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 )
 
@@ -19,13 +19,13 @@ type MesehubUserResponse struct {
 type MesehubOauth struct {
 }
 
-func (o *MesehubOauth) RequestAccessToken(code string) (string, error) {
+func (o *MesehubOauth) RequestAccessToken(code string, cfg *core.Config) (string, error) {
 	accessTokenReq := make(map[string]string)
-	accessTokenReq["client_id"] = os.Getenv("MESEHUB_APP_ID")
-	accessTokenReq["client_secret"] = os.Getenv("MESEHUB_APP_SECRET")
+	accessTokenReq["client_id"] = cfg.MesehubOAuthConfig.ClientID
+	accessTokenReq["client_secret"] = cfg.MesehubOAuthConfig.Secret
 	accessTokenReq["code"] = code
 	accessTokenReq["grant_type"] = "authorization_code"
-	accessTokenReq["redirect_uri"] = os.Getenv("BASE_URL") + "/api/oauth_callback/mesehub"
+	accessTokenReq["redirect_uri"] = cfg.BaseURL + "/api/oauth_callback/mesehub"
 
 	data, err := json.Marshal(accessTokenReq)
 	if err != nil {
@@ -51,11 +51,10 @@ func (o *MesehubOauth) RequestAccessToken(code string) (string, error) {
 		return "", err
 	}
 
-	fmt.Println(fmt.Sprintf("AccessCode: %s", tokenData.AccessToken))
 	return tokenData.AccessToken, nil
 }
 
-func (o *MesehubOauth) RequestUserInfo(access_token string) (*OauthUserInfo, error) {
+func (o *MesehubOauth) RequestUserInfo(access_token string, cfg *core.Config) (*OauthUserInfo, error) {
 	req, err := http.NewRequest("GET", "https://git.minetest.land/api/v1/user", nil)
 	if err != nil {
 		return nil, nil

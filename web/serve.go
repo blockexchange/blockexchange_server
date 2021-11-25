@@ -17,7 +17,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func Serve(db_ *sqlx.DB) {
+func Serve(db_ *sqlx.DB, cfg *core.Config) {
 
 	r := mux.NewRouter()
 
@@ -32,7 +32,7 @@ func Serve(db_ *sqlx.DB) {
 	}
 
 	api := NewApi(db_, cache)
-	SetupRoutes(r, api)
+	SetupRoutes(r, api, cfg)
 
 	handler := cors.Default().Handler(r)
 	http.Handle("/", handler)
@@ -46,19 +46,27 @@ func Serve(db_ *sqlx.DB) {
 	}
 }
 
-func SetupRoutes(r *mux.Router, api *Api) {
+func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {
 
-	github_oauth := oauth.NewHandler(&oauth.GithubOauth{}, api.UserRepo, api.AccessTokenRepo)
-	discord_oauth := oauth.NewHandler(&oauth.DiscordOauth{}, api.UserRepo, api.AccessTokenRepo)
-	mesehub_oauth := oauth.NewHandler(&oauth.MesehubOauth{}, api.UserRepo, api.AccessTokenRepo)
+	if cfg.GithubOAuthConfig != nil {
+		github_oauth := oauth.NewHandler(&oauth.GithubOauth{}, cfg, api.UserRepo, api.AccessTokenRepo)
+		r.HandleFunc("/api/oauth_callback/github", github_oauth.Handle)
+	}
+
+	if cfg.DiscordOAuthConfig != nil {
+		discord_oauth := oauth.NewHandler(&oauth.DiscordOauth{}, cfg, api.UserRepo, api.AccessTokenRepo)
+		r.HandleFunc("/api/oauth_callback/discord", discord_oauth.Handle)
+	}
+
+	if cfg.MesehubOAuthConfig != nil {
+		mesehub_oauth := oauth.NewHandler(&oauth.MesehubOauth{}, cfg, api.UserRepo, api.AccessTokenRepo)
+		r.HandleFunc("/api/oauth_callback/mesehub", mesehub_oauth.Handle)
+	}
 
 	// api surface
-	r.HandleFunc("/api/info", InfoEndpoint)
+	r.Handle("/api/info", InfoHandler{Config: cfg})
 	r.HandleFunc("/api/register", api.Register).Methods("POST")
 	r.HandleFunc("/api/token", api.PostLogin).Methods("POST")
-	r.HandleFunc("/api/oauth_callback/github", github_oauth.Handle)
-	r.HandleFunc("/api/oauth_callback/discord", discord_oauth.Handle)
-	r.HandleFunc("/api/oauth_callback/mesehub", mesehub_oauth.Handle)
 
 	r.HandleFunc("/api/validate_username", api.PostValidateUsername).Methods("POST")
 	r.HandleFunc("/api/user", api.GetUsers).Methods("GET")
@@ -114,7 +122,7 @@ func SetupRoutes(r *mux.Router, api *Api) {
 	r.HandleFunc("/api/access_token/{id}", Secure(api.DeleteAccessToken)).Methods("DELETE")
 
 	// webdev flag
-	useLocalfs := os.Getenv("WEBDEV") == "true"
+	useLocalfs := cfg.WebDev
 	// static files
 	r.PathPrefix("/").Handler(http.FileServer(getFileSystem(useLocalfs, public.Webapp)))
 }

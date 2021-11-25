@@ -1,8 +1,8 @@
 package web
 
 import (
+	"blockexchange/core"
 	"net/http"
-	"os"
 )
 
 type OauthInfo struct {
@@ -20,19 +20,32 @@ type Info struct {
 	Oauth        *OauthInfo `json:"oauth"`
 }
 
-func InfoEndpoint(w http.ResponseWriter, req *http.Request) {
+type InfoHandler struct {
+	Config *core.Config
+}
+
+func (h InfoHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	oauth := OauthInfo{
-		GithubID:  os.Getenv("GITHUB_APP_ID"),
-		DiscordID: os.Getenv("DISCORD_APP_ID"),
-		MesehubID: os.Getenv("MESEHUB_APP_ID"),
-		BaseURL:   os.Getenv("BASE_URL"),
+		BaseURL: h.Config.BaseURL,
+	}
+
+	if h.Config.GithubOAuthConfig != nil {
+		oauth.GithubID = h.Config.GithubOAuthConfig.ClientID
+	}
+
+	if h.Config.DiscordOAuthConfig != nil {
+		oauth.DiscordID = h.Config.DiscordOAuthConfig.ClientID
+	}
+
+	if h.Config.MesehubOAuthConfig != nil {
+		oauth.MesehubID = h.Config.MesehubOAuthConfig.ClientID
 	}
 
 	info := Info{
 		VersionMajor: 1,
 		VersionMinor: 1,
-		Name:         os.Getenv("BLOCKEXCHANGE_NAME"),
-		Owner:        os.Getenv("BLOCKEXCHANGE_OWNER"),
+		Name:         h.Config.Name,
+		Owner:        h.Config.Owner,
 		Oauth:        &oauth,
 	}
 

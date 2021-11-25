@@ -1,12 +1,12 @@
 package oauth
 
 import (
+	"blockexchange/core"
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 )
 
@@ -25,10 +25,10 @@ type GithubUserResponse struct {
 type GithubOauth struct {
 }
 
-func (o *GithubOauth) RequestAccessToken(code string) (string, error) {
+func (o *GithubOauth) RequestAccessToken(code string, cfg *core.Config) (string, error) {
 	accessTokenReq := GithubAccessTokenRequest{
-		ClientID:     os.Getenv("GITHUB_APP_ID"),
-		ClientSecret: os.Getenv("GITHUB_APP_SECRET"),
+		ClientID:     cfg.GithubOAuthConfig.ClientID,
+		ClientSecret: cfg.GithubOAuthConfig.Secret,
 		Code:         code,
 	}
 
@@ -56,11 +56,10 @@ func (o *GithubOauth) RequestAccessToken(code string) (string, error) {
 		return "", err
 	}
 
-	fmt.Println(fmt.Sprintf("AccessCode: %s", tokenData.AccessToken))
 	return tokenData.AccessToken, nil
 }
 
-func (o *GithubOauth) RequestUserInfo(access_token string) (*OauthUserInfo, error) {
+func (o *GithubOauth) RequestUserInfo(access_token string, cfg *core.Config) (*OauthUserInfo, error) {
 	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
 	if err != nil {
 		return nil, nil
