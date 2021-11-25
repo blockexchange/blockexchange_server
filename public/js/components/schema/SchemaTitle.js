@@ -2,7 +2,7 @@ import loginStore from '../../store/login.js';
 import { get, update } from '../../api/schema.js';
 
 export default {
-	props: ["schema"],
+	props: ["schema", "username"],
 	data: function(){
 		return {
 			edit: false,
@@ -14,7 +14,7 @@ export default {
 	methods: {
 		save: function(){
 			if (this.name != this.schema.name){
-				get(this.schema.id)
+				get(this.username, this.schema.name)
 				.then(schema => {
 					schema.name = this.name;
 					return update(schema);

@@ -3,7 +3,7 @@ import { remove } from '../../api/schema.js';
 
 
 export default {
-	props: ["schema"],
+	props: ["schema", "username"],
 	data: function(){
 		return {
 			ask: false,
@@ -13,7 +13,7 @@ export default {
 	methods: {
 		do_remove: function(){
 			// delete and route to search page
-			remove(this.schema.id)
+			remove(this.username, this.schema.name)
 			.then(() => this.$router.push("/search"));
 		}
 	},

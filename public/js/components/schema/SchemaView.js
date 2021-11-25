@@ -57,7 +57,7 @@ export default {
 			<div class="row">
 				<div class="col-md-6">
 					<h3>
-						<schema-title :schema="schema"/>
+						<schema-title :schema="schema" :username="user_name"/>
 						<small class="text-muted">by {{ user_name }}</small>
 						<span v-if="!schema.complete" class="badge bg-danger">
 							Incomplete
@@ -67,8 +67,8 @@ export default {
 				</div>
 				<div class="col-md-6">
 					<div class="btn-group float-end">
-						<schema-updateinfo :schema="schema" v-on:stats-updated="preview_version++"/>
-						<schema-delete :schema="schema"/>
+						<schema-updateinfo :schema="schema" :username="user_name" v-on:stats-updated="preview_version++"/>
+						<schema-delete :schema="schema" :username="user_name"/>
 					</div>
 				</div>
 			</div>
@@ -77,14 +77,14 @@ export default {
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">Details</h5>
-							<schema-detail :schema="schema"/>
+							<schema-detail :schema="schema" :username="user_name"/>
 						</div>
 					</div>
 					<br>
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">Description</h5>
-							<schema-description :schema="schema"/>
+							<schema-description :schema="schema" :username="user_name"/>
 						</div>
 					</div>
 					<br>

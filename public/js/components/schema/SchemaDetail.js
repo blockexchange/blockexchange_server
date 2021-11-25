@@ -4,7 +4,7 @@ export default {
 	components: {
 		"schema-license": SchemaLicense
 	},
-	props: ["schema"],
+	props: ["schema", "username"],
 	template: /*html*/`
 	<ul>
 		<li>
@@ -26,7 +26,7 @@ export default {
 			<b>Downloads: </b>{{ schema.downloads }}
 		</li>
 		<li>
-			<b>License: </b><schema-license style="display: inline;" :schema="schema"/>
+			<b>License: </b><schema-license style="display: inline;" :schema="schema" :username="username"/>
 		</li>
 	</ul>
 	`

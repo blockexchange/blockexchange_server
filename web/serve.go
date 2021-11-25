@@ -67,13 +67,14 @@ func SetupRoutes(r *mux.Router, api *Api) {
 	r.HandleFunc("/api/export_we/{username}/{schemaname}/{filename}", api.ExportWorldeditSchema).Methods("GET")
 	r.HandleFunc("/api/export_bx/{username}/{schemaname}/{filename}", api.ExportBXSchema).Methods("GET")
 
-	r.HandleFunc("/api/schema/{id}", api.GetSchema).Methods("GET")
+	r.HandleFunc("/api/schema/{username}/{schemaname}", api.GetSchema).Methods("GET")
 	r.HandleFunc("/api/schema", Secure(api.CreateSchema)).Methods("POST")
-	r.HandleFunc("/api/schema/{id}", Secure(api.UpdateSchema)).Methods("PUT")
-	r.HandleFunc("/api/schema/{id}", Secure(api.DeleteSchema)).Methods("DELETE")
+	r.HandleFunc("/api/schema", Secure(api.UpdateSchema)).Methods("PUT")
+	r.HandleFunc("/api/schema/{username}/{schemaname}", Secure(api.DeleteSchema)).Methods("DELETE")
+	r.HandleFunc("/api/schema/{username}/{schemaname}/update", Secure(api.UpdateSchemaInfo)).Methods("POST")
+
 	r.HandleFunc("/api/schema/{id}/mods", api.GetSchemaMods).Methods("GET")
 	r.HandleFunc("/api/schema/{id}/mods", Secure(api.CreateSchemaMods)).Methods("POST")
-	r.HandleFunc("/api/schema/{id}/update", Secure(api.UpdateSchemaInfo)).Methods("POST")
 
 	r.HandleFunc("/api/schema/{schema_id}/star", Secure(api.CreateSchemaStar)).Methods("POST")
 	r.HandleFunc("/api/schema/{schema_id}/star", Secure(api.DeleteSchemaStar)).Methods("DELETE")

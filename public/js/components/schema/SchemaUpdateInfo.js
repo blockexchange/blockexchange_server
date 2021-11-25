@@ -3,7 +3,7 @@ import { updateInfo } from '../../api/schema.js';
 
 
 export default {
-	props: ["schema"],
+	props: ["schema", "username"],
 	data: function(){
 		return {
 			busy: false,
@@ -13,7 +13,7 @@ export default {
 	methods: {
 		updateInfo: function(){
 			this.busy = true;
-			updateInfo(this.schema.id)
+			updateInfo(this.username, this.schema.name)
 			.then(() => {
 				this.busy = false;
 				this.$emit('stats-updated');

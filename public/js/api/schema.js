@@ -1,8 +1,8 @@
 import securefetch from './securefetch.js';
 
-export const get = schema_id => fetch(`api/schema/${schema_id}`).then(r => r.json());
+export const get = (username, schemaname) => fetch(`api/schema/${username}/${schemaname}`).then(r => r.json());
 
-export const update = schema => securefetch(`api/schema/${schema.id}`, {
+export const update = schema => securefetch(`api/schema`, {
 	method: "PUT",
 	headers: {
 		'Content-Type': 'application/json'
@@ -11,11 +11,11 @@ export const update = schema => securefetch(`api/schema/${schema.id}`, {
 })
 .then(r => r.json());
 
-export const updateInfo = schema_id => securefetch(`api/schema/${schema_id}/update`, {
+export const updateInfo = (username, schemaname) => securefetch(`api/schema/${username}/${schemaname}/update`, {
 	method: "POST"
 })
 .then(r => r.text());
 
-export const remove = schema_id => securefetch(`api/schema/${schema_id}`, {
+export const remove = (username, schemaname) => securefetch(`api/schema/${username}/${schemaname}`, {
 	method: "DELETE"
 });

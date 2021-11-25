@@ -6,7 +6,6 @@ import (
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -15,14 +14,14 @@ import (
 
 func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	schema, err := api.SchemaRepo.GetSchemaByUsernameAndName(vars["username"], vars["schemaname"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
-	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
-	if err != nil {
-		SendError(w, 500, err.Error())
+
+	if schema == nil {
+		SendError(w, 404, "Not found")
 		return
 	}
 
@@ -40,13 +39,18 @@ func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 
 func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	schema, err := api.SchemaRepo.GetSchemaByUsernameAndName(vars["username"], vars["schemaname"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	err = api.SchemaRepo.DeleteSchema(int64(id), ctx.Token.UserID)
+	if schema == nil {
+		SendError(w, 404, "Not found")
+		return
+	}
+
+	err = api.SchemaRepo.DeleteSchema(schema.ID, ctx.Token.UserID)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -59,6 +63,7 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	logrus.WithFields(logrus.Fields{
 		"body": r.Body,
 	}).Trace("POST /api/schema")
+
 	if !ctx.CheckPermission(w, types.JWTPermissionUpload) {
 		return
 	}
@@ -118,15 +123,14 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	schema, err := api.SchemaRepo.GetSchemaByUsernameAndName(vars["username"], vars["schemaname"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if schema == nil {
+		SendError(w, 404, "Not found")
 		return
 	}
 
