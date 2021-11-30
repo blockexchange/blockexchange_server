@@ -54,16 +54,14 @@ func (repo DBSchemaRepository) CreateSchema(schema *types.Schema) error {
 		insert into
 		schema(
 			created, user_id, name, description, complete,
-			size_x_plus, size_y_plus, size_z_plus,
-			size_x_minus, size_y_minus, size_z_minus,
+			size_x, size_y, size_z,
 			part_length,
 			total_size, total_parts, license,
 			search_tokens
 		)
 		values(
 			:created, :user_id, :name, :description, :complete,
-			:size_x_plus, :size_y_plus, :size_z_plus,
-			:size_x_minus, :size_y_minus, :size_z_minus,
+			:size_x, :size_y, :size_z,
 			:part_length,
 			:total_size, :total_parts, :license,
 			to_tsvector(:description)

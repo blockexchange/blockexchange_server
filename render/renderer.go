@@ -38,9 +38,9 @@ func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
 	timer := prometheus.NewTimer(renderHistogram)
 	defer timer.ObserveDuration()
 
-	size_x := schema.SizeXMinus + schema.SizeXPlus
-	size_y := schema.SizeYMinus + schema.SizeYPlus
-	size_z := schema.SizeZMinus + schema.SizeZPlus
+	size_x := schema.SizeX
+	size_y := schema.SizeY
+	size_z := schema.SizeZ
 
 	img_center_x := img_size_x / (size_x + size_z) * size_z
 	img_center_y := img_size_y

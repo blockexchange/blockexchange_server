@@ -39,10 +39,10 @@ func TestRenderer(t *testing.T) {
 
 	renderer := NewRenderer(repo.GetBySchemaIDAndOffset, cm)
 	schema := types.Schema{
-		SizeXPlus: 32,
-		SizeYPlus: 32,
-		SizeZPlus: 32,
-		ID:        0,
+		SizeX: 32,
+		SizeY: 32,
+		SizeZ: 32,
+		ID:    0,
 	}
 	png, err := renderer.RenderSchema(&schema)
 	assert.NoError(t, err)

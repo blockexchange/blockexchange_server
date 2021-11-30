@@ -10,12 +10,9 @@ type Schema struct {
 	Name         string `db:"name" json:"name"`
 	Description  string `db:"description" json:"description"`
 	Complete     bool   `db:"complete" json:"complete"`
-	SizeXPlus    int    `db:"size_x_plus" json:"size_x_plus"`
-	SizeXMinus   int    `db:"size_x_minus" json:"size_x_minus"`
-	SizeYPlus    int    `db:"size_y_plus" json:"size_y_plus"`
-	SizeYMinus   int    `db:"size_y_minus" json:"size_y_minus"`
-	SizeZPlus    int    `db:"size_z_plus" json:"size_z_plus"`
-	SizeZMinus   int    `db:"size_z_minus" json:"size_z_minus"`
+	SizeX        int    `db:"size_x" json:"size_x"`
+	SizeY        int    `db:"size_y" json:"size_y"`
+	SizeZ        int    `db:"size_z" json:"size_z"`
 	PartLength   int    `db:"part_length" json:"part_length"`
 	TotalSize    int    `db:"total_size" json:"total_size"`
 	TotalParts   int    `db:"total_parts" json:"total_parts"`
@@ -38,12 +35,9 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	s.Description = getString(m["description"])
 	s.License = getString(m["license"])
 	s.Complete = getBool(m["complete"])
-	s.SizeXPlus = getInt(m["size_x_plus"])
-	s.SizeXMinus = getInt(m["size_x_minus"])
-	s.SizeYPlus = getInt(m["size_y_plus"])
-	s.SizeYMinus = getInt(m["size_y_minus"])
-	s.SizeZPlus = getInt(m["size_z_plus"])
-	s.SizeZMinus = getInt(m["size_z_minus"])
+	s.SizeX = getInt(m["size_x"])
+	s.SizeY = getInt(m["size_y"])
+	s.SizeZ = getInt(m["size_z"])
 	s.PartLength = getInt(m["part_length"])
 	s.TotalSize = getInt(m["total_size"])
 	s.TotalParts = getInt(m["total_parts"])

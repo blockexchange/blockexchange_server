@@ -12,9 +12,9 @@ func TestRenderFeedTemplate(t *testing.T) {
 	schema := types.Schema{
 		Name:       "my_schema",
 		License:    "CC0",
-		SizeXPlus:  100,
-		SizeYPlus:  200,
-		SizeZPlus:  300,
+		SizeX:      100,
+		SizeY:      200,
+		SizeZ:      300,
 		TotalSize:  2300,
 		TotalParts: 16,
 	}

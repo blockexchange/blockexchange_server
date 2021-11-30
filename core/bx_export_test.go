@@ -30,10 +30,10 @@ func TestExportBXSchema(t *testing.T) {
 	}
 
 	schema := types.Schema{
-		Name:      "",
-		SizeXPlus: 16,
-		SizeYPlus: 16,
-		SizeZPlus: 16,
+		Name:  "",
+		SizeX: 16,
+		SizeY: 16,
+		SizeZ: 16,
 	}
 
 	mods := []types.SchemaMod{

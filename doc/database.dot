@@ -5,24 +5,24 @@ digraph {
 
 	user [label=<
 	<table border="0" cellborder="1" cellspacing="0">
-	  <tr><td><i>user</i></td></tr>
-	  <tr><td port="1">id (serial)</td></tr>
-	  <tr><td port="2">created (bigint)</td></tr>
-	  <tr><td port="3">name (varchar)</td></tr>
-	  <tr><td port="4">hash (varchar)</td></tr>
-	  <tr><td port="5">mail (varchar)</td></tr>
+		<tr><td><i>user</i></td></tr>
+		<tr><td port="1">id (serial)</td></tr>
+		<tr><td port="2">created (bigint)</td></tr>
+		<tr><td port="3">name (varchar)</td></tr>
+		<tr><td port="4">hash (varchar)</td></tr>
+		<tr><td port="5">mail (varchar)</td></tr>
 		<tr><td port="5b">type (varchar(16))</td></tr>
 		<tr><td port="5c">external_id (varchar(63))</td></tr>
 	</table>>];
 
 	access_token [label=<
 	<table border="0" cellborder="1" cellspacing="0">
-	  <tr><td><i>access_token</i></td></tr>
-	  <tr><td port="40">id (serial)</td></tr>
+		<tr><td><i>access_token</i></td></tr>
+		<tr><td port="40">id (serial)</td></tr>
 		<tr><td port="41">user_id (serial)</td></tr>
 		<tr><td port="42">created (bigint)</td></tr>
 		<tr><td port="43">expires (bigint)</td></tr>
-	  <tr><td port="44">name (varchar)</td></tr>
+		<tr><td port="44">name (varchar)</td></tr>
 		<tr><td port="45">token (varchar)</td></tr>
 		<tr><td port="46">usecount (int)</td></tr>
 	</table>>];
@@ -30,24 +30,21 @@ digraph {
 
 	schema [label=<
 	<table border="0" cellborder="1" cellspacing="0">
-	  <tr><td><i>schema</i></td></tr>
-	  <tr><td port="6">id (serial)</td></tr>
-	  <tr><td port="7">created (bigint)</td></tr>
-	  <tr><td port="8">user_id (serial)</td></tr>
+		<tr><td><i>schema</i></td></tr>
+		<tr><td port="6">id (serial)</td></tr>
+		<tr><td port="7">created (bigint)</td></tr>
+		<tr><td port="8">user_id (serial)</td></tr>
 		<tr><td port="9">name (varchar)</td></tr>
-	  <tr><td port="10">description (text)</td></tr>
-	  <tr><td port="11">complete (boolean)</td></tr>
-	  <tr><td port="12">size_x_plus (smallint)</td></tr>
-	  <tr><td port="12a">size_x_minus (smallint)</td></tr>
-	  <tr><td port="13">size_y_plus (smallint)</td></tr>
-	  <tr><td port="13a">size_y_minus (smallint)</td></tr>
-	  <tr><td port="14">size_z_plus (smallint)</td></tr>
-	  <tr><td port="14a">size_z_minus (smallint)</td></tr>
-	  <tr><td port="15">part_length (smallint)</td></tr>
-	  <tr><td port="16">total_size (int)</td></tr>
-	  <tr><td port="17">total_parts (int)</td></tr>
-	  <tr><td port="18">search_tokens (tsvector)</td></tr>
-	  <tr><td port="19">downloads (int)</td></tr>
+		<tr><td port="10">description (text)</td></tr>
+		<tr><td port="11">complete (boolean)</td></tr>
+		<tr><td port="12">size_x (smallint)</td></tr>
+		<tr><td port="13">size_y (smallint)</td></tr>
+		<tr><td port="14">size_z (smallint)</td></tr>
+		<tr><td port="15">part_length (smallint)</td></tr>
+		<tr><td port="16">total_size (int)</td></tr>
+		<tr><td port="17">total_parts (int)</td></tr>
+		<tr><td port="18">search_tokens (tsvector)</td></tr>
+		<tr><td port="19">downloads (int)</td></tr>
 		<tr><td port="20">license (varchar)</td></tr>
 	</table>>];
 
