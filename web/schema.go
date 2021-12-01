@@ -2,7 +2,6 @@ package web
 
 import (
 	"blockexchange/core"
-	"blockexchange/render"
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
@@ -143,51 +142,11 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 
-	cm, err := render.GetColorMapping()
+	// update screenshot
+	screenshot, err := core.UpdatePreview(schema, api.Repositories)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
-	}
-
-	renderer := render.NewRenderer(api.SchemaPartRepo.GetBySchemaIDAndOffset, cm)
-	png, err := renderer.RenderSchema(schema)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(schema.ID)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	var screenshot types.SchemaScreenshot
-
-	if len(screenshots) >= 1 {
-		// update existing
-		screenshot = screenshots[0]
-		screenshot.Data = png
-
-		err = api.SchemaScreenshotRepo.Update(&screenshot)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-	} else {
-		// create a new one
-		screenshot = types.SchemaScreenshot{
-			SchemaID: schema.ID,
-			Type:     "image/png",
-			Title:    "Isometric preview",
-			Data:     png,
-		}
-
-		err = api.SchemaScreenshotRepo.Create(&screenshot)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
 	}
 
 	// let the database calculate the size/count stats
@@ -212,7 +171,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 		}
 
 		// initial schema upload, send it to the feed async
-		go core.UpdateSchemaFeed(schema, user, &screenshot)
+		go core.UpdateSchemaFeed(schema, user, screenshot)
 	}
 
 	w.WriteHeader(http.StatusOK)

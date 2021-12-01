@@ -1,6 +1,7 @@
 package core
 
 import (
+	"blockexchange/parser"
 	"blockexchange/types"
 	"errors"
 	"io"
@@ -35,7 +36,7 @@ func ExportWorldeditSchema(w io.Writer, it SchemaPartIterator) error {
 }
 
 func exportSchemaPart(w io.Writer, schemapart *types.SchemaPart) error {
-	mapblock, err := ParseSchemaPart(schemapart)
+	mapblock, err := parser.ParseSchemaPart(schemapart)
 	if err != nil {
 		return err
 	}
@@ -67,7 +68,7 @@ func exportSchemaPart(w io.Writer, schemapart *types.SchemaPart) error {
 	return nil
 }
 
-func exportNode(w io.Writer, x, y, z int, mapblock *ParsedSchemaPart, schemapart *types.SchemaPart, nodeid_names map[int]string) (bool, error) {
+func exportNode(w io.Writer, x, y, z int, mapblock *parser.ParsedSchemaPart, schemapart *types.SchemaPart, nodeid_names map[int]string) (bool, error) {
 	// TODO: account for negative schema offset (size_n_minus)
 	index := mapblock.GetIndex(x, y, z)
 	nodeid := mapblock.NodeIDS[index]

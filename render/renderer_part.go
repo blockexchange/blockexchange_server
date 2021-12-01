@@ -1,7 +1,7 @@
 package render
 
 import (
-	"blockexchange/core"
+	"blockexchange/parser"
 	"sort"
 
 	"github.com/fogleman/gg"
@@ -16,7 +16,7 @@ type Block struct {
 }
 
 type PartRenderer struct {
-	Mapblock            *core.ParsedSchemaPart
+	Mapblock            *parser.ParsedSchemaPart
 	Colormapping        map[string]*Color
 	NodeIDStringMapping map[int]string
 	Blocks              []*Block
@@ -28,7 +28,7 @@ type PartRenderer struct {
 	OffsetY             float64
 }
 
-func NewPartRenderer(mapblock *core.ParsedSchemaPart, cm map[string]*Color, size, offset_x, offset_y float64) *PartRenderer {
+func NewPartRenderer(mapblock *parser.ParsedSchemaPart, cm map[string]*Color, size, offset_x, offset_y float64) *PartRenderer {
 	// reverse index
 	idm := make(map[int]string)
 	for k, v := range mapblock.Meta.NodeMapping {
