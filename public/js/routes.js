@@ -11,13 +11,13 @@ import CollectionsPage from './components/pages/CollectionsPage.js';
 import TagsPage from './components/pages/TagsPage.js';
 
 export default [{
-  path: "/", component: StartPage
+	path: "/", component: StartPage
 },{
-  path: "/login", component: LoginPage
+	path: "/login", component: LoginPage
 },{
-  path: "/mod", component: ModPage
+	path: "/mod", component: ModPage
 },{
-  path: "/search", component: SearchPage
+	path: "/search", component: SearchPage
 },{
 	path: "/register", component: RegisterPage
 },{
