@@ -3,7 +3,7 @@ export default {
 	template: /*html*/`
 	<div class="row">
 		<div class="col-md-6">
-			<div class="card">
+			<div class="card bg-secondary">
 				<div class="card-header">
 					Online
 				</div>
@@ -16,7 +16,7 @@ export default {
 			</div>
 		</div>
 		<div class="col-md-6">
-			<div class="card">
+			<div class="card bg-secondary">
 				<div class="card-header">
 					Offline
 				</div>
