@@ -11,15 +11,15 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-type Renderer struct {
+type ISORenderer struct {
 	SchemaPartProvider SchemaPartProvider
 	Colormapping       map[string]*Color
 }
 
 type SchemaPartProvider func(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
 
-func NewRenderer(spp SchemaPartProvider, cm map[string]*Color) *Renderer {
-	return &Renderer{
+func NewISORenderer(spp SchemaPartProvider, cm map[string]*Color) *ISORenderer {
+	return &ISORenderer{
 		SchemaPartProvider: spp,
 		Colormapping:       cm,
 	}
@@ -34,7 +34,7 @@ var renderHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 	Buckets: []float64{0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10, 30, 60},
 })
 
-func (r *Renderer) RenderIsometricPreview(schema *types.Schema) ([]byte, error) {
+func (r *ISORenderer) RenderIsometricPreview(schema *types.Schema) ([]byte, error) {
 	timer := prometheus.NewTimer(renderHistogram)
 	defer timer.ObserveDuration()
 

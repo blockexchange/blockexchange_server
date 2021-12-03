@@ -37,7 +37,7 @@ func TestISORenderer(t *testing.T) {
 	cm, err := GetColorMapping()
 	assert.NoError(t, err)
 
-	renderer := NewRenderer(repo.GetBySchemaIDAndOffset, cm)
+	renderer := NewISORenderer(repo.GetBySchemaIDAndOffset, cm)
 	schema := types.Schema{
 		SizeX: 32,
 		SizeY: 32,
