@@ -17,24 +17,32 @@ const CreateForm = {
 		}
 	},
 	template: /*html*/`
-	<div>
-		<input type="text"
-			class="form-control"
-			v-model="name"
-			placeholder="Token name (usually the name of the server you are using it on)"/>
-		<input type="text"
-			class="form-control"
-			v-model="expires"
-			placeholder="Expire-time"/>
-		<select class="form-control" v-model="modifier">
-			<option :value="3600*1000">Hours</option>
-			<option :value="3600*1000*24">Days</option>
-			<option :value="3600*1000*24*30">Months</option>
-			<option :value="3600*1000*24*365">Years</option>
-		</select>
-		<button class="btn btn-primary" v-on:click="add" v-bind:disabled="!name">
-			<i class="fa fa-plus"/> Add
-		</button>
+	<div class="row">
+		<div class="col">
+			<input type="text"
+				class="form-control"
+				v-model="name"
+				placeholder="Name of the token to add"/>
+		</div>
+		<div class="col">
+			<input type="text"
+				class="form-control"
+				v-model="expires"
+				placeholder="Expire-time"/>
+		</div>
+		<div class="col">
+			<select class="form-control" v-model="modifier">
+				<option :value="3600*1000">Hours</option>
+				<option :value="3600*1000*24">Days</option>
+				<option :value="3600*1000*24*30">Months</option>
+				<option :value="3600*1000*24*365">Years</option>
+			</select>
+		</div>
+		<div class="col">
+			<button class="btn btn-primary" v-on:click="add" v-bind:disabled="!name">
+				<i class="fa fa-plus"/> Add
+			</button>
+		</div>
 	</div>
 	`
 };
