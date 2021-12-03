@@ -34,7 +34,7 @@ var renderHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 	Buckets: []float64{0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10, 30, 60},
 })
 
-func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
+func (r *Renderer) RenderIsometricPreview(schema *types.Schema) ([]byte, error) {
 	timer := prometheus.NewTimer(renderHistogram)
 	defer timer.ObserveDuration()
 
@@ -77,7 +77,7 @@ func (r *Renderer) RenderSchema(schema *types.Schema) ([]byte, error) {
 				x_offset := float64(img_center_x) + (size * float64(x)) - (size * float64(z))
 				y_offset := float64(img_center_y) - (size * tan30 * float64(x)) - (size * tan30 * float64(z)) - (size * sqrt3div2 * float64(y))
 
-				pr := NewPartRenderer(mapblock, r.Colormapping, size, x_offset, y_offset)
+				pr := NewISOPartRenderer(mapblock, r.Colormapping, size, x_offset, y_offset)
 				pr.RenderSchemaPart(dc)
 			}
 		}

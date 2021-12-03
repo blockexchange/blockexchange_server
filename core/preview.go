@@ -14,7 +14,7 @@ func UpdatePreview(schema *types.Schema, repo *db.Repositories) (*types.SchemaSc
 	}
 
 	renderer := render.NewRenderer(repo.SchemaPartRepo.GetBySchemaIDAndOffset, cm)
-	png, err := renderer.RenderSchema(schema)
+	png, err := renderer.RenderIsometricPreview(schema)
 	if err != nil {
 		return nil, err
 	}

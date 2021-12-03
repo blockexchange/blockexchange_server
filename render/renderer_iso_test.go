@@ -30,7 +30,7 @@ func (r *MockSchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offse
 	return &part, err
 }
 
-func TestRenderer(t *testing.T) {
+func TestISORenderer(t *testing.T) {
 	logrus.SetLevel(logrus.TraceLevel)
 
 	repo := MockSchemaPartRepository{}
@@ -44,7 +44,7 @@ func TestRenderer(t *testing.T) {
 		SizeZ: 32,
 		ID:    0,
 	}
-	png, err := renderer.RenderSchema(&schema)
+	png, err := renderer.RenderIsometricPreview(&schema)
 	assert.NoError(t, err)
 	assert.NotNil(t, png)
 

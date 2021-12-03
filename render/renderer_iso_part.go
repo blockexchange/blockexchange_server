@@ -28,7 +28,7 @@ type PartRenderer struct {
 	OffsetY             float64
 }
 
-func NewPartRenderer(mapblock *parser.ParsedSchemaPart, cm map[string]*Color, size, offset_x, offset_y float64) *PartRenderer {
+func NewISOPartRenderer(mapblock *parser.ParsedSchemaPart, cm map[string]*Color, size, offset_x, offset_y float64) *PartRenderer {
 	// reverse index
 	idm := make(map[int]string)
 	for k, v := range mapblock.Meta.NodeMapping {
