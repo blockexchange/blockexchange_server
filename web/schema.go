@@ -134,6 +134,9 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 
+	// schema is complete now, mark as initial
+	initial := !schema.Complete
+
 	schema.Complete = true
 	schema.Created = time.Now().Unix() * 1000
 	err = api.SchemaRepo.UpdateSchema(schema)
@@ -163,7 +166,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 
-	if r.URL.Query().Get("initial") == "true" {
+	if initial {
 		user, err := api.UserRepo.GetUserById(schema.UserID)
 		if err != nil {
 			SendError(w, 500, err.Error())
