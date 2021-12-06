@@ -16,4 +16,6 @@ func TestValidateUsername(t *testing.T) {
 	assert.False(t, ValidateName("bad::"))
 	assert.False(t, ValidateName("bad/"))
 	assert.False(t, ValidateName("bad	"))
+	assert.False(t, ValidateName(""))
+	assert.False(t, ValidateName(" "))
 }

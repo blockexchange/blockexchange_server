@@ -69,6 +69,11 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		return
 	}
 
+	if !core.ValidateName(schema.Name) {
+		SendError(w, 400, "Invalid schema name")
+		return
+	}
+
 	MAX_SIZE := 500
 	if schema.SizeX > MAX_SIZE || schema.SizeY > MAX_SIZE || schema.SizeZ > MAX_SIZE {
 		SendError(w, 400, fmt.Sprintf("Max side-length of %d nodes exceeded", MAX_SIZE))
