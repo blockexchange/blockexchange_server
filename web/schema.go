@@ -4,6 +4,7 @@ import (
 	"blockexchange/core"
 	"blockexchange/types"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -65,6 +66,12 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	err := json.NewDecoder(r.Body).Decode(&schema)
 	if err != nil {
 		SendError(w, 500, err.Error())
+		return
+	}
+
+	MAX_SIZE := 500
+	if schema.SizeX > MAX_SIZE || schema.SizeY > MAX_SIZE || schema.SizeZ > MAX_SIZE {
+		SendError(w, 400, fmt.Sprintf("Max side-length of %d nodes exceeded", MAX_SIZE))
 		return
 	}
 
