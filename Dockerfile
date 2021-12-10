@@ -5,7 +5,7 @@ RUN cd /public && \
 	npm run jshint && \
 	npm run bundle
 
-FROM golang:1.17.4 as stage2
+FROM golang:1.17.5 as stage2
 COPY . /data
 COPY --from=stage1 /public /data/public
 RUN cd /data && \
