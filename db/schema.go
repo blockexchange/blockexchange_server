@@ -64,7 +64,7 @@ func (repo DBSchemaRepository) CreateSchema(schema *types.Schema) error {
 			:size_x, :size_y, :size_z,
 			:part_length,
 			:total_size, :total_parts, :license,
-			to_tsvector(:description)
+			to_tsvector(:description || ' ' || :name)
 		)
 		returning id
 	`
@@ -81,7 +81,7 @@ func (repo DBSchemaRepository) UpdateSchema(schema *types.Schema) error {
 		set
 			name = :name,
 			description = :description,
-			search_tokens = to_tsvector(:description),
+			search_tokens = to_tsvector(:description || ' ' || :name),
 			user_id = :user_id,
 			license = :license,
 			complete = :complete,
