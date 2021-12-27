@@ -22,6 +22,7 @@ type Config struct {
 func CreateConfig() (*Config, error) {
 	cfg := &Config{
 		Name:         os.Getenv("BLOCKEXCHANGE_NAME"),
+		Owner:        os.Getenv("BLOCKEXCHANGE_OWNER"),
 		WebDev:       os.Getenv("WEBDEV") == "true",
 		EnableSignup: os.Getenv("ENABLE_SIGNUP") == "true",
 		BaseURL:      os.Getenv("BASE_URL"),
