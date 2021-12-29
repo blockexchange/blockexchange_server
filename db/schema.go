@@ -82,6 +82,7 @@ func (repo DBSchemaRepository) UpdateSchema(schema *types.Schema) error {
 			name = :name,
 			description = :description,
 			search_tokens = to_tsvector(:description || ' ' || :name),
+			mtime = :mtime,
 			user_id = :user_id,
 			license = :license,
 			complete = :complete,

@@ -33,6 +33,7 @@ digraph {
 		<tr><td><i>schema</i></td></tr>
 		<tr><td port="6">id (serial)</td></tr>
 		<tr><td port="7">created (bigint)</td></tr>
+		<tr><td port="7a">mtime (bigint)</td></tr>
 		<tr><td port="8">user_id (serial)</td></tr>
 		<tr><td port="9">name (varchar)</td></tr>
 		<tr><td port="10">description (text)</td></tr>

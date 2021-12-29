@@ -6,6 +6,7 @@ import "encoding/json"
 type Schema struct {
 	ID           int64  `db:"id" json:"id"`
 	Created      int64  `db:"created" json:"created"`
+	Mtime        int64  `db:"mtime" json:"mtime"`
 	UserID       int64  `db:"user_id" json:"user_id"`
 	Name         string `db:"name" json:"name"`
 	Description  string `db:"description" json:"description"`
@@ -30,6 +31,7 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 
 	s.ID = getInt64(m["id"])
 	s.Created = getInt64(m["created"])
+	s.Mtime = getInt64(m["mtime"])
 	s.UserID = getInt64(m["user_id"])
 	s.Name = getString(m["name"])
 	s.Description = getString(m["description"])

@@ -46,13 +46,25 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	schemapart.Mtime = time.Now().Unix() * 1000
+	mtime := time.Now().Unix() * 1000
+
+	// update schema part
+	schemapart.Mtime = mtime
 	err = api.SchemaPartRepo.CreateOrUpdateSchemaPart(&schemapart)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
+	// update schema mtime
+	schema.Mtime = mtime
+	err = api.SchemaRepo.UpdateSchema(schema)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	// increment stats
 	partsUploaded.Inc()
 
 	SendJson(w, schemapart)
