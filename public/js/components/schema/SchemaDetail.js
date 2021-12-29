@@ -8,7 +8,10 @@ export default {
 	template: /*html*/`
 	<ul>
 		<li>
-			<b>Changed: </b>{{ new Date(+schema.created).toDateString() }}
+			<b>Created: </b>{{ new Date(+schema.created).toDateString() }}
+		</li>
+		<li>
+			<b>Changed: </b>{{ new Date(+schema.mtime).toDateString() }}
 		</li>
 		<li>
 			<b>Size: </b>{{ schema.total_size | prettysize }}
