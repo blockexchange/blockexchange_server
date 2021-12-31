@@ -37,7 +37,7 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 	}
 
 	if schema == nil {
-		SendError(w, 404, "no schema found")
+		SendError(w, 500, "no schema found")
 		return
 	}
 
