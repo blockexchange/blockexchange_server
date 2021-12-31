@@ -37,7 +37,7 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 	}
 
 	if schema == nil {
-		SendError(w, 500, "no schema found")
+		SendError(w, 404, "no schema found")
 		return
 	}
 
@@ -68,6 +68,36 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 	partsUploaded.Inc()
 
 	SendJson(w, schemapart)
+}
+
+func (api *Api) DeleteSchemaPart(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	schema_id, x, y, z, err := extractSchemaPartVars(r)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	schema, err := api.SchemaRepo.GetSchemaById(schema_id)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	if schema == nil {
+		SendError(w, 500, "no schema found")
+		return
+	}
+
+	if schema.UserID != ctx.Token.UserID {
+		SendError(w, 403, "you are not the owner of the schema")
+		return
+	}
+
+	err = api.SchemaPartRepo.RemoveBySchemaIDAndOffset(schema_id, x, y, z)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
 }
 
 func extractSchemaPartVars(r *http.Request) (int64, int, int, int, error) {

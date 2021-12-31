@@ -114,7 +114,8 @@ func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {
 	r.HandleFunc("/api/searchrecent/{count}", api.SearchRecentSchemas)
 
 	r.HandleFunc("/api/schemapart", Secure(api.CreateSchemaPart)).Methods("POST")
-	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", api.GetSchemaPart)
+	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", api.GetSchemaPart).Methods("GET")
+	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", Secure(api.DeleteSchemaPart)).Methods("DELETE")
 	r.HandleFunc("/api/schemapart_chunk/{schema_id}/{x}/{y}/{z}", api.GetSchemaPartChunk)
 	r.HandleFunc("/api/schemapart_next/{schema_id}/{x}/{y}/{z}", api.GetNextSchemaPart)
 	r.HandleFunc("/api/schemapart_next/by-mtime/{schema_id}/{mtime}", api.GetNextSchemaPartByMtime)
