@@ -98,6 +98,8 @@ func (api *Api) DeleteSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		SendError(w, 500, err.Error())
 		return
 	}
+
+	w.Write([]byte("true"))
 }
 
 func extractSchemaPartVars(r *http.Request) (int64, int, int, int, error) {
