@@ -22,7 +22,7 @@ export default {
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-md-2" v-for="schema in changed_schematics">
+				<div class="col-md-2" style="padding-bottom: 5px;" v-for="schema in changed_schematics">
 					<schema-card :schema="schema"/>
 				</div>
 			</div>

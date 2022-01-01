@@ -54,7 +54,6 @@ export default {
 					{{ schema.size_y }} / 
 					{{ schema.size_z }} nodes
 				</p>
-				<pre>{{ schema.description }}</pre>
 			</div>
 		</div>
 	`
