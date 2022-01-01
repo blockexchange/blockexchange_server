@@ -11,7 +11,7 @@ type UserRepository interface {
 	GetUserById(id int64) (*types.User, error)
 	GetUserByName(name string) (*types.User, error)
 	GetUserByExternalId(external_id string) (*types.User, error)
-	GetUsers() ([]types.User, error)
+	GetUsers(limit, offset int) ([]*types.User, error)
 	CreateUser(user *types.User) error
 	UpdateUser(user *types.User) error
 }
@@ -56,10 +56,10 @@ func (repo DBUserRepository) GetUserByExternalId(external_id string) (*types.Use
 	}
 }
 
-func (repo DBUserRepository) GetUsers() ([]types.User, error) {
+func (repo DBUserRepository) GetUsers(limit, offset int) ([]*types.User, error) {
 	logrus.Trace("db.GetUsers")
-	list := []types.User{}
-	err := repo.DB.Select(&list, "select * from public.user")
+	list := []*types.User{}
+	err := repo.DB.Select(&list, "select * from public.user limit $1 offset $2", limit, offset)
 	if err != nil {
 		return nil, err
 	} else {

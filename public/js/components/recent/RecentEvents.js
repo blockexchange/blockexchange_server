@@ -8,7 +8,7 @@ export default {
 		};
 	},
 	created: function(){
-		find_recent(12)
+		find_recent(12, 0)
 		.then(list => this.changed_schematics = list);
 	},
 	components: {

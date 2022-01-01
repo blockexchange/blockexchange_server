@@ -1,7 +1,7 @@
 
-export const find_recent = count => fetch(`api/searchrecent/${count}`).then(r => r.json());
+export const find_recent = (limit, offset) => fetch(`api/searchrecent?limit=${limit}&offset=${offset || 0}`).then(r => r.json());
 
-export const search = params => fetch("api/searchschema", {
+export const search = (params, limit, offset) => fetch(`api/searchschema?limit=${limit}&offset=${offset || 0}`, {
 	method: "POST",
 	headers: {
 		'Content-Type': 'application/json'

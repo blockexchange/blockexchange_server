@@ -9,8 +9,8 @@ import (
 )
 
 type SchemaSearchRepository interface {
-	FindByKeywords(keywords string) ([]types.SchemaSearchResult, error)
-	FindRecent(count int) ([]types.SchemaSearchResult, error)
+	FindByKeywords(keywords string, limit, offset int) ([]types.SchemaSearchResult, error)
+	FindRecent(limit, offset int) ([]types.SchemaSearchResult, error)
 	FindByTagID(tag_id int64) ([]types.SchemaSearchResult, error)
 	FindByUserID(tag_id int64) ([]types.SchemaSearchResult, error)
 	FindBySchemaID(schema_id int64) ([]types.SchemaSearchResult, error)
@@ -127,12 +127,12 @@ func (repo DBSchemaSearchRepository) findMulti(where string, params ...interface
 	return repo.enhance(list)
 }
 
-func (repo DBSchemaSearchRepository) FindByKeywords(keywords string) ([]types.SchemaSearchResult, error) {
-	return repo.findMulti("search_tokens @@ to_tsquery($1)", keywords)
+func (repo DBSchemaSearchRepository) FindByKeywords(keywords string, limit, offset int) ([]types.SchemaSearchResult, error) {
+	return repo.findMulti("search_tokens @@ to_tsquery($1) limit $2 offset $3", keywords, limit, offset)
 }
 
-func (repo DBSchemaSearchRepository) FindRecent(count int) ([]types.SchemaSearchResult, error) {
-	return repo.findMulti("complete = true order by created desc limit $1", count)
+func (repo DBSchemaSearchRepository) FindRecent(limit, offset int) ([]types.SchemaSearchResult, error) {
+	return repo.findMulti("complete = true order by created desc limit $1 offset $2", limit, offset)
 }
 
 func (repo DBSchemaSearchRepository) FindByUsernameAndSchemaname(schema_name, user_name string) (*types.SchemaSearchResult, error) {

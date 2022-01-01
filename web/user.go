@@ -11,7 +11,8 @@ import (
 )
 
 func (api Api) GetUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := api.UserRepo.GetUsers()
+	limit, offset := GetLimitOffset(r, 100)
+	users, err := api.UserRepo.GetUsers(limit, offset)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

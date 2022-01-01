@@ -4,7 +4,6 @@ import (
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
@@ -12,14 +11,9 @@ import (
 )
 
 func (api *Api) SearchRecentSchemas(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	count, err := strconv.Atoi(vars["count"])
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	limit, offset := GetLimitOffset(r, 20)
 
-	list, err := api.SchemaSearchRepo.FindRecent(count)
+	list, err := api.SchemaSearchRepo.FindRecent(limit, offset)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -56,6 +50,7 @@ var schemaSearchHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 	timer := prometheus.NewTimer(schemaSearchHistogram)
 	defer timer.ObserveDuration()
+	limit, offset := GetLimitOffset(r, 20)
 
 	search := types.SchemaSearch{}
 	err := json.NewDecoder(r.Body).Decode(&search)
@@ -87,7 +82,7 @@ func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 
 	if search.Keywords != nil {
 		// search by keywords
-		list, err := api.SchemaSearchRepo.FindByKeywords(*search.Keywords)
+		list, err := api.SchemaSearchRepo.FindByKeywords(*search.Keywords, limit, offset)
 		Send(w, list, err)
 		return
 	}
