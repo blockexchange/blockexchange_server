@@ -7,6 +7,7 @@ type SchemaSearch struct {
 	SchemaName *string  `json:"schema_name"`
 	UserName   *string  `json:"user_name"`
 	Keywords   *string  `json:"keywords"`
+	Complete   *bool    `json:"complete"`
 }
 
 type SchemaSearchResult struct {

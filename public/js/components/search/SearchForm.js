@@ -23,7 +23,7 @@ export default {
 				// initialize list with recent additions
 				find_recent(20).then(l => this.list = l);
 			else
-				search({ keywords: this.term }, 20, 0)
+				search({ keywords: this.term, complete: true }, 20, 0)
 				.then(l => this.list = l);
 
 		}

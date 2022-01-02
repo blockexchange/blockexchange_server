@@ -13,7 +13,11 @@ import (
 func (api *Api) SearchRecentSchemas(w http.ResponseWriter, r *http.Request) {
 	limit, offset := GetLimitOffset(r, 20)
 
-	list, err := api.SchemaSearchRepo.FindRecent(limit, offset)
+	complete := true
+	search := &types.SchemaSearch{
+		Complete: &complete,
+	}
+	list, err := api.SchemaSearchRepo.Search(search, limit, offset)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -27,18 +31,28 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 	schema_name := vars["schema_name"]
 	user_name := vars["user_name"]
 
-	schema, err := api.SchemaSearchRepo.FindByUsernameAndSchemaname(schema_name, user_name)
+	search := &types.SchemaSearch{
+		UserName:   &user_name,
+		SchemaName: &schema_name,
+	}
+	list, err := api.SchemaSearchRepo.Search(search, 1, 0)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
 
-	if schema != nil && r.URL.Query().Get("download") == "true" {
+	if len(list) == 0 {
+		SendError(w, 404, "not found")
+		return
+	}
+
+	schema := list[0]
+	if r.URL.Query().Get("download") == "true" {
 		// increment downloads and ignore error
 		api.SchemaRepo.IncrementDownloads(schema.ID)
 	}
 
-	if schema == nil {
-		SendError(w, 404, "not found")
-	} else {
-		Send(w, schema, err)
-	}
+	Send(w, schema, err)
 }
 
 var schemaSearchHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
@@ -52,53 +66,13 @@ func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 	defer timer.ObserveDuration()
 	limit, offset := GetLimitOffset(r, 20)
 
-	search := types.SchemaSearch{}
-	err := json.NewDecoder(r.Body).Decode(&search)
+	search := &types.SchemaSearch{}
+	err := json.NewDecoder(r.Body).Decode(search)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	if search.UserName != nil && search.SchemaName != nil {
-		// direct search by username and schema name
-		schema, err := api.SchemaSearchRepo.FindByUsernameAndSchemaname(*search.SchemaName, *search.UserName)
-		Send(w, []types.SchemaSearchResult{*schema}, err)
-		return
-	}
-
-	if search.UserID != nil {
-		// search by user_id
-		list, err := api.SchemaSearchRepo.FindByUserID(int64(*search.UserID))
-		Send(w, list, err)
-		return
-	}
-
-	if search.UserName != nil {
-		// search by user_name
-		list, err := api.SchemaSearchRepo.FindByUsername(*search.UserName)
-		Send(w, list, err)
-		return
-	}
-
-	if search.Keywords != nil {
-		// search by keywords
-		list, err := api.SchemaSearchRepo.FindByKeywords(*search.Keywords, limit, offset)
-		Send(w, list, err)
-		return
-	}
-
-	if search.SchemaID != nil {
-		// search by schema id
-		list, err := api.SchemaSearchRepo.FindBySchemaID(int64(*search.SchemaID))
-		Send(w, list, err)
-		return
-	}
-
-	if search.TagID != nil {
-		// search by tag id
-		list, err := api.SchemaSearchRepo.FindByTagID(int64(*search.TagID))
-		Send(w, list, err)
-		return
-	}
-
+	list, err := api.SchemaSearchRepo.Search(search, limit, offset)
+	Send(w, list, err)
 }

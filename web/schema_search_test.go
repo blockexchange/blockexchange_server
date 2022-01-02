@@ -23,7 +23,12 @@ func TestSearchSchema(t *testing.T) {
 	err := api.SchemaRepo.CreateSchema(&schema)
 	assert.NoError(t, err)
 
-	list, err := api.SchemaSearchRepo.FindByUsername(user.Name)
+	complete := false
+	q := &types.SchemaSearch{
+		UserName: &user.Name,
+		Complete: &complete,
+	}
+	list, err := api.SchemaSearchRepo.Search(q, 10, 0)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(list))
 	assert.Equal(t, schema.ID, list[0].ID)

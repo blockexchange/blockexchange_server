@@ -40,16 +40,22 @@ func (api *Api) GetStaticView(w http.ResponseWriter, r *http.Request) {
 	schema_name := vars["schema_name"]
 	user_name := vars["user_name"]
 
-	schema, err := api.SchemaSearchRepo.FindByUsernameAndSchemaname(schema_name, user_name)
+	search := &types.SchemaSearch{
+		UserName:   &user_name,
+		SchemaName: &schema_name,
+	}
+	list, err := api.SchemaSearchRepo.Search(search, 1, 0)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	if schema == nil {
+	if len(list) == 0 {
 		SendError(w, 404, "Not found")
 		return
 	}
+
+	schema := list[0]
 
 	screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(schema.ID)
 	if err != nil {
