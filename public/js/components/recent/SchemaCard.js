@@ -37,6 +37,7 @@ export default {
 		<div class="card">
 			<router-link :to="router_link">
 				<img v-if="screenshot" :src="screenshot_url" class="card-img-top img-fluid">
+				<div v-if="!screenshot" style="height: 240px; width: 360px"></div>
 			</router-link>
 			<div class="card-body">
 				<h5 class="card-title">
