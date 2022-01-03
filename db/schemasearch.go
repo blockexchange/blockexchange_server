@@ -7,6 +7,8 @@ import (
 	"sync"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/sirupsen/logrus"
 )
 
@@ -32,7 +34,16 @@ type DBSchemaSearchRepository struct {
 	SchemaStarRepo SchemaStarRepository
 }
 
+var schemaSearchHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
+	Name:    "bx_schema_search_hist",
+	Help:    "Histogram for the schema render time",
+	Buckets: []float64{0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10},
+})
+
 func (repo DBSchemaSearchRepository) Search(search *types.SchemaSearch, limit, offset int) ([]*types.SchemaSearchResult, error) {
+	timer := prometheus.NewTimer(schemaSearchHistogram)
+	defer timer.ObserveDuration()
+
 	query := strings.Builder{}
 	query.WriteString("select * from schema where true=true")
 	params := []interface{}{}
