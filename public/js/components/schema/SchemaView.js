@@ -1,4 +1,4 @@
-import { search_by_user_and_schemaname } from '../../api/searchschema.js';
+import { search } from '../../api/searchschema.js';
 import { get_by_schemaid } from '../../api/screenshot.js';
 
 import loginStore from '../../store/login.js';
@@ -38,7 +38,11 @@ export default {
 	},
 	methods: {
 		update: function(){
-			search_by_user_and_schemaname(this.user_name, this.schema_name)
+			search({
+				user_name: this.user_name,
+				schema_name: this.schema_name
+			})
+			.then(list => list[0])
 			.then(schema => {
 				this.schema = schema;
 				this.is_owner = loginStore.claims && loginStore.claims.user_id == schema.user_id;

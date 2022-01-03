@@ -9,6 +9,3 @@ export const search = (params, limit, offset) => fetch(`api/searchschema?limit=$
 	body: JSON.stringify(params)
 })
 .then(r => r.json());
-
-export const search_by_user_and_schemaname = (username, schemaname) => fetch(`api/search/schema/byname/${username}/${schemaname}`)
-	.then(r => r.json());
