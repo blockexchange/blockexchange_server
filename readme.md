@@ -43,6 +43,7 @@ Optional:
 * **MESEHUB_APP_ID** Mesehub app ID
 * **REDIS_HOST** redis host
 * **REDIS_PORT** redis port
+* **ENABLE_SIGNUP** if "true": enables lokal signup and login
 
 ## Docker usage
 

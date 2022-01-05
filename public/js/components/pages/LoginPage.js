@@ -14,13 +14,16 @@ export default {
 		<div class="row">
 			<div class="col-md-8">
 				<div class="card">
-				  <div class="card-header">
-				    Local login
-				  </div>
-				  <div class="card-body">
-				    <h5 class="card-title">Login</h5>
-						<local-login/>
-				  </div>
+					<div class="card-header">
+					Local login
+					</div>
+					<div class="card-body">
+						<h5 class="card-title">Login</h5>
+						<local-login v-if="info.enable_signup"/>
+						<div v-if="!info.enable_signup">
+							Local login is disabled
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="col-md-4">
