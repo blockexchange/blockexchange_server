@@ -99,6 +99,18 @@ func exportNode(w io.Writer, x, y, z int, mapblock *parser.ParsedSchemaPart, sch
 
 	s += `}`
 
+	/*
+		if mapblock.Meta.Metadata != nil {
+			key := fmt.Sprintf("(%d,%d,%d)", x, y, z)
+			fields := mapblock.Meta.Metadata.Meta.Fields[key]
+			inventory := mapblock.Meta.Metadata.Meta.Inventories[key]
+			if inventory != nil {
+				fmt.Printf("inventory: %s", inventory)
+				fmt.Printf("fields: %s", fields)
+			}
+		}
+	*/
+
 	//TODO: export metadata
 
 	_, err := w.Write([]byte(s))

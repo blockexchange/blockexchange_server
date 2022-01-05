@@ -9,17 +9,6 @@ import (
 
 const offset = 32768
 
-type SchemaPartSize struct {
-	X int
-	Y int
-	Z int
-}
-
-type SchemaPartMetadata struct {
-	NodeMapping map[string]int
-	Size        SchemaPartSize
-}
-
 func getInt(o interface{}) int {
 	v, _ := o.(float64)
 	return int(v)
@@ -32,36 +21,47 @@ func (s *SchemaPartMetadata) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	// nodemapping
 	nm := make(map[string]float64)
 	err = json.Unmarshal(m["node_mapping"], &nm)
 	if err != nil {
 		return err
 	}
-
 	s.NodeMapping = make(map[string]int)
 	for k, v := range nm {
 		s.NodeMapping[k] = int(v)
 	}
 
+	// metadata
+	if m["metadata"] != nil {
+		s.Metadata = &Metadata{}
+		err = json.Unmarshal(m["metadata"], s.Metadata)
+		if err != nil {
+			return err
+		}
+
+		s.Metadata = &Metadata{
+			Meta: &MetadataEntry{
+				Fields:      make(map[string]*Fields),
+				Inventories: make(map[string]*Inventory),
+			},
+		}
+
+		//TODO: fill in fields/inventories
+	}
+
+	// schemapart size
 	s.Size = SchemaPartSize{}
 	nm = make(map[string]float64)
 	err = json.Unmarshal(m["size"], &nm)
 	if err != nil {
 		return err
 	}
-
 	s.Size.X = getInt(nm["x"])
 	s.Size.Y = getInt(nm["y"])
 	s.Size.Z = getInt(nm["z"])
 
 	return nil
-}
-
-type ParsedSchemaPart struct {
-	NodeIDS []int16
-	Param1  []byte
-	Param2  []byte
-	Meta    *SchemaPartMetadata
 }
 
 func (mapblock *ParsedSchemaPart) GetIndex(x, y, z int) int {
