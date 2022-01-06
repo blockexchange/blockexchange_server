@@ -28,7 +28,7 @@
     "vue-router": "^3.5.3"
   },
   "devDependencies": {
-    "jshint": "^2.13.2",
+    "jshint": "^2.13.3",
     "rollup": "^2.63.0"
   }
 }
