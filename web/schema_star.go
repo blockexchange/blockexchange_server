@@ -1,6 +1,7 @@
 package web
 
 import (
+	"blockexchange/types"
 	"net/http"
 	"strconv"
 
@@ -71,6 +72,13 @@ func (api Api) GetSchemaStars(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var has_user_id bool = true
+	user_id, err := strconv.Atoi(r.URL.Query().Get("user_id"))
+	if err != nil {
+		// user not specified
+		has_user_id = false
+	}
+
 	schema, err := api.SchemaRepo.GetSchemaById(int64(schema_id))
 	if err != nil {
 		SendError(w, 500, err.Error())
@@ -82,13 +90,25 @@ func (api Api) GetSchemaStars(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	response := &types.SchemaStarResponse{}
+
+	// count the stars
 	count, err := api.SchemaStarRepo.CountBySchemaID(int64(schema_id))
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
+	response.Count = count
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("content-type", "text/plain")
-	w.Write([]byte(strconv.Itoa(count)))
+	if has_user_id {
+		// also check if the user has starred the schema already
+		star, err := api.SchemaStarRepo.GetBySchemaAndUserID(int64(schema_id), int64(user_id))
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+		response.Starred = star != nil
+	}
+
+	SendJson(w, response)
 }

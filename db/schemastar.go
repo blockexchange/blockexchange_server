@@ -2,6 +2,7 @@ package db
 
 import (
 	"blockexchange/types"
+	"database/sql"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -10,6 +11,7 @@ type SchemaStarRepository interface {
 	Create(schema_id, user_id int64) error
 	Delete(schema_id, user_id int64) error
 	GetBySchemaID(schema_id int64) ([]types.SchemaStar, error)
+	GetBySchemaAndUserID(schema_id int64, user_id int64) (*types.SchemaStar, error)
 	CountBySchemaID(schema_id int64) (int, error)
 }
 
@@ -35,6 +37,19 @@ func (repo DBSchemaStarRepository) GetBySchemaID(schema_id int64) ([]types.Schem
 		return nil, err
 	} else {
 		return list, nil
+	}
+}
+
+func (repo DBSchemaStarRepository) GetBySchemaAndUserID(schema_id int64, user_id int64) (*types.SchemaStar, error) {
+	query := `select * from user_schema_star where schema_id = $1 and user_id = $2`
+	star := types.SchemaStar{}
+	err := repo.DB.Get(&star, query, schema_id, user_id)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	} else {
+		return &star, nil
 	}
 }
 

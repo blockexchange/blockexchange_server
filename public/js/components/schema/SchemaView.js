@@ -69,8 +69,9 @@ export default {
 						<span v-if="!schema.complete" class="badge bg-danger">
 							Incomplete
 						</span>
+						&nbsp;
+						<schema-star :schema="schema"/>
 					</h3>
-					<schema-star :schema="schema"/>
 				</div>
 				<div class="col-md-6">
 					<div class="btn-group float-end">
