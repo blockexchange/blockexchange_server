@@ -45,10 +45,17 @@ export default {
 			</router-link>
 			<div class="card-body">
 				<h5 class="card-title">
-					<router-link :to="router_link">
-						{{ schema.name }}
-					</router-link>
-					<small class="text-muted">by {{ schema.user.name }}</small>
+					<p>
+						<router-link :to="router_link">
+							{{ schema.name }}
+						</router-link>
+					</p>
+					<p>
+						<small class="text-muted">by {{ schema.user.name }}</small>
+						&nbsp;
+						<i v-if="schema.stars > 0" class="fa-regular fa-star"></i>
+						<span v-if="schema.stars > 0" class="badge bg-secondary rounded-pill">{{ schema.stars }}</span>
+					</p>
 				</h5>
 				<p>
 					<tag-label v-for="tag in schema.tags" :tag_id="tag.tag_id"/>
