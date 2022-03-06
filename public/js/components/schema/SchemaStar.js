@@ -39,7 +39,7 @@ export default {
 		<span v-if="stars">
 			<i v-if="stars.starred" class="fa-solid fa-star" style="color: yellow;" v-on:click="removeStar()"></i>
 			<i v-else class="fa-regular fa-star" v-on:click="addStar()"></i>
-			<span v-if="stars.count > 0">{{ stars.count }}</span>
+			<span v-if="stars.count > 0" class="badge bg-secondary rounded-pill">{{ stars.count }}</span>
 		</span>
 	`
 };

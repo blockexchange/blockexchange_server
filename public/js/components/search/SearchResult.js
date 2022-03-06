@@ -1,6 +1,7 @@
 import store from '../../store/login.js';
 import Tag from '../tags/Tag.js';
 import prettysize from '../../util/prettysize.js';
+import SchemaStar from '../schema/SchemaStar.js';
 
 export default {
 	data: function(){
@@ -9,7 +10,8 @@ export default {
 		};
 	},
 	components: {
-		"tag-label": Tag
+		"tag-label": Tag,
+		"schema-star": SchemaStar
 	},
 	props: ["list"],
 	methods: {
@@ -20,6 +22,7 @@ export default {
 			<thead>
 				<tr>
 					<th>Name</th>
+					<th>Stars</th>
 					<th>User</th>
 					<th>description</th>
 					<th>Parts</th>
@@ -34,6 +37,10 @@ export default {
 							{{ entry.name }}
 						</router-link>
 						<tag-label v-for="tag in entry.tags" :tag_id="tag.tag_id"/>
+					</td>
+					<td>
+						<i class="fa-regular fa-star"></i>
+						<span v-if="entry.stars > 0" class="badge bg-secondary rounded-pill">{{ entry.stars }}</span>
 					</td>
 					<td>
 						{{ entry.user.name }}
