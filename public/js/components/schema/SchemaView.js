@@ -33,7 +33,7 @@ export default {
 			schema: null,
 			screenshots: [],
 			is_owner: false,
-			preview_version: 0
+			preview_version: Date.now()
 		};
 	},
 	methods: {
@@ -51,6 +51,9 @@ export default {
 			.then(screenshots => {
 				this.screenshots = screenshots;
 			});
+		},
+		updatePreview: function(){
+			this.preview_version = Date.now();
 		}
 	},
 	created: function(){
@@ -71,7 +74,7 @@ export default {
 				</div>
 				<div class="col-md-6">
 					<div class="btn-group float-end">
-						<schema-updateinfo :schema="schema" v-on:stats-updated="preview_version++"/>
+						<schema-updateinfo :schema="schema" v-on:stats-updated="updatePreview()"/>
 						<schema-delete :schema="schema"/>
 					</div>
 				</div>
