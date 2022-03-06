@@ -35,18 +35,22 @@ export default {
 						<i class="fa fa-search"></i>
 						Search
 					</router-link>
+					&nbsp;
 					<router-link to="/users" class="btn btn-primary">
 						<i class="fa fa-users"></i>
 						Users
 					</router-link>
+					&nbsp;
 					<router-link to="/mod" class="btn btn-primary">
 						<i class="fa fa-download"></i>
 						Mod/Installation
 					</router-link>
+					&nbsp;
 					<a href="https://github.com/blockexchange" class="btn btn-secondary">
 						<i class="fab fa-github"></i>
 						Browse the source
 					</a>
+					&nbsp;
 					<a href="https://discord.gg/ye9aCUJPdB" class="btn btn-secondary">
 						<i class="fab fa-discord"></i>
 						Join the discord community
