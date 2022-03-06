@@ -1,6 +1,6 @@
 import { get_all } from '../api/tag.js';
 
-const store = Vue.observable({
+const store = Vue.reactive({
     tags: []
 });
 

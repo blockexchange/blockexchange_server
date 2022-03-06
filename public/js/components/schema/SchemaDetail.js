@@ -1,10 +1,14 @@
 import SchemaLicense from './SchemaLicense.js';
+import prettysize from '../../util/prettysize.js';
 
 export default {
 	components: {
 		"schema-license": SchemaLicense
 	},
 	props: ["schema"],
+	methods: {
+		prettysize: prettysize
+	},
 	template: /*html*/`
 	<ul>
 		<li>
@@ -14,7 +18,7 @@ export default {
 			<b>Changed: </b>{{ new Date(+schema.mtime).toISOString() }}
 		</li>
 		<li>
-			<b>Size: </b>{{ schema.total_size | prettysize }}
+			<b>Size: </b>{{ prettysize(schema.total_size) }}
 		</li>
 		<li>
 			<b>Dimensions: </b>

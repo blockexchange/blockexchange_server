@@ -1,5 +1,6 @@
 import store from '../../store/login.js';
 import Tag from '../tags/Tag.js';
+import prettysize from '../../util/prettysize.js';
 
 export default {
 	data: function(){
@@ -11,6 +12,9 @@ export default {
 		"tag-label": Tag
 	},
 	props: ["list"],
+	methods: {
+		prettysize: prettysize
+	},
 	template: /*html*/`
 		<table class="table table-striped table-condensed">
 			<thead>
@@ -44,7 +48,7 @@ export default {
 							Incomplete
 						</span>
 					</td>
-					<td>{{ entry.total_size | prettysize }}</td>
+					<td>{{ prettysize(entry.total_size) }}</td>
 					<td>{{ new Date(+entry.created).toDateString() }}</td>
 				</tr>
 			</tbody>

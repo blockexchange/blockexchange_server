@@ -1,7 +1,7 @@
 import NavBar from './components/NavBar.js';
 import Footer from './components/Footer.js';
 
-Vue.component('app', {
+export default {
 	components: {
 		"nav-bar": NavBar,
 		"nav-footer": Footer
@@ -16,4 +16,4 @@ Vue.component('app', {
 			<nav-footer/>
 		</div>
 	`
-});
+};

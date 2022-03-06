@@ -2,7 +2,7 @@ import SearchParams from './SearchParams.js';
 import SearchResult from './SearchResult.js';
 import { search, find_recent } from '../../api/searchschema.js';
 
-const store = Vue.observable({
+const store = Vue.reactive({
 	list: [],
 	term: ""
 });

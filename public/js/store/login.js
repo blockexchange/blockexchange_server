@@ -1,5 +1,5 @@
 
-const store = Vue.observable({
+const store = Vue.reactive({
 	loggedIn: false,
 	/* { username, user_id, type, mail, permissions } */
 	claims: null,

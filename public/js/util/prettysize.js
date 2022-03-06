@@ -7,7 +7,7 @@ const ranges = [{
 	suffix: "kB"
 }];
 
-Vue.filter("prettysize", function(value) {
+export default function(value) {
 	let bytes = +value;
 	for (let i=0; i<ranges.length; i++){
 		let range = ranges[i];
@@ -17,4 +17,4 @@ Vue.filter("prettysize", function(value) {
 	}
 
 	return bytes + " bytes";
-});
+}

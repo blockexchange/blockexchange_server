@@ -1,5 +1,6 @@
 import { get_by_schemaid } from '../../api/screenshot.js';
 import Tag from '../../components/tags/Tag.js';
+import prettysize from '../../util/prettysize.js';
 
 export default {
 	props: ["schema"],
@@ -18,6 +19,9 @@ export default {
 				this.screenshot = screenshots[0];
 			}
 		});
+	},
+	methods: {
+		prettysize: prettysize
 	},
 	computed: {
 		screenshot_url: function(){
@@ -50,7 +54,7 @@ export default {
 					<tag-label v-for="tag in schema.tags" :tag_id="tag.tag_id"/>
 				</p>
 				<p>
-					{{ schema.total_size | prettysize }};
+					{{ prettysize(schema.total_size) }};
 					{{ schema.size_x }} / 
 					{{ schema.size_y }} / 
 					{{ schema.size_z }} nodes

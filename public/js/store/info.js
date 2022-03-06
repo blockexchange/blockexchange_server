@@ -1,4 +1,4 @@
 
-export default Vue.observable({
+export default Vue.reactive({
 	// populated by values from "api/info"
 });
