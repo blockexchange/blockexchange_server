@@ -92,10 +92,14 @@ func (repo DBSchemaSearchRepository) Search(search *types.SchemaSearch, limit, o
 		params = append(params, *search.TagID)
 	}
 
-	// TODO: configurable order
+	if search.OrderColumn != nil && search.OrderDirection != nil {
+		query.WriteString(fmt.Sprintf(" order by %s %s", *search.OrderColumn, *search.OrderDirection))
+	} else {
+		query.WriteString(" order by created desc")
+	}
 
 	// add limit and offset
-	query.WriteString(fmt.Sprintf(" order by created desc limit $%d offset $%d", bind_index, bind_index+1))
+	query.WriteString(fmt.Sprintf(" limit $%d offset $%d", bind_index, bind_index+1))
 	bind_index += 2
 	params = append(params, limit, offset)
 

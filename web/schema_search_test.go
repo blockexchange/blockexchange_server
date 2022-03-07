@@ -23,10 +23,15 @@ func TestSearchSchema(t *testing.T) {
 	err := api.SchemaRepo.CreateSchema(&schema)
 	assert.NoError(t, err)
 
+	order := types.CREATED
+	order_dir := types.ASC
 	complete := false
+
 	q := &types.SchemaSearch{
-		UserName: &user.Name,
-		Complete: &complete,
+		UserName:       &user.Name,
+		Complete:       &complete,
+		OrderColumn:    &order,
+		OrderDirection: &order_dir,
 	}
 	list, err := api.SchemaSearchRepo.Search(q, 10, 0)
 	assert.NoError(t, err)
