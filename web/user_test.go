@@ -4,7 +4,11 @@ import (
 	"blockexchange/core"
 	"blockexchange/testutils"
 	"blockexchange/types"
+	"encoding/json"
+	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func assertValidUsername(t *testing.T, api *Api, username string) {
@@ -36,4 +40,26 @@ func TestValidateUsername(t *testing.T) {
 	assertInvalidUsername(t, api, "invalid_username/")
 	assertInvalidUsername(t, api, "invalid_usernameä")
 	assertInvalidUsername(t, api, "invalid_username$")
+}
+
+func TestCountUsers(t *testing.T) {
+	db_ := testutils.CreateTestDatabase(t)
+	api := NewApi(db_, core.NewNoOpCache())
+	testutils.CreateUser(api.UserRepo, t, &types.User{})
+
+	count, err := api.UserRepo.CountUsers()
+	assert.NoError(t, err)
+	assert.NotEqual(t, 0, count)
+
+	r := httptest.NewRequest("GET", "http://?limit=10&offset=1", nil)
+	w := httptest.NewRecorder()
+	api.GetUsers(w, r)
+	assert.Equal(t, 200, w.Result().StatusCode)
+
+	response := &types.PagedUsersResponse{}
+	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), &response))
+	assert.Equal(t, 10, response.Limit)
+	assert.Equal(t, 1, response.Offset)
+	assert.NotEqual(t, 0, len(response.Users))
+	assert.NotEqual(t, 0, response.Total)
 }

@@ -16,6 +16,12 @@ func SendError(w http.ResponseWriter, code int, message string) {
 	json.NewEncoder(w).Encode(types.ErrorResponse{Message: message})
 }
 
+func SendText(w http.ResponseWriter, txt string) {
+	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(txt))
+}
+
 func SendJson(w http.ResponseWriter, o interface{}) []byte {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)

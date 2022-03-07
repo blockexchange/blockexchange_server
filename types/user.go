@@ -25,3 +25,10 @@ type User struct {
 	ExternalID *string  `json:"external_id" db:"external_id"`
 	Mail       *string  `json:"mail" db:"mail"`
 }
+
+type PagedUsersResponse struct {
+	Users  []User `json:"list"`
+	Limit  int    `json:"limit"`
+	Offset int    `json:"offset"`
+	Total  int    `json:"total"`
+}

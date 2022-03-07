@@ -12,6 +12,7 @@ type UserRepository interface {
 	GetUserByName(name string) (*types.User, error)
 	GetUserByExternalId(external_id string) (*types.User, error)
 	GetUsers(limit, offset int) ([]*types.User, error)
+	CountUsers() (int, error)
 	CreateUser(user *types.User) error
 	UpdateUser(user *types.User) error
 }
@@ -30,6 +31,14 @@ func (repo DBUserRepository) GetUserById(id int64) (*types.User, error) {
 	} else {
 		return nil, nil
 	}
+}
+
+func (repo DBUserRepository) CountUsers() (int, error) {
+	query := `select count(*) from public.user`
+	row := repo.DB.QueryRow(query)
+	count := 0
+	err := row.Scan(&count)
+	return count, err
 }
 
 func (repo DBUserRepository) GetUserByName(name string) (*types.User, error) {

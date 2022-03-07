@@ -28,7 +28,20 @@ func (api Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	SendJson(w, sanitizedUsers)
+	count, err := api.UserRepo.CountUsers()
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	pagedUsers := types.PagedUsersResponse{
+		Users:  sanitizedUsers,
+		Limit:  limit,
+		Offset: offset,
+		Total:  count,
+	}
+
+	SendJson(w, pagedUsers)
 }
 
 func (api Api) UpdateUser(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {

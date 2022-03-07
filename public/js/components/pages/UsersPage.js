@@ -2,15 +2,15 @@ import { get_all } from '../../api/user.js';
 
 export default {
 	created: function(){
-		get_all().then(users => this.users = users);
+		get_all().then(userdata => this.userdata = userdata);
 	},
 	data: function(){
 		return {
-			users: []
+			userdata: null
 		};
 	},
 	template: /*html*/`
-		<div>
+		<div v-if="userdata">
 			<table class="table table-condensed table-striped">
 				<thead>
 					<tr>
@@ -21,7 +21,7 @@ export default {
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="user in users">
+					<tr v-for="user in userdata.list">
 						<td>{{ user.name }}</td>
 						<td>{{ new Date(+user.created).toDateString() }}</td>
 						<td>{{ user.type }}</td>
