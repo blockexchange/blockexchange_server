@@ -35,7 +35,7 @@ func (api Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pagedUsers := types.PagedUsersResponse{
-		Users:  sanitizedUsers,
+		List:   sanitizedUsers,
 		Limit:  limit,
 		Offset: offset,
 		Total:  count,

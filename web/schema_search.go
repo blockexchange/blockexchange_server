@@ -12,7 +12,7 @@ func (api *Api) SearchRecentSchemas(w http.ResponseWriter, r *http.Request) {
 	limit, offset := GetLimitOffset(r, 20)
 
 	complete := true
-	search := &types.SchemaSearch{
+	search := &types.SchemaSearchRequest{
 		Complete: &complete,
 	}
 	list, err := api.SchemaSearchRepo.Search(search, limit, offset)
@@ -29,7 +29,7 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 	schema_name := vars["schema_name"]
 	user_name := vars["user_name"]
 
-	search := &types.SchemaSearch{
+	search := &types.SchemaSearchRequest{
 		UserName:   &user_name,
 		SchemaName: &schema_name,
 	}
@@ -56,7 +56,7 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 	limit, offset := GetLimitOffset(r, 20)
 
-	search := &types.SchemaSearch{}
+	search := &types.SchemaSearchRequest{}
 	err := json.NewDecoder(r.Body).Decode(search)
 	if err != nil {
 		SendError(w, 500, err.Error())

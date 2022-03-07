@@ -13,7 +13,7 @@ import (
 )
 
 type SchemaSearchRepository interface {
-	Search(search *types.SchemaSearch, limit, offset int) ([]*types.SchemaSearchResult, error)
+	Search(search *types.SchemaSearchRequest, limit, offset int) ([]*types.SchemaSearchResult, error)
 }
 
 func NewSchemaSearchRepository(db *sqlx.DB) SchemaSearchRepository {
@@ -40,7 +40,7 @@ var schemaSearchHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 	Buckets: []float64{0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10},
 })
 
-func (repo DBSchemaSearchRepository) Search(search *types.SchemaSearch, limit, offset int) ([]*types.SchemaSearchResult, error) {
+func (repo DBSchemaSearchRepository) Search(search *types.SchemaSearchRequest, limit, offset int) ([]*types.SchemaSearchResult, error) {
 	timer := prometheus.NewTimer(schemaSearchHistogram)
 	defer timer.ObserveDuration()
 

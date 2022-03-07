@@ -27,7 +27,7 @@ type User struct {
 }
 
 type PagedUsersResponse struct {
-	Users  []User `json:"list"`
+	List   []User `json:"list"`
 	Limit  int    `json:"limit"`
 	Offset int    `json:"offset"`
 	Total  int    `json:"total"`

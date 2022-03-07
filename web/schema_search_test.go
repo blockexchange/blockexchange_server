@@ -27,7 +27,7 @@ func TestSearchSchema(t *testing.T) {
 	order_dir := types.ASC
 	complete := false
 
-	q := &types.SchemaSearch{
+	q := &types.SchemaSearchRequest{
 		UserName:       &user.Name,
 		Complete:       &complete,
 		OrderColumn:    &order,

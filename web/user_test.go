@@ -60,6 +60,6 @@ func TestCountUsers(t *testing.T) {
 	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), &response))
 	assert.Equal(t, 10, response.Limit)
 	assert.Equal(t, 1, response.Offset)
-	assert.NotEqual(t, 0, len(response.Users))
+	assert.NotEqual(t, 0, len(response.List))
 	assert.NotEqual(t, 0, response.Total)
 }

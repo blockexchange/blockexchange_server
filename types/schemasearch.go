@@ -13,7 +13,7 @@ const (
 	CREATED OrderColumnType = "created"
 )
 
-type SchemaSearch struct {
+type SchemaSearchRequest struct {
 	UserID         *float64            `json:"user_id"`
 	SchemaID       *float64            `json:"schema_id"`
 	TagID          *float64            `json:"tag_id"`
@@ -31,4 +31,11 @@ type SchemaSearchResult struct {
 	User  *User       `json:"user"`
 	Mods  []string    `json:"mods"`
 	Tags  []SchemaTag `json:"tags"`
+}
+
+type SchemaSearchResponse struct {
+	List   []*SchemaSearchResult `json:"list"`
+	Limit  int                   `json:"limit"`
+	Offset int                   `json:"offset"`
+	Total  int                   `json:"total"`
 }

@@ -40,7 +40,7 @@ func (api *Api) GetStaticView(w http.ResponseWriter, r *http.Request) {
 	schema_name := vars["schema_name"]
 	user_name := vars["user_name"]
 
-	search := &types.SchemaSearch{
+	search := &types.SchemaSearchRequest{
 		UserName:   &user_name,
 		SchemaName: &schema_name,
 	}
