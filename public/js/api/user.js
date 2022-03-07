@@ -1,7 +1,6 @@
 import securefetch from './securefetch.js';
-import memoize from '../util/memoize.js';
 
-export const get_all = memoize(() => fetch("api/user").then(r => r.json()));
+export const get = (limit, offset) => fetch(`api/user?limit=${limit}&offset=${offset || 0}`).then(r => r.json());
 
 export const update = user => securefetch(`api/user/${user.id}`, {
 	method: "POST",

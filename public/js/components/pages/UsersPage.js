@@ -1,16 +1,34 @@
-import { get_all } from '../../api/user.js';
+import { get } from '../../api/user.js';
+import Pager from '../Pager.js';
 
 export default {
 	created: function(){
-		get_all().then(userdata => this.userdata = userdata);
+		this.update();
+	},
+	components: {
+		"pager-component": Pager
 	},
 	data: function(){
 		return {
-			userdata: null
+			userdata: null,
+			page: 1,
+			limit: 20
 		};
+	},
+	methods: {
+		update: function(page){
+			this.page = page || 1;
+			get(this.limit, (this.page-1) * this.limit)
+			.then(userdata => this.userdata = userdata);
+		}
 	},
 	template: /*html*/`
 		<div v-if="userdata">
+			<pager-component
+				:current="this.page"
+				:pages="Math.ceil(this.userdata.total / this.limit)"
+				v-on:switch="update">
+			</pager-component>
 			<table class="table table-condensed table-striped">
 				<thead>
 					<tr>
