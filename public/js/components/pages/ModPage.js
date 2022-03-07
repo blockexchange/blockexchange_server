@@ -26,14 +26,14 @@ export default {
 						<h3>Download schematics</h3>
 						<ul>
 							<li>
-								Browse and download schemas with <b>/bx_search [name]</b> and <b>/bx_load [user] [name]</b>
+								Browse and download schemas with <b>/bx_search</b> and <b>/bx_load [user] [name]</b>
 								or search for them <router-link to="/search">here</router-link>
 							</li>
 						</ul>
 						<h3>Upload schematics</h3>
 						<ul>
 							<li>
-								To upload schematics you have to <router-link to="/register">register</router-link> and <router-link to="/login">login</router-link> first
+								To upload schematics you have to <router-link to="/login">login</router-link> first
 								(you can also use external logins for github <i class="fab fa-github"></i>, discord <i class="fab fa-discord"></i> or mesehub <img src="pics/default_mese_crystal.png"/>)
 							</li>
 							<li>
