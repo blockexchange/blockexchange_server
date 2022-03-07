@@ -14,6 +14,7 @@ import (
 
 type SchemaSearchRepository interface {
 	Search(search *types.SchemaSearchRequest, limit, offset int) ([]*types.SchemaSearchResult, error)
+	Count(search *types.SchemaSearchRequest) (int, error)
 }
 
 func NewSchemaSearchRepository(db *sqlx.DB) SchemaSearchRepository {
@@ -40,12 +41,7 @@ var schemaSearchHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 	Buckets: []float64{0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10},
 })
 
-func (repo DBSchemaSearchRepository) Search(search *types.SchemaSearchRequest, limit, offset int) ([]*types.SchemaSearchResult, error) {
-	timer := prometheus.NewTimer(schemaSearchHistogram)
-	defer timer.ObserveDuration()
-
-	query := strings.Builder{}
-	query.WriteString("select * from schema where true=true")
+func (repo DBSchemaSearchRepository) buildWhereQuery(query *strings.Builder, search *types.SchemaSearchRequest) []interface{} {
 	params := []interface{}{}
 	bind_index := 1
 
@@ -92,15 +88,44 @@ func (repo DBSchemaSearchRepository) Search(search *types.SchemaSearchRequest, l
 		params = append(params, *search.TagID)
 	}
 
+	return params
+}
+
+func (repo DBSchemaSearchRepository) buildOrderQuery(query *strings.Builder, search *types.SchemaSearchRequest) {
 	if search.OrderColumn != nil && search.OrderDirection != nil {
 		query.WriteString(fmt.Sprintf(" order by %s %s", *search.OrderColumn, *search.OrderDirection))
 	} else {
 		query.WriteString(" order by created desc")
 	}
+}
+
+func (repo DBSchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int, error) {
+	query := strings.Builder{}
+	query.WriteString("select count(*) from schema where true=true")
+
+	// build query
+	params := repo.buildWhereQuery(&query, search)
+
+	// execute
+	row := repo.DB.QueryRow(query.String(), params...)
+	count := 0
+	err := row.Scan(&count)
+	return count, err
+}
+
+func (repo DBSchemaSearchRepository) Search(search *types.SchemaSearchRequest, limit, offset int) ([]*types.SchemaSearchResult, error) {
+	timer := prometheus.NewTimer(schemaSearchHistogram)
+	defer timer.ObserveDuration()
+
+	query := strings.Builder{}
+	query.WriteString("select * from schema where true=true")
+
+	// build query
+	params := repo.buildWhereQuery(&query, search)
+	repo.buildOrderQuery(&query, search)
 
 	// add limit and offset
-	query.WriteString(fmt.Sprintf(" limit $%d offset $%d", bind_index, bind_index+1))
-	bind_index += 2
+	query.WriteString(fmt.Sprintf(" limit $%d offset $%d", len(params)+1, len(params)+2))
 	params = append(params, limit, offset)
 
 	logrus.WithFields(logrus.Fields{
