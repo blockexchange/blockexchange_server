@@ -32,6 +32,12 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		SendError(w, 500, err.Error())
 	}
+
+	err = api.SchemaRepo.IncrementDownloads(int64(id))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
 }
 
 func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
@@ -72,5 +78,11 @@ func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 	err = core.ExportBXSchema(w, schema, schemamods, it)
 	if err != nil {
 		SendError(w, 500, err.Error())
+	}
+
+	err = api.SchemaRepo.IncrementDownloads(int64(id))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
 	}
 }
