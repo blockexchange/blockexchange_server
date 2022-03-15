@@ -1,7 +1,9 @@
 package render
 
 import (
+	"blockexchange/colormapping"
 	"blockexchange/parser"
+	"image/color"
 	"sort"
 
 	"github.com/fogleman/gg"
@@ -11,13 +13,13 @@ type Block struct {
 	X     int
 	Y     int
 	Z     int
-	Color *Color
+	Color *color.RGBA
 	Order int
 }
 
 type PartRenderer struct {
 	Mapblock            *parser.ParsedSchemaPart
-	Colormapping        map[string]*Color
+	Colormapping        *colormapping.ColorMapping
 	NodeIDStringMapping map[int]string
 	Blocks              []*Block
 	MaxX                int
@@ -28,7 +30,7 @@ type PartRenderer struct {
 	OffsetY             float64
 }
 
-func NewISOPartRenderer(mapblock *parser.ParsedSchemaPart, cm map[string]*Color, size, offset_x, offset_y float64) *PartRenderer {
+func NewISOPartRenderer(mapblock *parser.ParsedSchemaPart, cm *colormapping.ColorMapping, size, offset_x, offset_y float64) *PartRenderer {
 	// reverse index
 	idm := make(map[int]string)
 	for k, v := range mapblock.Meta.NodeMapping {
@@ -55,15 +57,16 @@ func (r *PartRenderer) GetImagePos(x, y, z float64) (float64, float64) {
 	return xpos, ypos
 }
 
-func (r *PartRenderer) GetColorAtPos(x, y, z int) *Color {
+func (r *PartRenderer) GetColorAtPos(x, y, z int) *color.RGBA {
 	if x > r.MaxX || y > r.MaxY || z > r.MaxZ || x < 0 || y < 0 || z < 0 {
 		return nil
 	}
 
 	index := r.Mapblock.GetIndex(x, y, z)
+	param2 := int(r.Mapblock.Param2[index])
 	nodeid := int(r.Mapblock.NodeIDS[index])
 	nodename := r.NodeIDStringMapping[nodeid]
-	color := r.Colormapping[nodename]
+	color := r.Colormapping.GetColor(nodename, param2)
 	return color
 }
 
@@ -104,7 +107,7 @@ func (r *PartRenderer) DrawBlock(dc *gg.Context, block *Block) {
 	dc.LineTo(x, y)
 	dc.LineTo(radius+x, -(radius*tan30)+y)
 	dc.ClosePath()
-	dc.SetRGB255(block.Color.Red, block.Color.Green, block.Color.Blue)
+	dc.SetRGB255(int(block.Color.R), int(block.Color.G), int(block.Color.B))
 	dc.Fill()
 
 	// left side
@@ -113,7 +116,7 @@ func (r *PartRenderer) DrawBlock(dc *gg.Context, block *Block) {
 	dc.LineTo(-radius+x, -(radius*tan30)+y)
 	dc.LineTo(x, y)
 	dc.ClosePath()
-	AdjustAndFill(dc, block.Color.Red, block.Color.Green, block.Color.Blue, -20)
+	AdjustAndFill(dc, int(block.Color.R), int(block.Color.G), int(block.Color.B), -20)
 	dc.Fill()
 
 	// top side
@@ -122,7 +125,7 @@ func (r *PartRenderer) DrawBlock(dc *gg.Context, block *Block) {
 	dc.LineTo(radius+x, -(radius*tan30)+y)
 	dc.LineTo(x, y)
 	dc.ClosePath()
-	AdjustAndFill(dc, block.Color.Red, block.Color.Green, block.Color.Blue, 20)
+	AdjustAndFill(dc, int(block.Color.R), int(block.Color.G), int(block.Color.B), 20)
 	dc.Fill()
 }
 

@@ -1,6 +1,7 @@
 package render
 
 import (
+	"blockexchange/colormapping"
 	"blockexchange/types"
 	"encoding/json"
 	"fmt"
@@ -34,8 +35,8 @@ func TestISORenderer(t *testing.T) {
 	logrus.SetLevel(logrus.TraceLevel)
 
 	repo := MockSchemaPartRepository{}
-	cm, err := GetColorMapping()
-	assert.NoError(t, err)
+	cm := colormapping.NewColorMapping()
+	assert.NoError(t, cm.LoadDefaults())
 
 	renderer := NewISORenderer(repo.GetBySchemaIDAndOffset, cm)
 	schema := types.Schema{

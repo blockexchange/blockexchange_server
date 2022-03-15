@@ -1,6 +1,7 @@
 package core
 
 import (
+	"blockexchange/colormapping"
 	"blockexchange/db"
 	"blockexchange/render"
 	"blockexchange/types"
@@ -8,7 +9,8 @@ import (
 
 func UpdatePreview(schema *types.Schema, repo *db.Repositories) (*types.SchemaScreenshot, error) {
 
-	cm, err := render.GetColorMapping()
+	cm := colormapping.NewColorMapping()
+	err := cm.LoadDefaults()
 	if err != nil {
 		return nil, err
 	}

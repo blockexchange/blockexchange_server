@@ -1,6 +1,7 @@
 package render
 
 import (
+	"blockexchange/colormapping"
 	"blockexchange/parser"
 	"blockexchange/types"
 	"bytes"
@@ -13,12 +14,12 @@ import (
 
 type ISORenderer struct {
 	SchemaPartProvider SchemaPartProvider
-	Colormapping       map[string]*Color
+	Colormapping       *colormapping.ColorMapping
 }
 
 type SchemaPartProvider func(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
 
-func NewISORenderer(spp SchemaPartProvider, cm map[string]*Color) *ISORenderer {
+func NewISORenderer(spp SchemaPartProvider, cm *colormapping.ColorMapping) *ISORenderer {
 	return &ISORenderer{
 		SchemaPartProvider: spp,
 		Colormapping:       cm,
