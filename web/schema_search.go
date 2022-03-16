@@ -8,22 +8,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (api *Api) SearchRecentSchemas(w http.ResponseWriter, r *http.Request) {
-	limit, offset := GetLimitOffset(r, 20)
-
-	complete := true
-	search := &types.SchemaSearchRequest{
-		Complete: &complete,
-	}
-	list, err := api.SchemaSearchRepo.Search(search, limit, offset)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	SendJson(w, list)
-}
-
 func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	schema_name := vars["schema_name"]

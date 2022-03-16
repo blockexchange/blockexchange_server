@@ -1,5 +1,5 @@
 import SchemaCard from './SchemaCard.js';
-import { find_recent } from '../../api/searchschema.js';
+import { search } from '../../api/searchschema.js';
 
 export default {
 	data: function(){
@@ -8,7 +8,12 @@ export default {
 		};
 	},
 	created: function(){
-		find_recent(12, 0)
+		const q = {
+			order_column: "created",
+			order_direction: "desc",
+			complete: true
+		};
+		search(q, 12, 0)
 		.then(list => this.changed_schematics = list);
 	},
 	components: {

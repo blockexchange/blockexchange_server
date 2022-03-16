@@ -1,6 +1,6 @@
 import SearchParams from './SearchParams.js';
 import SearchResult from './SearchResult.js';
-import { search, find_recent } from '../../api/searchschema.js';
+import { search } from '../../api/searchschema.js';
 
 const store = Vue.reactive({
 	list: [],
@@ -19,12 +19,18 @@ export default {
 	methods: {
 		search: function(term){
 			this.term = term.trim().replaceAll(" ", "|");
-			if (this.term === "")
+			if (this.term === "") {
 				// initialize list with recent additions
-				find_recent(20).then(l => this.list = l);
-			else
+				const q = {
+					order_column: "created",
+					order_direction: "desc",
+					complete: true
+				};
+				search(q, 20, 0).then(l => this.list = l);
+			} else {
 				search({ keywords: this.term, complete: true }, 20, 0)
 				.then(l => this.list = l);
+			}
 
 		}
 	},
