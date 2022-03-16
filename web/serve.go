@@ -128,7 +128,8 @@ func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {
 	// webdev flag
 	useLocalfs := cfg.WebDev
 	// static files
-	r.PathPrefix("/").Handler(http.FileServer(getFileSystem(useLocalfs, public.Webapp)))
+	fs := http.FileServer(getFileSystem(useLocalfs, public.Webapp))
+	r.PathPrefix("/").HandlerFunc(CachedServeFunc(fs.ServeHTTP))
 }
 
 func getFileSystem(useLocalfs bool, content embed.FS) http.FileSystem {
