@@ -6,11 +6,14 @@ export default {
             this.$emit("switch", num);
         },
         next: function(){
-            this.selectPage(this.current + 1);
+            this.selectPage(+this.current + 1);
         },
         previous: function(){
-            this.selectPage(this.current - 1);
+            this.selectPage(+this.current - 1);
         }
+    },
+    created: function(){
+        console.log(this.$router.currentRoute.value);
     },
     template: /*html*/`
         <nav aria-label="Page navigation example" v-if="pages > 1">

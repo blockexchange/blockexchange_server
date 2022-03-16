@@ -15,11 +15,24 @@ export default {
 			limit: 20
 		};
 	},
+	watch: {
+		"$route": "update"
+	},
 	methods: {
-		update: function(page){
-			this.page = page || 1;
+		update: function(){
+			const r = this.$route;
+			this.page = r.query.page || 1;
 			get(this.limit, (this.page-1) * this.limit)
 			.then(userdata => this.userdata = userdata);
+		},
+		updateRoute: function(page){
+			const r = this.$router.currentRoute.value;
+			this.$router.push({
+				path: r.path,
+				query: {
+					page: page
+				}
+			});
 		}
 	},
 	template: /*html*/`
@@ -27,7 +40,7 @@ export default {
 			<pager-component
 				:current="this.page"
 				:pages="Math.ceil(this.userdata.total / this.limit)"
-				v-on:switch="update">
+				v-on:switch="updateRoute">
 			</pager-component>
 			<table class="table table-condensed table-striped">
 				<thead>
