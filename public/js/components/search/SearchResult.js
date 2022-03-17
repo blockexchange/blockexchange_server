@@ -43,7 +43,9 @@ export default {
 						<span v-if="entry.stars > 0" class="badge bg-secondary rounded-pill">{{ entry.stars }}</span>
 					</td>
 					<td>
-						{{ entry.user.name }}
+						<router-link :to="{ name: 'userschemas', params: { user_name: entry.user.name }}">
+							{{ entry.user.name }}
+						</router-link>
 						<span v-if="store.claims && store.claims.username == entry.user.name" class="badge bg-secondary">
 							owner
 						</span>

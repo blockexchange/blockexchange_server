@@ -9,6 +9,7 @@ import ProfilePage from './components/pages/ProfilePage.js';
 import ModPage from './components/pages/ModPage.js';
 import CollectionsPage from './components/pages/CollectionsPage.js';
 import TagsPage from './components/pages/TagsPage.js';
+import UserSchemasPage from './components/pages/UserSchemasPage.js';
 
 export default [{
 	path: "/", component: StartPage
@@ -26,6 +27,8 @@ export default [{
 	path: "/users", component: UsersPage
 },{
 	path: "/profile", component: ProfilePage
+},{
+	path: "/schema/:user_name", name: "userschemas", component: UserSchemasPage
 },{
 	path: "/schema/:user_name/:schema_name", name: "schemapage", component: SchemaPage
 },{

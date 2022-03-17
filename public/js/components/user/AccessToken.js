@@ -11,7 +11,6 @@ const CreateForm = {
 	},
 	methods: {
 		add: function(){
-			console.log(this.expires, this.modifier);
 			create(this.name, Date.now() + (+this.expires * +this.modifier))
 			.then(() => this.$emit('updated'));
 		}
