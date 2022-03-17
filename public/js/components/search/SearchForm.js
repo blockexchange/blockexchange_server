@@ -2,7 +2,6 @@ import SearchResult from './SearchResult.js';
 import { search } from '../../api/searchschema.js';
 import { get_all as get_tags } from '../../api/tag.js';
 import Pager from '../Pager.js';
-import { get } from '../../api/schematag.js';
 
 const store = Vue.reactive({
 	result: null,
