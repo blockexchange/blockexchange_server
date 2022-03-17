@@ -22,8 +22,8 @@ local function fail(msg)
     end)
 end
 
-local size = {x=20, y=20, z=20}
-local pos1 = {x=0, y=0, z=0}
+local size = {x=30, y=30, z=30}
+local pos1 = {x=0, y=-10, z=0}
 local pos2 = vector.add(pos1, size)
 local pos1_load = {x=0, y=30, z=0 }
 local pos2_load = vector.add(pos1_load, size)
