@@ -98,6 +98,9 @@ func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {
 	r.HandleFunc("/api/collection/{id}", Secure(api.UpdateCollection)).Methods("PUT")
 	r.HandleFunc("/api/collection/{id}", Secure(api.DeleteCollection)).Methods("DELETE")
 
+	r.HandleFunc("/api/collection_schema/{collection_id}", api.GetCollectionSchemaByCollectionID).Methods("GET")
+	r.HandleFunc("/api/collection_schema/{collection_id}/{schema_id}", api.GetCollectionSchemaByCollectionID).Methods("POST")
+
 	r.HandleFunc("/api/tag", api.GetTags).Methods("GET")
 	r.HandleFunc("/api/tag", Secure(api.CreateTag)).Methods("POST")
 	r.HandleFunc("/api/tag", Secure(api.UpdateTag)).Methods("PUT")
