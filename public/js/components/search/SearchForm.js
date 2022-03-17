@@ -5,6 +5,7 @@ import Pager from '../Pager.js';
 
 const store = Vue.reactive({
 	result: null,
+	total: 0,
 	search_params: {
 		keywords: ""
 	}
@@ -32,6 +33,7 @@ export default {
 			search(query, limit, offset)
 			.then(result => {
 				this.result = result;
+				this.total = result.total;
 			});
 		}
 	},
