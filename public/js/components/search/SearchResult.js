@@ -31,12 +31,12 @@ export default {
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="entry in list" v-bind:class="{ 'table-danger': !entry.complete }">
+				<tr v-for="entry in list" :key="entry.id" v-bind:class="{ 'table-danger': !entry.complete }">
 					<td>
 						<router-link :to="{ name: 'schemapage', params: { schema_name: entry.name, user_name: entry.user.name }}">
 							{{ entry.name }}
 						</router-link>
-						<tag-label v-for="tag in entry.tags" :tag_id="tag.tag_id"/>
+						<tag-label v-for="tag in entry.tags" :tag_id="tag.tag_id" :key="tag.id"/>
 					</td>
 					<td>
 						<i class="fa-regular fa-star"></i>
