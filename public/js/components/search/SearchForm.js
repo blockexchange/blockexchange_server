@@ -1,4 +1,3 @@
-import SearchParams from './SearchParams.js';
 import SearchResult from './SearchResult.js';
 import { search } from '../../api/searchschema.js';
 import Pager from '../Pager.js';
@@ -13,7 +12,6 @@ const store = Vue.reactive({
 
 export default {
 	components: {
-		"search-params": SearchParams,
 		"search-result": SearchResult,
 		"pager-component": Pager
 	},
@@ -35,11 +33,26 @@ export default {
 				this.result = result;
 				this.total = result.total;
 			});
+		},
+		search: function() {
+			this.$refs.pager.update();
 		}
 	},
 	template: /*html*/`
 		<div>
-			<search-params v-on:search="this.$refs.pager.update()" :search_params="search_params"/>
+			<form v-on:submit.prevent="search">
+				<div class="input-group mb-3">
+					<input type="text"
+						class="form-control"
+						placeholder="Search term (for example 'mesecons')"
+						v-model="search_params.keywords"
+					/>
+					<button class="btn btn-primary" type="button" v-on:click="search">
+						<i class="fa fa-search"></i>
+						Search
+					</button>
+				</div>
+			</form>
 			<pager-component ref="pager" :total="total" v-on:fetchData="fetchData" :limit="20" :route="$route"/>
 			<search-result :list="result.list" v-if="result"/>
 		</div>
