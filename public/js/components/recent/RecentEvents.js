@@ -14,7 +14,7 @@ export default {
 			complete: true
 		};
 		search(q, 12, 0)
-		.then(list => this.changed_schematics = list);
+		.then(result => this.changed_schematics = result.list);
 	},
 	components: {
 		"schema-card": SchemaCard

@@ -48,5 +48,23 @@ func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 	}
 
 	list, err := api.SchemaSearchRepo.Search(search, limit, offset)
-	Send(w, list, err)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	total, err := api.SchemaSearchRepo.Count(search)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	result := types.SchemaSearchResponse{
+		List:   list,
+		Offset: offset,
+		Limit:  limit,
+		Total:  total,
+	}
+
+	Send(w, result, err)
 }

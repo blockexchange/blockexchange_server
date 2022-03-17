@@ -42,7 +42,7 @@ export default {
 				user_name: this.user_name,
 				schema_name: this.schema_name
 			})
-			.then(list => list[0])
+			.then(result => result.list[0])
 			.then(schema => {
 				this.schema = schema;
 				this.is_owner = loginStore.claims && loginStore.claims.user_id == schema.user_id;

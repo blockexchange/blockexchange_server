@@ -1,43 +1,45 @@
 import SearchParams from './SearchParams.js';
 import SearchResult from './SearchResult.js';
 import { search } from '../../api/searchschema.js';
+import Pager from '../Pager.js';
 
 const store = Vue.reactive({
-	list: [],
-	term: ""
+	result: null,
+	search_params: {
+		keywords: ""
+	}
 });
 
 export default {
 	components: {
 		"search-params": SearchParams,
-		"search-result": SearchResult
+		"search-result": SearchResult,
+		"pager-component": Pager
 	},
 	data: () => store,
-	mounted: function(){
-		this.search(this.term);
-	},
 	methods: {
-		search: function(term){
-			this.term = term.trim().replaceAll(" ", "|");
-			if (this.term === "") {
-				// initialize list with recent additions
-				const q = {
-					order_column: "created",
-					order_direction: "desc",
-					complete: true
-				};
-				search(q, 20, 0).then(l => this.list = l);
-			} else {
-				search({ keywords: this.term, complete: true }, 20, 0)
-				.then(l => this.list = l);
+		fetchData: function(limit, offset) {
+			const query = {
+				order_column: "created",
+				order_direction: "desc",
+				complete: true
+			};
+
+			if (this.search_params.keywords != "") {
+				query.keywords = this.search_params.keywords.trim().replaceAll(" ", "|");
 			}
 
+			search(query, limit, offset)
+			.then(result => {
+				this.result = result;
+			});
 		}
 	},
 	template: /*html*/`
 		<div>
-			<search-params v-on:search="search" :term="term"/>
-			<search-result :list="list"/>
+			<search-params v-on:search="this.$refs.pager.update()" :search_params="search_params"/>
+			<pager-component ref="pager" :total="total" v-on:fetchData="fetchData" :limit="20" :route="$route"/>
+			<search-result :list="result.list" v-if="result"/>
 		</div>
 	`
 };

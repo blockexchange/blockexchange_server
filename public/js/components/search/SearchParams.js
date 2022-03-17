@@ -1,21 +1,24 @@
-import debounce from '../../util/debounce.js';
-
 
 export default {
-	props: ["term"],
+	props: ["search_params"],
 	methods: {
-		search: debounce(function(term){
-			this.$emit("search", term);
-		}, 250)
+		search: function(){
+			this.$emit("search");
+			return false;
+		}
 	},
 	template: /*html*/`
-		<form v-on:submit.prevent>
-			<input type="text"
-				class="form-control"
-				placeholder="Search term (for example 'mesecons')"
-				:value="term"
-				v-on:input="search($event.target.value)"
-			/>
+		<form v-on:submit="search">
+			<div class="input-group mb-3">
+				<input type="text"
+					class="form-control"
+					placeholder="Search term (for example 'mesecons')"
+					v-model="search_params.keywords"
+				/>
+				<button class="btn btn-primary" type="button" v-on:click="search">
+					Search
+				</button>
+			</div>
 		</form>
 	`
 };
