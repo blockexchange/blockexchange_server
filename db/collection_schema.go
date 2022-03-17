@@ -27,4 +27,22 @@ func (repo DBCollectionSchemaRepository) Delete(collection_id, schema_id int64) 
 	return err
 }
 
-// TODO GetBy*
+func (repo DBCollectionSchemaRepository) GetBySchemaID(schema_id int64) ([]types.CollectionSchema, error) {
+	list := []types.CollectionSchema{}
+	err := repo.DB.Select(&list, "select * from collection_schema where schema_id = $1", schema_id)
+	if err != nil {
+		return nil, err
+	} else {
+		return list, nil
+	}
+}
+
+func (repo DBCollectionSchemaRepository) GetByCollectionID(collection_id int64) ([]types.CollectionSchema, error) {
+	list := []types.CollectionSchema{}
+	err := repo.DB.Select(&list, "select * from collection_schema where collection_id = $1", collection_id)
+	if err != nil {
+		return nil, err
+	} else {
+		return list, nil
+	}
+}

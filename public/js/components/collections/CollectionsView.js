@@ -36,6 +36,8 @@ const AddRow = {
 				description: this.new_description
 			})
 			.then(collection => {
+				this.new_name = "";
+				this.new_description = "";
 				this.$emit("added", collection);
 			});
 		}
