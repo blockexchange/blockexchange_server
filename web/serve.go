@@ -1,7 +1,6 @@
 package web
 
 import (
-	"embed"
 	"net/http"
 	"os"
 
@@ -125,19 +124,15 @@ func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {
 	r.HandleFunc("/api/access_token", Secure(api.PostAccessToken)).Methods("POST")
 	r.HandleFunc("/api/access_token/{id}", Secure(api.DeleteAccessToken)).Methods("DELETE")
 
-	// webdev flag
-	useLocalfs := cfg.WebDev
 	// static files
-	fs := http.FileServer(getFileSystem(useLocalfs, public.Webapp))
-	r.PathPrefix("/").HandlerFunc(CachedServeFunc(fs.ServeHTTP))
-}
-
-func getFileSystem(useLocalfs bool, content embed.FS) http.FileSystem {
-	if useLocalfs {
+	if cfg.WebDev {
 		logrus.Print("using live mode")
-		return http.FS(os.DirFS("public"))
-	}
+		fs := http.FileServer(http.FS(os.DirFS("public")))
+		r.PathPrefix("/").HandlerFunc(fs.ServeHTTP)
 
-	logrus.Print("using embed mode")
-	return http.FS(content)
+	} else {
+		logrus.Print("using embed mode")
+		fs := http.FileServer(http.FS(public.Webapp))
+		r.PathPrefix("/").HandlerFunc(CachedServeFunc(fs.ServeHTTP))
+	}
 }
