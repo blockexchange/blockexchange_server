@@ -82,7 +82,7 @@ func (repo DBSchemaSearchRepository) buildWhereQuery(query *strings.Builder, sea
 		params = append(params, *search.UserID)
 	}
 
-	if search.UserID != nil {
+	if search.TagID != nil {
 		query.WriteString(fmt.Sprintf(" and id in (select schema_id from schematag where tag_id = $%d)", bind_index))
 		bind_index++
 		params = append(params, *search.TagID)
