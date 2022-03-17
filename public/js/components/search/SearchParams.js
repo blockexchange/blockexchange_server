@@ -4,11 +4,10 @@ export default {
 	methods: {
 		search: function(){
 			this.$emit("search");
-			return false;
 		}
 	},
 	template: /*html*/`
-		<form v-on:submit="search">
+		<form v-on:submit.prevent="search">
 			<div class="input-group mb-3">
 				<input type="text"
 					class="form-control"
