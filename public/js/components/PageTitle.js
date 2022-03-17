@@ -8,4 +8,4 @@ export default {
             <small v-if="minor" class="text-muted">{{ minor }}</small>
         </h3>
     `
-}
+};
