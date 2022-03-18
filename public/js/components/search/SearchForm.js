@@ -2,11 +2,13 @@ import SearchResult from './SearchResult.js';
 import { search } from '../../api/searchschema.js';
 import { get_all as get_tags } from '../../api/tag.js';
 import Pager from '../Pager.js';
+import debounce from '../../util/debounce.js';
 
 const store = Vue.reactive({
 	result: null,
 	total: 0,
 	tags: [],
+	busy: false,
 	selected_tag: null,
 	keywords: ""
 });
@@ -39,15 +41,24 @@ export default {
 				query.keywords = this.keywords.trim().replaceAll(" ", "|");
 			}
 
+			this.busy = true;
 			search(query, limit, offset)
 			.then(result => {
 				this.result = result;
 				this.total = result.total;
+				this.busy = false;
 			});
 		},
 		search: function() {
 			this.$refs.pager.update();
-		}
+		},
+		debouncedSearch: debounce(function() {
+			this.search();
+		}, 250)
+	},
+	watch: {
+		"keywords": "debouncedSearch",
+		"selected_tag": "search"
 	},
 	template: /*html*/`
 		<div>
@@ -75,6 +86,8 @@ export default {
 						<button class="btn btn-primary w-100" type="button" v-on:click="search">
 							<i class="fa fa-search"></i>
 							Search
+							<span v-if="!busy" class="badge rounded-pill bg-secondary">{{ total }}</span>
+							<i v-if="busy" class="fa-solid fa-spinner fa-spin"></i>
 						</button>
 					</div>
 				</div>
