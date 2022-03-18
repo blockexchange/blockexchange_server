@@ -71,7 +71,7 @@ export default {
 							v-model="keywords"
 						/>
 					</div>
-					<div class="col-md-3">
+					<div class="col-md-2">
 						<div class="input-group">
 							<span class="input-group-text">Tag</span>
 							<select class="form-select" v-model="selected_tag">
@@ -82,7 +82,7 @@ export default {
 							</select>
 						</div>
 					</div>
-					<div class="col-md-1">
+					<div class="col-md-2">
 						<button class="btn btn-primary w-100" type="button" v-on:click="search">
 							<i class="fa fa-search"></i>
 							Search
