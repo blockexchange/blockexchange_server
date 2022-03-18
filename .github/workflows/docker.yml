@@ -22,15 +22,12 @@ jobs:
         tag_names: true
         cache: true
 
-    - name: deploy central
-      run: curl -X POST -F token=6e0aa9d77b43c78c268a0c7e7fabb6 -F ref=master https://dev.rudin.io/api/v4/projects/68/trigger/pipeline
-
     - name: 📧 Discord success notification
       env:
         DISCORD_WEBHOOK: ${{ secrets.discord_webhook }}
       uses: Ilshidur/action-discord@0.3.2
       with:
-        args: '☑️ Deployment triggered for commit `${{ github.sha }}`'
+        args: '☑️ Build complete for commit `${{ github.sha }}`'
 
     - name: 📧 Discord failure notification
       if: failure()
@@ -39,3 +36,10 @@ jobs:
       uses: Ilshidur/action-discord@0.3.2
       with:
         args: '🚫 Build failed for commit `${{ github.sha }}`'
+
+    - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        repository: blockexchange/blockexchange.minetest.land
+        event-type: deploy
