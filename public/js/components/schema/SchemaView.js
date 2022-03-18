@@ -2,6 +2,7 @@ import { search } from '../../api/searchschema.js';
 import { get_by_schemaid } from '../../api/screenshot.js';
 
 import loginStore from '../../store/login.js';
+import infoStore from '../../store/info.js';
 
 import SchemaDetail from './SchemaDetail.js';
 import SchemaMods from './SchemaMods.js';
@@ -14,6 +15,8 @@ import SchemaTitle from './SchemaTitle.js';
 import SchemaTags from './SchemaTags.js';
 import SchemaStar from './SchemaStar.js';
 
+import Clipboard from '../Clipboard.js';
+
 export default {
 	components: {
 		"schema-detail": SchemaDetail,
@@ -25,7 +28,8 @@ export default {
 		"schema-title": SchemaTitle,
 		"schema-tags": SchemaTags,
 		"schema-updateinfo": SchemaUpdateInfo,
-		"schema-star": SchemaStar
+		"schema-star": SchemaStar,
+		"clipboard-component": Clipboard
 	},
 	props: ["user_name", "schema_name"],
 	data: function(){
@@ -54,6 +58,10 @@ export default {
 		},
 		updatePreview: function(){
 			this.preview_version = Date.now();
+		},
+		getLink: function(){
+			//TODO: move base_url to common props
+			return `${infoStore.oauth.base_url}/api/static/schema/${this.user_name}/${this.schema_name}`;
 		}
 	},
 	created: function(){
@@ -70,8 +78,10 @@ export default {
 							Incomplete
 						</span>
 						&nbsp;
+						<clipboard-component :link="getLink()"/>
+						&nbsp;
 						<schema-star :schema="schema"/>
-					</h3>
+						</h3>
 				</div>
 				<div class="col-md-6">
 					<div class="btn-group float-end">
