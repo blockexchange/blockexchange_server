@@ -95,6 +95,11 @@ func (api *Api) DeleteCollection(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
+	if collection == nil {
+		SendError(w, 404, "not found")
+		return
+	}
+
 	if collection.UserID != ctx.Token.UserID {
 		SendError(w, 403, "Userid does not match")
 		return

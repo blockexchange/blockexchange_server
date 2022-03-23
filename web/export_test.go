@@ -16,9 +16,7 @@ func TestWorldEditExport(t *testing.T) {
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
 	testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, nil)
 
-	r := httptest.NewRequest("GET", "http://", nil)
-	w := httptest.NewRecorder()
-	r = mux.SetURLVars(r, map[string]string{
+	w, r := testutils.CreateGETRequest(t, map[string]string{
 		"id": strconv.Itoa(int(schema.ID)),
 	})
 
