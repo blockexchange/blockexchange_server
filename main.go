@@ -38,5 +38,8 @@ func main() {
 	jobs.Start(db_)
 
 	// listen to web requests
-	web.Serve(db_, cfg)
+	err = web.Serve(db_, cfg)
+	if err != nil {
+		panic(err)
+	}
 }

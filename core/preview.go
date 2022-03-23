@@ -7,13 +7,7 @@ import (
 	"blockexchange/types"
 )
 
-func UpdatePreview(schema *types.Schema, repo *db.Repositories) (*types.SchemaScreenshot, error) {
-
-	cm := colormapping.NewColorMapping()
-	err := cm.LoadDefaults()
-	if err != nil {
-		return nil, err
-	}
+func UpdatePreview(schema *types.Schema, repo *db.Repositories, cm *colormapping.ColorMapping) (*types.SchemaScreenshot, error) {
 
 	renderer := render.NewISORenderer(repo.SchemaPartRepo.GetBySchemaIDAndOffset, cm)
 	png, err := renderer.RenderIsometricPreview(schema)

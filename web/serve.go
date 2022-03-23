@@ -16,7 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func Serve(db_ *sqlx.DB, cfg *core.Config) {
+func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 
 	r := mux.NewRouter()
 
@@ -30,7 +30,10 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) {
 		cache = core.NewNoOpCache()
 	}
 
-	api := NewApi(db_, cache)
+	api, err := NewApi(db_, cache)
+	if err != nil {
+		return err
+	}
 	SetupRoutes(r, api, cfg)
 
 	handler := cors.Default().Handler(r)
@@ -39,10 +42,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) {
 	// metrics
 	http.Handle("/metrics", promhttp.Handler())
 
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		panic(err)
-	}
+	return http.ListenAndServe(":8080", nil)
 }
 
 func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {

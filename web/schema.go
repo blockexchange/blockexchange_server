@@ -158,7 +158,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 	}
 
 	// update screenshot
-	screenshot, err := core.UpdatePreview(schema, api.Repositories)
+	screenshot, err := core.UpdatePreview(schema, api.Repositories, api.ColorMapping)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
