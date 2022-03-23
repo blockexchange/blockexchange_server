@@ -12,6 +12,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
+	"github.com/vearutop/statigz"
+	"github.com/vearutop/statigz/brotli"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -137,7 +139,6 @@ func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {
 
 	} else {
 		logrus.Print("using embed mode")
-		fs := http.FileServer(http.FS(public.Webapp))
-		r.PathPrefix("/").HandlerFunc(CachedServeFunc(fs.ServeHTTP))
+		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding))
 	}
 }
