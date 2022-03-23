@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/blockexchange/blockexchange_server#readme",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.1.0",
+    "@fortawesome/fontawesome-free": "^6.1.1",
     "bootswatch": "^5.1.3",
     "vue": "^3.2.30",
     "vue-router": "^4.0.14",
