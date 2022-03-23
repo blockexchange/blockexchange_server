@@ -17,7 +17,7 @@ func CachedServeFunc(h http.HandlerFunc) http.HandlerFunc {
 			}
 		}
 
-		w.Header().Set("Cache-Control", "max-age=60")
+		w.Header().Set("Cache-Control", "max-age=345600")
 		w.Header().Set("ETag", etag)
 		h.ServeHTTP(w, r)
 	}
