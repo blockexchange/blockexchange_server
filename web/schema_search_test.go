@@ -1,7 +1,6 @@
 package web
 
 import (
-	"blockexchange/core"
 	"blockexchange/testutils"
 	"blockexchange/types"
 	"bytes"
@@ -14,8 +13,7 @@ import (
 )
 
 func TestSearchSchema(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 
 	// prepare data
 

@@ -1,8 +1,6 @@
 package web
 
 import (
-	"blockexchange/core"
-	"blockexchange/testutils"
 	"net/http/httptest"
 	"testing"
 
@@ -10,8 +8,7 @@ import (
 )
 
 func TestGetColorMapping(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 
 	// Create
 	r := httptest.NewRequest("GET", "http://", nil)

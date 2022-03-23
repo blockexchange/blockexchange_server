@@ -49,14 +49,8 @@ func (r MockUserRepo) UpdateUser(user *types.User) error {
 	return nil
 }
 
-func createTestApi(t *testing.T) *Api {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
-	return api
-}
-
 func TestValidUserLogin(t *testing.T) {
-	api := createTestApi(t)
+	api := NewTestApi(t)
 
 	hash, err := bcrypt.GenerateFromPassword([]byte("pw"), bcrypt.DefaultCost)
 	assert.NoError(t, err)
@@ -87,7 +81,7 @@ func TestValidUserLogin(t *testing.T) {
 }
 
 func TestInvalidUserLogin(t *testing.T) {
-	api := createTestApi(t)
+	api := NewTestApi(t)
 
 	hash, err := bcrypt.GenerateFromPassword([]byte("pw"), bcrypt.DefaultCost)
 	assert.NoError(t, err)
@@ -116,7 +110,7 @@ func TestInvalidUserLogin(t *testing.T) {
 }
 
 func TestAccessTokenLogin(t *testing.T) {
-	api := createTestApi(t)
+	api := NewTestApi(t)
 
 	user := &types.User{
 		Type: types.UserTypeLocal,
@@ -152,7 +146,7 @@ func TestAccessTokenLogin(t *testing.T) {
 }
 
 func TestInvalidAccessTokenLogin(t *testing.T) {
-	api := createTestApi(t)
+	api := NewTestApi(t)
 
 	user := &types.User{
 		Type: types.UserTypeLocal,

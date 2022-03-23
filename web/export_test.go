@@ -1,7 +1,6 @@
 package web
 
 import (
-	"blockexchange/core"
 	"blockexchange/testutils"
 	"net/http/httptest"
 	"strconv"
@@ -12,8 +11,7 @@ import (
 )
 
 func TestWorldEditExport(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, nil)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
 	testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, nil)
@@ -31,8 +29,7 @@ func TestWorldEditExport(t *testing.T) {
 }
 
 func TestBXExport(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, nil)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
 	testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, nil)

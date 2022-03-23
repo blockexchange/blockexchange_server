@@ -1,7 +1,6 @@
 package web
 
 import (
-	"blockexchange/core"
 	"blockexchange/testutils"
 	"blockexchange/types"
 	"bytes"
@@ -16,8 +15,7 @@ import (
 )
 
 func TestSchemaCreateNoUser(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	schema := &types.Schema{
 		UserID:      -1,
 		Name:        "my-schema",
@@ -38,8 +36,7 @@ func TestSchemaCreateNoUser(t *testing.T) {
 }
 
 func TestSchemaCreateInvalidUser(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	schema := &types.Schema{
 		UserID:      -1,
@@ -62,8 +59,7 @@ func TestSchemaCreateInvalidUser(t *testing.T) {
 }
 
 func TestSchemaCreate(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	schema := &types.Schema{
 		UserID:      user.ID,
@@ -123,8 +119,7 @@ func TestSchemaCreate(t *testing.T) {
 }
 
 func TestSchemaCreateAndDownload(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	schema := &types.Schema{
 		UserID:      user.ID,

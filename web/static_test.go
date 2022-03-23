@@ -1,7 +1,6 @@
 package web
 
 import (
-	"blockexchange/core"
 	"blockexchange/testutils"
 	"net/http/httptest"
 	"testing"
@@ -11,8 +10,7 @@ import (
 )
 
 func TestGetStaticView(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 
 	r := httptest.NewRequest("GET", "http://", nil)
 	w := httptest.NewRecorder()

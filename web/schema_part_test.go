@@ -1,7 +1,6 @@
 package web
 
 import (
-	"blockexchange/core"
 	"blockexchange/testutils"
 	"blockexchange/types"
 	"bytes"
@@ -15,8 +14,7 @@ import (
 )
 
 func TestCreateSchemaPart(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, nil)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
 	schemapart := testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, nil)
@@ -56,8 +54,7 @@ func TestCreateSchemaPart(t *testing.T) {
 }
 
 func TestGetNextSchemaPart(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, nil)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
 	testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, &types.SchemaPart{
@@ -117,8 +114,7 @@ func TestGetNextSchemaPart(t *testing.T) {
 }
 
 func TestCreateSchemaPartInvalidSchemaID(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, nil)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
 	schemapart := testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, nil)

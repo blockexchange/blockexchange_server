@@ -1,7 +1,6 @@
 package web
 
 import (
-	"blockexchange/core"
 	"blockexchange/testutils"
 	"blockexchange/types"
 	"encoding/json"
@@ -26,8 +25,7 @@ func assertInvalidUsername(t *testing.T, api *Api, username string) {
 }
 
 func TestValidateUsername(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 
 	assertValidUsername(t, api, "nonexistentuser")
@@ -43,8 +41,7 @@ func TestValidateUsername(t *testing.T) {
 }
 
 func TestCountUsers(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	testutils.CreateUser(api.UserRepo, t, &types.User{})
 
 	count, err := api.UserRepo.CountUsers()

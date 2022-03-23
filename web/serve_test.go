@@ -16,7 +16,7 @@ func TestServe(t *testing.T) {
 	ts := httptest.NewServer(r)
 	defer ts.Close()
 
-	api := createTestApi(t)
+	api := NewTestApi(t)
 	SetupRoutes(r, api, &core.Config{})
 
 	res, err := http.Get(ts.URL + "/api/info")

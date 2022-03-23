@@ -1,7 +1,6 @@
 package web
 
 import (
-	"blockexchange/core"
 	"blockexchange/testutils"
 	"blockexchange/types"
 	"bytes"
@@ -17,8 +16,7 @@ import (
 )
 
 func TestAccessTokenNoAccess(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	token := &types.AccessToken{
 		UserID:  user.ID,
@@ -37,8 +35,7 @@ func TestAccessTokenNoAccess(t *testing.T) {
 }
 
 func TestAccessTokenFullAccess(t *testing.T) {
-	db_ := testutils.CreateTestDatabase(t)
-	api := NewApi(db_, core.NewNoOpCache())
+	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	token := &types.AccessToken{
 		UserID:  user.ID,
