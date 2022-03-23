@@ -2,7 +2,6 @@ package web
 
 import (
 	"blockexchange/types"
-	"encoding/json"
 	"net/http"
 )
 
@@ -20,11 +19,6 @@ func (api *Api) GetColorMapping(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	colormapping, err := json.Marshal(response)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	SendJson(w, colormapping)
+	w.Header().Set("Cache-Control", "max-age=345600")
+	SendJson(w, response)
 }
