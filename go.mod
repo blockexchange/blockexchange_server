@@ -9,12 +9,13 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.15.1
 	github.com/gorilla/mux v1.8.0
 	github.com/jmoiron/sqlx v1.3.4
-	github.com/lib/pq v1.10.4
+	github.com/lib/pq v1.10.5
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/prometheus/client_golang v1.12.1
 	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.1
+	github.com/vearutop/statigz v1.1.7
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 )
 
@@ -33,7 +34,6 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
-	github.com/vearutop/statigz v1.1.7 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
 	golang.org/x/image v0.0.0-20210504121937-7319ad40d33e // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
