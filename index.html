@@ -1190,6 +1190,10 @@ pub fn main() {
                                         }
                                         if (schema.$ref != null) {
                                           schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
                                         } else if (schema.items != null && schema.items.$ref != null) {
                                             schema.items = defsParser.$refs.get(schema.items.$ref);
                                         } else {
@@ -1495,6 +1499,10 @@ pub fn main() {
                                         }
                                         if (schema.$ref != null) {
                                           schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
                                         } else if (schema.items != null && schema.items.$ref != null) {
                                             schema.items = defsParser.$refs.get(schema.items.$ref);
                                         } else {
