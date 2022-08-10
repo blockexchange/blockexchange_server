@@ -1,7 +1,6 @@
-package web
+package controller
 
 import (
-	"blockexchange/colormapping"
 	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/public"
@@ -11,35 +10,23 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var webdev = os.Getenv("WEBDEV")
-
-type Api struct {
+type Controller struct {
 	*db.Repositories
-	te           *templateengine.TemplateEngine
-	Cache        core.Cache
-	ColorMapping *colormapping.ColorMapping
+	te *templateengine.TemplateEngine
 }
 
-func NewApi(db_ *sqlx.DB, cache core.Cache) (*Api, error) {
-	cm := colormapping.NewColorMapping()
-	err := cm.LoadDefaults()
-	if err != nil {
-		return nil, err
-	}
-
-	return &Api{
+func NewController(db_ *sqlx.DB, cfg *core.Config) *Controller {
+	return &Controller{
 		Repositories: db.NewRepositories(db_),
-		Cache:        cache,
-		ColorMapping: cm,
 		te: templateengine.NewTemplateEngine(&templateengine.TemplateEngineOptions{
 			Templates:    public.Files,
 			TemplateDir:  "public",
-			EnableCache:  webdev != "true",
+			EnableCache:  !cfg.WebDev,
 			JWTKey:       os.Getenv("BLOCKEXCHANGE_KEY"),
 			CookieName:   "blockexchange",
 			CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
 			CookieDomain: os.Getenv("BLOCKEXCHANGE_COOKIE_DOMAIN"),
 			CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
 		}),
-	}, nil
+	}
 }

@@ -1,4 +1,4 @@
-package web
+package api
 
 import (
 	"blockexchange/testutils"
@@ -224,12 +224,4 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, schema3)
 	assert.Equal(t, 2, schema3.Downloads)
-
-	// delete
-
-	r = httptest.NewRequest("DELETE", "http://", nil)
-	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
-	w = httptest.NewRecorder()
-	testutils.Login(t, r, user)
-
 }
