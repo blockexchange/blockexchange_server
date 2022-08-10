@@ -1,0 +1,12 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{{.BaseURL}}assets/bootstrap.min.css"/>
+        <title>{{block "title" .}}{{end}}</title>
+    </head>
+    <body>
+        {{block "content" .}}{{end}}
+    </body>
+</html>
+{{end}}

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	jwt "github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 func GetPermissions(user *types.User, management bool) []types.JWTPermission {

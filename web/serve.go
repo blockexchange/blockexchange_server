@@ -6,14 +6,9 @@ import (
 
 	"blockexchange/core"
 	"blockexchange/public"
-	"blockexchange/web/oauth"
 
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
-	"github.com/rs/cors"
-	"github.com/sirupsen/logrus"
-	"github.com/vearutop/statigz"
-	"github.com/vearutop/statigz/brotli"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -37,9 +32,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 		return err
 	}
 	SetupRoutes(r, api, cfg)
-
-	handler := cors.Default().Handler(r)
-	http.Handle("/", handler)
+	http.Handle("/", r)
 
 	// metrics
 	http.Handle("/metrics", promhttp.Handler())
@@ -49,71 +42,22 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 
 func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {
 
-	if cfg.GithubOAuthConfig != nil {
-		github_oauth := oauth.NewHandler(&oauth.GithubOauth{}, cfg, api.UserRepo, api.AccessTokenRepo)
-		r.HandleFunc("/api/oauth_callback/github", github_oauth.Handle)
-	}
-
-	if cfg.DiscordOAuthConfig != nil {
-		discord_oauth := oauth.NewHandler(&oauth.DiscordOauth{}, cfg, api.UserRepo, api.AccessTokenRepo)
-		r.HandleFunc("/api/oauth_callback/discord", discord_oauth.Handle)
-	}
-
-	if cfg.MesehubOAuthConfig != nil {
-		mesehub_oauth := oauth.NewHandler(&oauth.MesehubOauth{}, cfg, api.UserRepo, api.AccessTokenRepo)
-		r.HandleFunc("/api/oauth_callback/mesehub", mesehub_oauth.Handle)
-	}
-
 	// api surface
 	r.Handle("/api/info", InfoHandler{Config: cfg})
 	r.HandleFunc("/api/token", api.PostLogin).Methods("POST")
 
-	if cfg.EnableSignup {
-		r.HandleFunc("/api/register", api.Register).Methods("POST")
-	}
-
-	r.HandleFunc("/api/validate_username", api.PostValidateUsername).Methods("POST")
-	r.HandleFunc("/api/user", api.GetUsers).Methods("GET")
-	r.HandleFunc("/api/user/{id}", Secure(api.UpdateUser)).Methods("POST")
-
 	r.HandleFunc("/api/export_we/{id}/{filename}", api.ExportWorldeditSchema).Methods("GET")
 	r.HandleFunc("/api/export_bx/{id}/{filename}", api.ExportBXSchema).Methods("GET")
-
-	r.HandleFunc("/api/colormapping", api.GetColorMapping).Methods("GET")
 
 	r.HandleFunc("/api/schema/{id}", api.GetSchema).Methods("GET")
 	r.HandleFunc("/api/schema", Secure(api.CreateSchema)).Methods("POST")
 	r.HandleFunc("/api/schema/{id}", Secure(api.UpdateSchema)).Methods("PUT")
-	r.HandleFunc("/api/schema/{id}", Secure(api.DeleteSchema)).Methods("DELETE")
 	r.HandleFunc("/api/schema/{id}/mods", api.GetSchemaMods).Methods("GET")
 	r.HandleFunc("/api/schema/{id}/mods", Secure(api.CreateSchemaMods)).Methods("POST")
 	r.HandleFunc("/api/schema/{id}/update", Secure(api.UpdateSchemaInfo)).Methods("POST")
 
-	r.HandleFunc("/api/schema/{schema_id}/star", Secure(api.CreateSchemaStar)).Methods("POST")
-	r.HandleFunc("/api/schema/{schema_id}/star", Secure(api.DeleteSchemaStar)).Methods("DELETE")
-	r.HandleFunc("/api/schema/{schema_id}/star", api.GetSchemaStars).Methods("GET")
-
-	r.HandleFunc("/api/schema/{schema_id}/tag/{tag_id}", Secure(api.CreateSchemaTag)).Methods("PUT")
-	r.HandleFunc("/api/schema/{schema_id}/tag/{tag_id}", Secure(api.DeleteSchemaTag)).Methods("DELETE")
-	r.HandleFunc("/api/schema/{schema_id}/tag", api.GetSchemaTags).Methods("GET")
-
-	r.HandleFunc("/api/collection/by-user_id/{user_id}", api.GetCollectionsByUserID).Methods("GET")
-	r.HandleFunc("/api/collection", Secure(api.CreateCollection)).Methods("POST")
-	r.HandleFunc("/api/collection/{id}", Secure(api.UpdateCollection)).Methods("PUT")
-	r.HandleFunc("/api/collection/{id}", Secure(api.DeleteCollection)).Methods("DELETE")
-
-	r.HandleFunc("/api/collection_schema/{collection_id}", api.GetCollectionSchemaByCollectionID).Methods("GET")
-	r.HandleFunc("/api/collection_schema/{collection_id}/{schema_id}", api.GetCollectionSchemaByCollectionID).Methods("POST")
-
-	r.HandleFunc("/api/tag", api.GetTags).Methods("GET")
-	r.HandleFunc("/api/tag", Secure(api.CreateTag)).Methods("POST")
-	r.HandleFunc("/api/tag", Secure(api.UpdateTag)).Methods("PUT")
-	r.HandleFunc("/api/tag/{id}", Secure(api.DeleteTag)).Methods("DELETE")
-
 	r.HandleFunc("/api/schema/{schema_id}/screenshot/{id}", api.GetSchemaScreenshotByID)
 	r.HandleFunc("/api/schema/{schema_id}/screenshot", api.GetSchemaScreenshots)
-
-	r.HandleFunc("/api/static/schema/{user_name}/{schema_name}", api.GetStaticView)
 
 	r.HandleFunc("/api/search/schema/byname/{user_name}/{schema_name}", api.SearchSchemaByNameAndUser)
 	r.HandleFunc("/api/searchschema", api.SearchSchema).Methods("POST")
@@ -127,18 +71,9 @@ func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {
 	r.HandleFunc("/api/schemapart_next/by-mtime/{schema_id}/{mtime}", api.GetNextSchemaPartByMtime)
 	r.HandleFunc("/api/schemapart_first/{schema_id}", api.GetFirstSchemaPart)
 
-	r.HandleFunc("/api/access_token", Secure(api.GetAccessTokens)).Methods("GET")
-	r.HandleFunc("/api/access_token", Secure(api.PostAccessToken)).Methods("POST")
-	r.HandleFunc("/api/access_token/{id}", Secure(api.DeleteAccessToken)).Methods("DELETE")
+	r.HandleFunc("/", api.Index)
 
-	// static files
-	if cfg.WebDev {
-		logrus.Print("using live mode")
-		fs := http.FileServer(http.FS(os.DirFS("public")))
-		r.PathPrefix("/").HandlerFunc(fs.ServeHTTP)
+	r.PathPrefix("/assets/").HandlerFunc(HandleAssets(public.Files, webdev != "true"))
+	r.PathPrefix("/pics/").HandlerFunc(HandleAssets(public.Files, webdev != "true"))
 
-	} else {
-		logrus.Print("using embed mode")
-		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding))
-	}
 }

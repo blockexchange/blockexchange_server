@@ -232,7 +232,4 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	w = httptest.NewRecorder()
 	testutils.Login(t, r, user)
 
-	Secure(api.DeleteSchema)(w, r)
-	assert.Equal(t, 200, w.Result().StatusCode)
-
 }

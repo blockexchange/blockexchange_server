@@ -1,0 +1,23 @@
+{{define "title"}}Login{{end}}
+{{define "content"}}
+    <a href="/">Index</a>
+    <form method="POST">
+        <input type="hidden" name="action" value="login"/>
+        <input type="text" name="username" placeholder="Username" value="{{.Data.Username}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
+        <input type="password" name="password" placeholder="Password" value="{{.Data.Password}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
+        {{if .Data.LoginError}}
+            <div class="invalid-feedback">
+                Invalid usernmame or password!
+            </div>
+        {{end}}
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <br>
+    <form method="POST">
+        <input type="hidden" name="action" value="logout"/>
+        <button type="submit" class="btn btn-secondary">Logout</button>
+    </form>
+    {{if .Claims}}
+        Username: {{.Claims.Username}}
+    {{end}}
+{{end}}
