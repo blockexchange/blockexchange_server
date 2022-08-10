@@ -1,9 +1,14 @@
 {{define "layout"}}
 <!DOCTYPE html>
-<html>
+<html style="height: 100%">
     <head>
-        <link rel="stylesheet" href="{{.BaseURL}}assets/bootstrap.min.css"/>
-        <title>{{block "title" .}}{{end}}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="theme-color" content="#000">
+        <link rel="icon" href="{{.BaseURL}}assets/pics/bx_big.png" type="image/png">
+        <link rel="stylesheet" href="{{.BaseURL}}assets/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="{{.BaseURL}}assets/css/fontawesome.min.css"/>
+        <title>Block exchange {{block "title" .}}{{end}}</title>
     </head>
     <body>
         {{block "content" .}}{{end}}

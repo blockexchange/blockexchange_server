@@ -74,6 +74,5 @@ func SetupRoutes(r *mux.Router, api *Api, cfg *core.Config) {
 	r.HandleFunc("/", api.Index)
 
 	r.PathPrefix("/assets/").HandlerFunc(HandleAssets(public.Files, webdev != "true"))
-	r.PathPrefix("/pics/").HandlerFunc(HandleAssets(public.Files, webdev != "true"))
 
 }
