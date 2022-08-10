@@ -1,6 +1,8 @@
 package types
 
-import "fmt"
+import (
+	"github.com/golang-jwt/jwt/v4"
+)
 
 type JWTPermission string
 
@@ -11,15 +13,11 @@ const (
 	JWTPermissionAdmin      JWTPermission = "ADMIN"
 )
 
-type TokenInfo struct {
-	Username    string
-	UserID      int64
-	Mail        string
-	Type        string
-	Permissions []JWTPermission
-}
-
-func (t TokenInfo) String() string {
-	return fmt.Sprintf("TokenInfo: Username=%s UserID=%d Mail=%s Type=%s Permissions=%s",
-		t.Username, t.UserID, t.Mail, t.Type, t.Permissions)
+type Claims struct {
+	*jwt.RegisteredClaims
+	Username    string          `json:"username"`
+	UserID      int64           `json:"user_id"`
+	Mail        string          `json:"mail"`
+	Type        UserType        `json:"type"`
+	Permissions []JWTPermission `json:"permissions"`
 }

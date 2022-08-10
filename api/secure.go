@@ -8,11 +8,11 @@ import (
 )
 
 type SecureContext struct {
-	Token *types.TokenInfo
+	Claims *types.Claims
 }
 
 func (ctx *SecureContext) CheckPermission(w http.ResponseWriter, permission types.JWTPermission) bool {
-	for _, p := range ctx.Token.Permissions {
+	for _, p := range ctx.Claims.Permissions {
 		if p == permission {
 			return true
 		}
@@ -36,14 +36,14 @@ func Secure(h SecureHandler) Handler {
 			return
 		}
 
-		token, err := core.ParseJWT(authorization)
+		claims, err := core.ParseJWT(authorization)
 		if err != nil {
 			SendError(w, http.StatusForbidden, err.Error())
 			return
 		}
 
 		ctx := SecureContext{
-			Token: token,
+			Claims: claims,
 		}
 
 		h(w, r, &ctx)

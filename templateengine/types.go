@@ -1,14 +1,9 @@
 package templateengine
 
-import "github.com/golang-jwt/jwt/v4"
-
-type Claims struct {
-	*jwt.RegisteredClaims
-	Username string `json:"username"`
-}
+import "blockexchange/types"
 
 type RenderData struct {
-	Claims  *Claims
+	Claims  *types.Claims
 	BaseURL string
 	Data    any
 }

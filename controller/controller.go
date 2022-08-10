@@ -12,12 +12,14 @@ import (
 
 type Controller struct {
 	*db.Repositories
-	te *templateengine.TemplateEngine
+	cfg *core.Config
+	te  *templateengine.TemplateEngine
 }
 
 func NewController(db_ *sqlx.DB, cfg *core.Config) *Controller {
 	return &Controller{
 		Repositories: db.NewRepositories(db_),
+		cfg:          cfg,
 		te: templateengine.NewTemplateEngine(&templateengine.TemplateEngineOptions{
 			Templates:    public.Files,
 			TemplateDir:  "public",

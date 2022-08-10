@@ -136,8 +136,7 @@ func (h *OauthHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	permissions := core.GetPermissions(user, true)
-	exp := time.Now().Unix() + (3600 * 24 * 180)
-	token, err := core.CreateJWT(user, permissions, exp)
+	token, err := core.CreateJWT(user, permissions, time.Duration(24*180*time.Hour))
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

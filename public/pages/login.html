@@ -1,23 +1,83 @@
 {{define "title"}}Login{{end}}
 {{define "content"}}
-    <a href="/">Index</a>
-    <form method="POST">
-        <input type="hidden" name="action" value="login"/>
-        <input type="text" name="username" placeholder="Username" value="{{.Data.Username}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
-        <input type="password" name="password" placeholder="Password" value="{{.Data.Password}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
-        {{if .Data.LoginError}}
-            <div class="invalid-feedback">
-                Invalid usernmame or password!
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+            Local login
             </div>
+            <div class="card-body">
+                <h5 class="card-title">Login</h5>
+                {{if .Data.Config.EnableSignup}}
+                    {{if .Claims}}
+                    <form method="POST">
+                        <input type="hidden" name="action" value="logout"/>
+                        <button type="submit" class="btn btn-secondary">Logout</button>
+                    </form>
+                    {{else}}
+                    <form method="POST">
+                        <input type="hidden" name="action" value="login"/>
+                        <input type="text" name="username" placeholder="Username" value="{{.Data.Username}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
+                        <input type="password" name="password" placeholder="Password" value="{{.Data.Password}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
+                        {{if .Data.LoginError}}
+                            <div class="invalid-feedback">
+                                Invalid usernmame or password!
+                            </div>
+                        {{end}}
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                    {{end}}
+                {{else}}
+                <div>
+                    Local login is disabled
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        {{if .Data.Config.EnableSignup}}
+        <div class="card">
+            <div class="card-header">
+                Sign up
+            </div>
+            <div class="card-body">
+                <a href="{{.BaseURL}}register" class="btn btn-secondary">
+                    Register
+                </a>
+            </div>
+        </div>
         {{end}}
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
-    <br>
-    <form method="POST">
-        <input type="hidden" name="action" value="logout"/>
-        <button type="submit" class="btn btn-secondary">Logout</button>
-    </form>
-    {{if .Claims}}
-        Username: {{.Claims.Username}}
-    {{end}}
+        <div class="card">
+            <div class="card-header">
+                External login
+            </div>
+            <div class="card-body">
+                {{if .Data.Config.DiscordOAuthConfig}}
+                <a href="'https://discord.com/api/oauth2/authorize?client_id=' + info.oauth.discord_id + '&redirect_uri=' + encodeURIComponent(info.oauth.base_url + '/api/oauth_callback/discord') + '&response_type=code&scope=identify%20email'"
+                    class="btn btn-secondary">
+                    <i class="fab fa-discord"></i>
+                    Login with Discord
+                </a>
+                &nbsp;
+                {{end}}
+                {{if .Data.Config.GithubOAuthConfig}}
+                <a href="'https://github.com/login/oauth/authorize?client_id=' + info.oauth.github_id"
+                    class="btn btn-secondary">
+                    <i class="fab fa-github"></i>
+                    Login with Github
+                </a>
+                &nbsp;
+                {{end}}
+                {{if .Data.Config.MesehubOAuthConfig}}
+                <a href="'https://git.minetest.land/login/oauth/authorize?client_id=' + info.oauth.mesehub_id + '&redirect_uri=' + encodeURIComponent(info.oauth.base_url + '/api/oauth_callback/mesehub') + '&response_type=code&state=STATE'"
+                    class="btn btn-secondary">
+                    <img src="assets/pics/default_mese_crystal.png"/>
+                    Login with Mesehub
+                </a>
+                {{end}}
+            </div>
+        </div>
+    </div>
+</div>
 {{end}}

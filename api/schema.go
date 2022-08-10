@@ -64,13 +64,13 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 
 	// remove incomplete schema with same name if it exists
-	err = api.SchemaRepo.DeleteIncompleteSchema(ctx.Token.UserID, schema.Name)
+	err = api.SchemaRepo.DeleteIncompleteSchema(ctx.Claims.UserID, schema.Name)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	schema.UserID = ctx.Token.UserID
+	schema.UserID = ctx.Claims.UserID
 	schema.Created = time.Now().Unix() * 1000
 
 	err = api.SchemaRepo.CreateSchema(&schema)
@@ -98,7 +98,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		return
 	}
 
-	schema.UserID = ctx.Token.UserID
+	schema.UserID = ctx.Claims.UserID
 	schema.Created = time.Now().Unix() * 1000
 
 	err = api.SchemaRepo.UpdateSchema(&schema)
@@ -124,7 +124,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 
-	if schema.UserID != ctx.Token.UserID {
+	if schema.UserID != ctx.Claims.UserID {
 		SendError(w, 403, "you are not the owner of the schema")
 		return
 	}

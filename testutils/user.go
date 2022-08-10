@@ -60,7 +60,7 @@ func Login(t *testing.T, r *http.Request, user *types.User) {
 		types.JWTPermissionOverwrite,
 		types.JWTPermissionAdmin,
 	}
-	token, err := core.CreateJWT(user, permissions, (time.Now().Unix()+3600)+1000)
+	token, err := core.CreateJWT(user, permissions, time.Duration(1*time.Hour))
 	assert.NoError(t, err)
 	r.Header.Set("Authorization", token)
 }

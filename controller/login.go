@@ -1,18 +1,25 @@
 package controller
 
 import (
-	"blockexchange/templateengine"
+	"blockexchange/core"
+	"blockexchange/types"
 	"net/http"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type LoginModel struct {
 	Username   string
 	Password   string
 	LoginError bool
+	Config     *core.Config
 }
 
 func (ctrl *Controller) Login(w http.ResponseWriter, r *http.Request) {
-	lm := &LoginModel{}
+	lm := &LoginModel{
+		Config: ctrl.cfg,
+	}
 
 	if r.Method == http.MethodPost {
 		r.ParseForm()
@@ -22,21 +29,43 @@ func (ctrl *Controller) Login(w http.ResponseWriter, r *http.Request) {
 			lm.Username = r.Form.Get("username")
 			lm.Password = r.Form.Get("password")
 
-			if lm.Password == "enter" {
-				// ok
-				claims := &templateengine.Claims{
-					Username: r.Form.Get("username"),
-				}
-				ctrl.te.SetClaims(w, claims)
-				http.Redirect(w, r, "login", http.StatusSeeOther)
+			user, err := ctrl.UserRepo.GetUserByName(lm.Username)
+			if err != nil {
+				ctrl.te.ExecuteError(w, r, "./", 500, err)
+				return
+			}
 
-			} else {
-				// wrong pw
+			if user == nil {
 				lm.LoginError = true
 				w.WriteHeader(401)
+				break
 			}
+
+			err = bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(lm.Password))
+			if err != nil {
+				lm.LoginError = true
+				w.WriteHeader(401)
+				break
+			}
+
+			permissions := core.GetPermissions(user, true)
+			if user.Role == types.UserRoleAdmin {
+				// admin user
+				permissions = append(permissions, types.JWTPermissionAdmin)
+			}
+
+			dur := time.Duration(7 * 24 * time.Hour)
+			token, err := core.CreateJWT(user, permissions, dur)
+			if err != nil {
+				ctrl.te.ExecuteError(w, r, "./", 500, err)
+				return
+			}
+
+			ctrl.te.SetToken(w, token, dur)
+			http.Redirect(w, r, "login", http.StatusSeeOther)
+
 		case "logout":
-			ctrl.te.RemoveClaims(w)
+			ctrl.te.RemoveToken(w)
 			http.Redirect(w, r, "login", http.StatusSeeOther)
 			return
 		}

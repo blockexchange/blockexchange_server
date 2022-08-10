@@ -1,6 +1,7 @@
 package templateengine
 
 import (
+	"fmt"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -75,7 +76,11 @@ func (te *TemplateEngine) Execute(file string, w http.ResponseWriter, r *http.Re
 		Data:    data,
 	}
 
-	return t.ExecuteTemplate(w, "layout", rd)
+	err = t.ExecuteTemplate(w, "layout", rd)
+	if err != nil {
+		fmt.Printf("Error on page: '%s', '%s'\n", file, err.Error())
+	}
+	return err
 }
 
 func (te *TemplateEngine) ExecuteError(w http.ResponseWriter, r *http.Request, baseUrl string, statuscode int, err error) error {
