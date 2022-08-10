@@ -11,7 +11,10 @@
         <title>Block exchange {{block "title" .}}{{end}}</title>
     </head>
     <body>
-        {{block "content" .}}{{end}}
+        {{block "navbar" .}}{{end}}
+        <div class="container-fluid">
+            {{block "content" .}}{{end}}
+        </div>
     </body>
 </html>
 {{end}}
