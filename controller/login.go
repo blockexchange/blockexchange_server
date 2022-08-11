@@ -21,7 +21,11 @@ func (ctrl *Controller) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		r.ParseForm()
+		err := r.ParseForm()
+		if err != nil {
+			ctrl.te.ExecuteError(w, r, "./", 500, err)
+			return
+		}
 
 		switch r.Form.Get("action") {
 		case "login":
