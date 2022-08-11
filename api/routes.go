@@ -23,10 +23,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/api/schema/{id}/update", Secure(api.UpdateSchemaInfo)).Methods("POST")
 
 	r.HandleFunc("/api/schema/{schema_id}/screenshot/{id}", api.GetSchemaScreenshotByID)
-	r.HandleFunc("/api/schema/{schema_id}/screenshot", api.GetSchemaScreenshots)
 
 	r.HandleFunc("/api/search/schema/byname/{user_name}/{schema_name}", api.SearchSchemaByNameAndUser)
-	r.HandleFunc("/api/searchschema", api.SearchSchema).Methods("POST")
 
 	r.HandleFunc("/api/schemapart", Secure(api.CreateSchemaPart)).Methods("POST")
 	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", api.GetSchemaPart).Methods("GET")

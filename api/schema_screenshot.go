@@ -99,24 +99,3 @@ func (api Api) GetSchemaScreenshotByID(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write(screenshot.Data)
 }
-
-func (api Api) GetSchemaScreenshots(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["schema_id"])
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(int64(id))
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	for i := range screenshots {
-		screenshots[i].Data = nil
-	}
-
-	SendJson(w, screenshots)
-}
