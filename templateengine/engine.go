@@ -1,7 +1,7 @@
 package templateengine
 
 import (
-	"fmt"
+	"bytes"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -34,13 +34,13 @@ func NewTemplateEngine(options *TemplateEngineOptions) *TemplateEngine {
 	}
 }
 
-func (te *TemplateEngine) GetTemplate(file string) *template.Template {
+func (te *TemplateEngine) GetTemplate(file string) (*template.Template, error) {
 	te.lock.RLock()
 	t := te.cache[file]
 	te.lock.RUnlock()
 
 	if t != nil {
-		return t
+		return t, nil
 	}
 
 	// create new template
@@ -50,21 +50,32 @@ func (te *TemplateEngine) GetTemplate(file string) *template.Template {
 		f = os.DirFS(te.options.TemplateDir)
 	}
 
-	tmpl := template.Must(template.New("").Option("missingkey=error").ParseFS(f, "layout.html", "components/*.html"))
-	t = template.Must(tmpl.ParseFS(f, file))
+	tmpl, err := template.New("").Option("missingkey=error").ParseFS(f, "layout.html", "components/*.html")
+	if err != nil {
+		return nil, err
+	}
+
+	tmpl, err = tmpl.ParseFS(f, file)
+	if err != nil {
+		return nil, err
+	}
 
 	if te.options.EnableCache {
 		// cache template
 		te.lock.Lock()
-		te.cache[file] = t
+		te.cache[file] = tmpl
 		te.lock.Unlock()
 	}
 
-	return t
+	return tmpl, nil
 }
 
 func (te *TemplateEngine) Execute(file string, w http.ResponseWriter, r *http.Request, baseUrl string, data any) error {
-	t := te.GetTemplate(file)
+	t, err := te.GetTemplate(file)
+	if err != nil {
+		return te.ExecuteError(w, r, baseUrl, 500, err)
+	}
+
 	claims, err := te.GetClaims(r)
 	if err != nil {
 		return te.ExecuteError(w, r, baseUrl, 500, err)
@@ -76,19 +87,30 @@ func (te *TemplateEngine) Execute(file string, w http.ResponseWriter, r *http.Re
 		Data:    data,
 	}
 
-	err = t.ExecuteTemplate(w, "layout", rd)
+	buf := bytes.Buffer{}
+
+	err = t.ExecuteTemplate(&buf, "layout", rd)
 	if err != nil {
-		fmt.Printf("Error on page: '%s', '%s'\n", file, err.Error())
+		te.ExecuteError(w, r, baseUrl, 500, err)
+		return err
 	}
+
+	_, err = w.Write(buf.Bytes())
 	return err
 }
 
-func (te *TemplateEngine) ExecuteError(w http.ResponseWriter, r *http.Request, baseUrl string, statuscode int, err error) error {
+func (te *TemplateEngine) ExecuteError(w http.ResponseWriter, r *http.Request, baseUrl string, statuscode int, tmplerr error) error {
 	w.WriteHeader(statuscode)
-	t := te.GetTemplate("pages/error.html")
+	t, err := te.GetTemplate("pages/error.html")
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+		return err
+	}
+
 	rd := &RenderData{
 		BaseURL: baseUrl,
-		Data:    err,
+		Data:    tmplerr,
 	}
 	return t.ExecuteTemplate(w, "layout", rd)
 }
