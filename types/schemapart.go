@@ -17,7 +17,7 @@ type SchemaPart struct {
 }
 
 func (s *SchemaPart) UnmarshalJSON(data []byte) error {
-	m := make(map[string]interface{})
+	m := make(map[string]any)
 	err := json.Unmarshal(data, &m)
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (s *SchemaPart) UnmarshalJSON(data []byte) error {
 }
 
 func (s SchemaPart) MarshalJSON() ([]byte, error) {
-	m := make(map[string]interface{})
+	m := make(map[string]any)
 	m["id"] = s.ID
 	m["schema_id"] = s.SchemaID
 	m["offset_x"] = s.OffsetX

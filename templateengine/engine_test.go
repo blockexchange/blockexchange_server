@@ -26,6 +26,4 @@ func TestEngine(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	assert.NoError(t, te.ExecuteError(w, r, "./", 500, errors.New("dummy")))
-	assert.NoError(t, te.Execute("pages/index.html", w, r, "./", nil))
-
 }

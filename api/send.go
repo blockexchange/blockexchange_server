@@ -22,7 +22,7 @@ func SendText(w http.ResponseWriter, txt string) {
 	w.Write([]byte(txt))
 }
 
-func SendJson(w http.ResponseWriter, o interface{}) []byte {
+func SendJson(w http.ResponseWriter, o any) []byte {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	buf := bytes.NewBuffer([]byte{})
@@ -37,7 +37,7 @@ func SendRawJson(w http.ResponseWriter, data []byte) {
 	w.Write(data)
 }
 
-func Send(w http.ResponseWriter, o interface{}, err error) {
+func Send(w http.ResponseWriter, o any, err error) {
 	if err != nil {
 		SendError(w, 500, err.Error())
 	} else {

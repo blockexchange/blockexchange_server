@@ -50,7 +50,7 @@ func SendError(w http.ResponseWriter, code int, message string) {
 	json.NewEncoder(w).Encode(types.ErrorResponse{Message: message})
 }
 
-func SendJson(w http.ResponseWriter, o interface{}) {
+func SendJson(w http.ResponseWriter, o any) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(o)

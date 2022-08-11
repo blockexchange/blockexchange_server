@@ -41,11 +41,11 @@ var schemaSearchHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 	Buckets: []float64{0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10},
 })
 
-func (repo DBSchemaSearchRepository) buildWhereQuery(query *strings.Builder, search *types.SchemaSearchRequest) []interface{} {
-	params := []interface{}{}
+func (repo DBSchemaSearchRepository) buildWhereQuery(query *strings.Builder, search *types.SchemaSearchRequest) []any {
+	params := []any{}
 	bind_index := 1
 
-	// complete flag
+	// complete flagW
 	if search.Complete != nil {
 		query.WriteString(fmt.Sprintf(" and complete = $%d", bind_index))
 		bind_index++

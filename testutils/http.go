@@ -21,7 +21,7 @@ func CreateGETRequest(t *testing.T, vars map[string]string) (*httptest.ResponseR
 	return w, r
 }
 
-func CreatePOSTRequest(t *testing.T, vars map[string]string, o interface{}) (*httptest.ResponseRecorder, *http.Request) {
+func CreatePOSTRequest(t *testing.T, vars map[string]string, o any) (*httptest.ResponseRecorder, *http.Request) {
 
 	var buf *bytes.Buffer = nil
 

@@ -23,7 +23,7 @@ type Schema struct {
 }
 
 func (s *Schema) UnmarshalJSON(data []byte) error {
-	m := make(map[string]interface{})
+	m := make(map[string]any)
 	err := json.Unmarshal(data, &m)
 	if err != nil {
 		return err

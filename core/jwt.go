@@ -50,7 +50,7 @@ func CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Durat
 }
 
 func ParseJWT(token string) (*types.Claims, error) {
-	t, err := jwt.ParseWithClaims(token, &types.Claims{}, func(token *jwt.Token) (interface{}, error) {
+	t, err := jwt.ParseWithClaims(token, &types.Claims{}, func(token *jwt.Token) (any, error) {
 		return []byte(os.Getenv("BLOCKEXCHANGE_KEY")), nil
 	})
 
