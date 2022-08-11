@@ -8,10 +8,9 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"golang.org/x/crypto/bcrypt"
 )
 
-func (api Api) PostLogin(w http.ResponseWriter, r *http.Request) {
+func (api Api) RequestToken(w http.ResponseWriter, r *http.Request) {
 	login := types.Login{}
 	err := json.NewDecoder(r.Body).Decode(&login)
 	if err != nil {
@@ -21,7 +20,6 @@ func (api Api) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	logrus.WithFields(logrus.Fields{
 		"Username": login.Username,
-		"Password": login.Password,
 		"Token":    login.Token,
 	}).Debug("POST /api/token")
 
@@ -35,31 +33,7 @@ func (api Api) PostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if login.Password != "" {
-		// login with username / password
-		err = bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(login.Password))
-		if err != nil {
-			SendError(w, 401, err.Error())
-			return
-		}
-
-		permissions := core.GetPermissions(user, true)
-		if user.Role == types.UserRoleAdmin {
-			// admin user
-			permissions = append(permissions, types.JWTPermissionAdmin)
-		}
-
-		token, err := core.CreateJWT(user, permissions, time.Duration(24*180*time.Hour))
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-
-		w.Header().Set("Content-Type", "text/plain")
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(token))
-
-	} else if login.Token != "" {
+	if login.Token != "" {
 		// login with token
 		access_token, err := api.AccessTokenRepo.GetAccessTokenByTokenAndUserID(login.Token, user.ID)
 		if err != nil {
@@ -90,7 +64,7 @@ func (api Api) PostLogin(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(token))
 
 	} else {
-		SendError(w, 405, "Empty password/access_token not allowed")
+		SendError(w, 405, "Empty access_token not allowed")
 	}
 
 }

@@ -2,7 +2,6 @@ package controller
 
 import (
 	"blockexchange/core"
-	"blockexchange/types"
 	"net/http"
 	"time"
 
@@ -49,11 +48,6 @@ func (ctrl *Controller) Login(w http.ResponseWriter, r *http.Request) {
 			}
 
 			permissions := core.GetPermissions(user, true)
-			if user.Role == types.UserRoleAdmin {
-				// admin user
-				permissions = append(permissions, types.JWTPermissionAdmin)
-			}
-
 			dur := time.Duration(7 * 24 * time.Hour)
 			token, err := core.CreateJWT(user, permissions, dur)
 			if err != nil {

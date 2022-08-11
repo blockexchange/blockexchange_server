@@ -49,65 +49,6 @@ func (r MockUserRepo) UpdateUser(user *types.User) error {
 	return nil
 }
 
-func TestValidUserLogin(t *testing.T) {
-	api := NewTestApi(t)
-
-	hash, err := bcrypt.GenerateFromPassword([]byte("pw"), bcrypt.DefaultCost)
-	assert.NoError(t, err)
-	user := &types.User{
-		Hash: string(hash),
-		Type: types.UserTypeLocal,
-	}
-	testutils.CreateUser(api.UserRepo, t, user)
-
-	login := types.Login{}
-	login.Username = user.Name
-	login.Password = "pw"
-	data, err := json.Marshal(login)
-	assert.NoError(t, err)
-	assert.NotNil(t, data)
-
-	r := httptest.NewRequest("GET", "http://", bytes.NewReader(data))
-	w := httptest.NewRecorder()
-
-	api.PostLogin(w, r)
-
-	assert.NotNil(t, w.Body)
-	info, err := core.ParseJWT(w.Body.String())
-	assert.NoError(t, err)
-	assert.NotNil(t, info)
-	assert.Equal(t, user.Name, info.Username)
-}
-
-func TestInvalidUserLogin(t *testing.T) {
-	api := NewTestApi(t)
-
-	hash, err := bcrypt.GenerateFromPassword([]byte("pw"), bcrypt.DefaultCost)
-	assert.NoError(t, err)
-	user := &types.User{
-		Hash: string(hash),
-		Type: types.UserTypeLocal,
-	}
-	testutils.CreateUser(api.UserRepo, t, user)
-
-	login := types.Login{}
-	login.Username = "user"
-	login.Password = "pw2"
-	data, err := json.Marshal(login)
-	assert.NoError(t, err)
-	assert.NotNil(t, data)
-
-	r := httptest.NewRequest("GET", "http://", bytes.NewReader(data))
-	w := httptest.NewRecorder()
-
-	api.PostLogin(w, r)
-
-	assert.NotNil(t, w.Body)
-	info, err := core.ParseJWT(w.Body.String())
-	assert.Error(t, err)
-	assert.Nil(t, info)
-}
-
 func TestAccessTokenLogin(t *testing.T) {
 	api := NewTestApi(t)
 
@@ -134,7 +75,7 @@ func TestAccessTokenLogin(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://", bytes.NewReader(data))
 	w := httptest.NewRecorder()
 
-	api.PostLogin(w, r)
+	api.RequestToken(w, r)
 
 	assert.NotNil(t, w.Body)
 	info, err := core.ParseJWT(w.Body.String())
@@ -169,7 +110,7 @@ func TestInvalidAccessTokenLogin(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://", bytes.NewReader(data))
 	w := httptest.NewRecorder()
 
-	api.PostLogin(w, r)
+	api.RequestToken(w, r)
 
 	assert.NotNil(t, w.Body)
 	info, err := core.ParseJWT(w.Body.String())
