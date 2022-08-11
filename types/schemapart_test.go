@@ -18,7 +18,6 @@ func TestSanityBase64(t *testing.T) {
 
 func TestSchemaPartSerialization(t *testing.T) {
 	part := SchemaPart{
-		ID:       1,
 		SchemaID: 2,
 		OffsetX:  3,
 		OffsetY:  4,
@@ -39,7 +38,6 @@ func TestSchemaPartSerialization(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, part.ID, part2.ID)
 	assert.Equal(t, part.SchemaID, part2.SchemaID)
 	assert.Equal(t, part.OffsetX, part2.OffsetX)
 	assert.Equal(t, part.OffsetY, part2.OffsetY)

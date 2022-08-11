@@ -120,7 +120,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 
 	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, "GetSchemaById::"+err.Error())
 		return
 	}
 
@@ -136,35 +136,35 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 	schema.Created = time.Now().Unix() * 1000
 	err = api.SchemaRepo.UpdateSchema(schema)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, "UpdateSchema::"+err.Error())
 		return
 	}
 
 	// update screenshot
 	screenshot, err := core.UpdatePreview(schema, api.Repositories, api.ColorMapping)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, "UpdatePreview::"+err.Error())
 		return
 	}
 
 	// let the database calculate the size/count stats
 	err = api.SchemaRepo.CalculateStats(schema.ID)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, "CalculateStats::"+err.Error())
 		return
 	}
 
 	// retrieve updated schema data from the db (size, count)
 	schema, err = api.SchemaRepo.GetSchemaById(schema.ID)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, "GetSchemaById::"+err.Error())
 		return
 	}
 
 	if initial {
 		user, err := api.UserRepo.GetUserById(schema.UserID)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, "GetUserById::"+err.Error())
 			return
 		}
 
