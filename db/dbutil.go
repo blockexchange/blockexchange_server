@@ -64,6 +64,32 @@ func InsertReturning(d *sql.DB, entity Insertable, retField string, retValue any
 	return err
 }
 
+func Update(d *sql.DB, entity Insertable, where map[string]any) error {
+	cols := entity.Columns(UpdateAction)
+	updates := make([]string, len(cols))
+	pi := 1
+	for i := range cols {
+		updates[i] = fmt.Sprintf("%s = $%d", cols[i], pi)
+		pi++
+	}
+
+	params := entity.Values(UpdateAction)
+	wheres := make([]string, 0)
+	for k, v := range where {
+		wheres = append(wheres, fmt.Sprintf("%s = $%d", k, pi))
+		params = append(params, v)
+		pi++
+	}
+
+	_, err := d.Exec(fmt.Sprintf(
+		"update %s set %s where %s",
+		entity.Table(), strings.Join(updates, ","), strings.Join(wheres, " and ")),
+		params...,
+	)
+
+	return err
+}
+
 func Select[E Selectable](d *sql.DB, entity E, constraints string, params ...any) (E, error) {
 	row := d.QueryRow(fmt.Sprintf(
 		"select %s from %s %s",

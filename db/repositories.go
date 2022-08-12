@@ -10,7 +10,7 @@ type Repositories struct {
 	SchemaModRepo              SchemaModRepository
 	SchemaSearchRepo           SchemaSearchRepository
 	SchemaScreenshotRepo       SchemaScreenshotRepository
-	CollectionRepo             CollectionRepsoitory
+	CollectionRepo             CollectionRepository
 	CollectionSchemaRepository CollectionSchemaRepository
 	TagRepo                    TagRepository
 	SchemaTagRepo              SchemaTagRepository
@@ -26,8 +26,8 @@ func NewRepositories(db_ *sqlx.DB) *Repositories {
 		SchemaModRepo:              DBSchemaModRepository{DB: db_},
 		SchemaSearchRepo:           NewSchemaSearchRepository(db_),
 		SchemaScreenshotRepo:       DBSchemaScreenshotRepository{DB: db_},
-		CollectionRepo:             DBCollectionRepository{DB: db_},
-		CollectionSchemaRepository: DBCollectionSchemaRepository{DB: db_},
+		CollectionRepo:             CollectionRepository{DB: db_.DB},
+		CollectionSchemaRepository: CollectionSchemaRepository{DB: db_.DB},
 		TagRepo:                    DBTagRepository{DB: db_},
 		SchemaTagRepo:              DBSchemaTagRepository{DB: db_},
 		SchemaStarRepo:             DBSchemaStarRepository{DB: db_},
