@@ -56,14 +56,14 @@ func (s *SchemaPart) Table() string {
 	return "schemapart"
 }
 
-func (s *SchemaPart) Columns() []string {
+func (s *SchemaPart) Columns(action string) []string {
 	return []string{"schema_id", "offset_x", "offset_y", "offset_z", "mtime", "data", "metadata"}
 }
 
-func (s *SchemaPart) Values() []any {
+func (s *SchemaPart) Values(action string) []any {
 	return []any{s.SchemaID, s.OffsetX, s.OffsetY, s.OffsetZ, s.Mtime, s.Data, s.MetaData}
 }
 
-func (s *SchemaPart) Scan(r func(dest ...any) error) error {
+func (s *SchemaPart) Scan(action string, r func(dest ...any) error) error {
 	return r(&s.SchemaID, &s.OffsetX, &s.OffsetY, &s.OffsetZ, &s.Mtime, &s.Data, &s.MetaData)
 }
