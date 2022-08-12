@@ -22,7 +22,7 @@ func NewRepositories(db_ *sqlx.DB) *Repositories {
 		AccessTokenRepo:            DBAccessTokenRepository{DB: db_},
 		UserRepo:                   DBUserRepository{DB: db_},
 		SchemaRepo:                 DBSchemaRepository{DB: db_},
-		SchemaPartRepo:             DBSchemaPartRepository{DB: db_.DB},
+		SchemaPartRepo:             SchemaPartRepository{DB: db_.DB},
 		SchemaModRepo:              DBSchemaModRepository{DB: db_},
 		SchemaSearchRepo:           NewSchemaSearchRepository(db_),
 		SchemaScreenshotRepo:       DBSchemaScreenshotRepository{DB: db_},

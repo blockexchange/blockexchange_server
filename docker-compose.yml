@@ -10,6 +10,10 @@ services:
    POSTGRES_PASSWORD: enter
   volumes:
    - "postgres:/var/lib/postgresql/data"
+  command:
+   - "postgres"
+   - "-c"
+   - "log_statement=all"
 
  blockexchange:
   image: golang:1.18.0

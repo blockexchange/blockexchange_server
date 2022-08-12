@@ -52,15 +52,15 @@ func (s SchemaPart) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
-func (s SchemaPart) Columns() string {
-	return "schema_id,offset_x,offset_y,offset_z,mtime,data,metadata"
+func (s *SchemaPart) Table() string {
+	return "schemapart"
 }
 
-func (s SchemaPart) Parameters() string {
-	return "$1,$2,$3,$4,$5,$6,$7"
+func (s *SchemaPart) Columns() []string {
+	return []string{"schema_id", "offset_x", "offset_y", "offset_z", "mtime", "data", "metadata"}
 }
 
-func (s SchemaPart) Values() []any {
+func (s *SchemaPart) Values() []any {
 	return []any{s.SchemaID, s.OffsetX, s.OffsetY, s.OffsetZ, s.Mtime, s.Data, s.MetaData}
 }
 
