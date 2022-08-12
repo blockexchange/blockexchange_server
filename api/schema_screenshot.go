@@ -10,28 +10,27 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/nfnt/resize"
-	"github.com/sirupsen/logrus"
 )
 
-func (api Api) GetSchemaScreenshotByID(w http.ResponseWriter, r *http.Request) {
+func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	schema_id, err := strconv.Atoi(vars["schema_id"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	screenshot, err := api.SchemaScreenshotRepo.GetByID(int64(id))
+	screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(int64(schema_id))
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
-
-	if screenshot == nil {
-		w.WriteHeader(404)
+	if len(screenshots) == 0 {
+		SendError(w, 404, "no screenshots found")
 		return
 	}
 
+	screenshot := screenshots[0]
 	if r.URL.Query().Get("height") != "" {
 		height, err := strconv.Atoi(r.URL.Query().Get("height"))
 		if err != nil || height < 0 || height > 2048 {
@@ -45,7 +44,7 @@ func (api Api) GetSchemaScreenshotByID(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		cache_key := fmt.Sprintf("screenshot_%d_%d_%d", id, height, width)
+		cache_key := fmt.Sprintf("screenshot_%d_%d_%d", schema_id, height, width)
 		data, err := api.Cache.Get(cache_key)
 		if err != nil {
 			// cache error
@@ -60,11 +59,6 @@ func (api Api) GetSchemaScreenshotByID(w http.ResponseWriter, r *http.Request) {
 			w.Write(data)
 			return
 		}
-
-		logrus.WithFields(logrus.Fields{
-			"width":  width,
-			"height": height,
-		}).Trace("api::GetSchemaScreenshotByID rescaling image")
 
 		img, err := png.Decode(bytes.NewReader(screenshot.Data))
 		if err != nil {

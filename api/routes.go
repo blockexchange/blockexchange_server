@@ -22,7 +22,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/api/schema/{id}/mods", Secure(api.CreateSchemaMods)).Methods("POST")
 	r.HandleFunc("/api/schema/{id}/update", Secure(api.UpdateSchemaInfo)).Methods("POST")
 
-	r.HandleFunc("/api/schema/{schema_id}/screenshot/{id}", api.GetSchemaScreenshotByID)
+	r.HandleFunc("/api/schema/{schema_id}/screenshot", api.GetFirstSchemaScreenshot)
 
 	r.HandleFunc("/api/search/schema/byname/{user_name}/{schema_name}", api.SearchSchemaByNameAndUser)
 

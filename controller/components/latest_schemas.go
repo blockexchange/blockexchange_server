@@ -6,16 +6,21 @@ import (
 )
 
 type LatestSchemasModel struct {
-	List []*types.SchemaSearchResult
+	Schemas []*SchemaCardModel
 }
 
-func LatestSchemas(repos *db.Repositories) (*LatestSchemasModel, error) {
+func LatestSchemas(baseUrl string, repos *db.Repositories) (*LatestSchemasModel, error) {
 	m := &LatestSchemasModel{}
 	var err error
 
-	m.List, err = repos.SchemaSearchRepo.Search(&types.SchemaSearchRequest{}, 20, 0)
+	schemas, err := repos.SchemaSearchRepo.Search(&types.SchemaSearchRequest{}, 20, 0)
 	if err != nil {
 		return nil, err
+	}
+
+	m.Schemas = make([]*SchemaCardModel, len(schemas))
+	for i, s := range schemas {
+		m.Schemas[i] = SchemaCard(baseUrl, s)
 	}
 
 	return m, nil

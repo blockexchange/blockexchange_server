@@ -1,31 +1,30 @@
 {{define "schema_card"}}
 <div class="card">
     <router-link :to="router_link">
-        <img v-if="screenshot" :src="screenshot_url" class="card-img-top img-fluid">
-        <div v-if="!screenshot" style="height: 240px; width: 360px"></div>
+        <img src="{{.BaseURL}}/api/schema/{{.Schema.ID}}/screenshot" class="card-img-top img-fluid">
     </router-link>
     <div class="card-body">
         <h5 class="card-title">
             <p>
                 <router-link :to="router_link">
-                    {{ .Name }}
+                    {{ .Schema.Name }}
                 </router-link>
             </p>
             <p>
-                <small class="text-muted">by {{ .User.Name }}</small>
+                <small class="text-muted">by {{ .Schema.User.Name }}</small>
                 &nbsp;
                 <i v-if=".Schema.Starts > 0" class="fa-regular fa-star"></i>
-                <span v-if=".Schema.stars > 0" class="badge bg-secondary rounded-pill">{{ .Stars }}</span>
+                <span v-if=".Schema.stars > 0" class="badge bg-secondary rounded-pill">{{ .Schema.Stars }}</span>
             </p>
         </h5>
         <p>
             <tag-label v-for="tag in .Schema.tags" :tag_id="tag.tag_id"/>
         </p>
         <p>
-            {{ .TotalSize }};
-            {{ .SizeX }} / 
-            {{ .SizeY }} / 
-            {{ .SizeZ }} nodes
+            {{ .Schema.TotalSize }};
+            {{ .Schema.SizeX }} / 
+            {{ .Schema.SizeY }} / 
+            {{ .Schema.SizeZ }} nodes
         </p>
     </div>
 </div>
