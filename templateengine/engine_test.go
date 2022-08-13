@@ -15,7 +15,6 @@ func TestEngine(t *testing.T) {
 		Templates:    public.Files,
 		TemplateDir:  "public",
 		EnableCache:  true,
-		JWTKey:       "mykey",
 		CookieName:   "my-app",
 		CookiePath:   "/",
 		CookieDomain: "127.0.0.1",

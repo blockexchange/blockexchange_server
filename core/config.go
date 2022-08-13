@@ -17,6 +17,9 @@ type Config struct {
 	GithubOAuthConfig  *OAuthConfig
 	DiscordOAuthConfig *OAuthConfig
 	MesehubOAuthConfig *OAuthConfig
+	CookiePath         string
+	CookieDomain       string
+	CookieSecure       bool
 }
 
 func CreateConfig() (*Config, error) {
@@ -26,6 +29,9 @@ func CreateConfig() (*Config, error) {
 		WebDev:       os.Getenv("WEBDEV") == "true",
 		EnableSignup: os.Getenv("ENABLE_SIGNUP") == "true",
 		BaseURL:      os.Getenv("BASE_URL"),
+		CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
+		CookieDomain: os.Getenv("BLOCKEXCHANGE_COOKIE_DOMAIN"),
+		CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
 	}
 
 	if os.Getenv("DISCORD_APP_ID") != "" {

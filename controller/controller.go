@@ -5,7 +5,6 @@ import (
 	"blockexchange/db"
 	"blockexchange/public"
 	"blockexchange/templateengine"
-	"os"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -24,11 +23,10 @@ func NewController(db_ *sqlx.DB, cfg *core.Config) *Controller {
 			Templates:    public.Files,
 			TemplateDir:  "public",
 			EnableCache:  !cfg.WebDev,
-			JWTKey:       os.Getenv("BLOCKEXCHANGE_KEY"),
 			CookieName:   "blockexchange",
-			CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
-			CookieDomain: os.Getenv("BLOCKEXCHANGE_COOKIE_DOMAIN"),
-			CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
+			CookiePath:   cfg.CookiePath,
+			CookieDomain: cfg.CookieDomain,
+			CookieSecure: cfg.CookieSecure,
 		}),
 	}
 }

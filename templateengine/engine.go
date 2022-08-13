@@ -13,7 +13,6 @@ type TemplateEngineOptions struct {
 	Templates    fs.FS
 	TemplateDir  string
 	EnableCache  bool
-	JWTKey       string
 	CookieName   string
 	CookiePath   string
 	CookieDomain string
