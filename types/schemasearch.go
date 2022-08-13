@@ -1,5 +1,7 @@
 package types
 
+import "github.com/lib/pq"
+
 type OrderDirectionType string
 
 const (
@@ -10,7 +12,7 @@ const (
 type OrderColumnType string
 
 const (
-	CREATED OrderColumnType = "created"
+	CREATED OrderColumnType = "s.created"
 )
 
 type SchemaSearchRequest struct {
@@ -27,15 +29,56 @@ type SchemaSearchRequest struct {
 
 type SchemaSearchResult struct {
 	Schema
-	Stars int         `json:"stars"`
-	User  *User       `json:"user"`
-	Mods  []string    `json:"mods"`
-	Tags  []SchemaTag `json:"tags"`
+	Stars    int            `json:"stars"`
+	UserName string         `json:"username"`
+	Mods     []string       `json:"mods"`
+	Tags     pq.StringArray `json:"tags"`
 }
 
-type SchemaSearchResponse struct {
-	List   []*SchemaSearchResult `json:"list"`
-	Limit  int                   `json:"limit"`
-	Offset int                   `json:"offset"`
-	Total  int                   `json:"total"`
+func (s *SchemaSearchResult) Table() string {
+	return "schema s join public.user u on s.user_id = u.id"
+}
+
+func (s *SchemaSearchResult) Columns(action string) []string {
+	return []string{
+		"s.id",
+		"s.created",
+		"s.mtime",
+		"s.user_id",
+		"s.name",
+		"s.description",
+		"s.complete",
+		"s.size_x",
+		"s.size_y",
+		"s.size_z",
+		"s.part_length",
+		"s.total_size",
+		"s.total_parts",
+		"s.downloads",
+		"s.license",
+		"u.name",
+		"array(select name from schematag st join tag t on st.tag_id = t.id where schema_id = s.id)",
+	}
+}
+
+func (s *SchemaSearchResult) Scan(action string, r func(dest ...any) error) error {
+	return r(
+		&s.ID,
+		&s.Created,
+		&s.Mtime,
+		&s.UserID,
+		&s.Name,
+		&s.Description,
+		&s.Complete,
+		&s.SizeX,
+		&s.SizeY,
+		&s.SizeZ,
+		&s.PartLength,
+		&s.TotalSize,
+		&s.TotalParts,
+		&s.Downloads,
+		&s.License,
+		&s.UserName,
+		&s.Tags,
+	)
 }

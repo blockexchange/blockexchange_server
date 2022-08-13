@@ -1,17 +1,17 @@
 {{define "schema_card"}}
 <div class="card">
-    <a href="{{.BaseURL}}schema/{{.Schema.User.Name}}/{{.Schema.Name}}">
+    <a href="{{.BaseURL}}/schema/{{.Schema.UserName}}/{{.Schema.Name}}">
         <img src="{{.BaseURL}}/api/schema/{{.Schema.ID}}/screenshot" class="card-img-top img-fluid">
     </a>
     <div class="card-body">
         <h5 class="card-title">
             <p>
-                <a href="{{.BaseURL}}schema/{{.Schema.User.Name}}/{{.Schema.Name}}">
+                <a href="{{.BaseURL}}/schema/{{.Schema.UserName}}/{{.Schema.Name}}">
                     {{ .Schema.Name }}
                 </a>
             </p>
             <p>
-                <small class="text-muted">by {{ .Schema.User.Name }}</small>
+                <small class="text-muted">by {{ .Schema.UserName }}</small>
                 &nbsp;
                 {{if gt .Schema.Stars 0}}
                     <i class="fa-regular fa-star"></i>
@@ -23,7 +23,7 @@
             {{range .Schema.Tags}}
             <span class="badge bg-success">
                 <i class="fas fa-tag"></i>
-                {{.ID}}
+                {{.}}
             </span>
             {{end}}
         </p>
