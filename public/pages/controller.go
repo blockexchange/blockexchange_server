@@ -13,11 +13,12 @@ type Controller struct {
 	*db.Repositories
 	cfg *core.Config
 	te  *templateengine.TemplateEngine
-}
+} 
 
 func NewController(db_ *sqlx.DB, cfg *core.Config) *Controller {
 	funcs := make(map[string]any)
 	funcs["prettysize"] = prettysize
+	funcs["formattime"] = formattime
 
 	return &Controller{
 		Repositories: db.NewRepositories(db_),

@@ -58,6 +58,7 @@ func (s *SchemaSearchResult) Columns(action string) []string {
 		"s.license",
 		"u.name",
 		"array(select name from schematag st join tag t on st.tag_id = t.id where schema_id = s.id)",
+		"(select count(*) from user_schema_star where schema_id = s.id)",
 	}
 }
 
@@ -80,5 +81,6 @@ func (s *SchemaSearchResult) Scan(action string, r func(dest ...any) error) erro
 		&s.License,
 		&s.UserName,
 		&s.Tags,
+		&s.Stars,
 	)
 }

@@ -1,6 +1,9 @@
 package pages
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func prettysize(num int) string {
 	if num > (1000 * 1000) {
@@ -11,3 +14,9 @@ func prettysize(num int) string {
 		return fmt.Sprintf("%d bytes", num)
 	}
 }
+
+func formattime(ts int64) string {
+	t := time.Unix(ts, 0)
+	return t.Format("2006-02-01")
+}
+
