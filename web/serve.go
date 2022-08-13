@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"blockexchange/api"
-	"blockexchange/controller"
 	"blockexchange/core"
 	"blockexchange/public"
+	"blockexchange/public/pages"
 
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -37,7 +37,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	a.SetupRoutes(r, cfg)
 
 	// controller setup and routing
-	ctrl := controller.NewController(db_, cfg)
+	ctrl := pages.NewController(db_, cfg)
 	ctrl.SetupRoutes(r, cfg)
 
 	// assets

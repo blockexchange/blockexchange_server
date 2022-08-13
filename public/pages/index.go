@@ -1,4 +1,4 @@
-package controller
+package pages
 
 import (
 	"blockexchange/public/components"

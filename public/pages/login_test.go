@@ -1,9 +1,9 @@
-package controller_test
+package pages_test
 
 import (
-	"blockexchange/controller"
 	"blockexchange/core"
 	"blockexchange/db"
+	"blockexchange/public/pages"
 	"blockexchange/testutils"
 	"blockexchange/types"
 	"net/http"
@@ -20,7 +20,7 @@ func TestLogin(t *testing.T) {
 	db_ := testutils.CreateTestDatabase(t)
 	repos := db.NewRepositories(db_)
 	cfg := &core.Config{}
-	c := controller.NewController(db_, cfg)
+	c := pages.NewController(db_, cfg)
 
 	// get
 
