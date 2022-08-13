@@ -8,8 +8,6 @@ import (
 	"image/color"
 	"strconv"
 	"strings"
-
-	"github.com/sirupsen/logrus"
 )
 
 //go:embed colors/*
@@ -93,10 +91,6 @@ func (m *ColorMapping) LoadVFSColors(filename string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-
-	log.WithFields(logrus.Fields{"size": len(buffer),
-		"filename": filename,
-	}).Info("Loading colors")
 
 	return m.LoadBytes(buffer)
 }
