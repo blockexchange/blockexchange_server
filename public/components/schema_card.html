@@ -1,14 +1,14 @@
 {{define "schema_card"}}
 <div class="card">
-    <router-link :to="router_link">
+    <a href="{{.BaseURL}}schema/{{.Schema.User.Name}}/{{.Schema.Name}}">
         <img src="{{.BaseURL}}/api/schema/{{.Schema.ID}}/screenshot" class="card-img-top img-fluid">
-    </router-link>
+    </a>
     <div class="card-body">
         <h5 class="card-title">
             <p>
-                <router-link :to="router_link">
+                <a href="{{.BaseURL}}schema/{{.Schema.User.Name}}/{{.Schema.Name}}">
                     {{ .Schema.Name }}
-                </router-link>
+                </a>
             </p>
             <p>
                 <small class="text-muted">by {{ .Schema.User.Name }}</small>
@@ -20,7 +20,12 @@
             </p>
         </h5>
         <p>
-            <tag-label v-for="tag in .Schema.tags" :tag_id="tag.tag_id"/>
+            {{range .Schema.Tags}}
+            <span class="badge bg-success">
+                <i class="fas fa-tag"></i>
+                {{.ID}}
+            </span>
+            {{end}}
         </p>
         <p>
             {{ prettysize .Schema.TotalSize }};
