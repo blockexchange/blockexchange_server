@@ -16,6 +16,9 @@ type Controller struct {
 }
 
 func NewController(db_ *sqlx.DB, cfg *core.Config) *Controller {
+	funcs := make(map[string]any)
+	funcs["prettysize"] = prettysize
+
 	return &Controller{
 		Repositories: db.NewRepositories(db_),
 		cfg:          cfg,
@@ -27,6 +30,7 @@ func NewController(db_ *sqlx.DB, cfg *core.Config) *Controller {
 			CookiePath:   cfg.CookiePath,
 			CookieDomain: cfg.CookieDomain,
 			CookieSecure: cfg.CookieSecure,
+			FuncMap:      funcs,
 		}),
 	}
 }

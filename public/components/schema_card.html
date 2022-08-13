@@ -13,15 +13,17 @@
             <p>
                 <small class="text-muted">by {{ .Schema.User.Name }}</small>
                 &nbsp;
-                <i v-if=".Schema.Starts > 0" class="fa-regular fa-star"></i>
-                <span v-if=".Schema.stars > 0" class="badge bg-secondary rounded-pill">{{ .Schema.Stars }}</span>
+                {{if gt .Schema.Stars 0}}
+                    <i class="fa-regular fa-star"></i>
+                    <span class="badge bg-secondary rounded-pill">{{ .Schema.Stars }}</span>
+                {{end}}
             </p>
         </h5>
         <p>
             <tag-label v-for="tag in .Schema.tags" :tag_id="tag.tag_id"/>
         </p>
         <p>
-            {{ .Schema.TotalSize }};
+            {{ prettysize .Schema.TotalSize }};
             {{ .Schema.SizeX }} / 
             {{ .Schema.SizeY }} / 
             {{ .Schema.SizeZ }} nodes

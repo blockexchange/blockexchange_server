@@ -19,6 +19,7 @@ func TestEngine(t *testing.T) {
 		CookiePath:   "/",
 		CookieDomain: "127.0.0.1",
 		CookieSecure: false,
+		FuncMap:      make(map[string]any),
 	})
 
 	r := httptest.NewRequest("GET", "http://", nil)

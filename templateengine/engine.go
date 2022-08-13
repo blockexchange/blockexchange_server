@@ -17,6 +17,7 @@ type TemplateEngineOptions struct {
 	CookiePath   string
 	CookieDomain string
 	CookieSecure bool
+	FuncMap      map[string]any
 }
 
 type TemplateEngine struct {
@@ -49,7 +50,7 @@ func (te *TemplateEngine) GetTemplate(file string) (*template.Template, error) {
 		f = os.DirFS(te.options.TemplateDir)
 	}
 
-	tmpl, err := template.New("").Option("missingkey=error").ParseFS(f, "layout.html", "components/*.html")
+	tmpl, err := template.New("").Funcs(te.options.FuncMap).Option("missingkey=error").ParseFS(f, "layout.html", "components/*.html")
 	if err != nil {
 		return nil, err
 	}
