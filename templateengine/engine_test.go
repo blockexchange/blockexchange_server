@@ -1,8 +1,8 @@
 package templateengine_test
 
 import (
-	"blockexchange/public"
 	"blockexchange/templateengine"
+	"blockexchange/templateengine/testdata"
 	"errors"
 	"net/http/httptest"
 	"testing"
@@ -12,8 +12,8 @@ import (
 
 func TestEngine(t *testing.T) {
 	te := templateengine.NewTemplateEngine(&templateengine.TemplateEngineOptions{
-		Templates:    public.Files,
-		TemplateDir:  "public",
+		Templates:    testdata.Files,
+		TemplateDir:  "testdata",
 		EnableCache:  true,
 		CookieName:   "my-app",
 		CookiePath:   "/",
@@ -26,4 +26,5 @@ func TestEngine(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	assert.NoError(t, te.ExecuteError(w, r, "./", 500, errors.New("dummy")))
+	assert.NoError(t, te.Execute("pages/index.html", w, r, "./", nil))
 }
