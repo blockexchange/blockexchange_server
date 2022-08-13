@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"blockexchange/controller/components"
+	"blockexchange/public/components"
 	"net/http"
 )
 
