@@ -1,4 +1,45 @@
 {{define "title"}}Profile{{end}}
 {{define "content"}}
-Profile
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Update profile
+            </div>
+            <div class="card-body">
+                <div>
+                    <input type="text" class="form-control" placeholder="Username" value="{{.Claims.Username}}">
+                    <input type="text" class="form-control" placeholder="E-Mail">
+                    <div class="alert alert-success">
+                        E-Mail address is optional but strongly encouraged as it is the only recovery-option for local accounts
+                    </div>
+                    <button class="btn btn-primary btn-block" disabled="">
+                        <i class="fa fa-save"></i>
+                        Update profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Profile info
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li> ID: <b>1</b></li>
+                    <li> Name: <b>BuckarooBanzai</b></li>
+                    <li> Type: <span class="badge bg-success">GITHUB</span></li>
+                    <li> Permissions:
+                        <span class="badge bg-primary">UPLOAD</span>
+                        <span class="badge bg-primary">OVERWRITE</span>
+                        <span class="badge bg-primary">MANAGEMENT</span>
+                        <span class="badge bg-primary">ADMIN</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {{end}}
