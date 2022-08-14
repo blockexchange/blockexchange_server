@@ -46,7 +46,7 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	mtime := time.Now().Unix() * 1000
+	mtime := time.Now().UnixMilli()
 
 	// update schema part
 	schemapart.Mtime = mtime

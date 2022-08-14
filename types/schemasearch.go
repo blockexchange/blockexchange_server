@@ -31,7 +31,7 @@ type SchemaSearchResult struct {
 	Schema
 	Stars    int            `json:"stars"`
 	UserName string         `json:"username"`
-	Mods     []string       `json:"mods"`
+	Mods     pq.StringArray `json:"mods"`
 	Tags     pq.StringArray `json:"tags"`
 }
 
@@ -58,6 +58,7 @@ func (s *SchemaSearchResult) Columns(action string) []string {
 		"s.license",
 		"u.name",
 		"array(select name from schematag st join tag t on st.tag_id = t.id where schema_id = s.id)",
+		"array(select mod_name from schemamod where schema_id = s.id)",
 		"(select count(*) from user_schema_star where schema_id = s.id)",
 	}
 }
@@ -81,6 +82,7 @@ func (s *SchemaSearchResult) Scan(action string, r func(dest ...any) error) erro
 		&s.License,
 		&s.UserName,
 		&s.Tags,
+		&s.Mods,
 		&s.Stars,
 	)
 }

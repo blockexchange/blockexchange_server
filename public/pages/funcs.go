@@ -16,7 +16,6 @@ func prettysize(num int) string {
 }
 
 func formattime(ts int64) string {
-	t := time.Unix(ts, 0)
-	return t.Format("2006-02-01")
+	t := time.UnixMilli(ts)
+	return t.Format(time.UnixDate)
 }
-

@@ -61,21 +61,32 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Description</h5>
-                    <schema-description :schema="schema"/>
+                    <pre>{{.Data.Schema.Description}}</pre>
                 </div>
             </div>
             <br>
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Used mods</h5>
-                    <schema-mods :schema="schema"/>
+                        <ul>
+                        {{range .Data.Schema.Mods}}
+                            <li>
+                                <span class="badge bg-primary">{{.}}</span>
+                            </li>
+                        {{end}}
+                    </ul>
                 </div>
             </div>
             <br>
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Tags</h5>
-                    <schema-tags :schema="schema" :is_owner="is_owner" v-on:updated="update"/>
+                    {{range .Data.Schema.Tags}}
+                    <span class="badge bg-success">
+                        <i class="fas fa-tag"></i>
+                        {{.}}
+                    </span>
+                    {{end}}
                 </div>
             </div>
         </div>
@@ -83,7 +94,9 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Preview</h5>
-                    <schema-preview :screenshots="screenshots" :schema="schema" :version="preview_version"/>
+                    <div class="text-center">
+                        <img src="{{.BaseURL}}/api/schema/{{.Data.Schema.ID}}/screenshot" class="img-fluid">
+                    </div>
                 </div>
             </div>
         </div>
@@ -94,7 +107,29 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Download</h5>
-                    <schema-download :schema="schema"/>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-secondary">
+                                <div class="card-header">Online</div>
+                                <div class="card-body">
+                                    <pre>/bx_pos1</pre>
+                                    <pre>/bx_load {{.Data.Schema.UserName}} {{.Data.Schema.Name}}</pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-secondary">
+                                <div class="card-header">Offline</div>
+                                <div class="card-body">
+                                    &nbsp;
+                                    <a class="btn btn-sm btn-primary" href="{{.BaseURL}}api/export_bx/{{.Data.Schema.ID}}/{{.Data.Schema.Name}}.zip">
+                                        <i class="fa fa-download"></i>
+                                        Export as BX Schema
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
