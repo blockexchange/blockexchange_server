@@ -68,13 +68,16 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Used mods</h5>
+                    <details>
+                        <summary>Click to open</summary>
                         <ul>
                         {{range .Data.Schema.Mods}}
                             <li>
                                 <span class="badge bg-primary">{{.}}</span>
                             </li>
                         {{end}}
-                    </ul>
+                        </ul>
+                    </details>
                 </div>
             </div>
             <br>
