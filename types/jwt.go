@@ -21,3 +21,12 @@ type Claims struct {
 	Type        UserType        `json:"type"`
 	Permissions []JWTPermission `json:"permissions"`
 }
+
+func (c *Claims) HasPermission(perm JWTPermission) bool {
+	for _, p := range c.Permissions {
+		if p == perm {
+			return true
+		}
+	}
+	return false
+}

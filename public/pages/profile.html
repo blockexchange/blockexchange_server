@@ -7,17 +7,17 @@
                 Update profile
             </div>
             <div class="card-body">
-                <div>
-                    <input type="text" class="form-control" placeholder="Username" value="{{.Claims.Username}}">
-                    <input type="text" class="form-control" placeholder="E-Mail">
+                <form method="POST" action="profile">
+                    <input type="text" class="form-control" name="username" placeholder="Username" value="{{.Claims.Username}}">
+                    <input type="text" class="form-control" name="mail" placeholder="E-Mail" value="{{.Claims.Mail}}">
                     <div class="alert alert-success">
                         E-Mail address is optional but strongly encouraged as it is the only recovery-option for local accounts
                     </div>
-                    <button class="btn btn-primary btn-block" disabled="">
+                    <button type="submit" class="btn btn-primary btn-block">
                         <i class="fa fa-save"></i>
                         Update profile
                     </button>
-                </div>
+                </form>
             </div>
         </div>
     </div>

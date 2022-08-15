@@ -3,6 +3,7 @@ package pages
 import (
 	"blockexchange/core"
 	"blockexchange/public/oauth"
+	"blockexchange/types"
 
 	"github.com/gorilla/mux"
 )
@@ -15,8 +16,8 @@ func (ctrl *Controller) SetupRoutes(r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/users", ctrl.Users)
 	r.HandleFunc("/search", ctrl.Search)
 	r.HandleFunc("/mod", ctrl.Mod)
-	r.HandleFunc("/profile", ctrl.Profile)
-	r.HandleFunc("/tags", ctrl.Profile)
+	r.HandleFunc("/profile", ctrl.Secure("./", ctrl.Profile))
+	r.HandleFunc("/tags", ctrl.Secure("./", ctrl.Tags, types.JWTPermissionAdmin))
 	r.HandleFunc("/about", ctrl.About)
 
 	if cfg.DiscordOAuthConfig != nil {

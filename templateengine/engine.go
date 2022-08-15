@@ -1,6 +1,7 @@
 package templateengine
 
 import (
+	"blockexchange/types"
 	"bytes"
 	"html/template"
 	"io/fs"
@@ -85,6 +86,10 @@ func (te *TemplateEngine) Execute(file string, w http.ResponseWriter, r *http.Re
 		BaseURL: baseUrl,
 		Claims:  claims,
 		Data:    data,
+	}
+
+	if claims != nil {
+		rd.IsAdmin = claims.HasPermission(types.JWTPermissionAdmin)
 	}
 
 	buf := bytes.Buffer{}
