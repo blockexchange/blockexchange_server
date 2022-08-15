@@ -5,7 +5,6 @@ import (
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -80,7 +79,6 @@ func (o *GithubOauth) RequestUserInfo(access_token string, cfg *core.Config) (*O
 		return nil, err
 	}
 
-	fmt.Println(userData)
 	external_id := strconv.Itoa(userData.ID)
 	info := OauthUserInfo{
 		Name:       userData.Login,

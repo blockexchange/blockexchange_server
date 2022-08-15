@@ -3,6 +3,7 @@ package oauth
 import (
 	"blockexchange/core"
 	"blockexchange/db"
+	"blockexchange/templateengine"
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
@@ -32,14 +33,16 @@ type OauthHandler struct {
 	Config          *core.Config
 	AccessTokenRepo db.AccessTokenRepository
 	UserRepo        db.UserRepository
+	TemplateEngine  *templateengine.TemplateEngine
 }
 
-func NewHandler(impl OauthImplementation, cfg *core.Config, ur db.UserRepository, atr db.AccessTokenRepository) *OauthHandler {
+func NewHandler(impl OauthImplementation, cfg *core.Config, ur db.UserRepository, atr db.AccessTokenRepository, te *templateengine.TemplateEngine) *OauthHandler {
 	return &OauthHandler{
 		Impl:            impl,
 		Config:          cfg,
 		AccessTokenRepo: atr,
 		UserRepo:        ur,
+		TemplateEngine:  te,
 	}
 }
 
@@ -56,7 +59,7 @@ func SendJson(w http.ResponseWriter, o any) {
 	json.NewEncoder(w).Encode(o)
 }
 
-func (h *OauthHandler) Handle(w http.ResponseWriter, r *http.Request) {
+func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	list := r.URL.Query()["code"]
 	if len(list) == 0 {
 		SendError(w, 404, "no code found")
@@ -135,13 +138,16 @@ func (h *OauthHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	dur := time.Duration(24 * 180 * time.Hour)
 	permissions := core.GetPermissions(user, true)
-	token, err := core.CreateJWT(user, permissions, time.Duration(24*180*time.Hour))
+	token, err := core.CreateJWT(user, permissions, dur)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	target := h.Config.BaseURL + "/#/oauth/" + token
-	http.Redirect(w, r, target, http.StatusTemporaryRedirect)
+	h.TemplateEngine.SetToken(w, token, dur)
+
+	target := h.Config.BaseURL + "/profile"
+	http.Redirect(w, r, target, http.StatusSeeOther)
 }

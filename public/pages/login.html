@@ -53,25 +53,22 @@
                 External login
             </div>
             <div class="card-body">
-                {{if .Data.Config.DiscordOAuthConfig}}
-                <a href="'https://discord.com/api/oauth2/authorize?client_id=' + info.oauth.discord_id + '&redirect_uri=' + encodeURIComponent(info.oauth.base_url + '/api/oauth_callback/discord') + '&response_type=code&scope=identify%20email'"
-                    class="btn btn-secondary">
+                {{if .Data.DiscordOauthLink}}
+                <a href="{{.Data.DiscordOauthLink}}" class="btn btn-secondary">
                     <i class="fab fa-discord"></i>
                     Login with Discord
                 </a>
                 &nbsp;
                 {{end}}
-                {{if .Data.Config.GithubOAuthConfig}}
-                <a href="'https://github.com/login/oauth/authorize?client_id=' + info.oauth.github_id"
-                    class="btn btn-secondary">
+                {{if .Data.GithubOauthLink}}
+                <a href="{{.Data.GithubOauthLink}}" class="btn btn-secondary">
                     <i class="fab fa-github"></i>
                     Login with Github
                 </a>
                 &nbsp;
                 {{end}}
-                {{if .Data.Config.MesehubOAuthConfig}}
-                <a href="'https://git.minetest.land/login/oauth/authorize?client_id=' + info.oauth.mesehub_id + '&redirect_uri=' + encodeURIComponent(info.oauth.base_url + '/api/oauth_callback/mesehub') + '&response_type=code&state=STATE'"
-                    class="btn btn-secondary">
+                {{if .Data.MesehubOauthLink}}
+                <a href="{{.Data.MesehubOauthLink}}" class="btn btn-secondary">
                     <img src="assets/pics/default_mese_crystal.png"/>
                     Login with Mesehub
                 </a>

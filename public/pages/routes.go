@@ -2,6 +2,7 @@ package pages
 
 import (
 	"blockexchange/core"
+	"blockexchange/public/oauth"
 
 	"github.com/gorilla/mux"
 )
@@ -17,4 +18,14 @@ func (ctrl *Controller) SetupRoutes(r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/profile", ctrl.Profile)
 	r.HandleFunc("/tags", ctrl.Profile)
 	r.HandleFunc("/about", ctrl.About)
+
+	if cfg.DiscordOAuthConfig != nil {
+		r.Handle("/api/oauth_callback/discord", oauth.NewHandler(&oauth.DiscordOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl.te))
+	}
+	if cfg.GithubOAuthConfig != nil {
+		r.Handle("/api/oauth_callback/github", oauth.NewHandler(&oauth.GithubOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl.te))
+	}
+	if cfg.MesehubOAuthConfig != nil {
+		r.Handle("/api/oauth_callback/mesehub", oauth.NewHandler(&oauth.MesehubOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl.te))
+	}
 }
