@@ -9,7 +9,7 @@ type SchemaEditModel struct {
 	Schema *types.SchemaSearchResult
 }
 
-func (ctrl *Controller) SchemaEdit(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) SchemaEdit(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	baseUrl := "../../../"
 
 	m := SchemaEditModel{

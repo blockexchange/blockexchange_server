@@ -23,4 +23,32 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Details</h5>
+                {{block "schema_details" .Data.Schema}}
+                {{end}}
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Description</h5>
+                <pre>{{.Data.Schema.Description}}</pre>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Preview</h5>
+                <div class="text-center">
+                    <img src="{{.BaseURL}}/api/schema/{{.Data.Schema.ID}}/screenshot" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {{end}}

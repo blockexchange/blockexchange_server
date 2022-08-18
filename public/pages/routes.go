@@ -12,7 +12,7 @@ func (ctrl *Controller) SetupRoutes(r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/", ctrl.Index)
 	r.HandleFunc("/login", ctrl.Login)
 	r.HandleFunc("/schema/{username}/{schemaname}", ctrl.Schema)
-	r.HandleFunc("/schema/{username}/{schemaname}/edit", ctrl.SchemaEdit)
+	r.HandleFunc("/schema/{username}/{schemaname}/edit", ctrl.Secure("../../../", ctrl.SchemaEdit))
 	r.HandleFunc("/users", ctrl.Users)
 	r.HandleFunc("/search", ctrl.Search)
 	r.HandleFunc("/mod", ctrl.Mod)
