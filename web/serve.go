@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"blockexchange/api"
+	"blockexchange/controller"
 	"blockexchange/core"
 	"blockexchange/public"
 	"blockexchange/public/pages"
@@ -37,8 +38,8 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	a.SetupRoutes(r, cfg)
 
 	// controller setup and routing
-	ctrl := pages.NewController(db_, cfg)
-	ctrl.SetupRoutes(r, cfg)
+	ctrl := controller.NewController(db_, cfg)
+	pages.SetupRoutes(ctrl, r, cfg)
 
 	// assets
 	r.PathPrefix("/assets/").HandlerFunc(HandleAssets(public.Files, cfg.WebDev))

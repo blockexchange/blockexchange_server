@@ -1,12 +1,13 @@
 package pages
 
 import (
+	"blockexchange/controller"
 	"net/http"
 )
 
 type UsersModel struct {
 }
 
-func (ctrl *Controller) Users(w http.ResponseWriter, r *http.Request) {
-	ctrl.te.Execute("pages/users.html", w, r, "./", nil)
+func Users(rc *controller.RenderContext, r *http.Request) error {
+	return rc.Render("pages/users.html", nil)
 }

@@ -1,12 +1,13 @@
 package pages
 
 import (
+	"blockexchange/controller"
 	"net/http"
 )
 
 type SearchModel struct {
 }
 
-func (ctrl *Controller) Search(w http.ResponseWriter, r *http.Request) {
-	ctrl.te.Execute("pages/search.html", w, r, "./", nil)
+func Search(rc *controller.RenderContext, r *http.Request) error {
+	return rc.Render("pages/search.html", nil)
 }

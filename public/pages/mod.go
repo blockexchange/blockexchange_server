@@ -1,9 +1,10 @@
 package pages
 
 import (
+	"blockexchange/controller"
 	"net/http"
 )
 
-func (ctrl *Controller) Mod(w http.ResponseWriter, r *http.Request) {
-	ctrl.te.Execute("pages/mod.html", w, r, "./", nil)
+func Mod(rc *controller.RenderContext, r *http.Request) error {
+	return rc.Render("pages/mod.html", nil)
 }

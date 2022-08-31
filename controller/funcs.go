@@ -1,4 +1,4 @@
-package pages
+package controller
 
 import (
 	"fmt"

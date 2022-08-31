@@ -1,7 +1,9 @@
 package pages
 
 import (
+	"blockexchange/controller"
 	"blockexchange/core"
+	"blockexchange/db"
 	"blockexchange/types"
 	"errors"
 	"net/http"
@@ -11,13 +13,13 @@ type ProfileModel struct {
 	UpdateError string
 }
 
-func (ctrl *Controller) updateProfileData(r *http.Request, c *types.Claims) error {
+func updateProfileData(ur db.UserRepository, r *http.Request, c *types.Claims) error {
 	err := r.ParseForm()
 	if err != nil {
 		return err
 	}
 
-	user, err := ctrl.UserRepo.GetUserById(c.UserID)
+	user, err := ur.GetUserById(c.UserID)
 	if err != nil {
 		return err
 	}
@@ -30,7 +32,7 @@ func (ctrl *Controller) updateProfileData(r *http.Request, c *types.Claims) erro
 			return errors.New("invalid username")
 		}
 
-		newUser, err := ctrl.UserRepo.GetUserByName(newUsername)
+		newUser, err := ur.GetUserByName(newUsername)
 		if err != nil {
 			return err
 		}
@@ -42,19 +44,16 @@ func (ctrl *Controller) updateProfileData(r *http.Request, c *types.Claims) erro
 	}
 
 	user.Mail = &newMail
-	return ctrl.UserRepo.UpdateUser(user)
+	return ur.UpdateUser(user)
 }
 
-func (ctrl *Controller) Profile(w http.ResponseWriter, r *http.Request, c *types.Claims) {
-	baseUrl := "./"
-
+func Profile(rc *controller.RenderContext, r *http.Request, c *types.Claims) error {
 	if r.Method == http.MethodPost {
-		err := ctrl.updateProfileData(r, c)
+		err := updateProfileData(rc.Repositories().UserRepo, r, c)
 		if err != nil {
-			ctrl.te.ExecuteError(w, r, baseUrl, 500, err)
-			return
+			return err
 		}
 	}
 
-	ctrl.te.Execute("pages/profile.html", w, r, baseUrl, nil)
+	return rc.Render("pages/profile.html", nil)
 }

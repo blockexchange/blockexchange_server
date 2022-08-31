@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"blockexchange/controller"
 	"blockexchange/types"
 	"net/http"
 )
@@ -8,6 +9,6 @@ import (
 type TagsModel struct {
 }
 
-func (ctrl *Controller) Tags(w http.ResponseWriter, r *http.Request, c *types.Claims) {
-	ctrl.te.Execute("pages/tags.html", w, r, "./", nil)
+func Tags(rc *controller.RenderContext, r *http.Request, c *types.Claims) error {
+	return rc.Render("pages/tags.html", nil)
 }

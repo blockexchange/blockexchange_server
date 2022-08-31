@@ -1,7 +1,9 @@
 package pages
 
 import (
+	"blockexchange/controller"
 	"blockexchange/types"
+	"errors"
 	"net/http"
 )
 
@@ -9,16 +11,20 @@ type SchemaEditModel struct {
 	Schema *types.SchemaSearchResult
 }
 
-func (ctrl *Controller) SchemaEdit(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	baseUrl := "../../../"
+func SchemaEdit(rc *controller.RenderContext, r *http.Request, claims *types.Claims) error {
+	schema, err := searchSchema(rc.Repositories().SchemaSearchRepo, r)
+	if err != nil {
+		return err
+	}
 
+	//TODO: edit stuff on POST
 	m := SchemaEditModel{
-		Schema: ctrl.searchSchema(w, r, baseUrl),
+		Schema: schema,
 	}
 
 	if m.Schema == nil {
-		return
+		return errors.New("not found")
 	}
 
-	ctrl.te.Execute("pages/schema_edit.html", w, r, baseUrl, m)
+	return rc.Render("pages/schema_edit.html", m)
 }

@@ -1,6 +1,8 @@
 package pages
 
 import (
+	"blockexchange/controller"
+	"blockexchange/db"
 	"blockexchange/types"
 	"errors"
 	"net/http"
@@ -12,38 +14,39 @@ type SchemaModel struct {
 	Schema *types.SchemaSearchResult
 }
 
-func (ctrl *Controller) searchSchema(w http.ResponseWriter, r *http.Request, baseUrl string) *types.SchemaSearchResult {
+func searchSchema(sr db.SchemaSearchRepository, r *http.Request) (*types.SchemaSearchResult, error) {
 	vars := mux.Vars(r)
 	username := vars["username"]
 	schemaname := vars["schemaname"]
 
-	list, err := ctrl.SchemaSearchRepo.Search(&types.SchemaSearchRequest{
+	list, err := sr.Search(&types.SchemaSearchRequest{
 		UserName:   &username,
 		SchemaName: &schemaname,
 	}, 1, 0)
 
 	if err != nil {
-		ctrl.te.ExecuteError(w, r, baseUrl, 500, err)
-		return nil
+		return nil, err
 	}
 
 	if len(list) == 0 {
-		ctrl.te.ExecuteError(w, r, baseUrl, 400, errors.New("schema not found"))
-		return nil
+		return nil, errors.New("schema not found")
 	}
 
-	return list[0]
+	return list[0], nil
 }
 
-func (ctrl *Controller) Schema(w http.ResponseWriter, r *http.Request) {
-	baseUrl := "../../"
-
+func Schema(rc *controller.RenderContext, r *http.Request) error {
+	schema, err := searchSchema(rc.Repositories().SchemaSearchRepo, r)
+	if err != nil {
+		return err
+	}
 	m := SchemaModel{
-		Schema: ctrl.searchSchema(w, r, baseUrl),
+		Schema: schema,
 	}
 
 	if m.Schema == nil {
-		return
+		return errors.New("not found")
 	}
-	ctrl.te.Execute("pages/schema.html", w, r, baseUrl, m)
+
+	return rc.Render("pages/schema.html", m)
 }

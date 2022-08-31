@@ -1,4 +1,4 @@
-package pages
+package controller
 
 import (
 	"blockexchange/core"
@@ -34,4 +34,8 @@ func NewController(db_ *sqlx.DB, cfg *core.Config) *Controller {
 			FuncMap:      funcs,
 		}),
 	}
+}
+
+func (ctrl *Controller) TemplateEngine() *templateengine.TemplateEngine {
+	return ctrl.te
 }

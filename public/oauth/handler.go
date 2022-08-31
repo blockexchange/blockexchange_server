@@ -1,6 +1,7 @@
 package oauth
 
 import (
+	"blockexchange/controller"
 	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/templateengine"
@@ -33,6 +34,7 @@ type OauthHandler struct {
 	Config          *core.Config
 	AccessTokenRepo db.AccessTokenRepository
 	UserRepo        db.UserRepository
+	Controller      *controller.Controller
 	TemplateEngine  *templateengine.TemplateEngine
 }
 

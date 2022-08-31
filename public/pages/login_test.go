@@ -1,6 +1,7 @@
 package pages_test
 
 import (
+	"blockexchange/controller"
 	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/public/pages"
@@ -20,14 +21,15 @@ func TestLogin(t *testing.T) {
 	db_ := testutils.CreateTestDatabase(t)
 	repos := db.NewRepositories(db_)
 	cfg := &core.Config{}
-	c := pages.NewController(db_, cfg)
+	c := controller.NewController(db_, cfg)
 
 	// get
 
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "http://", nil)
 
-	c.Login(w, r)
+	h := c.Handler("./", pages.Login)
+	h(w, r)
 
 	assert.Equal(t, 200, w.Result().StatusCode)
 
@@ -42,7 +44,7 @@ func TestLogin(t *testing.T) {
 	r = httptest.NewRequest(http.MethodPost, "http://", strings.NewReader(data.Encode()))
 	r.Header.Add("content-type", "application/x-www-form-urlencoded")
 
-	c.Login(w, r)
+	h(w, r)
 
 	assert.Equal(t, 401, w.Result().StatusCode)
 
@@ -63,7 +65,7 @@ func TestLogin(t *testing.T) {
 	r = httptest.NewRequest(http.MethodPost, "http://", strings.NewReader(data.Encode()))
 	r.Header.Add("content-type", "application/x-www-form-urlencoded")
 
-	c.Login(w, r)
+	h(w, r)
 
 	assert.Equal(t, 303, w.Result().StatusCode)
 

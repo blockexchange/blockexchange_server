@@ -1,21 +1,10 @@
-package pages
+package controller
 
 import (
 	"blockexchange/types"
 	"errors"
 	"net/http"
 )
-
-type RenderContext struct {
-	baseUrl string
-	ctrl    *Controller
-	w       http.ResponseWriter
-	r       *http.Request
-}
-
-func (rc *RenderContext) Render(file string, data any) error {
-	return rc.ctrl.te.Execute("pages/about.html", rc.w, rc.r, rc.baseUrl, data)
-}
 
 type RenderFunc func(rc *RenderContext, r *http.Request) error
 
