@@ -4,6 +4,6 @@ import (
 	"net/http"
 )
 
-func (ctrl *Controller) About(w http.ResponseWriter, r *http.Request) {
-	ctrl.te.Execute("pages/about.html", w, r, "./", nil)
+func About(rc *RenderContext, r *http.Request) error {
+	return rc.Render("pages/about.html", nil)
 }

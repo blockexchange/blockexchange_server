@@ -18,7 +18,7 @@ func (ctrl *Controller) SetupRoutes(r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/mod", ctrl.Mod)
 	r.HandleFunc("/profile", ctrl.Secure("./", ctrl.Profile))
 	r.HandleFunc("/tags", ctrl.Secure("./", ctrl.Tags, types.JWTPermissionAdmin))
-	r.HandleFunc("/about", ctrl.About)
+	r.HandleFunc("/about", ctrl.Handler("./", About))
 
 	if cfg.DiscordOAuthConfig != nil {
 		r.Handle("/api/oauth_callback/discord", oauth.NewHandler(&oauth.DiscordOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl.te))

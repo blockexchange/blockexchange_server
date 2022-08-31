@@ -13,7 +13,7 @@ type Controller struct {
 	*db.Repositories
 	cfg *core.Config
 	te  *templateengine.TemplateEngine
-} 
+}
 
 func NewController(db_ *sqlx.DB, cfg *core.Config) *Controller {
 	funcs := make(map[string]any)
