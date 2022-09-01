@@ -2,16 +2,17 @@ package pages
 
 import (
 	"blockexchange/controller"
+	"blockexchange/public/components"
 	"blockexchange/types"
 	"strconv"
 )
 
 type SearchModel struct {
-	Tags    []*types.Tag
-	Schemas []*types.SchemaSearchResult
-	Query   string
-	Offset  int
-	Limit   int
+	Tags       []*types.Tag
+	SchemaList *components.SchemaListModel
+	Query      string
+	Offset     int
+	Limit      int
 }
 
 func Search(rc *controller.RenderContext) error {
@@ -33,11 +34,12 @@ func Search(rc *controller.RenderContext) error {
 	}
 
 	if m.Query != "" {
-		list, err := rc.Repositories().SchemaSearchRepo.Search(&types.SchemaSearchRequest{Keywords: &m.Query}, m.Limit, m.Offset)
+		complete := true
+		list, err := rc.Repositories().SchemaSearchRepo.Search(&types.SchemaSearchRequest{Keywords: &m.Query, Complete: &complete}, m.Limit, m.Offset)
 		if err != nil {
 			return err
 		}
-		m.Schemas = list
+		m.SchemaList = components.SchemaList(rc, list)
 	}
 
 	return rc.Render("pages/search.html", m)

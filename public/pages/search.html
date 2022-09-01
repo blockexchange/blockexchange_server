@@ -34,10 +34,7 @@ Search
     </div>
 </form>
 
-<ul>
-{{ range .Data.Schemas }}
-    <li>{{.Name}}</li>
+{{ block "schema_list" .Data.SchemaList }}
 {{ end }}
-</ul>
 
 {{end}}
