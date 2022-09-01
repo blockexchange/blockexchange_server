@@ -1,4 +1,43 @@
 {{define "title"}}Search{{end}}
 {{define "content"}}
 Search
+
+<form method="GET">
+    <div class="row">
+        <div class="col-md-8">
+            <input type="text"
+                name="q"
+                class="form-control"
+                placeholder="Search term (for example 'mesecons')"
+                value="{{.Data.Query}}"
+            />
+        </div>
+        <div class="col-md-2">
+            <div class="input-group">
+                <span class="input-group-text">Tag</span>
+                <select class="form-select" name="tags">
+                    <option></option>
+                    {{ range .Data.Tags }}
+                    <option value="{{.ID}}">
+                        {{ .Name }}
+                    </option>
+                    {{ end }}
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" type="submit">
+                <i class="fa fa-search"></i>
+                Search
+            </button>
+        </div>
+    </div>
+</form>
+
+<ul>
+{{ range .Data.Schemas }}
+    <li>{{.Name}}</li>
+{{ end }}
+</ul>
+
 {{end}}
