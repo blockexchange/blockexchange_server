@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-type RenderFunc func(rc *RenderContext, r *http.Request) error
+type RenderFunc func(rc *RenderContext) error
 
 func (ctrl *Controller) Handler(baseUrl string, rf RenderFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -17,29 +17,29 @@ func (ctrl *Controller) Handler(baseUrl string, rf RenderFunc) http.HandlerFunc 
 			baseUrl: baseUrl,
 		}
 
-		err := rf(rc, r)
+		err := rf(rc)
 		if err != nil {
-			ctrl.te.ExecuteError(w, r, "./", 500, err)
+			ctrl.te.Execute("pages/error.html", w, r, 500, &RenderData{BaseURL: baseUrl, Data: err})
 		}
 	}
 }
 
-type SecureRenderFunc func(rc *RenderContext, r *http.Request, claims *types.Claims) error
+type SecureRenderFunc func(rc *RenderContext) error
 
 func (ctrl *Controller) SecureHandler(baseUrl string, shf SecureRenderFunc, req_perms ...types.JWTPermission) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		c, err := ctrl.te.GetClaims(r)
+		c, err := ctrl.GetClaims(r)
 		if err != nil {
-			ctrl.te.ExecuteError(w, r, baseUrl, 500, err)
+			ctrl.te.Execute("pages/error.html", w, r, 500, &RenderData{BaseURL: baseUrl, Data: err})
 			return
 		}
 		if c == nil {
-			ctrl.te.ExecuteError(w, r, baseUrl, 401, errors.New("unauthorized"))
+			ctrl.te.Execute("pages/error.html", w, r, 401, &RenderData{BaseURL: baseUrl, Data: errors.New("unauthorized")})
 			return
 		}
 		for _, req_perm := range req_perms {
 			if !c.HasPermission(req_perm) {
-				ctrl.te.ExecuteError(w, r, baseUrl, 403, errors.New("forbidden"))
+				ctrl.te.Execute("pages/error.html", w, r, 403, &RenderData{BaseURL: baseUrl, Data: errors.New("forbidden")})
 				return
 			}
 		}
@@ -49,11 +49,12 @@ func (ctrl *Controller) SecureHandler(baseUrl string, shf SecureRenderFunc, req_
 			w:       w,
 			r:       r,
 			baseUrl: baseUrl,
+			claims:  c,
 		}
 
-		err = shf(rc, r, c)
+		err = shf(rc)
 		if err != nil {
-			ctrl.te.ExecuteError(w, r, baseUrl, 500, err)
+			ctrl.te.Execute("pages/error.html", w, r, 500, &RenderData{BaseURL: baseUrl, Data: err})
 			return
 		}
 	}

@@ -3,14 +3,13 @@ package pages
 import (
 	"blockexchange/controller"
 	"blockexchange/public/components"
-	"net/http"
 )
 
 type IndexModel struct {
 	LatestSchemas *components.LatestSchemasModel
 }
 
-func Index(rc *controller.RenderContext, r *http.Request) error {
+func Index(rc *controller.RenderContext) error {
 	m := &IndexModel{}
 
 	var err error

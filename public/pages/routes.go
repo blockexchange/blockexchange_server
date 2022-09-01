@@ -22,12 +22,12 @@ func SetupRoutes(ctrl *controller.Controller, r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/about", ctrl.Handler("./", About))
 
 	if cfg.DiscordOAuthConfig != nil {
-		r.Handle("/api/oauth_callback/discord", oauth.NewHandler(&oauth.DiscordOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl.TemplateEngine()))
+		r.Handle("/api/oauth_callback/discord", oauth.NewHandler(&oauth.DiscordOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl))
 	}
 	if cfg.GithubOAuthConfig != nil {
-		r.Handle("/api/oauth_callback/github", oauth.NewHandler(&oauth.GithubOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl.TemplateEngine()))
+		r.Handle("/api/oauth_callback/github", oauth.NewHandler(&oauth.GithubOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl))
 	}
 	if cfg.MesehubOAuthConfig != nil {
-		r.Handle("/api/oauth_callback/mesehub", oauth.NewHandler(&oauth.MesehubOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl.TemplateEngine()))
+		r.Handle("/api/oauth_callback/mesehub", oauth.NewHandler(&oauth.MesehubOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl))
 	}
 }

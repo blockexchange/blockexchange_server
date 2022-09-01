@@ -20,6 +20,7 @@ type Config struct {
 	CookiePath         string
 	CookieDomain       string
 	CookieSecure       bool
+	CookieName         string
 }
 
 func CreateConfig() (*Config, error) {
@@ -32,6 +33,7 @@ func CreateConfig() (*Config, error) {
 		CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
 		CookieDomain: os.Getenv("BLOCKEXCHANGE_COOKIE_DOMAIN"),
 		CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
+		CookieName:   "blockexchange",
 	}
 
 	if os.Getenv("DISCORD_APP_ID") != "" {

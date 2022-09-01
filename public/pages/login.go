@@ -21,9 +21,10 @@ type LoginModel struct {
 	MesehubOauthLink string
 }
 
-func Login(rc *controller.RenderContext, r *http.Request) error {
+func Login(rc *controller.RenderContext) error {
 	cfg := rc.Config()
 	repos := rc.Repositories()
+	r := rc.Request()
 
 	lm := &LoginModel{
 		Config: cfg,

@@ -1,7 +1,6 @@
 package templateengine
 
 import (
-	"blockexchange/types"
 	"bytes"
 	"html/template"
 	"io/fs"
@@ -11,14 +10,10 @@ import (
 )
 
 type TemplateEngineOptions struct {
-	Templates    fs.FS
-	TemplateDir  string
-	EnableCache  bool
-	CookieName   string
-	CookiePath   string
-	CookieDomain string
-	CookieSecure bool
-	FuncMap      map[string]any
+	Templates   fs.FS
+	TemplateDir string
+	EnableCache bool
+	FuncMap     map[string]any
 }
 
 type TemplateEngine struct {
@@ -71,51 +66,19 @@ func (te *TemplateEngine) GetTemplate(file string) (*template.Template, error) {
 	return tmpl, nil
 }
 
-func (te *TemplateEngine) Execute(file string, w http.ResponseWriter, r *http.Request, baseUrl string, data any) error {
+func (te *TemplateEngine) Execute(file string, w http.ResponseWriter, r *http.Request, statuscode int, data any) error {
 	t, err := te.GetTemplate(file)
 	if err != nil {
-		return te.ExecuteError(w, r, baseUrl, 500, err)
-	}
-
-	claims, err := te.GetClaims(r)
-	if err != nil {
-		return te.ExecuteError(w, r, baseUrl, 500, err)
-	}
-
-	rd := &RenderData{
-		BaseURL: baseUrl,
-		Claims:  claims,
-		Data:    data,
-	}
-
-	if claims != nil {
-		rd.IsAdmin = claims.HasPermission(types.JWTPermissionAdmin)
+		return err
 	}
 
 	buf := bytes.Buffer{}
 
-	err = t.ExecuteTemplate(&buf, "layout", rd)
+	err = t.ExecuteTemplate(&buf, "layout", data)
 	if err != nil {
-		te.ExecuteError(w, r, baseUrl, 500, err)
 		return err
 	}
 
 	_, err = w.Write(buf.Bytes())
 	return err
-}
-
-func (te *TemplateEngine) ExecuteError(w http.ResponseWriter, r *http.Request, baseUrl string, statuscode int, tmplerr error) error {
-	w.WriteHeader(statuscode)
-	t, err := te.GetTemplate("pages/error.html")
-	if err != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
-		return err
-	}
-
-	rd := &RenderData{
-		BaseURL: baseUrl,
-		Data:    tmplerr,
-	}
-	return t.ExecuteTemplate(w, "layout", rd)
 }

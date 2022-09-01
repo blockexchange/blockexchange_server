@@ -47,9 +47,10 @@ func updateProfileData(ur db.UserRepository, r *http.Request, c *types.Claims) e
 	return ur.UpdateUser(user)
 }
 
-func Profile(rc *controller.RenderContext, r *http.Request, c *types.Claims) error {
+func Profile(rc *controller.RenderContext) error {
+	r := rc.Request()
 	if r.Method == http.MethodPost {
-		err := updateProfileData(rc.Repositories().UserRepo, r, c)
+		err := updateProfileData(rc.Repositories().UserRepo, r, rc.Claims())
 		if err != nil {
 			return err
 		}

@@ -2,9 +2,8 @@ package pages
 
 import (
 	"blockexchange/controller"
-	"net/http"
 )
 
-func Mod(rc *controller.RenderContext, r *http.Request) error {
+func Mod(rc *controller.RenderContext) error {
 	return rc.Render("pages/mod.html", nil)
 }

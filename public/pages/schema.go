@@ -35,7 +35,8 @@ func searchSchema(sr db.SchemaSearchRepository, r *http.Request) (*types.SchemaS
 	return list[0], nil
 }
 
-func Schema(rc *controller.RenderContext, r *http.Request) error {
+func Schema(rc *controller.RenderContext) error {
+	r := rc.Request()
 	schema, err := searchSchema(rc.Repositories().SchemaSearchRepo, r)
 	if err != nil {
 		return err

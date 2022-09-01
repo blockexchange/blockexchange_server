@@ -4,7 +4,6 @@ import (
 	"blockexchange/controller"
 	"blockexchange/core"
 	"blockexchange/db"
-	"blockexchange/templateengine"
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
@@ -35,16 +34,15 @@ type OauthHandler struct {
 	AccessTokenRepo db.AccessTokenRepository
 	UserRepo        db.UserRepository
 	Controller      *controller.Controller
-	TemplateEngine  *templateengine.TemplateEngine
 }
 
-func NewHandler(impl OauthImplementation, cfg *core.Config, ur db.UserRepository, atr db.AccessTokenRepository, te *templateengine.TemplateEngine) *OauthHandler {
+func NewHandler(impl OauthImplementation, cfg *core.Config, ur db.UserRepository, atr db.AccessTokenRepository, ctrl *controller.Controller) *OauthHandler {
 	return &OauthHandler{
 		Impl:            impl,
 		Config:          cfg,
 		AccessTokenRepo: atr,
 		UserRepo:        ur,
-		TemplateEngine:  te,
+		Controller:      ctrl,
 	}
 }
 
@@ -148,7 +146,7 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.TemplateEngine.SetToken(w, token, dur)
+	h.Controller.SetToken(w, token, dur)
 
 	target := h.Config.BaseURL + "/profile"
 	http.Redirect(w, r, target, http.StatusSeeOther)

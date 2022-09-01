@@ -4,14 +4,14 @@ import (
 	"blockexchange/controller"
 	"blockexchange/types"
 	"errors"
-	"net/http"
 )
 
 type SchemaEditModel struct {
 	Schema *types.SchemaSearchResult
 }
 
-func SchemaEdit(rc *controller.RenderContext, r *http.Request, claims *types.Claims) error {
+func SchemaEdit(rc *controller.RenderContext) error {
+	r := rc.Request()
 	schema, err := searchSchema(rc.Repositories().SchemaSearchRepo, r)
 	if err != nil {
 		return err
