@@ -9,7 +9,7 @@ import (
 
 type SearchModel struct {
 	Tags       []*types.Tag
-	SchemaList *components.SchemaListModel
+	SchemaList []*components.SchemaListEntry
 	Query      string
 	Offset     int
 	Limit      int

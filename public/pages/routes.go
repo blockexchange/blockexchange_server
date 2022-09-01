@@ -13,12 +13,12 @@ func SetupRoutes(ctrl *controller.Controller, r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/", ctrl.Handler("./", Index))
 	r.HandleFunc("/login", ctrl.Handler("./", Login))
 	r.HandleFunc("/schema/{username}/{schemaname}", ctrl.Handler("../../../", Schema))
-	r.HandleFunc("/schema/{username}/{schemaname}/edit", ctrl.SecureHandler("../../../", SchemaEdit))
+	r.HandleFunc("/schema/{username}/{schemaname}/edit", ctrl.Handler("../../../", SchemaEdit))
 	r.HandleFunc("/users", ctrl.Handler("./", Users))
 	r.HandleFunc("/search", ctrl.Handler("./", Search))
 	r.HandleFunc("/mod", ctrl.Handler("./", Mod))
-	r.HandleFunc("/profile", ctrl.SecureHandler("./", Profile))
-	r.HandleFunc("/tags", ctrl.SecureHandler("./", Tags, types.JWTPermissionAdmin))
+	r.HandleFunc("/profile", ctrl.Handler("./", Profile))
+	r.HandleFunc("/tags", ctrl.Handler("./", Tags, types.JWTPermissionAdmin))
 	r.HandleFunc("/about", ctrl.Handler("./", About))
 
 	if cfg.DiscordOAuthConfig != nil {

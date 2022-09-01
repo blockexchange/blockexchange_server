@@ -8,29 +8,7 @@ import (
 
 type RenderFunc func(rc *RenderContext) error
 
-func (ctrl *Controller) Handler(baseUrl string, rf RenderFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		rc := &RenderContext{
-			ctrl:    ctrl,
-			w:       w,
-			r:       r,
-			baseUrl: baseUrl,
-		}
-
-		err := rf(rc)
-		if err != nil {
-			err = ctrl.te.Execute("pages/error.html", w, r, 500, &RenderData{BaseURL: baseUrl, Data: err})
-			if err != nil {
-				w.WriteHeader(500)
-				w.Write([]byte(err.Error()))
-			}
-		}
-	}
-}
-
-type SecureRenderFunc func(rc *RenderContext) error
-
-func (ctrl *Controller) SecureHandler(baseUrl string, shf SecureRenderFunc, req_perms ...types.JWTPermission) http.HandlerFunc {
+func (ctrl *Controller) Handler(baseUrl string, shf RenderFunc, req_perms ...types.JWTPermission) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c, err := ctrl.GetClaims(r)
 		if err != nil {

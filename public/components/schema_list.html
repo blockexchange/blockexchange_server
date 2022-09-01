@@ -15,32 +15,35 @@
         {{ range . }}
         <tr>
             <td>
-                <router-link :to="{ name: 'schemapage', params: { schema_name: entry.name, user_name: entry.user.name }}">
-                    entry.name
-                </router-link>
-                <tag-label v-for="tag in entry.tags" :tag_id="tag.tag_id" :key="tag.id"/>
+                <a href="{{.BaseURL}}/schema/{{.Schema.UserName}}/{{.Schema.Name}}">
+                    {{ .Schema.Name }}
+                </a>
+                {{ range .Schema.Tags }}
+                    <span class="badge bg-success">
+                        <i class="fas fa-tag"></i> {{ . }}
+                    </span>
+                {{ end }}
             </td>
             <td>
                 <i class="fa-regular fa-star"></i>
-                <span v-if="entry.stars > 0" class="badge bg-secondary rounded-pill">entry.stars</span>
+                {{ if gt .Schema.Stars 0 }}
+                    <span class="badge bg-secondary rounded-pill">{{ .Schema.Stars }}</span>
+                {{ end }}
             </td>
             <td>
-                <router-link :to="{ name: 'userschemas', params: { user_name: entry.user.name }}">
-                    entry.user.name
-                </router-link>
-                <span v-if="store.claims && store.claims.username == entry.user.name" class="badge bg-secondary">
-                    owner
-                </span>
+                <a href="{{.BaseURL}}/schema/{{.Schema.UserName}}">
+                    {{ .Schema.UserName }}
+                </a>
+                {{ if .Owner }}
+                    <span class="badge bg-secondary">
+                        owner
+                    </span>
+                {{ end }}
             </td>
-            <td>entry.description</td>
-            <td>
-                entry.total_parts
-                <span v-if="!entry.complete" class="badge bg-danger">
-                    Incomplete
-                </span>
-            </td>
-            <td>prettysize(entry.total_size)</td>
-            <td>new Date(+entry.created).toDateString()</td>
+            <td>{{ .Schema.Description }}</td>
+            <td>{{ .Schema.TotalParts }}</td>
+            <td>{{ prettysize .Schema.TotalSize }}</td>
+            <td>{{ formattime .Schema.Mtime }}</td>
         </tr>
         {{end}}
     </tbody>

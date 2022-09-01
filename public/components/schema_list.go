@@ -5,14 +5,23 @@ import (
 	"blockexchange/types"
 )
 
-type SchemaListModel struct {
-	Schemas []*types.SchemaSearchResult
+type SchemaListEntry struct {
 	BaseURL string
+	Owner   bool
+	Schema  *types.SchemaSearchResult
 }
 
-func SchemaList(rc *controller.RenderContext, schemas []*types.SchemaSearchResult) *SchemaListModel {
-	return &SchemaListModel{
-		Schemas: schemas,
-		BaseURL: rc.BaseURL(),
+func SchemaList(rc *controller.RenderContext, schemas []*types.SchemaSearchResult) []*SchemaListEntry {
+	list := make([]*SchemaListEntry, len(schemas))
+	for i, s := range schemas {
+		list[i] = &SchemaListEntry{
+			Schema:  s,
+			BaseURL: rc.BaseURL(),
+		}
+
+		if rc.Claims() != nil && rc.Claims().Username == s.UserName {
+			list[i].Owner = true
+		}
 	}
+	return list
 }
