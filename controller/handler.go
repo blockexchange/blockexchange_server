@@ -19,7 +19,11 @@ func (ctrl *Controller) Handler(baseUrl string, rf RenderFunc) http.HandlerFunc 
 
 		err := rf(rc)
 		if err != nil {
-			ctrl.te.Execute("pages/error.html", w, r, 500, &RenderData{BaseURL: baseUrl, Data: err})
+			err = ctrl.te.Execute("pages/error.html", w, r, 500, &RenderData{BaseURL: baseUrl, Data: err})
+			if err != nil {
+				w.WriteHeader(500)
+				w.Write([]byte(err.Error()))
+			}
 		}
 	}
 }
@@ -54,7 +58,11 @@ func (ctrl *Controller) SecureHandler(baseUrl string, shf SecureRenderFunc, req_
 
 		err = shf(rc)
 		if err != nil {
-			ctrl.te.Execute("pages/error.html", w, r, 500, &RenderData{BaseURL: baseUrl, Data: err})
+			err = ctrl.te.Execute("pages/error.html", w, r, 500, &RenderData{BaseURL: baseUrl, Data: err})
+			if err != nil {
+				w.WriteHeader(500)
+				w.Write([]byte(err.Error()))
+			}
 			return
 		}
 	}

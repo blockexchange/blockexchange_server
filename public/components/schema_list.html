@@ -16,32 +16,33 @@
         <tr>
             <td>
                 <router-link :to="{ name: 'schemapage', params: { schema_name: entry.name, user_name: entry.user.name }}">
-                    {{ entry.name }}
+                    entry.name
                 </router-link>
                 <tag-label v-for="tag in entry.tags" :tag_id="tag.tag_id" :key="tag.id"/>
             </td>
             <td>
                 <i class="fa-regular fa-star"></i>
-                <span v-if="entry.stars > 0" class="badge bg-secondary rounded-pill">{{ entry.stars }}</span>
+                <span v-if="entry.stars > 0" class="badge bg-secondary rounded-pill">entry.stars</span>
             </td>
             <td>
                 <router-link :to="{ name: 'userschemas', params: { user_name: entry.user.name }}">
-                    {{ entry.user.name }}
+                    entry.user.name
                 </router-link>
                 <span v-if="store.claims && store.claims.username == entry.user.name" class="badge bg-secondary">
                     owner
                 </span>
             </td>
-            <td>{{ entry.description }}</td>
+            <td>entry.description</td>
             <td>
-                {{ entry.total_parts }}
+                entry.total_parts
                 <span v-if="!entry.complete" class="badge bg-danger">
                     Incomplete
                 </span>
             </td>
-            <td>{{ prettysize(entry.total_size) }}</td>
-            <td>{{ new Date(+entry.created).toDateString() }}</td>
+            <td>prettysize(entry.total_size)</td>
+            <td>new Date(+entry.created).toDateString()</td>
         </tr>
+        {{end}}
     </tbody>
 </table>
 {{end}}
