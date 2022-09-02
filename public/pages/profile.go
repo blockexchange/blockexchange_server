@@ -7,20 +7,22 @@ import (
 	"blockexchange/types"
 	"errors"
 	"net/http"
+	"time"
 )
 
 type ProfileModel struct {
-	UpdateError string
+	UpdateError error
 	User        *types.User
 }
 
-func updateProfileData(ur db.UserRepository, r *http.Request, c *types.Claims) error {
-	err := r.ParseForm()
+func updateProfileData(m *ProfileModel, ur db.UserRepository, r *http.Request, c *types.Claims) error {
+	var err error
+	err = r.ParseForm()
 	if err != nil {
 		return err
 	}
 
-	user, err := ur.GetUserById(c.UserID)
+	m.User, err = ur.GetUserById(c.UserID)
 	if err != nil {
 		return err
 	}
@@ -28,9 +30,10 @@ func updateProfileData(ur db.UserRepository, r *http.Request, c *types.Claims) e
 	newUsername := r.Form.Get("username")
 	newMail := r.Form.Get("mail")
 
-	if newUsername != user.Name {
+	if newUsername != m.User.Name {
 		if !core.ValidateName(newUsername) {
-			return errors.New("invalid username")
+			m.UpdateError = errors.New("invalid username, allowed chars: [a-zA-Z0-9_.-]")
+			return nil
 		}
 
 		newUser, err := ur.GetUserByName(newUsername)
@@ -38,35 +41,51 @@ func updateProfileData(ur db.UserRepository, r *http.Request, c *types.Claims) e
 			return err
 		}
 		if newUser != nil {
-			return errors.New("username already taken")
+			m.UpdateError = errors.New("username already taken")
+			return nil
 		}
 
-		user.Name = newUsername
+		m.User.Name = newUsername
 	}
 
-	user.Mail = &newMail
-	return ur.UpdateUser(user)
+	m.User.Mail = &newMail
+	return ur.UpdateUser(m.User)
 }
 
 func Profile(rc *controller.RenderContext) error {
+	m := &ProfileModel{}
+
 	r := rc.Request()
 	if r.Method == http.MethodPost {
-		err := updateProfileData(rc.Repositories().UserRepo, r, rc.Claims())
+		var err error
+		m.User, err = rc.Repositories().UserRepo.GetUserById(rc.Claims().UserID)
 		if err != nil {
 			return err
 		}
+
+		err = updateProfileData(m, rc.Repositories().UserRepo, r, rc.Claims())
+		if err != nil {
+			return err
+		}
+
+		permissions := core.GetPermissions(m.User, true)
+		dur := time.Duration(24 * 180 * time.Hour)
+		token, err := core.CreateJWT(m.User, permissions, dur)
+		if err != nil {
+			return err
+		}
+		rc.SetToken(token, dur)
 	}
 
-	user, err := rc.Repositories().UserRepo.GetUserById(rc.Claims().UserID)
-	if err != nil {
-		return err
-	}
-	if user == nil {
-		return errors.New("not founf")
-	}
-
-	m := &ProfileModel{
-		User: user,
+	if m.User == nil {
+		var err error
+		m.User, err = rc.Repositories().UserRepo.GetUserById(rc.Claims().UserID)
+		if err != nil {
+			return err
+		}
+		if m.User == nil {
+			return errors.New("not founf")
+		}
 	}
 
 	return rc.Render("pages/profile.html", m)
