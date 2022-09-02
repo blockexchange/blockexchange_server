@@ -36,6 +36,10 @@ func (rc *RenderContext) Render(file string, data any) error {
 	return rc.ctrl.te.Execute(file, rc.w, rc.r, 200, rd)
 }
 
+func (rc *RenderContext) Redirect(target string) {
+	http.Redirect(rc.w, rc.r, target, http.StatusSeeOther)
+}
+
 func (rc *RenderContext) Repositories() *db.Repositories {
 	return rc.ctrl.Repositories
 }

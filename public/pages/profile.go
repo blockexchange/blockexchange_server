@@ -11,6 +11,7 @@ import (
 
 type ProfileModel struct {
 	UpdateError string
+	User        *types.User
 }
 
 func updateProfileData(ur db.UserRepository, r *http.Request, c *types.Claims) error {
@@ -56,5 +57,17 @@ func Profile(rc *controller.RenderContext) error {
 		}
 	}
 
-	return rc.Render("pages/profile.html", nil)
+	user, err := rc.Repositories().UserRepo.GetUserById(rc.Claims().UserID)
+	if err != nil {
+		return err
+	}
+	if user == nil {
+		return errors.New("not founf")
+	}
+
+	m := &ProfileModel{
+		User: user,
+	}
+
+	return rc.Render("pages/profile.html", m)
 }

@@ -14,10 +14,13 @@ type SchemaModel struct {
 	Schema *types.SchemaSearchResult
 }
 
-func searchSchema(sr db.SchemaSearchRepository, r *http.Request) (*types.SchemaSearchResult, error) {
+func extractUsernameSchema(r *http.Request) (string, string) {
 	vars := mux.Vars(r)
-	username := vars["username"]
-	schemaname := vars["schemaname"]
+	return vars["username"], vars["schemaname"]
+}
+
+func searchSchema(sr db.SchemaSearchRepository, r *http.Request) (*types.SchemaSearchResult, error) {
+	username, schemaname := extractUsernameSchema(r)
 
 	list, err := sr.Search(&types.SchemaSearchRequest{
 		UserName:   &username,

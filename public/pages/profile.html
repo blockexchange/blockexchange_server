@@ -8,8 +8,8 @@
             </div>
             <div class="card-body">
                 <form method="POST" action="profile">
-                    <input type="text" class="form-control" name="username" placeholder="Username" value="{{.Claims.Username}}">
-                    <input type="text" class="form-control" name="mail" placeholder="E-Mail" value="{{.Claims.Mail}}">
+                    <input type="text" class="form-control" name="username" placeholder="Username" value="{{.Data.User.Name}}">
+                    <input type="text" class="form-control" name="mail" placeholder="E-Mail" value="{{.Data.User.Mail}}">
                     <div class="alert alert-success">
                         E-Mail address is optional but strongly encouraged as it is the only recovery-option for local accounts
                     </div>
@@ -28,15 +28,10 @@
             </div>
             <div class="card-body">
                 <ul>
-                    <li> ID: <b>1</b></li>
-                    <li> Name: <b>BuckarooBanzai</b></li>
-                    <li> Type: <span class="badge bg-success">GITHUB</span></li>
-                    <li> Permissions:
-                        <span class="badge bg-primary">UPLOAD</span>
-                        <span class="badge bg-primary">OVERWRITE</span>
-                        <span class="badge bg-primary">MANAGEMENT</span>
-                        <span class="badge bg-primary">ADMIN</span>
-                    </li>
+                    <li> ID: <b>{{.Data.User.ID}}</b></li>
+                    <li> Name: <b>{{.Data.User.Name}}</b></li>
+                    <li> Type: <span class="badge bg-success">{{.Data.User.Type}}</span></li>
+                    <li> Role: <b>{{.Data.User.Role}}</b></li>
                 </ul>
             </div>
         </div>
