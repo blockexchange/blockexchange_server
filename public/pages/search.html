@@ -1,6 +1,6 @@
 {{define "title"}}Search{{end}}
 {{define "content"}}
-Search
+<h3>Schema Search</h3>
 
 <form method="GET">
     <div class="row">
@@ -35,7 +35,7 @@ Search
     </div>
 </form>
 
-{{ block "schema_list" .Data.SchemaList }}
-{{ end }}
+{{ block "schema_list" .Data.SchemaList }}{{ end }}
+{{ block "pager" .Data.Pager }}{{ end }}
 
 {{end}}

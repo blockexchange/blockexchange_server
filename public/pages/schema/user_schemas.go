@@ -12,10 +12,13 @@ func UserSchema(rc *controller.RenderContext) error {
 
 	username, _ := extractUsernameSchema(r)
 
-	list, err := sr.Search(&types.SchemaSearchRequest{
-		UserName: &username,
-	}, 20, 0)
+	q := &types.SchemaSearchRequest{UserName: &username}
+	count, err := sr.Count(q)
+	if err != nil {
+		return err
+	}
 
+	list, err := sr.Search(q, 20, 0)
 	if err != nil {
 		return err
 	}
@@ -23,6 +26,7 @@ func UserSchema(rc *controller.RenderContext) error {
 	m := make(map[string]any)
 	m["Username"] = username
 	m["SchemaList"] = components.SchemaList(rc, list)
+	m["Pager"] = components.Pager(rc, 20, count)
 
 	return rc.Render("pages/schema/user_schemas.html", m)
 }

@@ -4,6 +4,8 @@
     Schemas
     <small class="text-muted">by {{ .Data.Username }}</small>
 </h3>
-{{ block "schema_list" .Data.SchemaList }}
-{{ end }}
+
+{{ block "schema_list" .Data.SchemaList }}{{ end }}
+{{ block "pager" .Data.Pager }}{{ end }}
+
 {{end}}

@@ -1,0 +1,20 @@
+{{define "pager"}}
+{{if gt .Pagecount 1}}
+<nav>
+    <ul class="pagination">
+        <li class="page-item {{if lt .Previous 1}}disabled{{end}}">
+            <a class="page-link" href="?page={{.Previous}}">Previous</a>
+        </li>
+        {{ $cp := .CurrentPage }}
+        {{ range $num := .Pages }}
+        <li class="page-item {{if eq $num $cp}}active{{end}}">
+            <a class="page-link" href="?page={{$num}}">{{$num}}</a>
+        </li>
+        {{ end }}
+        <li class="page-item {{if gt .Next .Pagecount}}disabled{{end}}">
+            <a class="page-link" href="?page={{.Next}}">Next</a>
+        </li>
+    </ul>
+</nav>
+{{end}}
+{{end}}

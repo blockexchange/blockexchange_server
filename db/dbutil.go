@@ -100,6 +100,12 @@ func Select[E Selectable](d *sql.DB, entity E, constraints string, params ...any
 	return entity, err
 }
 
+func Count[E Selectable](d *sql.DB, entity E, constraints string, params ...any) (int, error) {
+	row := d.QueryRow(fmt.Sprintf("select count(*) from %s %s", entity.Table(), constraints), params...)
+	var count int
+	return count, row.Scan(&count)
+}
+
 func SelectMulti[E Selectable](d *sql.DB, p func() E, constraints string, params ...any) ([]E, error) {
 	entity := p()
 	rows, err := d.Query(fmt.Sprintf("select %s from %s %s", strings.Join(entity.Columns(SelectAction), ","), entity.Table(), constraints), params...)

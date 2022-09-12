@@ -10,6 +10,7 @@ import (
 type SearchModel struct {
 	Tags       []*types.Tag
 	SchemaList []*components.SchemaListEntry
+	Pager      *components.PagerModel
 	Query      string
 	TagID      int64
 	Offset     int
@@ -24,10 +25,9 @@ func Search(rc *controller.RenderContext) error {
 	}
 
 	m := &SearchModel{
-		Tags:   tags,
-		Query:  rc.Request().URL.Query().Get("q"),
-		Limit:  20,
-		Offset: 0,
+		Tags:  tags,
+		Query: rc.Request().URL.Query().Get("q"),
+		Limit: 20,
 	}
 
 	tagidstr := rc.Request().URL.Query().Get("tagid")
@@ -40,11 +40,6 @@ func Search(rc *controller.RenderContext) error {
 		m.TagID = tagid
 	}
 
-	page, err := strconv.ParseInt(rc.Request().URL.Query().Get("page"), 10, 64)
-	if err == nil {
-		m.Offset = int(page) * m.Limit
-	}
-
 	complete := true
 	q := &types.SchemaSearchRequest{Complete: &complete}
 	if m.Query != "" {
@@ -54,7 +49,14 @@ func Search(rc *controller.RenderContext) error {
 		q.TagID = &m.TagID
 	}
 
-	list, err := repos.SchemaSearchRepo.Search(q, m.Limit, m.Offset)
+	count, err := repos.SchemaSearchRepo.Count(q)
+	if err != nil {
+		return err
+	}
+
+	m.Pager = components.Pager(rc, m.Limit, count)
+
+	list, err := repos.SchemaSearchRepo.Search(q, m.Limit, m.Pager.Offset)
 	if err != nil {
 		return err
 	}

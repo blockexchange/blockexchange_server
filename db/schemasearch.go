@@ -69,6 +69,15 @@ func (repo SchemaSearchRepository) buildOrderQuery(query *strings.Builder, searc
 	}
 }
 
+func (repo SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int, error) {
+	query := strings.Builder{}
+	query.WriteString("where true=true")
+
+	// build query
+	params := repo.buildWhereQuery(&query, search)
+	return Count(repo.DB, &types.SchemaSearchResult{}, query.String(), params...)
+}
+
 func (repo SchemaSearchRepository) Search(search *types.SchemaSearchRequest, limit, offset int) ([]*types.SchemaSearchResult, error) {
 
 	query := strings.Builder{}
