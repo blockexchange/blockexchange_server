@@ -25,7 +25,7 @@ func UserSchema(rc *controller.RenderContext) error {
 
 	m := make(map[string]any)
 	m["Username"] = username
-	m["SchemaList"] = components.SchemaList(rc, list)
+	m["SchemaList"] = components.SchemaList(rc, list, false)
 	m["Pager"] = components.Pager(rc, 20, count)
 
 	return rc.Render("pages/schema/user_schemas.html", m)

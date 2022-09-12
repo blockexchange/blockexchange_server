@@ -9,7 +9,7 @@ import (
 
 type SearchModel struct {
 	Tags       []*types.Tag
-	SchemaList []*components.SchemaListEntry
+	SchemaList *components.SchemaListModel
 	Pager      *components.PagerModel
 	Query      string
 	TagID      int64
@@ -60,7 +60,7 @@ func Search(rc *controller.RenderContext) error {
 	if err != nil {
 		return err
 	}
-	m.SchemaList = components.SchemaList(rc, list)
+	m.SchemaList = components.SchemaList(rc, list, true)
 
 	return rc.Render("pages/search.html", m)
 }

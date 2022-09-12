@@ -4,7 +4,9 @@
         <tr>
             <th>Name</th>
             <th>Stars</th>
+            {{if .ShowUser}}
             <th>User</th>
+            {{end}}
             <th>description</th>
             <th>Parts</th>
             <th>Size</th>
@@ -12,10 +14,12 @@
         </tr>
     </thead>
     <tbody>
-        {{ range . }}
+        {{ $baseurl := .BaseURL }}
+        {{ $showuser := .ShowUser }}
+        {{ range .Schemas }}
         <tr>
             <td>
-                <a href="{{.BaseURL}}/schema/{{.Schema.UserName}}/{{.Schema.Name}}">
+                <a href="{{$baseurl}}/schema/{{.Schema.UserName}}/{{.Schema.Name}}">
                     {{ .Schema.Name }}
                 </a>
                 {{ range .Schema.Tags }}
@@ -30,8 +34,9 @@
                     <span class="badge bg-secondary rounded-pill">{{ .Schema.Stars }}</span>
                 {{ end }}
             </td>
+            {{if $showuser}}
             <td>
-                <a href="{{.BaseURL}}/schema/{{.Schema.UserName}}">
+                <a href="{{$baseurl}}/schema/{{.Schema.UserName}}">
                     {{ .Schema.UserName }}
                 </a>
                 {{ if .Owner }}
@@ -40,6 +45,7 @@
                     </span>
                 {{ end }}
             </td>
+            {{end}}
             <td>{{ .Schema.Description }}</td>
             <td>{{ .Schema.TotalParts }}</td>
             <td>{{ prettysize .Schema.TotalSize }}</td>
