@@ -1,12 +1,12 @@
 {{define "schema_card"}}
 <div class="card">
-    <a href="{{.BaseURL}}/schema/{{.Schema.UserName}}/{{.Schema.Name}}">
+    <a href="{{.BaseURL}}schema/{{.Schema.UserName}}/{{.Schema.Name}}">
         <img src="{{.BaseURL}}/api/schema/{{.Schema.ID}}/screenshot?height=240&width=360" class="card-img-top img-fluid">
     </a>
     <div class="card-body">
         <h5 class="card-title">
             <p>
-                <a href="{{.BaseURL}}/schema/{{.Schema.UserName}}/{{.Schema.Name}}">
+                <a href="{{.BaseURL}}schema/{{.Schema.UserName}}/{{.Schema.Name}}">
                     {{ .Schema.Name }}
                 </a>
             </p>
