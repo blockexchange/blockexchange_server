@@ -27,6 +27,11 @@ func UserSchema(rc *controller.RenderContext) error {
 	m["Username"] = username
 	m["SchemaList"] = components.SchemaList(rc, list, false)
 	m["Pager"] = components.Pager(rc, 20, count)
+	m["Breadcrumb"] = components.Breadcrumb(
+		components.BreadcrumbEntry{Name: "Home", Link: "/"},
+		components.BreadcrumbEntry{Name: "Users", Link: "/users"},
+		components.BreadcrumbEntry{Name: username},
+	)
 
 	return rc.Render("pages/schema/user_schemas.html", m)
 }

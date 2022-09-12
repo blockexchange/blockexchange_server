@@ -11,6 +11,7 @@ type SearchModel struct {
 	Tags       []*types.Tag
 	SchemaList *components.SchemaListModel
 	Pager      *components.PagerModel
+	Breadcrumb *components.BreadcrumbModel
 	Query      string
 	TagID      int64
 	Offset     int
@@ -61,6 +62,11 @@ func Search(rc *controller.RenderContext) error {
 		return err
 	}
 	m.SchemaList = components.SchemaList(rc, list, true)
+
+	m.Breadcrumb = components.Breadcrumb(
+		components.BreadcrumbEntry{Name: "Home", Link: "/"},
+		components.BreadcrumbEntry{Name: "Search"},
+	)
 
 	return rc.Render("pages/search.html", m)
 }

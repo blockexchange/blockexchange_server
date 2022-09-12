@@ -1,5 +1,6 @@
 {{define "title"}}Search{{end}}
 {{define "content"}}
+{{ block "breadcrumb" .Data.Breadcrumb }}{{end}}
 <h3>Schema Search</h3>
 
 <form method="GET">

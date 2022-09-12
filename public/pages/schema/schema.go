@@ -3,6 +3,7 @@ package schema
 import (
 	"blockexchange/controller"
 	"blockexchange/db"
+	"blockexchange/public/components"
 	"blockexchange/types"
 	"errors"
 	"net/http"
@@ -11,7 +12,8 @@ import (
 )
 
 type SchemaModel struct {
-	Schema *types.SchemaSearchResult
+	Schema     *types.SchemaSearchResult
+	Breadcrumb *components.BreadcrumbModel
 }
 
 func extractUsernameSchema(r *http.Request) (string, string) {
@@ -46,6 +48,12 @@ func Schema(rc *controller.RenderContext) error {
 	}
 	m := SchemaModel{
 		Schema: schema,
+		Breadcrumb: components.Breadcrumb(
+			components.BreadcrumbEntry{Name: "Home", Link: "/"},
+			components.BreadcrumbEntry{Name: "Users", Link: "/users"},
+			components.BreadcrumbEntry{Name: schema.UserName, Link: "/schema/" + schema.UserName},
+			components.BreadcrumbEntry{Name: schema.Name},
+		),
 	}
 
 	if m.Schema == nil {
