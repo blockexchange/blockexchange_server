@@ -8,10 +8,10 @@
       },
       ["inventory"] = {
         ["main"] = {
-          "spacesuit:chestplate",
-          "spacesuit:pants",
-          "spacesuit:helmet",
-          "spacesuit:boots",
+          "default:stone 10",
+          "default:cobble 20",
+          "",
+          "",
           "", "", "", "", "", "", "", "", "", "", "", "", "", "",
           "", "", "", "", "", "", "", "", "", "", "", "", "", ""
         }
