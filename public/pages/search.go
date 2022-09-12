@@ -11,12 +11,14 @@ type SearchModel struct {
 	Tags       []*types.Tag
 	SchemaList []*components.SchemaListEntry
 	Query      string
+	TagID      int64
 	Offset     int
 	Limit      int
 }
 
 func Search(rc *controller.RenderContext) error {
-	tags, err := rc.Repositories().TagRepo.GetAll()
+	repos := rc.Repositories()
+	tags, err := repos.TagRepo.GetAll()
 	if err != nil {
 		return err
 	}
@@ -26,6 +28,16 @@ func Search(rc *controller.RenderContext) error {
 		Query:  rc.Request().URL.Query().Get("q"),
 		Limit:  20,
 		Offset: 0,
+	}
+
+	tagidstr := rc.Request().URL.Query().Get("tagid")
+	if tagidstr != "" {
+		tagid, err := strconv.ParseInt(tagidstr, 10, 64)
+		if err != nil {
+			return err
+		}
+
+		m.TagID = tagid
 	}
 
 	page, err := strconv.ParseInt(rc.Request().URL.Query().Get("page"), 10, 64)
@@ -38,7 +50,11 @@ func Search(rc *controller.RenderContext) error {
 	if m.Query != "" {
 		q.Keywords = &m.Query
 	}
-	list, err := rc.Repositories().SchemaSearchRepo.Search(q, m.Limit, m.Offset)
+	if m.TagID > 0 {
+		q.TagID = &m.TagID
+	}
+
+	list, err := repos.SchemaSearchRepo.Search(q, m.Limit, m.Offset)
 	if err != nil {
 		return err
 	}

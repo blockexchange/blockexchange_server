@@ -15,10 +15,11 @@ Search
         <div class="col-md-2">
             <div class="input-group">
                 <span class="input-group-text">Tag</span>
-                <select class="form-select" name="tags">
+                <select class="form-select" name="tagid">
                     <option></option>
+                    {{ $seltag := .Data.TagID }}
                     {{ range .Data.Tags }}
-                    <option value="{{.ID}}">
+                    <option value="{{.ID}}" {{if eq .ID $seltag}}selected{{end}}>
                         {{ .Name }}
                     </option>
                     {{ end }}
