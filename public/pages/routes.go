@@ -22,7 +22,6 @@ func SetupRoutes(ctrl *controller.Controller, r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/mod", ctrl.Handler("./", Mod))
 	r.HandleFunc("/profile", ctrl.Handler("./", Profile))
 	r.HandleFunc("/tags", ctrl.Handler("./", Tags, types.JWTPermissionAdmin))
-	r.HandleFunc("/about", ctrl.Handler("./", About))
 
 	if cfg.DiscordOAuthConfig != nil {
 		r.Handle("/api/oauth_callback/discord", oauth.NewHandler(&oauth.DiscordOauth{}, cfg, ctrl.UserRepo, ctrl.AccessTokenRepo, ctrl))
