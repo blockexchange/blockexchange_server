@@ -6,6 +6,7 @@ import (
 	"blockexchange/public/components"
 	"blockexchange/types"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -42,10 +43,22 @@ func searchSchema(sr db.SchemaSearchRepository, r *http.Request) (*types.SchemaS
 
 func Schema(rc *controller.RenderContext) error {
 	r := rc.Request()
-	schema, err := searchSchema(rc.Repositories().SchemaSearchRepo, r)
+	repos := rc.Repositories()
+
+	schema, err := searchSchema(repos.SchemaSearchRepo, r)
 	if err != nil {
 		return err
 	}
+
+	rc.AddMetaTag("og:title", fmt.Sprintf("%s by %s", schema.Name, schema.UserName))
+	rc.AddMetaTag("og:site_name", "Block exchange")
+	rc.AddMetaTag("og:type", "Schematic")
+	rc.AddMetaTag("og:url", fmt.Sprintf("%s/schema/%s/%s", rc.Config().BaseURL, schema.UserName, schema.Name))
+	rc.AddMetaTag("og:image", fmt.Sprintf("%s/api/schema/%d/screenshot", rc.Config().BaseURL, schema.ID))
+	if schema.Description != "" {
+		rc.AddMetaTag("og:description", schema.Description)
+	}
+
 	m := SchemaModel{
 		Schema: schema,
 		Breadcrumb: components.Breadcrumb(

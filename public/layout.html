@@ -9,6 +9,9 @@
         <link rel="stylesheet" href="{{.BaseURL}}assets/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="{{.BaseURL}}assets/css/fontawesome.min.css"/>
         <title>{{block "title" .}}{{end}} - Block exchange</title>
+        {{ range $name, $content := .AdditionalMetaTags }}
+        <meta name="{{$name}}" content="{{$content}}"/>
+        {{ end }}
     </head>
     <body>
         {{block "navbar" .}}{{end}}

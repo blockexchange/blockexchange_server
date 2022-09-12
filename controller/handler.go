@@ -23,11 +23,12 @@ func (ctrl *Controller) Handler(baseUrl string, shf RenderFunc, req_perms ...typ
 		}
 
 		rc := &RenderContext{
-			ctrl:    ctrl,
-			w:       w,
-			r:       r,
-			baseUrl: baseUrl,
-			claims:  c,
+			ctrl:               ctrl,
+			w:                  w,
+			r:                  r,
+			baseUrl:            baseUrl,
+			claims:             c,
+			AdditionalMetaTags: make(map[string]string),
 		}
 
 		err = shf(rc)

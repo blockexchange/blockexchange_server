@@ -9,17 +9,19 @@ import (
 )
 
 type RenderContext struct {
-	baseUrl string
-	ctrl    *Controller
-	w       http.ResponseWriter
-	r       *http.Request
-	claims  *types.Claims
+	baseUrl            string
+	ctrl               *Controller
+	w                  http.ResponseWriter
+	r                  *http.Request
+	claims             *types.Claims
+	AdditionalMetaTags map[string]string
 }
 
 func (rc *RenderContext) Render(file string, data any) error {
 	rd := &RenderData{
-		BaseURL: rc.baseUrl,
-		Data:    data,
+		BaseURL:            rc.baseUrl,
+		Data:               data,
+		AdditionalMetaTags: rc.AdditionalMetaTags,
 	}
 
 	c, err := rc.ctrl.GetClaims(rc.r)
@@ -34,6 +36,10 @@ func (rc *RenderContext) Render(file string, data any) error {
 	}
 
 	return rc.ctrl.te.Execute(file, rc.w, rc.r, 200, rd)
+}
+
+func (rc *RenderContext) AddMetaTag(name, content string) {
+	rc.AdditionalMetaTags[name] = content
 }
 
 func (rc *RenderContext) Redirect(target string) {
