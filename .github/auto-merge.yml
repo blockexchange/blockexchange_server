@@ -5,7 +5,7 @@ requiredLabels:
  - dependencies
 
 rules:
-  - requiredTitleRegex: '\bblockexchange|node|mesecons|rollup|jshint\b'
+  - requiredTitleRegex: '\bblockexchange|mesecons\b'
 
 mergeMethod: rebase
 reportStatus: true
