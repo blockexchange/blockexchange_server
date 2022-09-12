@@ -1,4 +1,4 @@
-package pages
+package schema
 
 import (
 	"blockexchange/controller"
@@ -74,5 +74,5 @@ func SchemaEdit(rc *controller.RenderContext) error {
 		return errors.New("not found")
 	}
 
-	return rc.Render("pages/schema_edit.html", m)
+	return rc.Render("pages/schema/schema_edit.html", m)
 }

@@ -4,6 +4,7 @@ import (
 	"blockexchange/controller"
 	"blockexchange/core"
 	"blockexchange/public/oauth"
+	"blockexchange/public/pages/schema"
 	"blockexchange/types"
 
 	"github.com/gorilla/mux"
@@ -12,8 +13,8 @@ import (
 func SetupRoutes(ctrl *controller.Controller, r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/", ctrl.Handler("./", Index))
 	r.HandleFunc("/login", ctrl.Handler("./", Login))
-	r.HandleFunc("/schema/{username}/{schemaname}", ctrl.Handler("../../../", Schema))
-	r.HandleFunc("/schema/{username}/{schemaname}/edit", ctrl.Handler("../../../", SchemaEdit))
+	r.HandleFunc("/schema/{username}/{schemaname}", ctrl.Handler("../../../", schema.Schema))
+	r.HandleFunc("/schema/{username}/{schemaname}/edit", ctrl.Handler("../../../", schema.SchemaEdit))
 	r.HandleFunc("/users", ctrl.Handler("./", Users))
 	r.HandleFunc("/search", ctrl.Handler("./", Search))
 	r.HandleFunc("/mod", ctrl.Handler("./", Mod))
