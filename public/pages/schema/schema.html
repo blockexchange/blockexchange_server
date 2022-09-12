@@ -38,7 +38,18 @@
         <br>
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Description</h5>
+                <h5 class="card-title">
+                    Description
+                    {{ if .Claims }}
+                    {{ if eq .Data.Schema.UserName .Claims.Username}}
+                    <div class="btn-group float-end">
+                        <a class="btn btn-sm btn-secondary" href="./{{.Data.Schema.Name}}/edit">
+                            <i class="fa fa-edit"></i> Edit
+                        </a>
+                    </div>
+                    {{end}}
+                    {{end}}
+                </h5>
                 <pre>{{.Data.Schema.Description}}</pre>
             </div>
         </div>
@@ -61,7 +72,18 @@
         <br>
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Tags</h5>
+                <h5 class="card-title">
+                    Tags
+                    {{ if .Claims }}
+                    {{ if eq .Data.Schema.UserName .Claims.Username}}
+                    <div class="btn-group float-end">
+                        <a class="btn btn-sm btn-secondary" href="./{{.Data.Schema.Name}}/edit-tags">
+                            <i class="fa fa-edit"></i> Edit
+                        </a>
+                    </div>
+                    {{end}}
+                    {{end}}
+                </h5>
                 {{range .Data.Schema.Tags}}
                 <span class="badge bg-success">
                     <i class="fas fa-tag"></i>
