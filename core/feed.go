@@ -13,20 +13,7 @@ import (
 
 const template_str = `
 Schema created: **{{.Schema.Name}}** by **{{.User.Name}}**
-Link: {{.BaseURL}}/api/static/schema/{{.User.Name}}/{{.Schema.Name}}
-License: **{{.Schema.License}}**
-Size: {{.Schema.SizeX}}/{{.Schema.SizeY}}/{{.Schema.SizeZ}} Blocks / {{.Schema.TotalSize}} bytes
-Download:
-{{.CodeMarker}}
-/bx_load {{.User.Name}} {{.Schema.Name}}
-{{.CodeMarker}}
-{{if .Schema.Description}}
-Description:
-{{.CodeMarker}}
-{{.Schema.Description}}
-{{.CodeMarker}}
-{{end}}
-Preview: {{.BaseURL}}/api/schema/{{.Schema.ID}}/screenshot/{{.Screenshot.ID}}
+Link: {{.BaseURL}}/schema/{{.User.Name}}/{{.Schema.Name}}
 `
 
 var feed_template = template.Must(template.New("main").Parse(template_str))
@@ -34,7 +21,6 @@ var feed_template = template.Must(template.New("main").Parse(template_str))
 type TemplateData struct {
 	Schema     *types.Schema
 	User       *types.User
-	Screenshot *types.SchemaScreenshot
 	BaseURL    string
 	CodeMarker string
 }
@@ -47,7 +33,6 @@ func renderFeedTemplate(baseUrl string, schema *types.Schema, user *types.User, 
 	data := TemplateData{
 		Schema:     schema,
 		User:       user,
-		Screenshot: screenshot,
 		BaseURL:    baseUrl,
 		CodeMarker: "```",
 	}
