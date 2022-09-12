@@ -11,7 +11,14 @@ func loggingMiddleware(next http.Handler) http.Handler {
 		rw := NewResponseWriter(w)
 		next.ServeHTTP(rw, r)
 
+		host := r.Host
+		forwHost := r.Header.Get("X-Forwarded-Host")
+		if forwHost != "" {
+			host = forwHost
+		}
+
 		logrus.WithFields(logrus.Fields{
+			"host":   host,
 			"method": r.Method,
 			"path":   r.URL.Path,
 			"status": rw.statusCode,
