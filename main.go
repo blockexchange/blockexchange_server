@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	logrus.SetLevel(logrus.TraceLevel)
+	logrus.SetLevel(logrus.InfoLevel)
 	logrus.Info("Starting")
 	db_, err := db.Init()
 	if err != nil {
