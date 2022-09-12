@@ -33,14 +33,16 @@ func Search(rc *controller.RenderContext) error {
 		m.Offset = int(page) * m.Limit
 	}
 
+	complete := true
+	q := &types.SchemaSearchRequest{Complete: &complete}
 	if m.Query != "" {
-		complete := true
-		list, err := rc.Repositories().SchemaSearchRepo.Search(&types.SchemaSearchRequest{Keywords: &m.Query, Complete: &complete}, m.Limit, m.Offset)
-		if err != nil {
-			return err
-		}
-		m.SchemaList = components.SchemaList(rc, list)
+		q.Keywords = &m.Query
 	}
+	list, err := rc.Repositories().SchemaSearchRepo.Search(q, m.Limit, m.Offset)
+	if err != nil {
+		return err
+	}
+	m.SchemaList = components.SchemaList(rc, list)
 
 	return rc.Render("pages/search.html", m)
 }
