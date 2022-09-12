@@ -1,0 +1,17 @@
+{{define "latest_schemas"}}
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            Recent changes
+        </div>
+    </div>
+    <div class="row">
+        {{range .Schemas}}
+        <div class="col-md-2" style="padding-bottom: 5px;">
+            {{block "schema_card" .}}{{end}}
+        </div>
+        {{end}}
+        </div>
+    </div>
+</div>
+{{end}}

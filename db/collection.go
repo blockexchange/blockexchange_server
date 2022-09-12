@@ -3,74 +3,34 @@ package db
 import (
 	"blockexchange/types"
 	"database/sql"
-
-	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
 )
 
-type CollectionRepsoitory interface {
-	Create(collection *types.Collection) error
-	Delete(id int64) error
-	Update(collection *types.Collection) error
-	GetByID(id int64) (*types.Collection, error)
-	GetByUserID(user_id int64) ([]types.Collection, error)
+type CollectionRepository struct {
+	DB *sql.DB
 }
 
-type DBCollectionRepository struct {
-	DB *sqlx.DB
+func (repo CollectionRepository) Create(collection *types.Collection) error {
+	c := &types.Collection{}
+	return InsertReturning(repo.DB, c, "id", &c.ID)
 }
 
-func (repo DBCollectionRepository) Create(collection *types.Collection) error {
-	logrus.Trace("db.CreateCollection", collection)
-	query := `
-		insert into
-		collection(user_id, name, description)
-		values(:user_id, :name, :description)
-		returning id
-	`
-	stmt, err := repo.DB.PrepareNamed(query)
-	if err != nil {
-		return err
-	}
-	return stmt.Get(&collection.ID, collection)
-}
-
-func (repo DBCollectionRepository) Delete(id int64) error {
+func (repo CollectionRepository) Delete(id int64) error {
 	_, err := repo.DB.Exec("delete from collection where id = $1", id)
 	return err
 }
 
-func (repo DBCollectionRepository) Update(collection *types.Collection) error {
-	query := `
-	update collection
-	set
-		name = :name,
-		description = :description
-	where id = :id
-`
-	_, err := repo.DB.NamedExec(query, collection)
-	return err
+func (repo CollectionRepository) Update(collection *types.Collection) error {
+	return Update(repo.DB, collection, map[string]any{"id": collection.ID})
 }
 
-func (repo DBCollectionRepository) GetByID(id int64) (*types.Collection, error) {
-	collection := types.Collection{}
-	err := repo.DB.Get(&collection, "select * from collection where id = $1", id)
+func (repo CollectionRepository) GetByID(id int64) (*types.Collection, error) {
+	c, err := Select(repo.DB, &types.Collection{}, "id = $1", id)
 	if err == sql.ErrNoRows {
 		return nil, nil
-	} else if err != nil {
-		return nil, err
-	} else {
-		return &collection, nil
 	}
+	return c, err
 }
 
-func (repo DBCollectionRepository) GetByUserID(user_id int64) ([]types.Collection, error) {
-	list := []types.Collection{}
-	query := `select * from collection where user_id = $1`
-	err := repo.DB.Select(&list, query, user_id)
-	if err != nil {
-		return nil, err
-	} else {
-		return list, nil
-	}
+func (repo CollectionRepository) GetByUserID(user_id int64) ([]*types.Collection, error) {
+	return SelectMulti(repo.DB, func() *types.Collection { return &types.Collection{} }, "user_id = $1", user_id)
 }

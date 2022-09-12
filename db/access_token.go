@@ -2,70 +2,35 @@ package db
 
 import (
 	"blockexchange/types"
-
-	"github.com/jmoiron/sqlx"
+	"database/sql"
 )
 
-type AccessTokenRepository interface {
-	GetAccessTokensByUserID(user_id int64) ([]types.AccessToken, error)
-	GetAccessTokenByTokenAndUserID(token string, user_id int64) (*types.AccessToken, error)
-	CreateAccessToken(access_token *types.AccessToken) error
-	IncrementAccessTokenUseCount(id int64) error
-	RemoveAccessToken(id, user_id int64) error
+type AccessTokenRepository struct {
+	DB *sql.DB
 }
 
-type DBAccessTokenRepository struct {
-	DB *sqlx.DB
+func (r AccessTokenRepository) GetAccessTokensByUserID(user_id int64) ([]*types.AccessToken, error) {
+	return SelectMulti(r.DB, func() *types.AccessToken { return &types.AccessToken{} }, "where user_id = $1", user_id)
 }
 
-func (r DBAccessTokenRepository) GetAccessTokensByUserID(user_id int64) ([]types.AccessToken, error) {
-	list := []types.AccessToken{}
-	err := r.DB.Select(&list, "select * from access_token where user_id = $1", user_id)
-	if err != nil {
-		return nil, err
-	} else {
-		return list, nil
-	}
-}
-
-func (r DBAccessTokenRepository) GetAccessTokenByTokenAndUserID(token string, user_id int64) (*types.AccessToken, error) {
-	list := []types.AccessToken{}
-	err := r.DB.Select(&list, "select * from access_token where token = $1 and user_id = $2", token, user_id)
-	if err != nil {
-		return nil, err
-	} else if len(list) == 1 {
-		return &list[0], nil
-	} else {
+func (r AccessTokenRepository) GetAccessTokenByTokenAndUserID(token string, user_id int64) (*types.AccessToken, error) {
+	at, err := Select(r.DB, &types.AccessToken{}, "where token = $1 and user_id = $2", token, user_id)
+	if err == sql.ErrNoRows {
 		return nil, nil
 	}
+	return at, err
 }
 
-func (r DBAccessTokenRepository) CreateAccessToken(access_token *types.AccessToken) error {
-	query := `
-		insert into
-		access_token(
-			name, token, user_id,
-			created, expires
-		)
-		values(
-			:name, :token, :user_id,
-			:created, :expires
-		)
-		returning id
-	`
-	stmt, err := r.DB.PrepareNamed(query)
-	if err != nil {
-		return err
-	}
-	return stmt.Get(&access_token.ID, access_token)
+func (r AccessTokenRepository) CreateAccessToken(access_token *types.AccessToken) error {
+	return InsertReturning(r.DB, access_token, "id", &access_token.ID)
 }
 
-func (r DBAccessTokenRepository) IncrementAccessTokenUseCount(id int64) error {
+func (r AccessTokenRepository) IncrementAccessTokenUseCount(id int64) error {
 	_, err := r.DB.Exec("update access_token set usecount = usecount + 1 where id = $1", id)
 	return err
 }
 
-func (r DBAccessTokenRepository) RemoveAccessToken(id, user_id int64) error {
+func (r AccessTokenRepository) RemoveAccessToken(id, user_id int64) error {
 	_, err := r.DB.Exec("delete from access_token where id = $1 and user_id = $2", id, user_id)
 	return err
 }

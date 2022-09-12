@@ -6,24 +6,22 @@ import (
 )
 
 type SchemaPart struct {
-	ID       int64  `json:"id" db:"id"`
-	SchemaID int64  `json:"schema_id" db:"schema_id"`
-	OffsetX  int    `json:"offset_x" db:"offset_x"`
-	OffsetY  int    `json:"offset_y" db:"offset_y"`
-	OffsetZ  int    `json:"offset_z" db:"offset_z"`
-	Mtime    int64  `json:"mtime" db:"mtime"`
-	Data     []byte `json:"data" db:"data"`
-	MetaData []byte `json:"metadata" db:"metadata"`
+	SchemaID int64  `json:"schema_id"`
+	OffsetX  int    `json:"offset_x"`
+	OffsetY  int    `json:"offset_y"`
+	OffsetZ  int    `json:"offset_z"`
+	Mtime    int64  `json:"mtime"`
+	Data     []byte `json:"data"`
+	MetaData []byte `json:"metadata"`
 }
 
 func (s *SchemaPart) UnmarshalJSON(data []byte) error {
-	m := make(map[string]interface{})
+	m := make(map[string]any)
 	err := json.Unmarshal(data, &m)
 	if err != nil {
 		return err
 	}
 
-	s.ID = getInt64(m["id"])
 	s.SchemaID = getInt64(m["schema_id"])
 	s.OffsetX = getInt(m["offset_x"])
 	s.OffsetY = getInt(m["offset_y"])
@@ -42,8 +40,7 @@ func (s *SchemaPart) UnmarshalJSON(data []byte) error {
 }
 
 func (s SchemaPart) MarshalJSON() ([]byte, error) {
-	m := make(map[string]interface{})
-	m["id"] = s.ID
+	m := make(map[string]any)
 	m["schema_id"] = s.SchemaID
 	m["offset_x"] = s.OffsetX
 	m["offset_y"] = s.OffsetY
@@ -53,4 +50,20 @@ func (s SchemaPart) MarshalJSON() ([]byte, error) {
 	m["metadata"] = base64.RawStdEncoding.EncodeToString(s.MetaData)
 
 	return json.Marshal(m)
+}
+
+func (s *SchemaPart) Table() string {
+	return "schemapart"
+}
+
+func (s *SchemaPart) Columns(action string) []string {
+	return []string{"schema_id", "offset_x", "offset_y", "offset_z", "mtime", "data", "metadata"}
+}
+
+func (s *SchemaPart) Values(action string) []any {
+	return []any{s.SchemaID, s.OffsetX, s.OffsetY, s.OffsetZ, s.Mtime, s.Data, s.MetaData}
+}
+
+func (s *SchemaPart) Scan(action string, r func(dest ...any) error) error {
+	return r(&s.SchemaID, &s.OffsetX, &s.OffsetY, &s.OffsetZ, &s.Mtime, &s.Data, &s.MetaData)
 }

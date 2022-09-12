@@ -2,68 +2,39 @@ package db
 
 import (
 	"blockexchange/types"
-
-	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
+	"database/sql"
 )
 
-type SchemaPartRepository interface {
-	CreateOrUpdateSchemaPart(part *types.SchemaPart) error
-	GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
-	GetBySchemaIDAndRange(schema_id int64, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error)
-	RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error
-	GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
-	GetNextBySchemaIDAndMtime(schema_id int64, mtime int64) (*types.SchemaPart, error)
-	GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error)
+type SchemaPartRepository struct {
+	DB *sql.DB
 }
 
-type DBSchemaPartRepository struct {
-	DB *sqlx.DB
-}
-
-func (repo DBSchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
-	logrus.WithFields(logrus.Fields{
-		"schema_id": part.SchemaID,
-	}).Trace("db.CreateOrUpdateSchemaPart")
-
-	query := `
-		insert into
-		schemapart(schema_id, offset_x, offset_y, offset_z, mtime, data, metadata)
-		values(:schema_id, :offset_x, :offset_y, :offset_z, :mtime, :data, :metadata)
+func (repo SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
+	conflict := `
 		on conflict on constraint schemapart_unique_coords
 		do update set data = EXCLUDED.data, metadata = EXCLUDED.metadata, mtime = EXCLUDED.mtime
-		returning id
 	`
-	stmt, err := repo.DB.PrepareNamed(query)
-	if err != nil {
-		return err
-	}
-	return stmt.Get(&part.ID, part)
+	return Insert(repo.DB, part, conflict)
 }
 
-func (repo DBSchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
-	list := []types.SchemaPart{}
-	query := `
-		select *
-		from schemapart
+func (repo SchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
+	where := `
 		where schema_id = $1
 		and offset_x = $2
 		and offset_y = $3
 		and offset_z = $4
 	`
-	err := repo.DB.Select(&list, query, schema_id, offset_x, offset_y, offset_z)
-	if err != nil {
-		return nil, err
-	} else if len(list) == 1 {
-		return &list[0], nil
-	} else {
+
+	sp, err := Select(repo.DB, &types.SchemaPart{}, where, schema_id, offset_x, offset_y, offset_z)
+	if err == sql.ErrNoRows {
 		return nil, nil
+	} else {
+		return sp, err
 	}
 }
 
-func (repo DBSchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error) {
-	list := []*types.SchemaPart{}
-	query := `
+func (repo SchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error) {
+	constraints := `
 		select *
 		from schemapart
 		where schema_id = $1
@@ -74,11 +45,11 @@ func (repo DBSchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1
 		and offset_y <= $6
 		and offset_z <= $7
 	`
-	err := repo.DB.Select(&list, query, schema_id, x1, y1, z1, x2, y2, z2)
-	return list, err
+
+	return SelectMulti(repo.DB, func() *types.SchemaPart { return &types.SchemaPart{} }, constraints)
 }
 
-func (repo DBSchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {
+func (repo SchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {
 	query := `
 		delete
 		from schemapart
@@ -91,11 +62,8 @@ func (repo DBSchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, of
 	return err
 }
 
-func (repo DBSchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
-	list := []types.SchemaPart{}
-	query := `
-		select *
-		from schemapart
+func (repo SchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
+	constraints := `
 		where id > (
 			select id from schemapart
 			where schema_id = $1
@@ -104,44 +72,32 @@ func (repo DBSchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, o
 			and offset_z = $4
 		)
 		and schema_id = $1
-		order by id asc
-		limit 1
+		order by id asc limit 1
 	`
-	err := repo.DB.Select(&list, query, schema_id, offset_x, offset_y, offset_z)
-	if err != nil {
-		return nil, err
-	} else if len(list) == 1 {
-		return &list[0], nil
-	} else {
+	sp, err := Select(repo.DB, &types.SchemaPart{}, constraints, schema_id, offset_x, offset_y, offset_z)
+	if err == sql.ErrNoRows {
 		return nil, nil
+	} else {
+		return sp, err
 	}
 }
 
-func (repo DBSchemaPartRepository) GetNextBySchemaIDAndMtime(schema_id int64, mtime int64) (*types.SchemaPart, error) {
-	list := []types.SchemaPart{}
-	query := `
-		select *
-		from schemapart
+func (repo SchemaPartRepository) GetNextBySchemaIDAndMtime(schema_id int64, mtime int64) (*types.SchemaPart, error) {
+	constraints := `
 		where mtime > $2
 		and schema_id = $1
-		order by mtime asc
-		limit 1
+		order by mtime asc limit 1
 	`
-	err := repo.DB.Select(&list, query, schema_id, mtime)
-	if err != nil {
-		return nil, err
-	} else if len(list) == 1 {
-		return &list[0], nil
-	} else {
+	sp, err := Select(repo.DB, &types.SchemaPart{}, constraints, schema_id, mtime)
+	if err == sql.ErrNoRows {
 		return nil, nil
+	} else {
+		return sp, err
 	}
 }
 
-func (repo DBSchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error) {
-	list := []types.SchemaPart{}
-	query := `
-		select *
-		from schemapart
+func (repo SchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error) {
+	constraints := `
 		where id = (
 			select min(id) from schemapart
 			where schema_id = $1
@@ -149,12 +105,10 @@ func (repo DBSchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.S
 		and schema_id = $1
 		limit 1
 	`
-	err := repo.DB.Select(&list, query, schema_id)
-	if err != nil {
-		return nil, err
-	} else if len(list) == 1 {
-		return &list[0], nil
-	} else {
+	sp, err := Select(repo.DB, &types.SchemaPart{}, constraints, schema_id)
+	if err == sql.ErrNoRows {
 		return nil, nil
+	} else {
+		return sp, err
 	}
 }

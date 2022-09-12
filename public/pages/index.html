@@ -1,0 +1,37 @@
+{{define "title"}}Overview{{end}}
+{{define "content"}}
+<div>
+    <div class="text-center">
+        <h4>Exchange your schemas across worlds with ease</h4>
+        <hr/>
+
+        <div>
+            <a href="{{.BaseURL}}search" class="btn btn-primary">
+                <i class="fa fa-search"></i>
+                Search
+            </a>
+            &nbsp;
+            <a href="{{.BaseURL}}users" class="btn btn-primary">
+                <i class="fa fa-users"></i>
+                Users
+            </a>
+            &nbsp;
+            <a href="{{.BaseURL}}mod" class="btn btn-primary">
+                <i class="fa fa-download"></i>
+                Mod/Installation
+            </a>
+            &nbsp;
+            <a href="https://github.com/blockexchange" class="btn btn-secondary">
+                <i class="fab fa-github"></i>
+                Browse the source
+            </a>
+            &nbsp;
+            <a href="https://discord.gg/ye9aCUJPdB" class="btn btn-secondary">
+                <i class="fab fa-discord"></i>
+                Join the discord community
+            </a>
+    </div>
+</div>
+<hr/>
+{{block "latest_schemas" .Data.LatestSchemas}}{{end}}
+{{end}}

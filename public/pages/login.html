@@ -1,0 +1,80 @@
+{{define "title"}}Login{{end}}
+{{define "content"}}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+            Local login
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Login</h5>
+                {{if .Data.Config.EnableSignup}}
+                    {{if .Claims}}
+                    <form method="POST">
+                        <input type="hidden" name="action" value="logout"/>
+                        <button type="submit" class="btn btn-secondary">Logout</button>
+                    </form>
+                    {{else}}
+                    <form method="POST">
+                        <input type="hidden" name="action" value="login"/>
+                        <input type="text" name="username" placeholder="Username" value="{{.Data.Username}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
+                        <input type="password" name="password" placeholder="Password" value="{{.Data.Password}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
+                        {{if .Data.LoginError}}
+                            <div class="invalid-feedback">
+                                Invalid usernmame or password!
+                            </div>
+                        {{end}}
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                    {{end}}
+                {{else}}
+                <div>
+                    Local login is disabled
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        {{if .Data.Config.EnableSignup}}
+        <div class="card">
+            <div class="card-header">
+                Sign up
+            </div>
+            <div class="card-body">
+                <a href="{{.BaseURL}}register" class="btn btn-secondary">
+                    Register
+                </a>
+            </div>
+        </div>
+        {{end}}
+        <div class="card">
+            <div class="card-header">
+                External login
+            </div>
+            <div class="card-body">
+                {{if .Data.DiscordOauthLink}}
+                <a href="{{.Data.DiscordOauthLink}}" class="btn btn-secondary">
+                    <i class="fab fa-discord"></i>
+                    Login with Discord
+                </a>
+                &nbsp;
+                {{end}}
+                {{if .Data.GithubOauthLink}}
+                <a href="{{.Data.GithubOauthLink}}" class="btn btn-secondary">
+                    <i class="fab fa-github"></i>
+                    Login with Github
+                </a>
+                &nbsp;
+                {{end}}
+                {{if .Data.MesehubOauthLink}}
+                <a href="{{.Data.MesehubOauthLink}}" class="btn btn-secondary">
+                    <img src="assets/pics/default_mese_crystal.png"/>
+                    Login with Mesehub
+                </a>
+                {{end}}
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

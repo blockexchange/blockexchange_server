@@ -9,7 +9,7 @@ import (
 
 const offset = 32768
 
-func getInt(o interface{}) int {
+func getInt(o any) int {
 	v, _ := o.(float64)
 	return int(v)
 }

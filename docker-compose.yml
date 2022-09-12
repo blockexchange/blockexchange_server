@@ -10,6 +10,10 @@ services:
    POSTGRES_PASSWORD: enter
   volumes:
    - "postgres:/var/lib/postgresql/data"
+  command:
+   - "postgres"
+   - "-c"
+   - "log_statement=all"
 
  blockexchange:
   image: golang:1.18.0
@@ -29,6 +33,9 @@ services:
    - BLOCKEXCHANGE_NAME=My-Blockexchange
    - BLOCKEXCHANGE_OWNER=yourname
    - BLOCKEXCHANGE_KEY=abcdefSecretKey
+   - BLOCKEXCHANGE_COOKIE_PATH=/
+   - BLOCKEXCHANGE_COOKIE_DOMAIN=localhost
+   - BLOCKEXCHANGE_COOKIE_SECURE=false
    - BLOCKEXCHANGE_TEST_DATA=true
    - BASE_URL=http://localhost:8080
    - WEBDEV=true

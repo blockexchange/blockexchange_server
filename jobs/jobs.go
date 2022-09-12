@@ -21,7 +21,7 @@ func loop(schemarepo db.DBSchemaRepository) {
 }
 
 func cleanupSchemas(schemarepo db.DBSchemaRepository) {
-	logrus.Debugf("Removing old schemas")
+	logrus.Trace("Removing old and incomplete schemas")
 	now := time.Now().Unix() * 1000
 	schemarepo.DeleteOldIncompleteSchema(now - (3600 * 1000 * 24))
 }

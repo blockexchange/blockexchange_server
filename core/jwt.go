@@ -3,11 +3,13 @@ package core
 import (
 	"blockexchange/types"
 	"errors"
-	"fmt"
 	"os"
+	"time"
 
-	jwt "github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 )
+
+var err_unauthorized = errors.New("unauthorized")
 
 func GetPermissions(user *types.User, management bool) []types.JWTPermission {
 	permissions := []types.JWTPermission{
@@ -26,45 +28,44 @@ func GetPermissions(user *types.User, management bool) []types.JWTPermission {
 	return permissions
 }
 
-func CreateJWT(user *types.User, permissions []types.JWTPermission, exp int64) (string, error) {
-	secret := os.Getenv("BLOCKEXCHANGE_KEY")
-	claims := jwt.MapClaims{}
-	claims["username"] = user.Name
-	claims["user_id"] = user.ID
-	claims["type"] = user.Type
-	claims["mail"] = user.Mail
-	claims["permissions"] = permissions
-	claims["exp"] = exp
-	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), claims)
-	return token.SignedString([]byte(secret))
+func CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Duration) (string, error) {
+	c := types.Claims{
+		UserID:      user.ID,
+		Username:    user.Name,
+		Type:        user.Type,
+		Permissions: permissions,
+	}
+
+	if user.Mail != nil {
+		c.Mail = *user.Mail
+	}
+
+	c.RegisteredClaims = &jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(d)),
+	}
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+
+	return t.SignedString([]byte(os.Getenv("BLOCKEXCHANGE_KEY")))
+
 }
 
-func ParseJWT(token string) (*types.TokenInfo, error) {
-	parsedtoken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+func ParseJWT(token string) (*types.Claims, error) {
+	t, err := jwt.ParseWithClaims(token, &types.Claims{}, func(token *jwt.Token) (any, error) {
 		return []byte(os.Getenv("BLOCKEXCHANGE_KEY")), nil
 	})
 
-	if err != nil || !parsedtoken.Valid {
+	if err != nil {
 		return nil, err
 	}
 
-	info := types.TokenInfo{}
-	claims, ok := parsedtoken.Claims.(jwt.MapClaims)
+	if !t.Valid {
+		return nil, err_unauthorized
+	}
+
+	claims, ok := t.Claims.(*types.Claims)
 	if !ok {
-		return nil, errors.New("invalid claims object")
+		return nil, errors.New("internal error")
 	}
 
-	info.Username = claims["username"].(string)
-	info.UserID = int64(claims["user_id"].(float64))
-	info.Type = claims["type"].(string)
-	if claims["mail"] != nil {
-		info.Mail = claims["mail"].(string)
-	}
-	info.Permissions = make([]types.JWTPermission, 0)
-	permissions := claims["permissions"].([]interface{})
-	for _, permission := range permissions {
-		info.Permissions = append(info.Permissions, types.JWTPermission(fmt.Sprint(permission)))
-	}
-
-	return &info, nil
+	return claims, nil
 }

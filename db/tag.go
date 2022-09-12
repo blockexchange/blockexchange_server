@@ -13,7 +13,7 @@ type TagRepository interface {
 	Delete(id int64) error
 	Update(tag *types.Tag) error
 	GetByID(id int64) (*types.Tag, error)
-	GetAll() ([]types.Tag, error)
+	GetAll() ([]*types.Tag, error)
 }
 
 type DBTagRepository struct {
@@ -64,8 +64,8 @@ func (repo DBTagRepository) GetByID(id int64) (*types.Tag, error) {
 	}
 }
 
-func (repo DBTagRepository) GetAll() ([]types.Tag, error) {
-	list := []types.Tag{}
+func (repo DBTagRepository) GetAll() ([]*types.Tag, error) {
+	list := []*types.Tag{}
 	err := repo.DB.Select(&list, "select * from tag")
 	if err != nil {
 		return nil, err

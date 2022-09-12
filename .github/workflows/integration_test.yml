@@ -13,9 +13,6 @@ jobs:
       with:
         fetch-depth: 0
         submodules: recursive
-    - name: Prepare files
-      run: |
-        cd public && npm ci && cd ..
     - name: Start  services
       run: |
         docker-compose up -d postgres

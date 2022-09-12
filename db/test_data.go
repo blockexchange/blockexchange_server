@@ -10,7 +10,7 @@ import (
 
 func PopulateTestData(_db *sqlx.DB) error {
 	userrepo := DBUserRepository{DB: _db}
-	tokenrepo := DBAccessTokenRepository{DB: _db}
+	tokenrepo := AccessTokenRepository{DB: _db.DB}
 
 	user, err := userrepo.GetUserByName("Testuser")
 	if err != nil {
