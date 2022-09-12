@@ -19,6 +19,8 @@ import (
 func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 
 	r := mux.NewRouter()
+	r.Use(prometheusMiddleware)
+	r.Use(loggingMiddleware)
 
 	// cache
 	redis_host := os.Getenv("REDIS_HOST")

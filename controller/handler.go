@@ -4,12 +4,17 @@ import (
 	"blockexchange/types"
 	"errors"
 	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type RenderFunc func(rc *RenderContext) error
 
 func (ctrl *Controller) Handler(baseUrl string, shf RenderFunc, req_perms ...types.JWTPermission) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		timer := prometheus.NewTimer(handleHistogram)
+		defer timer.ObserveDuration()
+
 		c, err := ctrl.GetClaims(r)
 		if err != nil {
 			ctrl.te.Execute("pages/error.html", w, r, 500, &RenderData{BaseURL: baseUrl, Data: err})
