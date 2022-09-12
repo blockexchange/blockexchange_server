@@ -13,6 +13,7 @@ import (
 func SetupRoutes(ctrl *controller.Controller, r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/", ctrl.Handler("./", Index))
 	r.HandleFunc("/login", ctrl.Handler("./", Login))
+	r.HandleFunc("/schema/{username}", ctrl.Handler("../../", schema.UserSchema))
 	r.HandleFunc("/schema/{username}/{schemaname}", ctrl.Handler("../../../", schema.Schema))
 	r.HandleFunc("/schema/{username}/{schemaname}/edit", ctrl.Handler("../../../", schema.SchemaEdit))
 	r.HandleFunc("/users", ctrl.Handler("./", Users))
