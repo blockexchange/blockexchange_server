@@ -19,7 +19,7 @@
         {{ range .Schemas }}
         <tr>
             <td>
-                <a href="{{$baseurl}}/schema/{{.Schema.UserName}}/{{.Schema.Name}}">
+                <a href="{{$baseurl}}schema/{{.Schema.UserName}}/{{.Schema.Name}}">
                     {{ .Schema.Name }}
                 </a>
                 {{ range .Schema.Tags }}
@@ -36,7 +36,7 @@
             </td>
             {{if $showuser}}
             <td>
-                <a href="{{$baseurl}}/schema/{{.Schema.UserName}}">
+                <a href="{{$baseurl}}schema/{{.Schema.UserName}}">
                     {{ .Schema.UserName }}
                 </a>
                 {{ if .Owner }}
