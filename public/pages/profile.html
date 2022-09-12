@@ -18,7 +18,7 @@
             <div class="card-body">
                 <form method="POST" action="profile">
                     <input type="text" class="form-control" name="username" placeholder="Username" value="{{.Data.User.Name}}">
-                    <input type="text" class="form-control" name="mail" placeholder="E-Mail" value="{{.Data.User.Mail}}">
+                    <input type="text" class="form-control" name="mail" placeholder="E-Mail" value="{{if not .Data.User.Mail}}{{else}}{{.Data.User.Mail}}{{end}}">
                     <div class="alert alert-success">
                         E-Mail address is optional but strongly encouraged as it is the only recovery-option for local accounts
                     </div>
