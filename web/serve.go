@@ -44,7 +44,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	pages.SetupRoutes(ctrl, r, cfg)
 
 	// assets
-	r.PathPrefix("/assets/").HandlerFunc(HandleAssets(public.Files, cfg.WebDev))
+	r.PathPrefix("/assets/").HandlerFunc(HandleAssets(public.Files, !cfg.WebDev))
 
 	// main entry
 	http.Handle("/", r)
