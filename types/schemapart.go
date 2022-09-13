@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 )
 
+type SchemaPartIterator func() (*SchemaPart, error)
+
 type SchemaPart struct {
 	SchemaID int64  `json:"schema_id"`
 	OffsetX  int    `json:"offset_x"`

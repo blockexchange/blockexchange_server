@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func ExportBXSchema(w io.Writer, schema *types.Schema, mods []types.SchemaMod, it SchemaPartIterator) error {
+func ExportBXSchema(w io.Writer, schema *types.Schema, mods []types.SchemaMod, it types.SchemaPartIterator) error {
 
 	archive := zip.NewWriter(w)
 	defer archive.Close()

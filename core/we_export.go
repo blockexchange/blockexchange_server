@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func ExportWorldeditSchema(w io.Writer, it SchemaPartIterator) error {
+func ExportWorldeditSchema(w io.Writer, it types.SchemaPartIterator) error {
 	// add header
 	_, err := w.Write([]byte("5:return {"))
 	if err != nil {
