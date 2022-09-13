@@ -2,6 +2,7 @@ package worldedit
 
 import (
 	"errors"
+	"fmt"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -38,12 +39,44 @@ func Parse(data []byte) ([]*WEEntry, error) {
 	entries := make([]*WEEntry, entry_count)
 
 	for i := 1; i <= entry_count; i++ {
-		entry, err := parseWEEntry(L, L.GetTable(tbl, lua.LNumber(i)))
+		entrytbl := L.GetTable(tbl, lua.LNumber(i))
+
+		// common entries
+		entry, err := parseWEEntry(L, entrytbl)
 		if err != nil {
 			return nil, err
 		}
-
 		entries[i-1] = entry
+
+		metatbl := L.GetTable(entrytbl, lua.LString("meta"))
+		if metatbl != lua.LNil {
+			entry.Meta = &WEMeta{
+				Fields:    make(WEFields),
+				Inventory: make(WEInventory),
+			}
+
+			// fields
+			fieldstbl := L.GetTable(metatbl, lua.LString("fields")).(*lua.LTable)
+			if fieldstbl != lua.LNil {
+				fieldstbl.ForEach(func(key, value lua.LValue) {
+					entry.Meta.Fields[key.String()] = value.String()
+				})
+			}
+
+			invtbl := L.GetTable(metatbl, lua.LString("inventory")).(*lua.LTable)
+			if invtbl != lua.LNil {
+				invtbl.ForEach(func(key, value lua.LValue) {
+					stacks := make([]string, 0)
+					stacktbl := value.(*lua.LTable)
+					stacktbl.ForEach(func(_, stack lua.LValue) {
+						fmt.Printf("stack: %s\n", stack)
+						stacks = append(stacks, stack.String())
+					})
+					entry.Meta.Inventory[key.String()] = stacks
+				})
+			}
+		}
+
 	}
 
 	return entries, nil

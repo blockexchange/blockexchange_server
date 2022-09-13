@@ -2,6 +2,14 @@ package worldedit
 
 import "fmt"
 
+type WEFields map[string]string
+type WEInventory map[string][]string
+
+type WEMeta struct {
+	Fields    WEFields
+	Inventory WEInventory
+}
+
 type WEEntry struct {
 	Name   string
 	X      int
@@ -9,6 +17,7 @@ type WEEntry struct {
 	Z      int
 	Param1 int
 	Param2 int
+	Meta   *WEMeta
 }
 
 func (e WEEntry) String() string {
