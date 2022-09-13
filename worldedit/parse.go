@@ -2,7 +2,6 @@ package worldedit
 
 import (
 	"errors"
-	"fmt"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -69,7 +68,6 @@ func Parse(data []byte) ([]*WEEntry, error) {
 					stacks := make([]string, 0)
 					stacktbl := value.(*lua.LTable)
 					stacktbl.ForEach(func(_, stack lua.LValue) {
-						fmt.Printf("stack: %s\n", stack)
 						stacks = append(stacks, stack.String())
 					})
 					entry.Meta.Inventory[key.String()] = stacks

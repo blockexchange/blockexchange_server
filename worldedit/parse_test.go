@@ -2,7 +2,6 @@ package worldedit_test
 
 import (
 	"blockexchange/worldedit"
-	"fmt"
 	"os"
 	"testing"
 
@@ -17,8 +16,6 @@ func TestParseWorldedit(t *testing.T) {
 	entries, err := worldedit.Parse(data)
 	assert.NoError(t, err)
 	assert.NotNil(t, entries)
-
-	fmt.Println(entries)
 
 	assert.Equal(t, 1, len(entries))
 	e := entries[0]
@@ -37,4 +34,16 @@ func TestParseWorldedit(t *testing.T) {
 	assert.NotNil(t, e.Meta.Inventory["main"])
 	assert.Equal(t, 32, len(e.Meta.Inventory["main"]))
 	assert.Equal(t, "default:stone 10", e.Meta.Inventory["main"][0])
+}
+
+func TestParseWorldedit2(t *testing.T) {
+	data, err := os.ReadFile("testdata/zlard.we")
+	assert.NoError(t, err)
+	assert.NotNil(t, data)
+
+	entries, err := worldedit.Parse(data)
+	assert.NoError(t, err)
+	assert.NotNil(t, entries)
+
+	assert.Equal(t, 21382, len(entries))
 }
