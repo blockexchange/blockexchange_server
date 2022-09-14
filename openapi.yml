@@ -4,8 +4,8 @@ info:
   description: blockexchange cloud schema exchanger api docs
   version: latest
 servers:
-  - url: https://blockexchange.minetest.land/api
-    description: blockexchange.minetest.land central server
+  - url: https://blockexchange.minetest.ch/api
+    description: blockexchange.minetest.ch central server
 
 components:
   schemas:

@@ -41,5 +41,5 @@ jobs:
       uses: peter-evans/repository-dispatch@v2
       with:
         token: ${{ secrets.REPO_ACCESS_TOKEN }}
-        repository: blockexchange/blockexchange.minetest.land
+        repository: blockexchange/blockexchange.minetest.ch
         event-type: deploy
