@@ -11,9 +11,9 @@ import (
 )
 
 type SchemaPartSize struct {
-	X int
-	Y int
-	Z int
+	X int `json:"x"`
+	Y int `json:"y"`
+	Z int `json:"z"`
 }
 
 type Inventory map[string][]string
