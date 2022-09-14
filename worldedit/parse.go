@@ -2,13 +2,14 @@ package worldedit
 
 import (
 	"errors"
+	"strings"
 
 	lua "github.com/yuin/gopher-lua"
 )
 
-func Parse(data []byte) ([]*WEEntry, error) {
+func Parse(data []byte) ([]*WEEntry, []string, error) {
 	if data[0] != byte('5') || data[1] != byte(':') {
-		return nil, errors.New("invalid format")
+		return nil, nil, errors.New("invalid format")
 	}
 
 	L := lua.NewState()
@@ -16,7 +17,7 @@ func Parse(data []byte) ([]*WEEntry, error) {
 
 	fn, err := L.LoadString(string(data[2:]))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	err = L.CallByParam(lua.P{
@@ -25,17 +26,18 @@ func Parse(data []byte) ([]*WEEntry, error) {
 		Protect: true,
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	lv := L.Get(-1)
 	tbl, ok := lv.(*lua.LTable)
 	if !ok {
-		return nil, errors.New("root table not found")
+		return nil, nil, errors.New("root table not found")
 	}
 
 	entry_count := L.ObjLen(tbl)
 	entries := make([]*WEEntry, entry_count)
+	modname_map := make(map[string]bool)
 
 	for i := 1; i <= entry_count; i++ {
 		entrytbl := L.GetTable(tbl, lua.LNumber(i))
@@ -43,9 +45,12 @@ func Parse(data []byte) ([]*WEEntry, error) {
 		// common entries
 		entry, err := parseWEEntry(L, entrytbl)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		entries[i-1] = entry
+
+		// set modname flag
+		modname_map[strings.Split(entry.Name, ":")[0]] = true
 
 		metatbl := L.GetTable(entrytbl, lua.LString("meta"))
 		if metatbl != lua.LNil {
@@ -77,7 +82,12 @@ func Parse(data []byte) ([]*WEEntry, error) {
 
 	}
 
-	return entries, nil
+	modnames := make([]string, 0)
+	for m := range modname_map {
+		modnames = append(modnames, m)
+	}
+
+	return entries, modnames, nil
 }
 
 func parseWEEntry(L *lua.LState, tbl lua.LValue) (*WEEntry, error) {

@@ -13,7 +13,7 @@ func TestImport(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, data)
 
-	entries, err := worldedit.Parse(data)
+	entries, _, err := worldedit.Parse(data)
 	assert.NoError(t, err)
 	assert.NotNil(t, entries)
 
@@ -54,7 +54,7 @@ func TestImportComplex(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, data)
 
-	entries, err := worldedit.Parse(data)
+	entries, _, err := worldedit.Parse(data)
 	assert.NoError(t, err)
 	assert.NotNil(t, entries)
 

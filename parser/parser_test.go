@@ -54,4 +54,15 @@ func TestParseSchemaPart(t *testing.T) {
 			t.Errorf("param1 too high: %d @ position %d", v, i)
 		}
 	}
+
+	sp2, err := parsed.Convert()
+	assert.NoError(t, err)
+	assert.NotNil(t, sp2)
+
+	assert.Equal(t, 0, sp2.OffsetX)
+	assert.Equal(t, 0, sp2.OffsetY)
+	assert.Equal(t, 0, sp2.OffsetZ)
+
+	assert.True(t, len(sp2.Data) > 2)
+	assert.True(t, len(sp2.MetaData) > 2)
 }
