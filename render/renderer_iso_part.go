@@ -20,7 +20,7 @@ type Block struct {
 type PartRenderer struct {
 	Mapblock            *parser.ParsedSchemaPart
 	Colormapping        *colormapping.ColorMapping
-	NodeIDStringMapping map[int]string
+	NodeIDStringMapping map[int16]string
 	Blocks              []*Block
 	MaxX                int
 	MaxY                int
@@ -32,7 +32,7 @@ type PartRenderer struct {
 
 func NewISOPartRenderer(mapblock *parser.ParsedSchemaPart, cm *colormapping.ColorMapping, size, offset_x, offset_y float64) *PartRenderer {
 	// reverse index
-	idm := make(map[int]string)
+	idm := make(map[int16]string)
 	for k, v := range mapblock.Meta.NodeMapping {
 		idm[v] = k
 	}
@@ -64,7 +64,7 @@ func (r *PartRenderer) GetColorAtPos(x, y, z int) *color.RGBA {
 
 	index := r.Mapblock.GetIndex(x, y, z)
 	param2 := int(r.Mapblock.Param2[index])
-	nodeid := int(r.Mapblock.NodeIDS[index])
+	nodeid := r.Mapblock.NodeIDS[index]
 	nodename := r.NodeIDStringMapping[nodeid]
 	color := r.Colormapping.GetColor(nodename, param2)
 	return color

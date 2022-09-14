@@ -27,9 +27,9 @@ func (s *SchemaPartMetadata) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	s.NodeMapping = make(map[string]int)
+	s.NodeMapping = make(map[string]int16)
 	for k, v := range nm {
-		s.NodeMapping[k] = int(v)
+		s.NodeMapping[k] = int16(v)
 	}
 
 	// metadata
@@ -39,15 +39,6 @@ func (s *SchemaPartMetadata) UnmarshalJSON(data []byte) error {
 		if err != nil {
 			return err
 		}
-
-		s.Metadata = &Metadata{
-			Meta: &MetadataEntry{
-				Fields:      make(map[string]*Fields),
-				Inventories: make(map[string]*Inventory),
-			},
-		}
-
-		//TODO: fill in fields/inventories
 	}
 
 	// schemapart size
@@ -62,10 +53,6 @@ func (s *SchemaPartMetadata) UnmarshalJSON(data []byte) error {
 	s.Size.Z = getInt(nm["z"])
 
 	return nil
-}
-
-func (mapblock *ParsedSchemaPart) GetIndex(x, y, z int) int {
-	return z + (y * mapblock.Meta.Size.Z) + (x * mapblock.Meta.Size.Y * mapblock.Meta.Size.Z)
 }
 
 func ParseSchemaPart(part *types.SchemaPart) (*ParsedSchemaPart, error) {

@@ -90,12 +90,12 @@ func parseWEEntry(L *lua.LState, tbl lua.LValue) (*WEEntry, error) {
 
 	param2, ok := L.GetTable(tbl, lua.LString("param2")).(lua.LNumber)
 	if ok {
-		e.Param2 = int(param2)
+		e.Param2 = byte(param2)
 	}
 
 	param1, ok := L.GetTable(tbl, lua.LString("param1")).(lua.LNumber)
 	if ok {
-		e.Param1 = int(param1)
+		e.Param1 = byte(param1)
 	}
 
 	x, ok := L.GetTable(tbl, lua.LString("x")).(lua.LNumber)

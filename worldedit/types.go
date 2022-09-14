@@ -15,8 +15,8 @@ type WEEntry struct {
 	X      int
 	Y      int
 	Z      int
-	Param1 int
-	Param2 int
+	Param1 byte
+	Param2 byte
 	Meta   *WEMeta
 }
 

@@ -42,7 +42,7 @@ func exportSchemaPart(w io.Writer, schemapart *types.SchemaPart) error {
 	}
 
 	// create reverse lookup table
-	nodeid_names := make(map[int]string)
+	nodeid_names := make(map[int16]string)
 	for name, nodeid := range mapblock.Meta.NodeMapping {
 		nodeid_names[nodeid] = name
 	}
@@ -68,14 +68,14 @@ func exportSchemaPart(w io.Writer, schemapart *types.SchemaPart) error {
 	return nil
 }
 
-func exportNode(w io.Writer, x, y, z int, mapblock *parser.ParsedSchemaPart, schemapart *types.SchemaPart, nodeid_names map[int]string) (bool, error) {
+func exportNode(w io.Writer, x, y, z int, mapblock *parser.ParsedSchemaPart, schemapart *types.SchemaPart, nodeid_names map[int16]string) (bool, error) {
 	index := mapblock.GetIndex(x, y, z)
 	nodeid := mapblock.NodeIDS[index]
-	if int(nodeid) == mapblock.Meta.NodeMapping["air"] {
+	if nodeid == mapblock.Meta.NodeMapping["air"] {
 		return false, nil
 	}
 
-	nodename := nodeid_names[int(nodeid)]
+	nodename := nodeid_names[nodeid]
 	if nodename == "" {
 		return false, errors.New("Nodename not found for " + strconv.Itoa(int(nodeid)))
 	}

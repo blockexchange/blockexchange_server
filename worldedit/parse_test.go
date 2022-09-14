@@ -23,8 +23,8 @@ func TestParseWorldedit(t *testing.T) {
 	assert.Equal(t, 0, e.X)
 	assert.Equal(t, 0, e.Y)
 	assert.Equal(t, 0, e.Z)
-	assert.Equal(t, 140, e.Param1)
-	assert.Equal(t, 3, e.Param2)
+	assert.Equal(t, byte(140), e.Param1)
+	assert.Equal(t, byte(3), e.Param2)
 
 	assert.NotNil(t, e.Meta)
 	assert.NotNil(t, e.Meta.Fields)
