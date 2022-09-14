@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="{{.BaseURL}}assets/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="{{.BaseURL}}assets/css/fontawesome.min.css"/>
         <title>{{block "title" .}}{{end}} - Block exchange</title>
-        {{ if .Config.GoogleSiteVerification }}
+        {{ if and .Config .Config.GoogleSiteVerification }}
         <meta name="google-site-verification" content="{{.Config.GoogleSiteVerification}}" />
         {{ end }}
         {{ range $name, $content := .AdditionalMetaTags }}
