@@ -1,7 +1,8 @@
-package core
+package worldedit_test
 
 import (
 	"blockexchange/types"
+	"blockexchange/worldedit"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -30,7 +31,7 @@ func TestExportSchemaMetadata(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer([]byte{})
-	err := ExportWorldeditSchema(buf, it)
+	err := worldedit.Export(buf, it)
 	assert.NoError(t, err)
 	assert.True(t, buf.Len() > 0)
 	fmt.Println(buf.String())
@@ -55,7 +56,7 @@ func TestExportSchemaSimple(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer([]byte{})
-	err := ExportWorldeditSchema(buf, it)
+	err := worldedit.Export(buf, it)
 	assert.NoError(t, err)
 	assert.True(t, buf.Len() > 0)
 	fmt.Println(buf.String())

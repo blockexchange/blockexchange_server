@@ -1,4 +1,4 @@
-package core
+package worldedit
 
 import (
 	"blockexchange/parser"
@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func ExportWorldeditSchema(w io.Writer, it types.SchemaPartIterator) error {
+func Export(w io.Writer, it types.SchemaPartIterator) error {
 	// add header
 	_, err := w.Write([]byte("5:return {"))
 	if err != nil {
@@ -69,7 +69,6 @@ func exportSchemaPart(w io.Writer, schemapart *types.SchemaPart) error {
 }
 
 func exportNode(w io.Writer, x, y, z int, mapblock *parser.ParsedSchemaPart, schemapart *types.SchemaPart, nodeid_names map[int]string) (bool, error) {
-	// TODO: account for negative schema offset (size_n_minus)
 	index := mapblock.GetIndex(x, y, z)
 	nodeid := mapblock.NodeIDS[index]
 	if int(nodeid) == mapblock.Meta.NodeMapping["air"] {

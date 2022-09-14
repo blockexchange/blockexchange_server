@@ -3,6 +3,7 @@ package api
 import (
 	"blockexchange/core"
 	"blockexchange/types"
+	"blockexchange/worldedit"
 	"net/http"
 	"strconv"
 
@@ -28,7 +29,7 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 		return schemapart, err
 	}
 
-	err = core.ExportWorldeditSchema(w, it)
+	err = worldedit.Export(w, it)
 	if err != nil {
 		SendError(w, 500, err.Error())
 	}
