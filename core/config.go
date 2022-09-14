@@ -8,32 +8,34 @@ type OAuthConfig struct {
 }
 
 type Config struct {
-	WebDev             bool
-	EnableSignup       bool
-	BaseURL            string
-	Name               string
-	Owner              string
-	Key                string
-	GithubOAuthConfig  *OAuthConfig
-	DiscordOAuthConfig *OAuthConfig
-	MesehubOAuthConfig *OAuthConfig
-	CookiePath         string
-	CookieDomain       string
-	CookieSecure       bool
-	CookieName         string
+	WebDev                 bool
+	EnableSignup           bool
+	BaseURL                string
+	Name                   string
+	Owner                  string
+	Key                    string
+	GithubOAuthConfig      *OAuthConfig
+	DiscordOAuthConfig     *OAuthConfig
+	MesehubOAuthConfig     *OAuthConfig
+	GoogleSiteVerification string
+	CookiePath             string
+	CookieDomain           string
+	CookieSecure           bool
+	CookieName             string
 }
 
 func CreateConfig() (*Config, error) {
 	cfg := &Config{
-		Name:         os.Getenv("BLOCKEXCHANGE_NAME"),
-		Owner:        os.Getenv("BLOCKEXCHANGE_OWNER"),
-		WebDev:       os.Getenv("WEBDEV") == "true",
-		EnableSignup: os.Getenv("ENABLE_SIGNUP") == "true",
-		BaseURL:      os.Getenv("BASE_URL"),
-		CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
-		CookieDomain: os.Getenv("BLOCKEXCHANGE_COOKIE_DOMAIN"),
-		CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
-		CookieName:   "blockexchange",
+		Name:                   os.Getenv("BLOCKEXCHANGE_NAME"),
+		Owner:                  os.Getenv("BLOCKEXCHANGE_OWNER"),
+		WebDev:                 os.Getenv("WEBDEV") == "true",
+		EnableSignup:           os.Getenv("ENABLE_SIGNUP") == "true",
+		BaseURL:                os.Getenv("BASE_URL"),
+		CookiePath:             os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
+		CookieDomain:           os.Getenv("BLOCKEXCHANGE_COOKIE_DOMAIN"),
+		CookieSecure:           os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
+		CookieName:             "blockexchange",
+		GoogleSiteVerification: os.Getenv("GOOGLE_SITE_VERIFICATION"),
 	}
 
 	if os.Getenv("DISCORD_APP_ID") != "" {

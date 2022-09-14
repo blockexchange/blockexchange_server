@@ -21,6 +21,7 @@ func (rc *RenderContext) Render(file string, data any) error {
 	rd := &RenderData{
 		BaseURL:            rc.baseUrl,
 		Data:               data,
+		Config:             rc.ctrl.cfg,
 		AdditionalMetaTags: rc.AdditionalMetaTags,
 	}
 
