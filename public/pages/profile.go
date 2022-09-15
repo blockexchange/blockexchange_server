@@ -4,6 +4,7 @@ import (
 	"blockexchange/controller"
 	"blockexchange/core"
 	"blockexchange/db"
+	"blockexchange/public/components"
 	"blockexchange/types"
 	"errors"
 	"net/http"
@@ -13,15 +14,11 @@ import (
 type ProfileModel struct {
 	UpdateError error
 	User        *types.User
+	AccessToken *components.AccessTokenModel
 }
 
 func updateProfileData(m *ProfileModel, ur db.UserRepository, r *http.Request, c *types.Claims) error {
 	var err error
-	err = r.ParseForm()
-	if err != nil {
-		return err
-	}
-
 	m.User, err = ur.GetUserById(c.UserID)
 	if err != nil {
 		return err
@@ -53,11 +50,16 @@ func updateProfileData(m *ProfileModel, ur db.UserRepository, r *http.Request, c
 }
 
 func Profile(rc *controller.RenderContext) error {
-	m := &ProfileModel{}
+	m := &ProfileModel{
+		AccessToken: components.AccessToken(rc),
+	}
 
 	r := rc.Request()
 	if r.Method == http.MethodPost {
-		var err error
+		err := rc.Request().ParseForm()
+		if err != nil {
+			return err
+		}
 		m.User, err = rc.Repositories().UserRepo.GetUserById(rc.Claims().UserID)
 		if err != nil {
 			return err
