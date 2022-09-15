@@ -36,6 +36,10 @@ func Parse(data []byte) ([]*WEEntry, []string, error) {
 	}
 
 	entry_count := L.ObjLen(tbl)
+	if entry_count >= 25550 {
+		return nil, nil, errors.New("we-import can't handle more than 25550 node entries")
+	}
+
 	entries := make([]*WEEntry, entry_count)
 	modname_map := make(map[string]bool)
 
