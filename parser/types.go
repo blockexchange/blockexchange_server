@@ -16,21 +16,18 @@ type SchemaPartSize struct {
 	Z int `json:"z"`
 }
 
-type Inventory map[string][]string
-type Fields map[string]string
-
 type MetadataEntry struct {
-	Inventories map[string]Inventory `json:"inventory"`
-	Fields      map[string]Fields    `json:"fields"`
-}
-
-func (m MetadataEntry) GetKey(x, y, z int) string {
-	return fmt.Sprintf("(%d,%d,%d)", x, y, z)
+	Inventories map[string][]string `json:"inventory"`
+	Fields      map[string]string   `json:"fields"`
 }
 
 type Metadata struct {
-	Meta *MetadataEntry `json:"meta"`
+	Meta map[string]*MetadataEntry `json:"meta"`
 	//TODO: timers
+}
+
+func (m Metadata) GetKey(x, y, z int) string {
+	return fmt.Sprintf("(%d,%d,%d)", x, y, z)
 }
 
 type SchemaPartMetadata struct {

@@ -40,10 +40,10 @@ func TestImport(t *testing.T) {
 
 	assert.NotNil(t, part.Meta.Metadata.Meta)
 
-	fields := part.Meta.Metadata.Meta.Fields["(0,0,0)"]
+	fields := part.Meta.Metadata.Meta["(0,0,0)"].Fields
 	assert.Equal(t, "Naj", fields["owner"])
 
-	inventory := part.Meta.Metadata.Meta.Inventories["(0,0,0)"]
+	inventory := part.Meta.Metadata.Meta["(0,0,0)"].Inventories
 	assert.NotNil(t, inventory["main"])
 	assert.Equal(t, 32, len(inventory["main"]))
 	assert.Equal(t, "default:stone 10", inventory["main"][0])

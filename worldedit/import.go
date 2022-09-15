@@ -37,10 +37,7 @@ func Import(entries []*WEEntry) ([]*parser.ParsedSchemaPart, error) {
 					NodeMapping: make(map[string]int16),
 					Size:        parser.SchemaPartSize{},
 					Metadata: &parser.Metadata{
-						Meta: &parser.MetadataEntry{
-							Fields:      make(map[string]parser.Fields),
-							Inventories: make(map[string]parser.Inventory),
-						},
+						Meta: make(map[string]*parser.MetadataEntry),
 					},
 				},
 				PosX: mbx,
@@ -89,9 +86,11 @@ func Import(entries []*WEEntry) ([]*parser.ParsedSchemaPart, error) {
 		part.Param2[bufIndex] = entry.Param2
 
 		if entry.Meta != nil {
-			key := part.Meta.Metadata.Meta.GetKey(rel_x, rel_y, rel_z)
-			part.Meta.Metadata.Meta.Fields[key] = parser.Fields(entry.Meta.Fields)
-			part.Meta.Metadata.Meta.Inventories[key] = parser.Inventory(entry.Meta.Inventory)
+			key := part.Meta.Metadata.GetKey(rel_x, rel_y, rel_z)
+			part.Meta.Metadata.Meta[key] = &parser.MetadataEntry{
+				Inventories: entry.Meta.Inventory,
+				Fields:      entry.Meta.Fields,
+			}
 		}
 	}
 

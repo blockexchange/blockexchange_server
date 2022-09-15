@@ -60,15 +60,17 @@ func Parse(data []byte) ([]*WEEntry, []string, error) {
 			}
 
 			// fields
-			fieldstbl := L.GetTable(metatbl, lua.LString("fields")).(*lua.LTable)
-			if fieldstbl != lua.LNil {
+			fieldvalue := L.GetTable(metatbl, lua.LString("fields"))
+			if fieldvalue != lua.LNil {
+				fieldstbl := fieldvalue.(*lua.LTable)
 				fieldstbl.ForEach(func(key, value lua.LValue) {
 					entry.Meta.Fields[key.String()] = value.String()
 				})
 			}
 
-			invtbl := L.GetTable(metatbl, lua.LString("inventory")).(*lua.LTable)
-			if invtbl != lua.LNil {
+			invvalue := L.GetTable(metatbl, lua.LString("inventory"))
+			if invvalue != lua.LNil {
+				invtbl := invvalue.(*lua.LTable)
 				invtbl.ForEach(func(key, value lua.LValue) {
 					stacks := make([]string, 0)
 					stacktbl := value.(*lua.LTable)
