@@ -23,6 +23,13 @@
                     <i class="fa fa-search"></i> Search
                 </a>
             </li>
+            {{if .Claims}}
+            <li class="nav-item">
+                <a href="{{.BaseURL}}weimport" class="nav-link">
+                    <i class="fas fa-upload"></i> Worldedit import
+                </a>
+            </li>
+            {{end}}
             {{if .IsAdmin}}
             <li class="nav-item">
                 <a href="{{.BaseURL}}tags" class="nav-link">

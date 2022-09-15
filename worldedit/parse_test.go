@@ -13,9 +13,13 @@ func TestParseWorldedit(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, data)
 
-	entries, err := worldedit.Parse(data)
+	entries, modnames, err := worldedit.Parse(data)
 	assert.NoError(t, err)
+	assert.NotNil(t, modnames)
 	assert.NotNil(t, entries)
+
+	assert.Equal(t, 1, len(modnames))
+	assert.Equal(t, "default", modnames[0])
 
 	assert.Equal(t, 1, len(entries))
 	e := entries[0]
@@ -41,7 +45,7 @@ func TestParseWorldedit2(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, data)
 
-	entries, err := worldedit.Parse(data)
+	entries, _, err := worldedit.Parse(data)
 	assert.NoError(t, err)
 	assert.NotNil(t, entries)
 

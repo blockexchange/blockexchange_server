@@ -13,7 +13,7 @@ func LatestSchemas(baseUrl string, repos *db.Repositories) (*LatestSchemasModel,
 	m := &LatestSchemasModel{}
 	var err error
 
-	schemas, err := repos.SchemaSearchRepo.Search(&types.SchemaSearchRequest{}, 20, 0)
+	schemas, err := repos.SchemaSearchRepo.Search(&types.SchemaSearchRequest{}, 12, 0)
 	if err != nil {
 		return nil, err
 	}

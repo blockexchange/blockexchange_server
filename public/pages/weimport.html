@@ -1,0 +1,40 @@
+{{define "title"}}Users{{end}}
+{{define "content"}}
+<h3>Worldedit import</h3>
+
+<form method="POST" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-10">
+            <input type="file" name="file" accept=".we" class="form-control"/>
+        </div>
+        <div class="col-md-2">
+            <input type="submit" value="Import" class="btn btn-primary w-100"/>
+        </div>
+    </div>
+</form>
+<hr>
+<div class="row">
+    <div class="col-md-12">
+        {{if .Data.ImportError}}
+        <div class="alert alert-danger">
+            <b>Error:</b> {{.Data.ImportError}}
+        </div>
+        {{end}}
+        {{if .Data.ImportedSchema}}
+        <div class="alert alert-success">
+            <p>
+                <b>Schematic uploaded:</b>
+                <a href="schema/{{.Claims.Username}}/{{.Data.ImportedSchema.Name}}">{{.Data.ImportedSchema.Name}}</a>
+            </p>
+            <b>Statistics:</b>
+            <ul>
+                <li>Parts: {{.Data.ImportedSchema.TotalParts}}</li>
+                <li>BX Size: {{ prettysize .Data.ImportedSchema.TotalSize}}</li>
+                <li>WE Filesize: {{ prettysize .Data.FileSize}}</li>
+            </ul>
+        </div>
+        {{end}}
+    </div>
+</div>
+
+{{end}}

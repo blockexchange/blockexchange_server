@@ -4,8 +4,10 @@ import (
 	"blockexchange/parser"
 	"blockexchange/types"
 	"errors"
+	"fmt"
 	"io"
 	"strconv"
+	"strings"
 )
 
 func Export(w io.Writer, it types.SchemaPartIterator) error {
@@ -83,35 +85,58 @@ func exportNode(w io.Writer, x, y, z int, mapblock *parser.ParsedSchemaPart, sch
 	param1 := mapblock.Param1[index]
 	param2 := mapblock.Param2[index]
 
-	s := `{` +
-		`["x"]=` + strconv.Itoa(x+schemapart.OffsetX) + `,` +
-		`["y"]=` + strconv.Itoa(y+schemapart.OffsetY) + `,` +
-		`["z"]=` + strconv.Itoa(z+schemapart.OffsetZ) + `,` +
-		`["name"]="` + nodename + `"`
+	parts := []string{
+		fmt.Sprintf("x=%d", x+schemapart.OffsetX),
+		fmt.Sprintf("y=%d", y+schemapart.OffsetY),
+		fmt.Sprintf("z=%d", z+schemapart.OffsetZ),
+		fmt.Sprintf("name=\"%s\"", nodename),
+	}
 
 	if param1 != 0 {
-		s += `,["param1"]=` + strconv.Itoa(int(param1))
+		parts = append(parts, fmt.Sprintf("param1=%d", param1))
 	}
+
 	if param2 != 0 {
-		s += `,["param2"]=` + strconv.Itoa(int(param2))
+		parts = append(parts, fmt.Sprintf("param2=%d", param2))
 	}
 
-	s += `}`
+	if mapblock.Meta != nil && mapblock.Meta.Metadata != nil {
+		fieldsStr := ""
+		key := mapblock.Meta.Metadata.GetKey(x, y, z)
+		if mapblock.Meta.Metadata.Meta != nil && mapblock.Meta.Metadata.Meta[key] != nil {
+			fields := mapblock.Meta.Metadata.Meta[key].Fields
+			fieldparts := make([]string, 0)
+			for k, v := range fields {
+				rv := strings.ReplaceAll(v, "\"", "\\\"")
+				rv = strings.ReplaceAll(rv, "\n", "\\n")
+				fieldparts = append(fieldparts, fmt.Sprintf("[\"%s\"]=\"%s\"", k, rv))
+			}
+			fieldsStr = strings.Join(fieldparts, ",")
 
-	/*
-		if mapblock.Meta.Metadata != nil {
-			key := fmt.Sprintf("(%d,%d,%d)", x, y, z)
-			fields := mapblock.Meta.Metadata.Meta.Fields[key]
-			inventory := mapblock.Meta.Metadata.Meta.Inventories[key]
-			if inventory != nil {
-				fmt.Printf("inventory: %s", inventory)
-				fmt.Printf("fields: %s", fields)
+			inventories := mapblock.Meta.Metadata.Meta[key].Inventories
+			invparts := make([]string, 0)
+			for invname, inventry := range inventories {
+				stacks := make([]string, len(inventry))
+				for i, stack := range inventry {
+					rv := strings.ReplaceAll(stack, "\\", "\\\\")
+					rv = strings.ReplaceAll(rv, "\"", "\\\"")
+					rv = strings.ReplaceAll(rv, "\n", "\\n")
+
+					stacks[i] = fmt.Sprintf("\"%s\"", rv)
+				}
+
+				invparts = append(invparts, fmt.Sprintf("[\"%s\"]={%s}", invname, strings.Join(stacks, ",")))
+			}
+			invStr := strings.Join(invparts, ",")
+
+			if fieldsStr != "" || invStr != "" {
+				parts = append(parts, fmt.Sprintf("meta={fields={%s},inventory={%s}}", fieldsStr, invStr))
 			}
 		}
-	*/
 
-	//TODO: export metadata
+	}
 
-	_, err := w.Write([]byte(s))
+	str := fmt.Sprintf("{%s}", strings.Join(parts, ","))
+	_, err := w.Write([]byte(str))
 	return true, err
 }
