@@ -27,10 +27,12 @@ type User struct {
 }
 
 func (u *User) Columns(action string) []string {
-	if action == "insert" {
-		return []string{"created", "name", "hash", "type", "role", "external_id", "mail"}
+	cols := []string{}
+	if action != "insert" {
+		cols = append(cols, "id")
 	}
-	return []string{"id", "created", "name", "hash", "type", "role", "external_id", "mail"}
+	cols = append(cols, "created", "name", "hash", "type", "role", "external_id", "mail")
+	return cols
 }
 
 func (u *User) Table() string {
@@ -42,8 +44,10 @@ func (u *User) Scan(action string, r func(dest ...any) error) error {
 }
 
 func (u *User) Values(action string) []any {
-	if action == "insert" {
-		return []any{u.Created, u.Name, u.Hash, u.Type, u.Role, u.ExternalID, u.Mail}
+	vals := []any{}
+	if action != "insert" {
+		vals = append(vals, u.ID)
 	}
-	return []any{u.ID, u.Created, u.Name, u.Hash, u.Type, u.Role, u.ExternalID, u.Mail}
+	vals = append(vals, u.Created, u.Name, u.Hash, u.Type, u.Role, u.ExternalID, u.Mail)
+	return vals
 }
