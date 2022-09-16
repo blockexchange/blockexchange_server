@@ -8,13 +8,18 @@
             </div>
             <div class="card-body">
                 <h5 class="card-title">Login</h5>
+                {{if .Claims}}
+                <form method="POST" style="display: inline;">
+                    <input type="hidden" name="action" value="logout"/>
+                    <button type="submit" class="btn btn-secondary">Logout</button>
+                </form>
+                <a href="{{.BaseURL}}profile" class="btn btn-primary">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </a>
+                {{end}}
                 {{if .Data.Config.EnableSignup}}
-                    {{if .Claims}}
-                    <form method="POST">
-                        <input type="hidden" name="action" value="logout"/>
-                        <button type="submit" class="btn btn-secondary">Logout</button>
-                    </form>
-                    {{else}}
+                    {{if not .Claims}}
                     <form method="POST">
                         <input type="hidden" name="action" value="login"/>
                         <input type="text" name="username" placeholder="Username" value="{{.Data.Username}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
