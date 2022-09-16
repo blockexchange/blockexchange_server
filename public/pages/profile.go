@@ -86,7 +86,7 @@ func Profile(rc *controller.RenderContext) error {
 			return err
 		}
 		if m.User == nil {
-			return errors.New("not founf")
+			return errors.New("not found")
 		}
 	}
 
