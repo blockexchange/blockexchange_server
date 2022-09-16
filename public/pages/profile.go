@@ -56,27 +56,29 @@ func Profile(rc *controller.RenderContext) error {
 
 	r := rc.Request()
 	if r.Method == http.MethodPost {
-		err := rc.Request().ParseForm()
+		err := r.ParseForm()
 		if err != nil {
 			return err
 		}
-		m.User, err = rc.Repositories().UserRepo.GetUserById(rc.Claims().UserID)
-		if err != nil {
-			return err
-		}
+		if r.FormValue("action") == "update_profile" {
+			m.User, err = rc.Repositories().UserRepo.GetUserById(rc.Claims().UserID)
+			if err != nil {
+				return err
+			}
 
-		err = updateProfileData(m, rc.Repositories().UserRepo, r, rc.Claims())
-		if err != nil {
-			return err
-		}
+			err = updateProfileData(m, rc.Repositories().UserRepo, r, rc.Claims())
+			if err != nil {
+				return err
+			}
 
-		permissions := core.GetPermissions(m.User, true)
-		dur := time.Duration(24 * 180 * time.Hour)
-		token, err := core.CreateJWT(m.User, permissions, dur)
-		if err != nil {
-			return err
+			permissions := core.GetPermissions(m.User, true)
+			dur := time.Duration(24 * 180 * time.Hour)
+			token, err := core.CreateJWT(m.User, permissions, dur)
+			if err != nil {
+				return err
+			}
+			rc.SetToken(token, dur)
 		}
-		rc.SetToken(token, dur)
 	}
 
 	if m.User == nil {

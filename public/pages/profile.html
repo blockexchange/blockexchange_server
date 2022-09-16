@@ -17,11 +17,15 @@
             </div>
             <div class="card-body">
                 <form method="POST" action="profile">
+                    <label>Username</label>
                     <input type="text" class="form-control" name="username" placeholder="Username" value="{{.Data.User.Name}}">
+                    <label>E-Mail</label>
                     <input type="text" class="form-control" name="mail" placeholder="E-Mail" value="{{if not .Data.User.Mail}}{{else}}{{.Data.User.Mail}}{{end}}">
                     <div class="alert alert-success">
+                        <i class="fa fa-circle-info"></i>
                         E-Mail address is optional but strongly encouraged as it is the only recovery-option for local accounts
                     </div>
+                    <input type="hidden" name="action" value="update_profile">
                     <button type="submit" class="btn btn-primary btn-block">
                         <i class="fa fa-save"></i>
                         Update profile
@@ -46,4 +50,6 @@
         </div>
     </div>
 </div>
+&nbsp;
+{{block "access_token" .Data.AccessToken}}{{end}}
 {{end}}
