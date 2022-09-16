@@ -56,9 +56,10 @@ func TestGetPermissions(t *testing.T) {
 }
 
 func TestCreateJWT(t *testing.T) {
+	var id int64 = 123
 	user := types.User{
 		Name: "dummy",
-		ID:   123,
+		ID:   &id,
 		Type: types.UserTypeGithub,
 	}
 	permissions := []types.JWTPermission{types.JWTPermissionUpload}

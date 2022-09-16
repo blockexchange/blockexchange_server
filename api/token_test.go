@@ -11,43 +11,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/crypto/bcrypt"
 )
-
-type MockUserRepo struct{}
-
-func (r MockUserRepo) GetUserById(id int64) (*types.User, error) {
-	return nil, nil
-}
-func (r MockUserRepo) GetUserByName(name string) (*types.User, error) {
-	var user *types.User
-
-	if name == "user" {
-		hash, err := bcrypt.GenerateFromPassword([]byte("pw"), bcrypt.DefaultCost)
-		if err != nil {
-			return nil, err
-		}
-		user = &types.User{
-			ID:   0,
-			Name: name,
-			Hash: string(hash),
-			Type: types.UserTypeLocal,
-		}
-	}
-	return user, nil
-}
-func (r MockUserRepo) GetUserByExternalId(external_id string) (*types.User, error) {
-	return nil, nil
-}
-func (r MockUserRepo) GetUsers() ([]types.User, error) {
-	return make([]types.User, 0), nil
-}
-func (r MockUserRepo) CreateUser(user *types.User) error {
-	return nil
-}
-func (r MockUserRepo) UpdateUser(user *types.User) error {
-	return nil
-}
 
 func TestAccessTokenLogin(t *testing.T) {
 	api := NewTestApi(t)
@@ -58,7 +22,7 @@ func TestAccessTokenLogin(t *testing.T) {
 	testutils.CreateUser(api.UserRepo, t, user)
 
 	token := &types.AccessToken{
-		UserID:  user.ID,
+		UserID:  *user.ID,
 		Expires: (time.Now().Unix() + 300) * 1000,
 		Created: time.Now().Unix() * 1000,
 		Token:   "abcdef",
@@ -93,7 +57,7 @@ func TestInvalidAccessTokenLogin(t *testing.T) {
 	testutils.CreateUser(api.UserRepo, t, user)
 
 	token := &types.AccessToken{
-		UserID:  user.ID,
+		UserID:  *user.ID,
 		Expires: (time.Now().Unix() + 300) * 1000,
 		Created: time.Now().Unix() * 1000,
 		Token:   "abcdef",

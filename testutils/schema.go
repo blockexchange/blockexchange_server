@@ -16,7 +16,7 @@ func CreateSchema(repo db.SchemaRepository, t *testing.T, user *types.User, sche
 		}
 	}
 
-	schema.UserID = user.ID
+	schema.UserID = *user.ID
 	assert.NoError(t, repo.CreateSchema(schema))
 	return schema
 }

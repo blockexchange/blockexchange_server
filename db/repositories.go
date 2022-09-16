@@ -20,7 +20,7 @@ type Repositories struct {
 func NewRepositories(db_ *sqlx.DB) *Repositories {
 	return &Repositories{
 		AccessTokenRepo:            AccessTokenRepository{DB: db_.DB},
-		UserRepo:                   DBUserRepository{DB: db_},
+		UserRepo:                   UserRepository{db: db_.DB},
 		SchemaRepo:                 DBSchemaRepository{DB: db_},
 		SchemaPartRepo:             SchemaPartRepository{DB: db_.DB},
 		SchemaModRepo:              DBSchemaModRepository{DB: db_},

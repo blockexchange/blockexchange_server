@@ -13,6 +13,7 @@ import (
 func TestWorldEditExport(t *testing.T) {
 	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, nil)
+	assert.NotNil(t, user.ID)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
 	testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, nil)
 

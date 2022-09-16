@@ -130,7 +130,7 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			Created: time.Now().Unix() * 1000,
 			Expires: (time.Now().Unix() + (3600 * 24 * 7 * 4)) * 1000,
 			Token:   core.CreateToken(6),
-			UserID:  user.ID,
+			UserID:  *user.ID,
 		})
 		if err != nil {
 			SendError(w, 500, err.Error())

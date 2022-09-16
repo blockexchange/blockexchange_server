@@ -30,7 +30,7 @@ func GetPermissions(user *types.User, management bool) []types.JWTPermission {
 
 func CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Duration) (string, error) {
 	c := types.Claims{
-		UserID:      user.ID,
+		UserID:      *user.ID,
 		Username:    user.Name,
 		Type:        user.Type,
 		Permissions: permissions,

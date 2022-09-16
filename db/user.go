@@ -2,108 +2,49 @@ package db
 
 import (
 	"blockexchange/types"
-
-	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
+	"database/sql"
 )
 
-type UserRepository interface {
-	GetUserById(id int64) (*types.User, error)
-	GetUserByName(name string) (*types.User, error)
-	GetUserByExternalId(external_id string) (*types.User, error)
-	GetUsers(limit, offset int) ([]*types.User, error)
-	CountUsers() (int, error)
-	CreateUser(user *types.User) error
-	UpdateUser(user *types.User) error
+type UserRepository struct {
+	db *sql.DB
 }
 
-type DBUserRepository struct {
-	DB *sqlx.DB
-}
-
-func (repo DBUserRepository) GetUserById(id int64) (*types.User, error) {
-	user := []types.User{}
-	err := repo.DB.Select(&user, "select * from public.user where id = $1", id)
-	if err != nil {
-		return nil, err
-	} else if len(user) == 1 {
-		return &user[0], nil
-	} else {
+func (r UserRepository) GetUserById(id int64) (*types.User, error) {
+	users, err := Select(r.db, &types.User{}, "where id = $1", id)
+	if err == sql.ErrNoRows {
 		return nil, nil
 	}
+	return users, err
 }
 
-func (repo DBUserRepository) CountUsers() (int, error) {
-	query := `select count(*) from public.user`
-	row := repo.DB.QueryRow(query)
-	count := 0
-	err := row.Scan(&count)
-	return count, err
+func (r UserRepository) CountUsers() (int, error) {
+	return Count(r.db, &types.User{}, "")
 }
 
-func (repo DBUserRepository) GetUserByName(name string) (*types.User, error) {
-	user := []types.User{}
-	err := repo.DB.Select(&user, "select * from public.user where name = $1", name)
-	if err != nil {
-		return nil, err
-	} else if len(user) == 1 {
-		return &user[0], nil
-	} else {
+func (r UserRepository) GetUserByName(name string) (*types.User, error) {
+	users, err := Select(r.db, &types.User{}, "where name = $1", name)
+	if err == sql.ErrNoRows {
 		return nil, nil
 	}
+	return users, err
 }
 
-func (repo DBUserRepository) GetUserByExternalId(external_id string) (*types.User, error) {
-	user := []types.User{}
-	err := repo.DB.Select(&user, "select * from public.user where external_id = $1", external_id)
-	if err != nil {
-		return nil, err
-	} else if len(user) == 1 {
-		return &user[0], nil
-	} else {
+func (r UserRepository) GetUserByExternalId(external_id string) (*types.User, error) {
+	users, err := Select(r.db, &types.User{}, "where external_id = $1", external_id)
+	if err == sql.ErrNoRows {
 		return nil, nil
 	}
+	return users, err
 }
 
-func (repo DBUserRepository) GetUsers(limit, offset int) ([]*types.User, error) {
-	logrus.Trace("db.GetUsers")
-	list := []*types.User{}
-	err := repo.DB.Select(&list, "select * from public.user limit $1 offset $2", limit, offset)
-	if err != nil {
-		return nil, err
-	} else {
-		return list, nil
-	}
+func (r UserRepository) GetUsers(limit, offset int) ([]*types.User, error) {
+	return SelectMulti(r.db, func() *types.User { return &types.User{} }, "limit $1 offset $2", limit, offset)
 }
 
-func (repo DBUserRepository) CreateUser(user *types.User) error {
-	logrus.Trace("db.CreateUser: ", user)
-	query := `
-		insert into
-		public.user(
-			created, name, hash, type,
-			external_id, mail
-		)
-		values(
-			:created, :name, :hash, :type,
-			:external_id, :mail
-		)
-		returning id
-	`
-	stmt, err := repo.DB.PrepareNamed(query)
-	if err != nil {
-		return err
-	}
-	return stmt.Get(&user.ID, user)
+func (r UserRepository) CreateUser(user *types.User) error {
+	return InsertReturning(r.db, user, "id", &user.ID)
 }
 
-func (repo DBUserRepository) UpdateUser(user *types.User) error {
-	logrus.Trace("db.UpdateUser", user)
-	query := `
-		update public.user
-		set name = :name, mail = :mail
-		where id = :id
-	`
-	_, err := repo.DB.NamedExec(query, user)
-	return err
+func (r UserRepository) UpdateUser(user *types.User) error {
+	return Update(r.db, user, map[string]any{"id": user.ID})
 }
