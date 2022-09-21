@@ -31,8 +31,39 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Details</h5>
-                {{block "schema_details" .Data.Schema}}
-                {{end}}
+                <ul>
+                    <li>
+                        <b>Created: </b>{{ formattime .Data.Schema.Created }}
+                    </li>
+                    <li>
+                        <b>Changed: </b>{{ formattime .Data.Schema.Mtime }}
+                    </li>
+                    <li>
+                        <b>Size: </b>{{ prettysize .Data.Schema.TotalSize }}
+                    </li>
+                    <li>
+                        <b>Dimensions: </b>
+                        {{ .Data.Schema.SizeX }} / 
+                        {{ .Data.Schema.SizeY }} / 
+                        {{ .Data.Schema.SizeZ }} nodes
+                    </li>
+                    <li>
+                        <b>Parts: </b>{{ .Data.Schema.TotalParts }}
+                    </li>
+                    <li>
+                        <b>Downloads: </b>{{ .Data.Schema.Downloads }}
+                    </li>
+                    <li>
+                        <b>License: </b>
+                        {{if eq .Data.Schema.License "CC0"}}
+                            <img src="{{.BaseURL}}/assets/pics/license_cc0.png">
+                        {{else if eq .Data.Schema.License "CC-BY-SA"}}
+                            <img src="{{.BaseURL}}/assets/pics/license_cc-by-sa.png">
+                        {{else}}
+                            {{ .Data.Schema.License }}
+                        {{end}}
+                    </li>
+                </ul>
             </div>
         </div>
         <br>

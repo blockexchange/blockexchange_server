@@ -43,6 +43,7 @@ func schemaEditPost(rc *controller.RenderContext) error {
 	}
 
 	schema.Description = r.FormValue("description")
+	schema.License = r.FormValue("license")
 	schema.Name = newSchemaName
 
 	rc.Redirect("../" + schema.Name)

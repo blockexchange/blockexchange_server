@@ -30,7 +30,36 @@ window.onbeforeunload = function() { return formSubmitting ? null : "" };
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Details</h5>
-                    {{block "schema_details" .Data.Schema}}{{end}}
+                    <ul>
+                        <li>
+                            <b>Created: </b>{{ formattime .Data.Schema.Created }}
+                        </li>
+                        <li>
+                            <b>Changed: </b>{{ formattime .Data.Schema.Mtime }}
+                        </li>
+                        <li>
+                            <b>Size: </b>{{ prettysize .Data.Schema.TotalSize }}
+                        </li>
+                        <li>
+                            <b>Dimensions: </b>
+                            {{ .Data.Schema.SizeX }} / 
+                            {{ .Data.Schema.SizeY }} / 
+                            {{ .Data.Schema.SizeZ }} nodes
+                        </li>
+                        <li>
+                            <b>Parts: </b>{{ .Data.Schema.TotalParts }}
+                        </li>
+                        <li>
+                            <b>Downloads: </b>{{ .Data.Schema.Downloads }}
+                        </li>
+                        <li>
+                            <b>License: </b>
+                            <select class="form-control" name="license">
+                                <option value="CC0" {{if eq .Data.Schema.License "CC0"}}selected{{end}}>CC0</option>
+                                <option value="CC-BY-SA" {{if eq .Data.Schema.License "CC-BY-SA"}}selected{{end}}>CC-BY-SA</option>
+                            </select>
+                        </li>
+                    </ul>    
                 </div>
             </div>
             <br>
