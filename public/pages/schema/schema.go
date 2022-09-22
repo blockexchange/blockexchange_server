@@ -14,6 +14,7 @@ import (
 
 type SchemaModel struct {
 	Schema     *types.SchemaSearchResult
+	Starred    bool
 	Breadcrumb *components.BreadcrumbModel
 }
 
@@ -44,6 +45,7 @@ func searchSchema(sr db.SchemaSearchRepository, r *http.Request) (*types.SchemaS
 func Schema(rc *controller.RenderContext) error {
 	r := rc.Request()
 	repos := rc.Repositories()
+	claims := rc.Claims()
 
 	schema, err := searchSchema(repos.SchemaSearchRepo, r)
 	if err != nil {
@@ -59,6 +61,25 @@ func Schema(rc *controller.RenderContext) error {
 		rc.AddMetaTag("og:description", schema.Description)
 	}
 
+	if r.Method == http.MethodPost && claims != nil {
+		r.ParseForm()
+		switch r.FormValue("action") {
+		case "star":
+			err = repos.SchemaStarRepo.Create(schema.ID, claims.UserID)
+		case "unstar":
+			err = repos.SchemaStarRepo.Delete(schema.ID, claims.UserID)
+		}
+		if err != nil {
+			return err
+		}
+
+		// refresh schema
+		schema, err = searchSchema(repos.SchemaSearchRepo, r)
+		if err != nil {
+			return err
+		}
+	}
+
 	err = repos.SchemaRepo.IncrementViews(schema.ID)
 	if err != nil {
 		return err
@@ -72,6 +93,14 @@ func Schema(rc *controller.RenderContext) error {
 			components.BreadcrumbEntry{Name: schema.UserName, Link: "/schema/" + schema.UserName},
 			components.BreadcrumbEntry{Name: schema.Name},
 		),
+	}
+
+	if claims != nil {
+		star, err := repos.SchemaStarRepo.GetBySchemaAndUserID(schema.ID, claims.UserID)
+		if err != nil {
+			return err
+		}
+		m.Starred = star != nil
 	}
 
 	if m.Schema == nil {

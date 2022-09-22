@@ -52,9 +52,6 @@ window.onbeforeunload = function() { return formSubmitting ? null : "" };
                             <b>Downloads: </b>{{ .Data.Schema.Downloads }}
                         </li>
                         <li>
-                            <b>Views: </b>{{ .Data.Schema.Views }}
-                        </li>
-                        <li>
                             <b>License: </b>
                             <select class="form-control" name="license">
                                 <option value="CC0" {{if eq .Data.Schema.License "CC0"}}selected{{end}}>CC0</option>

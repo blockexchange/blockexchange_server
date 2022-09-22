@@ -8,9 +8,31 @@
             {{ .Data.Schema.Name }}
             <small class="text-muted">by {{ .Data.Schema.UserName }}</small>
             &nbsp;
-            {{ if gt .Data.Schema.Stars 0 }}
-                <i class="fa-regular fa-star"></i>
-                <span class="badge bg-secondary rounded-pill">{{ .Data.Schema.Stars }}</span>
+            {{ if .Claims }}
+                <form method="POST" style="display: inline;">
+                {{ if .Data.Starred }}
+                    <input type="hidden" name="action" value="unstar"/>
+                    <button class="btn btn-xs btn-outline-primary">
+                        <i class="fa fa-star" style="color: yellow;"></i>
+                        <span class="badge bg-secondary rounded-pill">{{ .Data.Schema.Stars }}</span>
+                        Unstar
+                    </button>
+                {{else}}
+                    <input type="hidden" name="action" value="star"/>
+                    <button class="btn btn-xs btn-outline-primary">
+                        <i class="fa-regular fa-star"></i>
+                        <span class="badge bg-secondary rounded-pill">{{ .Data.Schema.Stars }}</span>
+                        Star
+                    </button>
+                {{end}}
+                </form>
+            {{else}}
+                {{ if gt .Data.Schema.Stars 0 }}
+                    <i class="fa fa-star" style="color: yellow;"></i>
+                    <span class="badge bg-secondary rounded-pill">{{ .Data.Schema.Stars }}</span>
+                {{else}}
+                    <i class="fa-regular fa-star"></i>
+                {{end}}
             {{end}}
         </h3>
     </div>
@@ -55,9 +77,6 @@
                     </li>
                     <li>
                         <b>Downloads: </b>{{ .Data.Schema.Downloads }}
-                    </li>
-                    <li>
-                        <b>Views: </b>{{ .Data.Schema.Views }}
                     </li>
                     <li>
                         <b>License: </b>

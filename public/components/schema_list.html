@@ -29,10 +29,12 @@
                 {{ end }}
             </td>
             <td>
-                <i class="fa-regular fa-star"></i>
                 {{ if gt .Schema.Stars 0 }}
+                    <i class="fa fa-star" style="color: yellow;"></i>
                     <span class="badge bg-secondary rounded-pill">{{ .Schema.Stars }}</span>
-                {{ end }}
+                {{else}}
+                    <i class="fa-regular fa-star"></i>
+                {{end}}
             </td>
             {{if $showuser}}
             <td>
