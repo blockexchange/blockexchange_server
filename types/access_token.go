@@ -15,19 +15,23 @@ func (a *AccessToken) Table() string {
 }
 
 func (a *AccessToken) Columns(action string) []string {
+	cols := []string{"name", "token", "user_id", "created", "expires", "usecount"}
 	switch action {
 	case "insert", "update":
-		return []string{"name", "token", "user_id", "created", "expires", "usecount"}
+		return cols
+	default:
+		return append([]string{"id"}, cols...)
 	}
-	return []string{"id", "name", "token", "user_id", "created", "expires", "usecount"}
 }
 
 func (a *AccessToken) Values(action string) []any {
+	vals := []any{a.Name, a.Token, a.UserID, a.Created, a.Expires, a.UseCount}
 	switch action {
 	case "insert", "update":
-		return []any{a.Name, a.Token, a.UserID, a.Created, a.Expires, a.UseCount}
+		return vals
+	default:
+		return append([]any{a.ID}, vals...)
 	}
-	return []any{a.ID, a.Name, a.Token, a.UserID, a.Created, a.Expires, a.UseCount}
 }
 
 func (a *AccessToken) Scan(action string, r func(dest ...any) error) error {

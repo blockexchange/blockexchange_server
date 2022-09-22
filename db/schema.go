@@ -3,97 +3,58 @@ package db
 import (
 	"blockexchange/types"
 	"database/sql"
-
-	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
+	"fmt"
 )
 
-type SchemaRepository interface {
-	GetSchemaById(id int64) (*types.Schema, error)
-	GetSchemaByUsernameAndName(username, schemaname string) (*types.Schema, error)
-	CreateSchema(schema *types.Schema) error
-	UpdateSchema(schema *types.Schema) error
-	DeleteSchema(id, user_id int64) error
-	IncrementDownloads(id int64) error
-	DeleteIncompleteSchema(user_id int64, name string) error
-	DeleteOldIncompleteSchema(time_before int64) error
-	CalculateStats(id int64) error
+type SchemaRepository struct {
+	DB *sql.DB
 }
 
-type DBSchemaRepository struct {
-	DB *sqlx.DB
-}
-
-func (repo DBSchemaRepository) GetSchemaById(id int64) (*types.Schema, error) {
-	schema := types.Schema{}
-	err := repo.DB.Get(&schema, "select * from schema where id = $1", id)
+func (repo SchemaRepository) GetSchemaById(id int64) (*types.Schema, error) {
+	schema, err := Select(repo.DB, &types.Schema{}, "where id = $1", id)
 	if err == sql.ErrNoRows {
 		return nil, nil
-	} else if err != nil {
-		return nil, err
 	} else {
-		return &schema, nil
+		return schema, err
 	}
 }
 
-func (repo DBSchemaRepository) GetSchemaByUsernameAndName(username, schemaname string) (*types.Schema, error) {
-	schema := types.Schema{}
-	err := repo.DB.Get(&schema, "select * from schema where user_id = (select id from public.user where name = $1) and name = $2", username, schemaname)
+func (repo SchemaRepository) GetSchemaByUsernameAndName(username, schemaname string) (*types.Schema, error) {
+	schema, err := Select(repo.DB, &types.Schema{}, "where user_id = (select id from public.user where name = $1) and name = $2", username, schemaname)
+	fmt.Printf("schema: %v, err = %v\n", schema, err)
 	if err == sql.ErrNoRows {
 		return nil, nil
-	} else if err != nil {
-		return nil, err
 	} else {
-		return &schema, nil
+		return schema, err
 	}
 }
 
-func (repo DBSchemaRepository) CreateSchema(schema *types.Schema) error {
-	logrus.Trace("db.CreateSchema", schema)
-	query := `
-		insert into
-		schema(
-			created, user_id, name, description, complete,
-			size_x, size_y, size_z,
-			part_length,
-			total_size, total_parts, license,
-			search_tokens
-		)
-		values(
-			:created, :user_id, :name, :description, :complete,
-			:size_x, :size_y, :size_z,
-			:part_length,
-			:total_size, :total_parts, :license,
-			to_tsvector(:description || ' ' || :name)
-		)
-		returning id
-	`
-	stmt, err := repo.DB.PrepareNamed(query)
+func (repo SchemaRepository) CreateSchema(schema *types.Schema) error {
+	err := InsertReturning(repo.DB, schema, "id", &schema.ID)
 	if err != nil {
 		return err
 	}
-	return stmt.Get(&schema.ID, schema)
+	return repo.UpdateSearchTokens(schema.ID)
 }
 
-func (repo DBSchemaRepository) UpdateSchema(schema *types.Schema) error {
-	query := `
-		update schema
-		set
-			name = :name,
-			description = :description,
-			search_tokens = to_tsvector(:description || ' ' || :name),
-			mtime = :mtime,
-			user_id = :user_id,
-			license = :license,
-			complete = :complete,
-			downloads = :downloads
-		where id = :id
-	`
-	_, err := repo.DB.NamedExec(query, schema)
+func (repo SchemaRepository) UpdateSchema(schema *types.Schema) error {
+	err := Update(repo.DB, schema, map[string]any{"id": schema.ID})
+	if err != nil {
+		return err
+	}
+	return repo.UpdateSearchTokens(schema.ID)
+}
+
+func (repo SchemaRepository) UpdateSearchTokens(id int64) error {
+	_, err := repo.DB.Exec(`
+		update schema s
+		set search_tokens = to_tsvector(s.description || ' ' || s.name)
+		where id = $1
+	`, id)
 	return err
 }
 
-func (repo DBSchemaRepository) IncrementDownloads(id int64) error {
+func (repo SchemaRepository) IncrementDownloads(id int64) error {
 	query := `
 		update schema
 		set downloads = downloads + 1
@@ -103,12 +64,12 @@ func (repo DBSchemaRepository) IncrementDownloads(id int64) error {
 	return err
 }
 
-func (repo DBSchemaRepository) DeleteSchema(id, user_id int64) error {
+func (repo SchemaRepository) DeleteSchema(id, user_id int64) error {
 	_, err := repo.DB.Exec("delete from schema where id = $1 and user_id = $2", id, user_id)
 	return err
 }
 
-func (repo DBSchemaRepository) DeleteIncompleteSchema(user_id int64, name string) error {
+func (repo SchemaRepository) DeleteIncompleteSchema(user_id int64, name string) error {
 	q := `
 		delete from schema where
 			user_id = $1 and
@@ -119,7 +80,7 @@ func (repo DBSchemaRepository) DeleteIncompleteSchema(user_id int64, name string
 	return err
 }
 
-func (repo DBSchemaRepository) DeleteOldIncompleteSchema(time_before int64) error {
+func (repo SchemaRepository) DeleteOldIncompleteSchema(time_before int64) error {
 	q := `
 		delete from schema where
 			created < $1 and
@@ -129,7 +90,7 @@ func (repo DBSchemaRepository) DeleteOldIncompleteSchema(time_before int64) erro
 	return err
 }
 
-func (repo DBSchemaRepository) CalculateStats(id int64) error {
+func (repo SchemaRepository) CalculateStats(id int64) error {
 	q := `
 		update schema s
 		set total_size = (

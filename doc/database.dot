@@ -41,7 +41,6 @@ digraph {
 		<tr><td port="12">size_x (smallint)</td></tr>
 		<tr><td port="13">size_y (smallint)</td></tr>
 		<tr><td port="14">size_z (smallint)</td></tr>
-		<tr><td port="15">part_length (smallint)</td></tr>
 		<tr><td port="16">total_size (int)</td></tr>
 		<tr><td port="17">total_parts (int)</td></tr>
 		<tr><td port="18">search_tokens (tsvector)</td></tr>

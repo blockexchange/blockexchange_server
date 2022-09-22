@@ -79,7 +79,6 @@ func handleWeImportPost(rc *controller.RenderContext, m *WeImportModel) {
 		SizeX:       max_x + 1,
 		SizeY:       max_y + 1,
 		SizeZ:       max_z + 1,
-		PartLength:  16,
 		TotalParts:  len(parts),
 		License:     "CC0",
 	}

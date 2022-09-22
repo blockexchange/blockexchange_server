@@ -4,22 +4,21 @@ import "encoding/json"
 
 // used for the database and GET requests
 type Schema struct {
-	ID           int64  `db:"id" json:"id"`
-	Created      int64  `db:"created" json:"created"`
-	Mtime        int64  `db:"mtime" json:"mtime"`
-	UserID       int64  `db:"user_id" json:"user_id"`
-	Name         string `db:"name" json:"name"`
-	Description  string `db:"description" json:"description"`
-	Complete     bool   `db:"complete" json:"complete"`
-	SizeX        int    `db:"size_x" json:"size_x"`
-	SizeY        int    `db:"size_y" json:"size_y"`
-	SizeZ        int    `db:"size_z" json:"size_z"`
-	PartLength   int    `db:"part_length" json:"part_length"`
-	TotalSize    int    `db:"total_size" json:"total_size"`
-	TotalParts   int    `db:"total_parts" json:"total_parts"`
-	Downloads    int    `db:"downloads" json:"downloads"`
-	License      string `db:"license" json:"license"`
-	SearchTokens string `db:"search_tokens"`
+	ID           int64  `json:"id"`
+	Created      int64  `json:"created"`
+	Mtime        int64  `json:"mtime"`
+	UserID       int64  `json:"user_id"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Complete     bool   `json:"complete"`
+	SizeX        int    `json:"size_x"`
+	SizeY        int    `json:"size_y"`
+	SizeZ        int    `json:"size_z"`
+	TotalSize    int    `json:"total_size"`
+	TotalParts   int    `json:"total_parts"`
+	Downloads    int    `json:"downloads"`
+	License      string `json:"license"`
+	SearchTokens string
 }
 
 func (s *Schema) UnmarshalJSON(data []byte) error {
@@ -40,10 +39,37 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	s.SizeX = getInt(m["size_x"])
 	s.SizeY = getInt(m["size_y"])
 	s.SizeZ = getInt(m["size_z"])
-	s.PartLength = getInt(m["part_length"])
 	s.TotalSize = getInt(m["total_size"])
 	s.TotalParts = getInt(m["total_parts"])
 	s.Downloads = getInt(m["downloads"])
 
 	return nil
+}
+
+func (a *Schema) Table() string {
+	return "schema"
+}
+
+func (a *Schema) Columns(action string) []string {
+	cols := []string{"created", "mtime", "user_id", "name", "description", "complete", "size_x", "size_y", "size_z", "total_size", "total_parts", "downloads", "license"}
+	switch action {
+	case "insert", "update":
+		return cols
+	default:
+		return append([]string{"id"}, cols...)
+	}
+}
+
+func (a *Schema) Values(action string) []any {
+	vals := []any{a.Created, a.Mtime, a.UserID, a.Name, a.Description, a.Complete, a.SizeX, a.SizeY, a.SizeZ, a.TotalSize, a.TotalParts, a.Downloads, a.License}
+	switch action {
+	case "insert", "update":
+		return vals
+	default:
+		return append([]any{a.ID}, vals...)
+	}
+}
+
+func (a *Schema) Scan(action string, r func(dest ...any) error) error {
+	return r(&a.ID, &a.Created, &a.Mtime, &a.UserID, &a.Name, &a.Description, &a.Complete, &a.SizeX, &a.SizeY, &a.SizeZ, &a.TotalSize, &a.TotalParts, &a.Downloads, &a.License)
 }
