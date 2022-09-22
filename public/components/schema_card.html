@@ -13,9 +13,11 @@
             <p>
                 <small class="text-muted">by {{ .Schema.UserName }}</small>
                 &nbsp;
-                {{if gt .Schema.Stars 0}}
-                    <i class="fa-regular fa-star"></i>
+                {{ if gt .Schema.Stars 0 }}
+                    <i class="fa fa-star" style="color: yellow;"></i>
                     <span class="badge bg-secondary rounded-pill">{{ .Schema.Stars }}</span>
+                {{else}}
+                    <i class="fa-regular fa-star"></i>
                 {{end}}
             </p>
         </h5>
