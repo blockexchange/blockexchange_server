@@ -2,13 +2,15 @@ package schema
 
 import (
 	"blockexchange/controller"
+	"blockexchange/public/components"
 	"blockexchange/types"
 	"errors"
 	"net/http"
 )
 
 type SchemaEditModel struct {
-	Schema *types.SchemaSearchResult
+	Schema     *types.SchemaSearchResult
+	Breadcrumb *components.BreadcrumbModel
 }
 
 func schemaEditPost(rc *controller.RenderContext) error {
@@ -74,6 +76,14 @@ func SchemaEdit(rc *controller.RenderContext) error {
 	if m.Schema == nil {
 		return errors.New("not found")
 	}
+
+	m.Breadcrumb = components.Breadcrumb(
+		components.BreadcrumbEntry{Name: "Home", Link: "/"},
+		components.BreadcrumbEntry{Name: "Users", Link: "/users"},
+		components.BreadcrumbEntry{Name: schema.UserName, Link: "/schema/" + schema.UserName},
+		components.BreadcrumbEntry{Name: schema.Name, Link: "/schema/" + schema.UserName + "/" + schema.Name},
+		components.BreadcrumbEntry{Name: "Edit"},
+	)
 
 	return rc.Render("pages/schema/schema_edit.html", m)
 }

@@ -1,5 +1,7 @@
 {{define "title"}}Edit schema{{end}}
 {{define "content"}}
+{{ block "breadcrumb" .Data.Breadcrumb }}{{end}}
+
 <script>
 var formSubmitting = false;
 var setFormSubmitting = function() { formSubmitting = true; };
@@ -19,9 +21,6 @@ window.onbeforeunload = function() { return formSubmitting ? null : "" };
                 <a class="btn btn-sm btn-warning" href="../{{.Data.Schema.Name}}">
                     <i class="fa fa-trash"></i> Abort
                 </a>
-                <button class="btn btn-sm btn-danger" name="action" value="delete">
-                    <i class="fa fa-trash"></i> Delete
-                </button>
             </div>
         </div>
     </div>

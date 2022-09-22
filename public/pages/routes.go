@@ -16,6 +16,7 @@ func SetupRoutes(ctrl *controller.Controller, r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/schema/{username}", ctrl.Handler("../../", schema.UserSchema))
 	r.HandleFunc("/schema/{username}/{schemaname}", ctrl.Handler("../../../", schema.Schema))
 	r.HandleFunc("/schema/{username}/{schemaname}/edit", ctrl.Handler("../../../", schema.SchemaEdit, types.JWTPermissionManagement))
+	r.HandleFunc("/schema/{username}/{schemaname}/delete", ctrl.Handler("../../../", schema.SchemaDelete, types.JWTPermissionManagement))
 	r.HandleFunc("/schema/{username}/{schemaname}/edit-tags", ctrl.Handler("../../../", schema.SchemaTagEdit, types.JWTPermissionManagement))
 	r.HandleFunc("/users", ctrl.Handler("./", Users))
 	r.HandleFunc("/search", ctrl.Handler("./", Search))
