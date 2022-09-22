@@ -54,6 +54,16 @@ func (repo SchemaRepository) UpdateSearchTokens(id int64) error {
 	return err
 }
 
+func (repo SchemaRepository) IncrementViews(id int64) error {
+	query := `
+		update schema
+		set views = views + 1
+		where id = $1
+	`
+	_, err := repo.DB.Exec(query, id)
+	return err
+}
+
 func (repo SchemaRepository) IncrementDownloads(id int64) error {
 	query := `
 		update schema

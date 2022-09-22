@@ -59,6 +59,11 @@ func Schema(rc *controller.RenderContext) error {
 		rc.AddMetaTag("og:description", schema.Description)
 	}
 
+	err = repos.SchemaRepo.IncrementViews(schema.ID)
+	if err != nil {
+		return err
+	}
+
 	m := SchemaModel{
 		Schema: schema,
 		Breadcrumb: components.Breadcrumb(

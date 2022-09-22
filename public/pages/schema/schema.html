@@ -57,6 +57,9 @@
                         <b>Downloads: </b>{{ .Data.Schema.Downloads }}
                     </li>
                     <li>
+                        <b>Views: </b>{{ .Data.Schema.Views }}
+                    </li>
+                    <li>
                         <b>License: </b>
                         {{if eq .Data.Schema.License "CC0"}}
                             <img src="{{.BaseURL}}/assets/pics/license_cc0.png">

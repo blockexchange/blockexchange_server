@@ -17,6 +17,7 @@ type Schema struct {
 	TotalSize    int    `json:"total_size"`
 	TotalParts   int    `json:"total_parts"`
 	Downloads    int    `json:"downloads"`
+	Views        int    `json:"views"`
 	License      string `json:"license"`
 	SearchTokens string
 }
@@ -51,7 +52,7 @@ func (a *Schema) Table() string {
 }
 
 func (a *Schema) Columns(action string) []string {
-	cols := []string{"created", "mtime", "user_id", "name", "description", "complete", "size_x", "size_y", "size_z", "total_size", "total_parts", "downloads", "license"}
+	cols := []string{"created", "mtime", "user_id", "name", "description", "complete", "size_x", "size_y", "size_z", "total_size", "total_parts", "downloads", "views", "license"}
 	switch action {
 	case "insert", "update":
 		return cols
@@ -61,7 +62,7 @@ func (a *Schema) Columns(action string) []string {
 }
 
 func (a *Schema) Values(action string) []any {
-	vals := []any{a.Created, a.Mtime, a.UserID, a.Name, a.Description, a.Complete, a.SizeX, a.SizeY, a.SizeZ, a.TotalSize, a.TotalParts, a.Downloads, a.License}
+	vals := []any{a.Created, a.Mtime, a.UserID, a.Name, a.Description, a.Complete, a.SizeX, a.SizeY, a.SizeZ, a.TotalSize, a.TotalParts, a.Downloads, a.Views, a.License}
 	switch action {
 	case "insert", "update":
 		return vals
@@ -71,5 +72,5 @@ func (a *Schema) Values(action string) []any {
 }
 
 func (a *Schema) Scan(action string, r func(dest ...any) error) error {
-	return r(&a.ID, &a.Created, &a.Mtime, &a.UserID, &a.Name, &a.Description, &a.Complete, &a.SizeX, &a.SizeY, &a.SizeZ, &a.TotalSize, &a.TotalParts, &a.Downloads, &a.License)
+	return r(&a.ID, &a.Created, &a.Mtime, &a.UserID, &a.Name, &a.Description, &a.Complete, &a.SizeX, &a.SizeY, &a.SizeZ, &a.TotalSize, &a.TotalParts, &a.Downloads, &a.Views, &a.License)
 }
