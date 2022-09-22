@@ -31,9 +31,9 @@ func TestExportBXSchema(t *testing.T) {
 
 	schema := types.Schema{
 		Name:  "",
-		SizeX: 16,
+		SizeX: 32,
 		SizeY: 16,
-		SizeZ: 16,
+		SizeZ: 32,
 	}
 
 	mods := []types.SchemaMod{
@@ -44,7 +44,25 @@ func TestExportBXSchema(t *testing.T) {
 	err := ExportBXSchema(buf, &schema, mods, it)
 	assert.NoError(t, err)
 	assert.True(t, buf.Len() > 0)
-	fmt.Println(buf.String())
+
+	// import
+
+	r := bytes.NewReader(buf.Bytes())
+	res, err := ImportBXSchema(r, int64(buf.Len()))
+	assert.NoError(t, err)
+	assert.NotNil(t, res)
+	assert.NotNil(t, res.Mods)
+	assert.NotNil(t, res.Parts)
+	assert.NotNil(t, res.Schema)
+
+	assert.Equal(t, 1, len(res.Mods))
+	assert.Equal(t, "blah", res.Mods[0])
+
+	assert.Equal(t, 32, res.Schema.SizeX)
+	assert.Equal(t, 16, res.Schema.SizeY)
+	assert.Equal(t, 32, res.Schema.SizeZ)
+
+	assert.Equal(t, 4, len(res.Parts))
 
 	/*
 		f, err := os.Create("my.zip")

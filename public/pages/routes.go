@@ -21,7 +21,7 @@ func SetupRoutes(ctrl *controller.Controller, r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/search", ctrl.Handler("./", Search))
 	r.HandleFunc("/mod", ctrl.Handler("./", Mod))
 	r.HandleFunc("/profile", ctrl.Handler("./", Profile))
-	r.HandleFunc("/weimport", ctrl.Handler("./", WeImport, types.JWTPermissionManagement))
+	r.HandleFunc("/import", ctrl.Handler("./", SchemaImport, types.JWTPermissionManagement))
 	r.HandleFunc("/tags", ctrl.Handler("./", Tags, types.JWTPermissionAdmin))
 
 	if cfg.DiscordOAuthConfig != nil {

@@ -5,8 +5,8 @@ import (
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
-	"strconv"
 	"time"
 )
 
@@ -55,17 +55,17 @@ func ExportBXSchema(w io.Writer, schema *types.Schema, mods []types.SchemaMod, i
 			return err
 		}
 
-		partfilename := "schemapart_" + strconv.Itoa(schemapart.OffsetX) + "_" +
-			strconv.Itoa(schemapart.OffsetY) + "_" +
-			strconv.Itoa(schemapart.OffsetZ) + ".json"
-
-		err = addDataToZip(archive, partfilename, schemapart_data)
+		err = addDataToZip(archive, formatSchemapartFilename(schemapart), schemapart_data)
 		if err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func formatSchemapartFilename(schemapart *types.SchemaPart) string {
+	return fmt.Sprintf("schemapart_%d_%d_%d.json", schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
 }
 
 func addDataToZip(archive *zip.Writer, filename string, data []byte) error {
