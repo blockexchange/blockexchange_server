@@ -16,6 +16,7 @@ type LoginModel struct {
 	Password         string
 	LoginError       bool
 	Config           *core.Config
+	ExternalLogin    bool
 	DiscordOauthLink string
 	GithubOauthLink  string
 	MesehubOauthLink string
@@ -31,15 +32,18 @@ func Login(rc *controller.RenderContext) error {
 	}
 
 	if cfg.GithubOAuthConfig != nil {
+		lm.ExternalLogin = true
 		lm.GithubOauthLink = fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s", cfg.GithubOAuthConfig.ClientID)
 	}
 	if cfg.DiscordOAuthConfig != nil {
+		lm.ExternalLogin = true
 		lm.DiscordOauthLink = fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&redirect_uri=%s&response_type=code&scope=identify%%20email",
 			cfg.DiscordOAuthConfig.ClientID,
 			url.QueryEscape(cfg.BaseURL+"/api/oauth_callback/discord"),
 		)
 	}
 	if cfg.MesehubOAuthConfig != nil {
+		lm.ExternalLogin = true
 		lm.MesehubOauthLink = fmt.Sprintf("https://git.minetest.land/login/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code&state=STATE",
 			cfg.MesehubOAuthConfig.ClientID,
 			url.QueryEscape(cfg.BaseURL+"/api/oauth_callback/mesehub"),

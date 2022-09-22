@@ -1,8 +1,9 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
-	"os"
+	"time"
 
 	"blockexchange/api"
 	"blockexchange/controller"
@@ -10,6 +11,8 @@ import (
 	"blockexchange/public"
 	"blockexchange/public/pages"
 
+	"github.com/dchest/captcha"
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 
@@ -22,15 +25,22 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	r.Use(prometheusMiddleware)
 	r.Use(loggingMiddleware)
 
-	// cache
-	redis_host := os.Getenv("REDIS_HOST")
-	redis_port := os.Getenv("REDIS_PORT")
-	var cache core.Cache
-	if redis_host != "" && redis_port != "" {
-		cache = core.NewRedisCache(redis_host + ":" + redis_port)
-	} else {
-		cache = core.NewNoOpCache()
+	// cache/store setup
+	var cache core.Cache = core.NewNoOpCache()
+	captchaExp := 10 * time.Minute
+	var captchaStore captcha.Store = captcha.NewMemoryStore(50, captchaExp)
+
+	if cfg.RedisHost != "" && cfg.RedisPort != "" {
+		rdb := redis.NewClient(&redis.Options{
+			Addr:     fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort),
+			Password: "",
+			DB:       0,
+		})
+
+		cache = core.NewRedisCache(rdb)
+		captchaStore = core.NewRedisCaptchaStore(rdb, captchaExp)
 	}
+	captcha.SetCustomStore(captchaStore)
 
 	// api setup and routing
 	a, err := api.NewApi(db_, cache)

@@ -9,7 +9,6 @@ type OAuthConfig struct {
 
 type Config struct {
 	WebDev                 bool
-	EnableSignup           bool
 	BaseURL                string
 	Name                   string
 	Owner                  string
@@ -22,6 +21,8 @@ type Config struct {
 	CookieDomain           string
 	CookieSecure           bool
 	CookieName             string
+	RedisHost              string
+	RedisPort              string
 }
 
 func CreateConfig() (*Config, error) {
@@ -29,13 +30,14 @@ func CreateConfig() (*Config, error) {
 		Name:                   os.Getenv("BLOCKEXCHANGE_NAME"),
 		Owner:                  os.Getenv("BLOCKEXCHANGE_OWNER"),
 		WebDev:                 os.Getenv("WEBDEV") == "true",
-		EnableSignup:           os.Getenv("ENABLE_SIGNUP") == "true",
 		BaseURL:                os.Getenv("BASE_URL"),
 		CookiePath:             os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
 		CookieDomain:           os.Getenv("BLOCKEXCHANGE_COOKIE_DOMAIN"),
 		CookieSecure:           os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
 		CookieName:             "blockexchange",
 		GoogleSiteVerification: os.Getenv("GOOGLE_SITE_VERIFICATION"),
+		RedisHost:              os.Getenv("REDIS_HOST"),
+		RedisPort:              os.Getenv("REDIS_PORT"),
 	}
 
 	if os.Getenv("DISCORD_APP_ID") != "" {

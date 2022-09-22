@@ -20,6 +20,10 @@ func (ctrl *Controller) Handler(baseUrl string, shf RenderFunc, req_perms ...typ
 			ctrl.te.Execute("pages/error.html", w, r, 500, &RenderData{BaseURL: baseUrl, Data: err})
 			return
 		}
+		if len(req_perms) > 0 && c == nil {
+			ctrl.te.Execute("pages/error.html", w, r, 403, &RenderData{BaseURL: baseUrl, Data: errors.New("no credentials found")})
+			return
+		}
 		for _, req_perm := range req_perms {
 			if !c.HasPermission(req_perm) {
 				ctrl.te.Execute("pages/error.html", w, r, 403, &RenderData{BaseURL: baseUrl, Data: errors.New("forbidden")})

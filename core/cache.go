@@ -41,13 +41,7 @@ type RedisCache struct {
 
 var ctx = context.Background()
 
-func NewRedisCache(redisUrl string) Cache {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     redisUrl,
-		Password: "",
-		DB:       0,
-	})
-
+func NewRedisCache(rdb *redis.Client) Cache {
 	return &RedisCache{RDB: rdb}
 }
 

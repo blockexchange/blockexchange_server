@@ -33,6 +33,7 @@
     <div class="col-md-12">
         {{if .Data.ImportError}}
         <div class="alert alert-danger">
+            <i class="fa fa-triangle-exclamation"></i>
             <b>Error:</b> {{.Data.ImportError}}
         </div>
         {{end}}

@@ -3,6 +3,7 @@ package api
 import (
 	"blockexchange/core"
 
+	"github.com/dchest/captcha"
 	"github.com/gorilla/mux"
 )
 
@@ -11,6 +12,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *core.Config) {
 	// api surface
 	r.Handle("/api/info", InfoHandler{Config: cfg})
 	r.HandleFunc("/api/token", api.RequestToken).Methods("POST")
+	r.PathPrefix("/api/captcha/").Handler(captcha.Server(350, 250))
 
 	r.HandleFunc("/api/export_we/{id}/{filename}", api.ExportWorldeditSchema).Methods("GET")
 	r.HandleFunc("/api/export_bx/{id}/{filename}", api.ExportBXSchema).Methods("GET")

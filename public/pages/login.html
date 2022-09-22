@@ -18,41 +18,35 @@
                     Profile
                 </a>
                 {{end}}
-                {{if .Data.Config.EnableSignup}}
-                    {{if not .Claims}}
-                    <form method="POST">
-                        <input type="hidden" name="action" value="login"/>
-                        <input type="text" name="username" placeholder="Username" value="{{.Data.Username}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
-                        <input type="password" name="password" placeholder="Password" value="{{.Data.Password}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
-                        {{if .Data.LoginError}}
-                            <div class="invalid-feedback">
-                                Invalid usernmame or password!
-                            </div>
-                        {{end}}
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </form>
+                {{if not .Claims}}
+                <form method="POST">
+                    <input type="hidden" name="action" value="login"/>
+                    <input type="text" name="username" placeholder="Username" value="{{.Data.Username}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
+                    <input type="password" name="password" placeholder="Password" value="{{.Data.Password}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
+                    {{if .Data.LoginError}}
+                    <div class="alert alert-danger">
+                        <i class="fa fa-triangle-exclamation"></i>
+                        Invalid username or password!
+                    </div>
                     {{end}}
-                {{else}}
-                <div>
-                    Local login is disabled
-                </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
                 {{end}}
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        {{if .Data.Config.EnableSignup}}
         <div class="card">
             <div class="card-header">
                 Sign up
             </div>
             <div class="card-body">
-                <a href="{{.BaseURL}}register" class="btn btn-secondary">
+                <a href="{{.BaseURL}}signup" class="btn btn-secondary">
                     Register
                 </a>
             </div>
         </div>
-        {{end}}
+        {{if .Data.ExternalLogin}}
         <div class="card">
             <div class="card-header">
                 External login
@@ -80,6 +74,7 @@
                 {{end}}
             </div>
         </div>
+        {{end}}
     </div>
 </div>
 {{end}}
