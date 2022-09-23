@@ -171,9 +171,9 @@
                         <div class="card bg-secondary">
                             <div class="card-header">Online</div>
                             <div class="card-body">
-                                <pre>/bx_pos1</pre>
-                                <pre>/bx_allocate {{.Data.Schema.UserName}} {{.Data.Schema.Name}}</pre>
-                                <pre>/bx_load {{.Data.Schema.UserName}} {{.Data.Schema.Name}}</pre>
+                                <p>To download the schematic with the <a href="{{.BaseURL}}mod">blockexchange</a> mod:</p>
+                                <p>See where it fits with <b>/bx_pos1</b> and <b>/bx_allocate {{.Data.Schema.UserName}} {{.Data.Schema.Name}}</b></p>
+                                <p>and load it with <b>/bx_load {{.Data.Schema.UserName}} {{.Data.Schema.Name}}</b></p>
                             </div>
                         </div>
                     </div>
@@ -192,6 +192,10 @@
                                     Export as Worldedit Schema
                                 </a>
                                 {{end}}
+                                <hr>
+                                <p>To import a BX schema copy the zip file to the <b>bxschems</b> folder in your world directory</p>
+                                <p>See where it fits with <b>/bx_pos1</b> and <b>/bx_allocate_local {{.Data.Schema.Name}}</b></p>
+                                <p>and load it with <b>/bx_load_local {{.Data.Schema.Name}}</b></p>
                             </div>
                         </div>
                     </div>
