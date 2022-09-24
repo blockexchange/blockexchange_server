@@ -115,6 +115,7 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			Created:    time.Now().Unix() * 1000,
 			Name:       info.Name,
 			Type:       info.Type,
+			Role:       types.UserRoleDefault,
 			Hash:       "",
 			Mail:       &info.Email,
 			ExternalID: &info.ExternalID,

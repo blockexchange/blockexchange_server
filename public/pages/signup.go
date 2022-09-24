@@ -81,6 +81,7 @@ func handleSignup(rc *controller.RenderContext, m *SignupModel) error {
 		Created: time.Now().Unix() * 1000,
 		Name:    m.Username,
 		Type:    types.UserTypeLocal,
+		Role:    types.UserRoleDefault,
 		Hash:    string(hash),
 		Mail:    &m.Mail,
 	}
