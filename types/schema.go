@@ -19,7 +19,7 @@ type Schema struct {
 	Downloads    int    `json:"downloads"`
 	Views        int    `json:"views"`
 	License      string `json:"license"`
-	SearchTokens string
+	SearchTokens string `json:"-"`
 }
 
 func (s *Schema) UnmarshalJSON(data []byte) error {
