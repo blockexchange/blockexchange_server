@@ -7,3 +7,6 @@
 [submodule "dev/worldmods/worldedit"]
 	path = dev/worldmods/worldedit
 	url = https://github.com/Uberi/Minetest-WorldEdit.git
+[submodule "dev/worldmods/mtzip"]
+	path = dev/worldmods/mtzip
+	url = https://github.com/BuckarooBanzay/mtzip
