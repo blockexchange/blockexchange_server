@@ -17,16 +17,17 @@ func UserSchema(rc *controller.RenderContext) error {
 	if err != nil {
 		return err
 	}
+	pager := components.Pager(rc, 20, count)
 
-	list, err := sr.Search(q, 20, 0)
+	list, err := sr.Search(q, 20, pager.Offset)
 	if err != nil {
 		return err
 	}
 
 	m := make(map[string]any)
 	m["Username"] = username
+	m["Pager"] = pager
 	m["SchemaList"] = components.SchemaList(rc, list, false)
-	m["Pager"] = components.Pager(rc, 20, count)
 	m["Breadcrumb"] = components.Breadcrumb(
 		components.BreadcrumbEntry{Name: "Home", Link: "/"},
 		components.BreadcrumbEntry{Name: "Users", Link: "/users"},
