@@ -1,6 +1,7 @@
 package api
 
 import (
+	"blockexchange/core"
 	"bytes"
 	"fmt"
 	"image/png"
@@ -92,4 +93,28 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Cache-Control", "max-age=345600")
 	w.WriteHeader(200)
 	w.Write(screenshot.Data)
+}
+
+func (api Api) UpdateSchemaPreview(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	vars := mux.Vars(r)
+	schema_id, err := strconv.Atoi(vars["schema_id"])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	schema, err := api.SchemaRepo.GetSchemaById(int64(schema_id))
+	if err != nil {
+		SendError(w, 500, "GetSchemaById::"+err.Error())
+		return
+	}
+
+	if schema.UserID != ctx.Claims.UserID {
+		SendError(w, 403, "you are not the owner of the schema")
+		return
+	}
+
+	// update screenshot
+	_, err = core.UpdatePreview(schema, api.Repositories)
+	Send(w, true, err)
 }

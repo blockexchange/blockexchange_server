@@ -2,6 +2,7 @@ package schema
 
 import (
 	"blockexchange/controller"
+	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/public/components"
 	"blockexchange/types"
@@ -50,6 +51,21 @@ func Schema(rc *controller.RenderContext) error {
 	schema, err := searchSchema(repos.SchemaSearchRepo, r)
 	if err != nil {
 		return err
+	}
+
+	if r.Method == http.MethodPost {
+		r.ParseForm()
+		if r.FormValue("action") == "update-screenshot" {
+			if schema.UserID != claims.UserID {
+				return errors.New("you are not the owner of the schema")
+			}
+
+			// update screenshot
+			_, err = core.UpdatePreview(&schema.Schema, repos)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	rc.AddMetaTag("og:title", fmt.Sprintf("%s by %s", schema.Name, schema.UserName))

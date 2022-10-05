@@ -39,14 +39,20 @@
     <div class="col-md-6">
         {{ if .Claims }}
         {{ if eq .Data.Schema.UserName .Claims.Username}}
-        <div class="btn-group float-end">
-            <a class="btn btn-sm btn-secondary" href="./{{.Data.Schema.Name}}/edit">
-                <i class="fa fa-edit"></i> Edit
-            </a>
-            <a class="btn btn-sm btn-danger" href="./{{.Data.Schema.Name}}/delete">
-                <i class="fa fa-trash"></i> Delete
-            </a>
-        </div>
+        <form method="POST">
+            <input type="hidden" name="action" value="update-screenshot">
+            <div class="btn-group float-end">
+                <a class="btn btn-sm btn-secondary" href="./{{.Data.Schema.Name}}/edit">
+                    <i class="fa fa-edit"></i> Edit
+                </a>
+                <button class="btn btn-sm btn-secondary" href="./{{.Data.Schema.Name}}">
+                    <i class="fa fa-image"></i> Update screenshot
+                </button>
+                <a class="btn btn-sm btn-danger" href="./{{.Data.Schema.Name}}/delete">
+                    <i class="fa fa-trash"></i> Delete
+                </a>
+            </div>
+        </form>
         {{end}}
         {{end}}
     </div>

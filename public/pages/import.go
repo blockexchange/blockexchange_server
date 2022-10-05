@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"blockexchange/colormapping"
 	"blockexchange/controller"
 	"blockexchange/core"
 	"blockexchange/types"
@@ -74,14 +73,7 @@ func handleImport(rc *controller.RenderContext, m *ImportModel) {
 		return
 	}
 
-	cm := colormapping.NewColorMapping()
-	err = cm.LoadDefaults()
-	if err != nil {
-		m.ImportError = err
-		return
-	}
-
-	_, err = core.UpdatePreview(schema, rc.Repositories(), cm)
+	_, err = core.UpdatePreview(schema, rc.Repositories())
 	if err != nil {
 		m.ImportError = err
 		return
