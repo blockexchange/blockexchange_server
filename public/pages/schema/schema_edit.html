@@ -56,6 +56,7 @@ window.onbeforeunload = function() { return formSubmitting ? null : "" };
                             <select class="form-control" name="license">
                                 <option value="CC0" {{if eq .Data.Schema.License "CC0"}}selected{{end}}>CC0</option>
                                 <option value="CC-BY-SA" {{if eq .Data.Schema.License "CC-BY-SA"}}selected{{end}}>CC-BY-SA</option>
+                                <option value="Proprietary" {{if eq .Data.Schema.License "Proprietary"}}selected{{end}}>Proprietary</option>
                             </select>
                         </li>
                     </ul>    
