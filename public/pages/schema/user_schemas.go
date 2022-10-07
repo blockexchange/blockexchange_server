@@ -12,7 +12,8 @@ func UserSchema(rc *controller.RenderContext) error {
 
 	username, _ := extractUsernameSchema(r)
 
-	q := &types.SchemaSearchRequest{UserName: &username}
+	complete := true
+	q := &types.SchemaSearchRequest{UserName: &username, Complete: &complete}
 	count, err := sr.Count(q)
 	if err != nil {
 		return err
