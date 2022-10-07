@@ -46,6 +46,16 @@ func (repo SchemaSearchRepository) buildWhereQuery(query *strings.Builder, searc
 		params = append(params, *search.SchemaID)
 	}
 
+	if search.SchemaIDList != nil && len(search.SchemaIDList) > 0 {
+		p2 := make([]string, len(search.SchemaIDList))
+		for i, id := range search.SchemaIDList {
+			p2[i] = fmt.Sprintf("%d", id)
+		}
+		params = append(params, fmt.Sprintf("{%s}", strings.Join(p2, ",")))
+		query.WriteString(fmt.Sprintf(" and s.id = any($%d::int[])", bind_index))
+		bind_index++
+	}
+
 	if search.UserID != nil {
 		query.WriteString(fmt.Sprintf(" and s.user_id = $%d", bind_index))
 		bind_index++

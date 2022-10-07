@@ -2,6 +2,7 @@ package api
 
 import (
 	"blockexchange/types"
+	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -34,4 +35,16 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 	}
 
 	Send(w, schema, err)
+}
+
+func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
+	search := &types.SchemaSearchRequest{}
+	err := json.NewDecoder(r.Body).Decode(search)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	list, err := api.SchemaSearchRepo.Search(search, 100, 0)
+	Send(w, list, err)
 }

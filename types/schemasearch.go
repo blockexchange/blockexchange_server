@@ -18,6 +18,7 @@ const (
 type SchemaSearchRequest struct {
 	UserID         *int64              `json:"user_id"`
 	SchemaID       *int64              `json:"schema_id"`
+	SchemaIDList   []int64             `json:"schema_id_list"`
 	TagID          *int64              `json:"tag_id"`
 	SchemaName     *string             `json:"schema_name"`
 	UserName       *string             `json:"user_name"`
