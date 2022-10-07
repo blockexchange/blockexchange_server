@@ -9,12 +9,6 @@ local compare_area = function() return true end -- dofile(MP.."/compare_area.lua
 
 print("[blockexchange_test] executing integration test")
 
--- override get_token
-local token
-function blockexchange.get_token()
-    return token
-end
-
 -- propagate error
 local function fail(msg)
     minetest.after(0, function()
@@ -34,8 +28,8 @@ local schemaname = "test_schema" .. math.random(1000)
 
 minetest.register_on_mods_loaded(function()
     minetest.after(1, function()
-        blockexchange.api.get_token(username, "default"):next(function(t)
-            token = t
+        blockexchange.api.get_token(username, "default"):next(function(token)
+            blockexchange.set_token(playername, token)
             return blockexchange.emerge(playername, pos1, pos2_load)
         end):next(function()
             return blockexchange.save(playername, pos1, pos2, schemaname)
