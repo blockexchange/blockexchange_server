@@ -99,6 +99,14 @@ func (api *Api) DeleteSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
+	// update schema mtime
+	schema.Mtime = time.Now().UnixMilli()
+	err = api.SchemaRepo.UpdateSchema(schema)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
 	w.Write([]byte("true"))
 }
 
