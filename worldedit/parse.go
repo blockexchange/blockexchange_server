@@ -12,7 +12,7 @@ func Parse(data []byte) ([]*WEEntry, []string, error) {
 		return nil, nil, errors.New("invalid format")
 	}
 
-	L := lua.NewState()
+	L := lua.NewState(lua.Options{SkipOpenLibs: true})
 	defer L.Close()
 
 	fn, err := L.LoadString(string(data[2:]))
