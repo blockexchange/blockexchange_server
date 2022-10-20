@@ -44,7 +44,7 @@ func (repo SchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, 
 		and offset_z <= $7
 	`
 
-	return SelectMulti(repo.DB, func() *types.SchemaPart { return &types.SchemaPart{} }, constraints)
+	return SelectMulti(repo.DB, func() *types.SchemaPart { return &types.SchemaPart{} }, constraints, schema_id, x1, y1, z1, x2, y2, z2)
 }
 
 func (repo SchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {
