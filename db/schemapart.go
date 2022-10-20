@@ -35,8 +35,6 @@ func (repo SchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_
 
 func (repo SchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error) {
 	constraints := `
-		select *
-		from schemapart
 		where schema_id = $1
 		and offset_x >= $2
 		and offset_y >= $3
