@@ -3,6 +3,7 @@ module blockexchange
 go 1.18
 
 require (
+	github.com/dchest/captcha v1.0.0
 	github.com/fogleman/gg v1.3.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.4.2
@@ -11,17 +12,14 @@ require (
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.7
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
-	github.com/prometheus/client_golang v1.13.0
+	github.com/prometheus/client_golang v1.13.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.0
+	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 )
 
-require (
-	github.com/andybalholm/brotli v1.0.4 // indirect
-	github.com/dchest/captcha v1.0.0 // indirect
-	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64 // indirect
-)
+require github.com/andybalholm/brotli v1.0.4 // indirect
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
