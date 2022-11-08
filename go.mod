@@ -14,7 +14,7 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/prometheus/client_golang v1.14.0
 	github.com/sirupsen/logrus v1.9.0
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 )
