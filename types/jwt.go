@@ -30,3 +30,7 @@ func (c *Claims) HasPermission(perm JWTPermission) bool {
 	}
 	return false
 }
+
+func (c *Claims) IsAdmin() bool {
+	return c.HasPermission(JWTPermissionAdmin)
+}

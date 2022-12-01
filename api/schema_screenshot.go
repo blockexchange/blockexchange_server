@@ -84,13 +84,13 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 		}
 
 		w.Header().Set("Content-Type", "image/png")
-		w.Header().Set("Cache-Control", "max-age=345600")
+		//w.Header().Set("Cache-Control", "max-age=345600")
 		w.Write(buf.Bytes())
 		return
 	}
 
 	w.Header().Set("Content-Type", screenshot.Type)
-	w.Header().Set("Cache-Control", "max-age=345600")
+	//w.Header().Set("Cache-Control", "max-age=345600")
 	w.WriteHeader(200)
 	w.Write(screenshot.Data)
 }

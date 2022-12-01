@@ -56,7 +56,7 @@ func Schema(rc *controller.RenderContext) error {
 	if r.Method == http.MethodPost {
 		r.ParseForm()
 		if r.FormValue("action") == "update-screenshot" {
-			if schema.UserID != claims.UserID {
+			if schema.UserID != claims.UserID && !claims.HasPermission(types.JWTPermissionAdmin) {
 				return errors.New("you are not the owner of the schema")
 			}
 

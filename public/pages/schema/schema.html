@@ -38,7 +38,7 @@
     </div>
     <div class="col-md-6">
         {{ if .Claims }}
-        {{ if eq .Data.Schema.UserName .Claims.Username}}
+        {{ if or (eq .Data.Schema.UserName .Claims.Username) (.Claims.IsAdmin) }}
         <form method="POST">
             <input type="hidden" name="action" value="update-screenshot">
             <div class="btn-group float-end">
