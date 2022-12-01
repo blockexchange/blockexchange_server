@@ -8,3 +8,5 @@ scifi_nodes:white2_colored
 scifi_nodes:white_colored
 scifi_nodes:whiteoct_colored
 scifi_nodes:whitetile_colored
+coloredwood:wood_block
+coloredwood:fence
