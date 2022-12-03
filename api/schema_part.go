@@ -3,6 +3,7 @@ package api
 import (
 	"blockexchange/types"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -208,6 +209,30 @@ func (api *Api) GetNextSchemaPartByMtime(w http.ResponseWriter, r *http.Request)
 	} else {
 		Send(w, schemapart, err)
 	}
+}
+
+func (api *Api) CountNextSchemaPartByMtime(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	schema_id, err := strconv.Atoi(vars["schema_id"])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	mtime, err := strconv.Atoi(vars["mtime"])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	count, err := api.SchemaPartRepo.CountNextBySchemaIDAndMtime(int64(schema_id), int64(mtime))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	w.Write([]byte(fmt.Sprintf("%d", count)))
 }
 
 func (api *Api) GetFirstSchemaPart(w http.ResponseWriter, r *http.Request) {

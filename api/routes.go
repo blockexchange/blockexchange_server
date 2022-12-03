@@ -38,6 +38,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/api/schemapart_chunk/{schema_id}/{x}/{y}/{z}", api.GetSchemaPartChunk)
 	r.HandleFunc("/api/schemapart_next/{schema_id}/{x}/{y}/{z}", api.GetNextSchemaPart)
 	r.HandleFunc("/api/schemapart_next/by-mtime/{schema_id}/{mtime}", api.GetNextSchemaPartByMtime)
+	r.HandleFunc("/api/schemapart_count/by-mtime/{schema_id}/{mtime}", api.CountNextSchemaPartByMtime)
 	r.HandleFunc("/api/schemapart_first/{schema_id}", api.GetFirstSchemaPart)
 
 }

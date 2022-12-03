@@ -5,6 +5,7 @@ import (
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http/httptest"
 	"strconv"
 	"testing"
@@ -111,6 +112,41 @@ func TestGetNextSchemaPart(t *testing.T) {
 	assert.Equal(t, 16, response_schemapart.OffsetX)
 	assert.Equal(t, 0, response_schemapart.OffsetY)
 	assert.Equal(t, 0, response_schemapart.OffsetZ)
+
+	// load by mtime
+
+	r = httptest.NewRequest("GET", "http://", nil)
+	w = httptest.NewRecorder()
+
+	r = mux.SetURLVars(r, map[string]string{
+		"schema_id": fmt.Sprintf("%d", schema.ID),
+		"mtime":     fmt.Sprintf("%d", 100),
+	})
+
+	api.GetNextSchemaPartByMtime(w, r)
+
+	assert.Equal(t, 200, w.Result().StatusCode)
+	response_schemapart = &types.SchemaPart{}
+	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), response_schemapart))
+	assert.Equal(t, int64(200), response_schemapart.Mtime)
+	assert.Equal(t, 16, response_schemapart.OffsetX)
+	assert.Equal(t, 0, response_schemapart.OffsetY)
+	assert.Equal(t, 0, response_schemapart.OffsetZ)
+
+	// count by mtime
+
+	r = httptest.NewRequest("GET", "http://", nil)
+	w = httptest.NewRecorder()
+
+	r = mux.SetURLVars(r, map[string]string{
+		"schema_id": fmt.Sprintf("%d", schema.ID),
+		"mtime":     fmt.Sprintf("%d", 100),
+	})
+
+	api.CountNextSchemaPartByMtime(w, r)
+
+	assert.Equal(t, 200, w.Result().StatusCode)
+	assert.Equal(t, []byte{'1'}, w.Body.Bytes())
 }
 
 func TestCreateSchemaPartInvalidSchemaID(t *testing.T) {

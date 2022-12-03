@@ -94,6 +94,14 @@ func (repo SchemaPartRepository) GetNextBySchemaIDAndMtime(schema_id int64, mtim
 	}
 }
 
+func (repo SchemaPartRepository) CountNextBySchemaIDAndMtime(schema_id int64, mtime int64) (int, error) {
+	constraints := `
+		where mtime > $2
+		and schema_id = $1
+	`
+	return Count(repo.DB, &types.SchemaPart{}, constraints, schema_id, mtime)
+}
+
 func (repo SchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error) {
 	constraints := `
 		where id = (
