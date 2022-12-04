@@ -2,30 +2,26 @@ package types
 
 import "github.com/lib/pq"
 
-type OrderDirectionType string
+var OrderDirections = map[string]bool{
+	"asc":  true,
+	"desc": true,
+}
 
-const (
-	ASC  OrderDirectionType = "asc"
-	DESC OrderDirectionType = "desc"
-)
-
-type OrderColumnType string
-
-const (
-	CREATED OrderColumnType = "s.created"
-)
+var OrderColumns = map[string]bool{
+	"s.created": true,
+}
 
 type SchemaSearchRequest struct {
-	UserID         *int64              `json:"user_id"`
-	SchemaID       *int64              `json:"schema_id"`
-	SchemaIDList   []int64             `json:"schema_id_list"`
-	TagID          *int64              `json:"tag_id"`
-	SchemaName     *string             `json:"schema_name"`
-	UserName       *string             `json:"user_name"`
-	Keywords       *string             `json:"keywords"`
-	Complete       *bool               `json:"complete"`
-	OrderDirection *OrderDirectionType `json:"order_direction"`
-	OrderColumn    *OrderColumnType    `json:"order_column"`
+	UserID         *int64  `json:"user_id"`
+	SchemaID       *int64  `json:"schema_id"`
+	SchemaIDList   []int64 `json:"schema_id_list"`
+	TagID          *int64  `json:"tag_id"`
+	SchemaName     *string `json:"schema_name"`
+	UserName       *string `json:"user_name"`
+	Keywords       *string `json:"keywords"`
+	Complete       *bool   `json:"complete"`
+	OrderDirection *string `json:"order_direction"`
+	OrderColumn    *string `json:"order_column"`
 }
 
 type SchemaSearchResult struct {
