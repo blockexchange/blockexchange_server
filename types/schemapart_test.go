@@ -45,6 +45,7 @@ func TestSchemaPartSerialization(t *testing.T) {
 	assert.Equal(t, part.OffsetZ, part2.OffsetZ)
 	assert.Equal(t, part.Mtime, part2.Mtime)
 	assert.Equal(t, part.MetaData, part2.MetaData)
+	assert.Equal(t, part.Data, part2.Data)
 }
 
 func TestSchemaPartInvalidData(t *testing.T) {
