@@ -26,8 +26,8 @@ func NewISORenderer(spp SchemaPartProvider, cm *colormapping.ColorMapping) *ISOR
 	}
 }
 
-const img_size_x = 800
-const img_size_y = 600
+const DefaultImageSizeX = 800
+const DefaultImageSizeY = 600
 
 var renderHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 	Name:    "bx_renderschema_hist",
@@ -43,13 +43,13 @@ func (r *ISORenderer) RenderIsometricPreview(schema *types.Schema) ([]byte, erro
 	size_y := schema.SizeY
 	size_z := schema.SizeZ
 
-	img_center_x := img_size_x / (size_x + size_z) * size_z
-	img_center_y := img_size_y
+	img_center_x := DefaultImageSizeX / (size_x + size_z) * size_z
+	img_center_y := DefaultImageSizeY
 
 	max_size := Max(size_x, Max(size_y, size_z))
-	size := float64(img_size_x) / float64(max_size) / 2.5
+	size := float64(DefaultImageSizeX) / float64(max_size) / 2.5
 
-	dc := gg.NewContext(img_size_x, img_size_y)
+	dc := gg.NewContext(DefaultImageSizeX, DefaultImageSizeY)
 
 	start_block_x := int(math.Ceil(float64(size_x)/16)) - 1
 	start_block_z := int(math.Ceil(float64(size_z)/16)) - 1

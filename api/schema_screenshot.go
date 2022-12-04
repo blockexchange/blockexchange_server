@@ -13,6 +13,10 @@ import (
 	"github.com/nfnt/resize"
 )
 
+func createScreenshotKey(schema_id int, height int, width int) string {
+	return fmt.Sprintf("screenshot_%d_%d_%d", schema_id, height, width)
+}
+
 func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	schema_id, err := strconv.Atoi(vars["schema_id"])
@@ -45,7 +49,7 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		cache_key := fmt.Sprintf("screenshot_%d_%d_%d", schema_id, height, width)
+		cache_key := createScreenshotKey(schema_id, height, width)
 		data, err := api.Cache.Get(cache_key)
 		if err != nil {
 			// cache error
