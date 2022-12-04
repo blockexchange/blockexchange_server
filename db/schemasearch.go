@@ -73,7 +73,12 @@ func (repo SchemaSearchRepository) buildWhereQuery(query *strings.Builder, searc
 
 func (repo SchemaSearchRepository) buildOrderQuery(query *strings.Builder, search *types.SchemaSearchRequest) {
 	if search.OrderColumn != nil && search.OrderDirection != nil {
-		query.WriteString(fmt.Sprintf(" order by %s %s", *search.OrderColumn, *search.OrderDirection))
+		if *search.OrderColumn == types.CREATED {
+			query.WriteString(fmt.Sprintf(" order by %s", *search.OrderColumn))
+		}
+		if *search.OrderDirection == types.ASC || *search.OrderDirection == types.DESC {
+			query.WriteString(string(*search.OrderDirection))
+		}
 	} else {
 		query.WriteString(" order by s.created desc")
 	}
