@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+
+	"github.com/minetest-go/dbutil"
 )
 
 type SchemaSearchRepository struct {
@@ -85,7 +87,7 @@ func (repo SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int
 
 	// build query
 	params := repo.buildWhereQuery(&query, search)
-	return Count(repo.DB, &types.SchemaSearchResult{}, query.String(), params...)
+	return dbutil.Count(repo.DB, &types.SchemaSearchResult{}, query.String(), params...)
 }
 
 func (repo SchemaSearchRepository) Search(search *types.SchemaSearchRequest, limit, offset int) ([]*types.SchemaSearchResult, error) {
@@ -101,5 +103,5 @@ func (repo SchemaSearchRepository) Search(search *types.SchemaSearchRequest, lim
 	query.WriteString(fmt.Sprintf(" limit $%d offset $%d", len(params)+1, len(params)+2))
 	params = append(params, limit, offset)
 
-	return SelectMulti(repo.DB, func() *types.SchemaSearchResult { return &types.SchemaSearchResult{} }, query.String(), params...)
+	return dbutil.SelectMulti(repo.DB, func() *types.SchemaSearchResult { return &types.SchemaSearchResult{} }, query.String(), params...)
 }

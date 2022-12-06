@@ -3,6 +3,8 @@ package db
 import (
 	"blockexchange/types"
 	"database/sql"
+
+	"github.com/minetest-go/dbutil"
 )
 
 type CollectionRepository struct {
@@ -11,7 +13,7 @@ type CollectionRepository struct {
 
 func (repo CollectionRepository) Create(collection *types.Collection) error {
 	c := &types.Collection{}
-	return InsertReturning(repo.DB, c, "id", &c.ID)
+	return dbutil.InsertReturning(repo.DB, c, "id", &c.ID)
 }
 
 func (repo CollectionRepository) Delete(id int64) error {
@@ -20,11 +22,11 @@ func (repo CollectionRepository) Delete(id int64) error {
 }
 
 func (repo CollectionRepository) Update(collection *types.Collection) error {
-	return Update(repo.DB, collection, map[string]any{"id": collection.ID})
+	return dbutil.Update(repo.DB, collection, map[string]any{"id": collection.ID})
 }
 
 func (repo CollectionRepository) GetByID(id int64) (*types.Collection, error) {
-	c, err := Select(repo.DB, &types.Collection{}, "id = $1", id)
+	c, err := dbutil.Select(repo.DB, &types.Collection{}, "id = $1", id)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -32,5 +34,5 @@ func (repo CollectionRepository) GetByID(id int64) (*types.Collection, error) {
 }
 
 func (repo CollectionRepository) GetByUserID(user_id int64) ([]*types.Collection, error) {
-	return SelectMulti(repo.DB, func() *types.Collection { return &types.Collection{} }, "user_id = $1", user_id)
+	return dbutil.SelectMulti(repo.DB, func() *types.Collection { return &types.Collection{} }, "user_id = $1", user_id)
 }

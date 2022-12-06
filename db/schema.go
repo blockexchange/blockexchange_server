@@ -4,6 +4,8 @@ import (
 	"blockexchange/types"
 	"database/sql"
 	"fmt"
+
+	"github.com/minetest-go/dbutil"
 )
 
 type SchemaRepository struct {
@@ -11,7 +13,7 @@ type SchemaRepository struct {
 }
 
 func (repo SchemaRepository) GetSchemaById(id int64) (*types.Schema, error) {
-	schema, err := Select(repo.DB, &types.Schema{}, "where id = $1", id)
+	schema, err := dbutil.Select(repo.DB, &types.Schema{}, "where id = $1", id)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else {
@@ -20,7 +22,7 @@ func (repo SchemaRepository) GetSchemaById(id int64) (*types.Schema, error) {
 }
 
 func (repo SchemaRepository) GetSchemaByUsernameAndName(username, schemaname string) (*types.Schema, error) {
-	schema, err := Select(repo.DB, &types.Schema{}, "where user_id = (select id from public.user where name = $1) and name = $2", username, schemaname)
+	schema, err := dbutil.Select(repo.DB, &types.Schema{}, "where user_id = (select id from public.user where name = $1) and name = $2", username, schemaname)
 	fmt.Printf("schema: %v, err = %v\n", schema, err)
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -30,7 +32,7 @@ func (repo SchemaRepository) GetSchemaByUsernameAndName(username, schemaname str
 }
 
 func (repo SchemaRepository) CreateSchema(schema *types.Schema) error {
-	err := InsertReturning(repo.DB, schema, "id", &schema.ID)
+	err := dbutil.InsertReturning(repo.DB, schema, "id", &schema.ID)
 	if err != nil {
 		return err
 	}
@@ -38,7 +40,7 @@ func (repo SchemaRepository) CreateSchema(schema *types.Schema) error {
 }
 
 func (repo SchemaRepository) UpdateSchema(schema *types.Schema) error {
-	err := Update(repo.DB, schema, map[string]any{"id": schema.ID})
+	err := dbutil.Update(repo.DB, schema, map[string]any{"id": schema.ID})
 	if err != nil {
 		return err
 	}

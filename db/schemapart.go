@@ -3,6 +3,8 @@ package db
 import (
 	"blockexchange/types"
 	"database/sql"
+
+	"github.com/minetest-go/dbutil"
 )
 
 type SchemaPartRepository struct {
@@ -14,7 +16,7 @@ func (repo SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart
 		on conflict on constraint schemapart_unique_coords
 		do update set data = EXCLUDED.data, metadata = EXCLUDED.metadata, mtime = EXCLUDED.mtime
 	`
-	return Insert(repo.DB, part, conflict)
+	return dbutil.Insert(repo.DB, part, conflict)
 }
 
 func (repo SchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
@@ -25,7 +27,7 @@ func (repo SchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_
 		and offset_z = $4
 	`
 
-	sp, err := Select(repo.DB, &types.SchemaPart{}, where, schema_id, offset_x, offset_y, offset_z)
+	sp, err := dbutil.Select(repo.DB, &types.SchemaPart{}, where, schema_id, offset_x, offset_y, offset_z)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else {
@@ -44,7 +46,7 @@ func (repo SchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, 
 		and offset_z <= $7
 	`
 
-	return SelectMulti(repo.DB, func() *types.SchemaPart { return &types.SchemaPart{} }, constraints, schema_id, x1, y1, z1, x2, y2, z2)
+	return dbutil.SelectMulti(repo.DB, func() *types.SchemaPart { return &types.SchemaPart{} }, constraints, schema_id, x1, y1, z1, x2, y2, z2)
 }
 
 func (repo SchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {
@@ -72,7 +74,7 @@ func (repo SchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, off
 		and schema_id = $1
 		order by id asc limit 1
 	`
-	sp, err := Select(repo.DB, &types.SchemaPart{}, constraints, schema_id, offset_x, offset_y, offset_z)
+	sp, err := dbutil.Select(repo.DB, &types.SchemaPart{}, constraints, schema_id, offset_x, offset_y, offset_z)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else {
@@ -86,7 +88,7 @@ func (repo SchemaPartRepository) GetNextBySchemaIDAndMtime(schema_id int64, mtim
 		and schema_id = $1
 		order by mtime asc limit 1
 	`
-	sp, err := Select(repo.DB, &types.SchemaPart{}, constraints, schema_id, mtime)
+	sp, err := dbutil.Select(repo.DB, &types.SchemaPart{}, constraints, schema_id, mtime)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else {
@@ -99,7 +101,7 @@ func (repo SchemaPartRepository) CountNextBySchemaIDAndMtime(schema_id int64, mt
 		where mtime > $2
 		and schema_id = $1
 	`
-	return Count(repo.DB, &types.SchemaPart{}, constraints, schema_id, mtime)
+	return dbutil.Count(repo.DB, &types.SchemaPart{}, constraints, schema_id, mtime)
 }
 
 func (repo SchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error) {
@@ -111,7 +113,7 @@ func (repo SchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.Sch
 		and schema_id = $1
 		limit 1
 	`
-	sp, err := Select(repo.DB, &types.SchemaPart{}, constraints, schema_id)
+	sp, err := dbutil.Select(repo.DB, &types.SchemaPart{}, constraints, schema_id)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else {

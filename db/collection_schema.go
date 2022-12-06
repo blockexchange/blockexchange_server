@@ -3,6 +3,8 @@ package db
 import (
 	"blockexchange/types"
 	"database/sql"
+
+	"github.com/minetest-go/dbutil"
 )
 
 type CollectionSchemaRepository struct {
@@ -10,7 +12,7 @@ type CollectionSchemaRepository struct {
 }
 
 func (repo CollectionSchemaRepository) Create(collection_id, schema_id int64) error {
-	return Insert(repo.DB, &types.CollectionSchema{CollectionID: collection_id, SchemaID: schema_id})
+	return dbutil.Insert(repo.DB, &types.CollectionSchema{CollectionID: collection_id, SchemaID: schema_id})
 }
 
 func (repo CollectionSchemaRepository) Delete(collection_id, schema_id int64) error {
@@ -19,9 +21,9 @@ func (repo CollectionSchemaRepository) Delete(collection_id, schema_id int64) er
 }
 
 func (repo CollectionSchemaRepository) GetBySchemaID(schema_id int64) ([]*types.CollectionSchema, error) {
-	return SelectMulti(repo.DB, func() *types.CollectionSchema { return &types.CollectionSchema{} }, "where schema_id = $1", schema_id)
+	return dbutil.SelectMulti(repo.DB, func() *types.CollectionSchema { return &types.CollectionSchema{} }, "where schema_id = $1", schema_id)
 }
 
 func (repo CollectionSchemaRepository) GetByCollectionID(collection_id int64) ([]*types.CollectionSchema, error) {
-	return SelectMulti(repo.DB, func() *types.CollectionSchema { return &types.CollectionSchema{} }, "where collection_id = $1", collection_id)
+	return dbutil.SelectMulti(repo.DB, func() *types.CollectionSchema { return &types.CollectionSchema{} }, "where collection_id = $1", collection_id)
 }
