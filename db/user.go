@@ -48,5 +48,5 @@ func (r UserRepository) CreateUser(user *types.User) error {
 }
 
 func (r UserRepository) UpdateUser(user *types.User) error {
-	return dbutil.Update(r.db, user, map[string]any{"id": user.ID})
+	return dbutil.Update(r.db, user, "where id = $1", user.ID)
 }

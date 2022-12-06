@@ -22,7 +22,7 @@ func (repo CollectionRepository) Delete(id int64) error {
 }
 
 func (repo CollectionRepository) Update(collection *types.Collection) error {
-	return dbutil.Update(repo.DB, collection, map[string]any{"id": collection.ID})
+	return dbutil.Update(repo.DB, collection, "where id = $1", collection.ID)
 }
 
 func (repo CollectionRepository) GetByID(id int64) (*types.Collection, error) {

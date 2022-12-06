@@ -40,7 +40,7 @@ func (repo SchemaRepository) CreateSchema(schema *types.Schema) error {
 }
 
 func (repo SchemaRepository) UpdateSchema(schema *types.Schema) error {
-	err := dbutil.Update(repo.DB, schema, map[string]any{"id": schema.ID})
+	err := dbutil.Update(repo.DB, schema, "where id = $1", schema.ID)
 	if err != nil {
 		return err
 	}
