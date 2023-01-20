@@ -1,9 +1,10 @@
 package api
 
 import (
-	"blockexchange/colormapping"
 	"blockexchange/core"
 	"blockexchange/db"
+
+	"github.com/minetest-go/colormapping"
 
 	"github.com/jmoiron/sqlx"
 )

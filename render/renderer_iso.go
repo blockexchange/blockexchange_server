@@ -1,11 +1,12 @@
 package render
 
 import (
-	"blockexchange/colormapping"
 	"blockexchange/parser"
 	"blockexchange/types"
 	"bytes"
 	"math"
+
+	"github.com/minetest-go/colormapping"
 
 	"github.com/fogleman/gg"
 	"github.com/prometheus/client_golang/prometheus"

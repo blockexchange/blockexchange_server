@@ -21,6 +21,7 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/minetest-go/colormapping v1.0.0 // indirect
 	github.com/minetest-go/dbutil v1.0.2 // indirect
 )
 

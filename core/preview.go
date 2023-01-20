@@ -1,10 +1,11 @@
 package core
 
 import (
-	"blockexchange/colormapping"
 	"blockexchange/db"
 	"blockexchange/render"
 	"blockexchange/types"
+
+	"github.com/minetest-go/colormapping"
 )
 
 var cm *colormapping.ColorMapping = colormapping.NewColorMapping()

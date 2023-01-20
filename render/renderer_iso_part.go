@@ -1,10 +1,11 @@
 package render
 
 import (
-	"blockexchange/colormapping"
 	"blockexchange/parser"
 	"image/color"
 	"sort"
+
+	"github.com/minetest-go/colormapping"
 
 	"github.com/fogleman/gg"
 )

@@ -1,12 +1,13 @@
 package render
 
 import (
-	"blockexchange/colormapping"
 	"blockexchange/types"
 	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/minetest-go/colormapping"
 
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"

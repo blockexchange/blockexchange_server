@@ -821,6 +821,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182aff
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
+github.com/minetest-go/colormapping v1.0.0 h1:kT2v8NG7kPf63p8cl/GPM6YSrxaT5O3zOW8HIs4xHjo=
+github.com/minetest-go/colormapping v1.0.0/go.mod h1:arMBjO6+z8+yhLvrsX4tCnYq5fzGcPFUOj/4Xb78Ktc=
 github.com/minetest-go/dbutil v1.0.1 h1:qR2QVUf09DEUTMFT8PvAhp4vwMRUOy2OOajq6i1sQC4=
 github.com/minetest-go/dbutil v1.0.1/go.mod h1:H80I+b3887mea/UcLKt2Sq6nyYNMLvHM9cdqe31Ia9A=
 github.com/minetest-go/dbutil v1.0.2 h1:HMCJoaE96rsC130/W3/ggmf5yWAu2u5pjMWJ57cP29E=
