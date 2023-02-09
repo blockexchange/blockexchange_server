@@ -10,3 +10,6 @@
 [submodule "dev/worldmods/mtzip"]
 	path = dev/worldmods/mtzip
 	url = https://github.com/BuckarooBanzay/mtzip
+[submodule "dev/worldmods/placeholder"]
+	path = dev/worldmods/placeholder
+	url = https://github.com/buckarooBanzay/placeholder
