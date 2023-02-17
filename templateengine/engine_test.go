@@ -14,7 +14,6 @@ import (
 func TestEngine(t *testing.T) {
 	te := templateengine.NewTemplateEngine(&templateengine.TemplateEngineOptions{
 		Templates:   testdata.Files,
-		TemplateDir: "testdata",
 		EnableCache: true,
 		FuncMap:     make(map[string]any),
 	})

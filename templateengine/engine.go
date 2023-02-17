@@ -5,13 +5,11 @@ import (
 	"html/template"
 	"io/fs"
 	"net/http"
-	"os"
 	"sync"
 )
 
 type TemplateEngineOptions struct {
 	Templates   fs.FS
-	TemplateDir string
 	EnableCache bool
 	FuncMap     map[string]any
 }
@@ -41,10 +39,6 @@ func (te *TemplateEngine) GetTemplate(file string) (*template.Template, error) {
 
 	// create new template
 	var f fs.FS = te.options.Templates
-	if !te.options.EnableCache {
-		// use live fs
-		f = os.DirFS(te.options.TemplateDir)
-	}
 
 	tmpl, err := template.New("").Funcs(te.options.FuncMap).Option("missingkey=error").ParseFS(f, "layout.html", "components/*.html")
 	if err != nil {
