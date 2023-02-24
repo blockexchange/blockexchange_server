@@ -11,19 +11,17 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.7
+	github.com/minetest-go/colormapping v1.0.0
+	github.com/minetest-go/dbutil v1.0.2
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/prometheus/client_golang v1.14.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.1
 	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+	golang.org/x/crypto v0.6.0
 )
 
-require (
-	github.com/andybalholm/brotli v1.0.4 // indirect
-	github.com/minetest-go/colormapping v1.0.0 // indirect
-	github.com/minetest-go/dbutil v1.0.2 // indirect
-)
+require github.com/andybalholm/brotli v1.0.4 // indirect
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -42,7 +40,7 @@ require (
 	github.com/vearutop/statigz v1.2.0
 	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/image v0.0.0-20210504121937-7319ad40d33e // indirect
-	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
+	golang.org/x/sys v0.5.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
