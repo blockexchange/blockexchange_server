@@ -39,7 +39,7 @@ require (
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/vearutop/statigz v1.2.0
 	go.uber.org/atomic v1.7.0 // indirect
-	golang.org/x/image v0.0.0-20210504121937-7319ad40d33e // indirect
+	golang.org/x/image v0.5.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
