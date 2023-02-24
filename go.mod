@@ -17,7 +17,7 @@ require (
 	github.com/prometheus/client_golang v1.14.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.1
-	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64
+	github.com/yuin/gopher-lua v1.1.0
 	golang.org/x/crypto v0.6.0
 )
 
