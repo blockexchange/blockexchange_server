@@ -187,13 +187,13 @@
                         <div class="card bg-secondary">
                             <div class="card-header">Offline</div>
                             <div class="card-body">
-                                <a class="btn btn-sm btn-primary" href="{{.BaseURL}}api/export_bx/{{.Data.Schema.ID}}/{{.Data.Schema.Name}}.zip">
+                                <a download class="btn btn-sm btn-primary" href="{{.BaseURL}}api/export_bx/{{.Data.Schema.ID}}/{{.Data.Schema.Name}}.zip">
                                     <i class="fa fa-download"></i>
                                     Export as Blockexchange Schema
                                 </a>
                                 {{if lt .Data.Schema.TotalParts 100}}
                                 &nbsp;
-                                <a class="btn btn-sm btn-primary" href="{{.BaseURL}}api/export_we/{{.Data.Schema.ID}}/{{.Data.Schema.Name}}.we">
+                                <a download class="btn btn-sm btn-primary" href="{{.BaseURL}}api/export_we/{{.Data.Schema.ID}}/{{.Data.Schema.Name}}.we">
                                     <i class="fa fa-download"></i>
                                     Export as Worldedit Schema
                                 </a>
