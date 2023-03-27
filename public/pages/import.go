@@ -44,15 +44,13 @@ func handleImport(rc *controller.RenderContext, m *ImportModel) {
 		return
 	}
 
-	t := r.FormValue("type")
 	var schema *types.Schema
-	switch t {
-	case "worldedit":
+	if strings.HasSuffix(handler.Filename, ".we") {
 		schema, err = handleWeImport(rc, handler, buf)
-	case "bx":
+	} else if strings.HasSuffix(handler.Filename, ".zip") {
 		schema, err = handleBXImport(rc, handler, buf)
-	default:
-		err = errors.New("unrecognized format: " + t)
+	} else {
+		err = errors.New("Unrecognized file extension")
 	}
 
 	if err != nil {

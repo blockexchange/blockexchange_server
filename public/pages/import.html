@@ -1,26 +1,12 @@
 {{define "title"}}Import{{end}}
 {{define "content"}}
-<h3>Schema import</h3>
+<h3>Upload Schematic File</h3>
 
 <form method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="type" value="worldedit"/>
-    <h4>Worldedit file</h4>
+    <h5>Block Exchange and WorldEdit format supported</h5>
     <div class="row">
-        <div class="col-md-10">
-            <input type="file" name="file" accept=".we" class="form-control"/>
-        </div>
-        <div class="col-md-2">
-            <input type="submit" value="Import" class="btn btn-primary w-100"/>
-        </div>
-    </div>
-</form>
-
-<form method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="type" value="bx"/>
-    <h4>Blockexchange file</h4>
-    <div class="row">
-        <div class="col-md-10">
-            <input type="file" name="file" accept=".zip" class="form-control"/>
+        <div class="col-md-4">
+            <input type="file" name="file" accept=".zip,.we" class="form-control"/>
         </div>
         <div class="col-md-2">
             <input type="submit" value="Import" class="btn btn-primary w-100"/>
