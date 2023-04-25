@@ -40,7 +40,7 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
-	github.com/vearutop/statigz v1.2.0
+	github.com/vearutop/statigz v1.3.0
 	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/image v0.5.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
