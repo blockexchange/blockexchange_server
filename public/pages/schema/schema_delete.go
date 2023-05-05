@@ -31,7 +31,7 @@ func SchemaDelete(rc *controller.RenderContext) error {
 				return errors.New("unauthorized")
 			}
 
-			err = repos.SchemaRepo.DeleteSchema(schema.ID, rc.Claims().UserID)
+			err = repos.SchemaRepo.DeleteSchema(schema.ID, schema.UserID)
 			if err != nil {
 				return err
 			}
