@@ -27,7 +27,7 @@ func SchemaDelete(rc *controller.RenderContext) error {
 	if r.Method == http.MethodPost {
 		r.ParseForm()
 		if r.FormValue("confirm") == "true" {
-			if schema.UserID != rc.Claims().UserID {
+			if schema.UserID != rc.Claims().UserID && !rc.Claims().IsAdmin() {
 				return errors.New("unauthorized")
 			}
 
