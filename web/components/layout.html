@@ -6,15 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="theme-color" content="#000">
         <link rel="icon" href="{{.BaseURL}}assets/pics/bx_big.png" type="image/png">
-        <link rel="stylesheet" href="{{.BaseURL}}assets/css/bootstrap.min.css"/>
-        <link rel="stylesheet" href="{{.BaseURL}}assets/css/fontawesome.min.css"/>
+        <link rel="stylesheet" href="{{getPrefixURL}}assets/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="{{getPrefixURL}}assets/css/fontawesome.min.css"/>
         <title>{{block "title" .}}{{end}} - Block exchange</title>
-        {{ if and .Config .Config.GoogleSiteVerification }}
-        <meta name="google-site-verification" content="{{.Config.GoogleSiteVerification}}" />
-        {{ end }}
-        {{ range $name, $content := .AdditionalMetaTags }}
-        <meta name="{{$name}}" content="{{$content}}"/>
-        {{ end }}
     </head>
     <body>
         {{block "navbar" .}}{{end}}

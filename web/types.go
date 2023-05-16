@@ -1,6 +1,10 @@
 package web
 
-import "github.com/golang-jwt/jwt/v4"
+import (
+	"blockexchange/db"
+
+	"github.com/golang-jwt/jwt/v4"
+)
 
 type Context struct {
 	JWTKey       string
@@ -8,6 +12,7 @@ type Context struct {
 	CookieDomain string
 	CookiePath   string
 	CookieSecure bool
+	Repos        *db.Repositories
 }
 
 type Claims struct {

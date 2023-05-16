@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/vearutop/statigz"
+	"github.com/vearutop/statigz/brotli"
 )
 
 //go:embed *
@@ -27,12 +29,8 @@ func (ctx *Context) StaticPage(name string) http.HandlerFunc {
 	})
 }
 
-func (ctx *Context) Setup() {
-	r := mux.NewRouter()
-
+func (ctx *Context) Setup(r *mux.Router) {
 	r.HandleFunc("/", ctx.StaticPage("index.html"))
-	r.PathPrefix("/assets").Handler(http.FileServer(http.FS(Files)))
-
+	r.PathPrefix("/assets").Handler(statigz.FileServer(Files, brotli.AddEncoding))
 	r.NotFoundHandler = ctx.NotFound()
-	http.Handle("/", r)
 }

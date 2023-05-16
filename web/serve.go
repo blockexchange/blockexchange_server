@@ -8,7 +8,6 @@ import (
 	"blockexchange/api"
 	"blockexchange/controller"
 	"blockexchange/core"
-	"blockexchange/public"
 	"blockexchange/public/pages"
 
 	"github.com/dchest/captcha"
@@ -49,12 +48,21 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	}
 	a.SetupRoutes(r, cfg)
 
+	// templates, pages
+	ctx := &Context{
+		JWTKey:       cfg.Key,
+		CookieName:   cfg.CookieName,
+		CookieDomain: cfg.CookieDomain,
+		CookiePath:   cfg.CookiePath,
+		CookieSecure: cfg.CookieSecure,
+		Repos:        a.Repositories,
+	}
+	ctx.Setup(r)
+
 	// controller setup and routing
+	// TODO: deprecated
 	ctrl := controller.NewController(db_, cfg)
 	pages.SetupRoutes(ctrl, r, cfg)
-
-	// assets
-	r.PathPrefix("/assets/").Handler(HandleAssets(public.Files, !cfg.WebDev))
 
 	// main entry
 	http.Handle("/", r)
