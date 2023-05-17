@@ -13,15 +13,17 @@ import (
 //go:embed *
 var Files embed.FS
 
-func createTemplate(pagename string) *template.Template {
+func (ctx *Context) CreateTemplate(pagename string) *template.Template {
 	funcs := template.FuncMap{
-		"getPrefixURL": func() string { return "/" },
+		"BaseURL":    func() string { return "/" },
+		"prettysize": prettysize,
+		"formattime": formattime,
 	}
 	return template.Must(template.New("").Funcs(funcs).ParseFS(Files, "components/*.html", pagename))
 }
 
 func (ctx *Context) StaticPage(name string) http.HandlerFunc {
-	t := createTemplate(name)
+	t := ctx.CreateTemplate(name)
 	return ctx.OptionalSecure(func(w http.ResponseWriter, r *http.Request, c *Claims) {
 		t.ExecuteTemplate(w, "layout", map[string]any{
 			"Claims": c,
@@ -30,7 +32,9 @@ func (ctx *Context) StaticPage(name string) http.HandlerFunc {
 }
 
 func (ctx *Context) Setup(r *mux.Router) {
-	r.HandleFunc("/", ctx.StaticPage("index.html"))
+	r.HandleFunc("/", ctx.Index())
 	r.PathPrefix("/assets").Handler(statigz.FileServer(Files, brotli.AddEncoding))
+
+	ctx.error_template = ctx.CreateTemplate("error.html")
 	r.NotFoundHandler = ctx.NotFound()
 }

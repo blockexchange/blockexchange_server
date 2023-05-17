@@ -9,7 +9,7 @@ type LatestSchemasModel struct {
 	Schemas []*SchemaCardModel
 }
 
-func LatestSchemas(baseUrl string, repos *db.Repositories) (*LatestSchemasModel, error) {
+func LatestSchemas(repos *db.Repositories) (*LatestSchemasModel, error) {
 	m := &LatestSchemasModel{}
 	var err error
 
@@ -21,7 +21,7 @@ func LatestSchemas(baseUrl string, repos *db.Repositories) (*LatestSchemasModel,
 
 	m.Schemas = make([]*SchemaCardModel, len(schemas))
 	for i, s := range schemas {
-		m.Schemas[i] = SchemaCard(baseUrl, s)
+		m.Schemas[i] = SchemaCard(s)
 	}
 
 	return m, nil

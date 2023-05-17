@@ -6,17 +6,17 @@
         <hr/>
 
         <div>
-            <a href="{{.BaseURL}}search" class="btn btn-primary">
+            <a href="{{BaseURL}}search" class="btn btn-primary">
                 <i class="fa fa-search"></i>
                 Search
             </a>
             &nbsp;
-            <a href="{{.BaseURL}}users" class="btn btn-primary">
+            <a href="{{BaseURL}}users" class="btn btn-primary">
                 <i class="fa fa-users"></i>
                 Users
             </a>
             &nbsp;
-            <a href="{{.BaseURL}}mod" class="btn btn-primary">
+            <a href="{{BaseURL}}mod" class="btn btn-primary">
                 <i class="fa fa-download"></i>
                 Mod/Installation
             </a>
@@ -33,5 +33,5 @@
     </div>
 </div>
 <hr/>
-{{block "latest_schemas" .Data.LatestSchemas}}{{end}}
+{{block "latest_schemas" .LatestSchemas}}{{end}}
 {{end}}

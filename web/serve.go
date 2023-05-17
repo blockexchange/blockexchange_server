@@ -6,9 +6,7 @@ import (
 	"time"
 
 	"blockexchange/api"
-	"blockexchange/controller"
 	"blockexchange/core"
-	"blockexchange/public/pages"
 
 	"github.com/dchest/captcha"
 	"github.com/go-redis/redis/v8"
@@ -55,14 +53,15 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 		CookieDomain: cfg.CookieDomain,
 		CookiePath:   cfg.CookiePath,
 		CookieSecure: cfg.CookieSecure,
+		BaseURL:      cfg.BaseURL,
 		Repos:        a.Repositories,
 	}
 	ctx.Setup(r)
 
 	// controller setup and routing
 	// TODO: deprecated
-	ctrl := controller.NewController(db_, cfg)
-	pages.SetupRoutes(ctrl, r, cfg)
+	//ctrl := controller.NewController(db_, cfg)
+	//pages.SetupRoutes(ctrl, r, cfg)
 
 	// main entry
 	http.Handle("/", r)
