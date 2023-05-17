@@ -33,6 +33,7 @@ func (ctx *Context) StaticPage(name string) http.HandlerFunc {
 
 func (ctx *Context) Setup(r *mux.Router) {
 	r.HandleFunc("/", ctx.Index())
+	r.HandleFunc("/mod", ctx.StaticPage("mod.html"))
 	r.PathPrefix("/assets").Handler(statigz.FileServer(Files, brotli.AddEncoding))
 
 	ctx.error_template = ctx.CreateTemplate("error.html")
