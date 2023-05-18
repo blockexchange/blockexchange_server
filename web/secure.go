@@ -1,6 +1,7 @@
 package web
 
 import (
+	"blockexchange/types"
 	"errors"
 	"net/http"
 	"time"
@@ -8,8 +9,8 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type SecureHandlerFunc func(http.ResponseWriter, *http.Request, *Claims)
-type ClaimsCheck func(*Claims) (bool, error)
+type SecureHandlerFunc func(http.ResponseWriter, *http.Request, *types.Claims)
+type ClaimsCheck func(*types.Claims) (bool, error)
 
 var err_unauthorized = errors.New("unauthorized")
 var err_forbidden = errors.New("forbidden")
@@ -54,7 +55,7 @@ func (ctx *Context) Secure(h SecureHandlerFunc, checks ...ClaimsCheck) http.Hand
 	}
 }
 
-func (ctx *Context) CreateJWT(c *Claims, d time.Duration) (string, error) {
+func (ctx *Context) CreateJWT(c *types.Claims, d time.Duration) (string, error) {
 	c.RegisteredClaims = &jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(d)),
 	}
@@ -62,8 +63,8 @@ func (ctx *Context) CreateJWT(c *Claims, d time.Duration) (string, error) {
 	return t.SignedString([]byte(ctx.JWTKey))
 }
 
-func (ctx *Context) ParseJWT(token string) (*Claims, error) {
-	t, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (any, error) {
+func (ctx *Context) ParseJWT(token string) (*types.Claims, error) {
+	t, err := jwt.ParseWithClaims(token, &types.Claims{}, func(token *jwt.Token) (any, error) {
 		return []byte(ctx.JWTKey), nil
 	})
 
@@ -75,7 +76,7 @@ func (ctx *Context) ParseJWT(token string) (*Claims, error) {
 		return nil, err_unauthorized
 	}
 
-	claims, ok := t.Claims.(*Claims)
+	claims, ok := t.Claims.(*types.Claims)
 	if !ok {
 		return nil, errors.New("internal error")
 	}
@@ -83,7 +84,7 @@ func (ctx *Context) ParseJWT(token string) (*Claims, error) {
 	return claims, nil
 }
 
-func (ctx *Context) GetClaims(r *http.Request) (*Claims, error) {
+func (ctx *Context) GetClaims(r *http.Request) (*types.Claims, error) {
 	co, err := r.Cookie(ctx.CookieName)
 	if err == http.ErrNoCookie {
 		return nil, nil

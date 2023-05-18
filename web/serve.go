@@ -54,6 +54,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 		CookiePath:   cfg.CookiePath,
 		CookieSecure: cfg.CookieSecure,
 		BaseURL:      cfg.BaseURL,
+		Config:       cfg,
 		Repos:        a.Repositories,
 	}
 	ctx.Setup(r)

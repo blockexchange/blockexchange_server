@@ -11,8 +11,6 @@ import (
 )
 
 func SetupRoutes(ctrl *controller.Controller, r *mux.Router, cfg *core.Config) {
-	r.HandleFunc("/", ctrl.Handler("./", Index))
-	r.HandleFunc("/login", ctrl.Handler("./", Login))
 	r.HandleFunc("/signup", ctrl.Handler("./", Signup))
 	r.HandleFunc("/schema/{username}", ctrl.Handler("../../", schema.UserSchema))
 	r.HandleFunc("/schema/{username}/{schemaname}", ctrl.Handler("../../../", schema.Schema))
@@ -21,7 +19,6 @@ func SetupRoutes(ctrl *controller.Controller, r *mux.Router, cfg *core.Config) {
 	r.HandleFunc("/schema/{username}/{schemaname}/edit-tags", ctrl.Handler("../../../", schema.SchemaTagEdit, types.JWTPermissionManagement))
 	r.HandleFunc("/users", ctrl.Handler("./", Users))
 	r.HandleFunc("/search", ctrl.Handler("./", Search))
-	r.HandleFunc("/mod", ctrl.Handler("./", Mod))
 	r.HandleFunc("/profile", ctrl.Handler("./", Profile, types.JWTPermissionManagement))
 	r.HandleFunc("/import", ctrl.Handler("./", SchemaImport, types.JWTPermissionManagement))
 	r.HandleFunc("/tags", ctrl.Handler("./", Tags, types.JWTPermissionAdmin))

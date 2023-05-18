@@ -1,10 +1,9 @@
 package web
 
 import (
+	"blockexchange/core"
 	"blockexchange/db"
 	"html/template"
-
-	"github.com/golang-jwt/jwt/v4"
 )
 
 type Context struct {
@@ -15,11 +14,6 @@ type Context struct {
 	CookieSecure   bool
 	BaseURL        string
 	Repos          *db.Repositories
+	Config         *core.Config
 	error_template *template.Template
-}
-
-type Claims struct {
-	*jwt.RegisteredClaims
-	Username string `json:"username"`
-	UserID   int64  `json:"user_id"`
 }

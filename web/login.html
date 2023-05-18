@@ -13,7 +13,7 @@
                     <input type="hidden" name="action" value="logout"/>
                     <button type="submit" class="btn btn-secondary">Logout</button>
                 </form>
-                <a href="{{.BaseURL}}profile" class="btn btn-primary">
+                <a href="{{BaseURL}}profile" class="btn btn-primary">
                     <i class="fas fa-user"></i>
                     Profile
                 </a>
@@ -21,9 +21,9 @@
                 {{if not .Claims}}
                 <form method="POST">
                     <input type="hidden" name="action" value="login"/>
-                    <input type="text" name="username" placeholder="Username" value="{{.Data.Username}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
-                    <input type="password" name="password" placeholder="Password" value="{{.Data.Password}}" class="form-control {{if .Data.LoginError}}is-invalid{{end}}"/>
-                    {{if .Data.LoginError}}
+                    <input type="text" name="username" placeholder="Username" value="{{.Username}}" class="form-control {{if .LoginError}}is-invalid{{end}}"/>
+                    <input type="password" name="password" placeholder="Password" value="{{.Password}}" class="form-control {{if .LoginError}}is-invalid{{end}}"/>
+                    {{if .LoginError}}
                     <div class="alert alert-danger">
                         <i class="fa fa-triangle-exclamation"></i>
                         Invalid username or password!
@@ -41,33 +41,33 @@
                 Sign up
             </div>
             <div class="card-body">
-                <a href="{{.BaseURL}}signup" class="btn btn-secondary">
+                <a href="{{BaseURL}}signup" class="btn btn-secondary">
                     Register
                 </a>
             </div>
         </div>
-        {{if .Data.ExternalLogin}}
+        {{if .ExternalLogin}}
         <div class="card">
             <div class="card-header">
                 External login
             </div>
             <div class="card-body">
-                {{if .Data.DiscordOauthLink}}
-                <a href="{{.Data.DiscordOauthLink}}" class="btn btn-secondary">
+                {{if .DiscordOauthLink}}
+                <a href="{{.DiscordOauthLink}}" class="btn btn-secondary">
                     <i class="fab fa-discord"></i>
                     Login with Discord
                 </a>
                 &nbsp;
                 {{end}}
-                {{if .Data.GithubOauthLink}}
-                <a href="{{.Data.GithubOauthLink}}" class="btn btn-secondary">
+                {{if .GithubOauthLink}}
+                <a href="{{.GithubOauthLink}}" class="btn btn-secondary">
                     <i class="fab fa-github"></i>
                     Login with Github
                 </a>
                 &nbsp;
                 {{end}}
-                {{if .Data.MesehubOauthLink}}
-                <a href="{{.Data.MesehubOauthLink}}" class="btn btn-secondary">
+                {{if .MesehubOauthLink}}
+                <a href="{{.MesehubOauthLink}}" class="btn btn-secondary">
                     <img src="assets/pics/default_mese_crystal.png"/>
                     Login with Mesehub
                 </a>
