@@ -14,9 +14,13 @@ import (
 //go:embed *
 var Files embed.FS
 
-func (ctx *Context) CreateTemplate(pagename string) *template.Template {
+func (ctx *Context) CreateTemplate(pagename string, r *http.Request) *template.Template {
 	funcs := template.FuncMap{
-		"BaseURL":    func() string { return ctx.BaseURL },
+		"BaseURL": func() string { return ctx.BaseURL },
+		"Claims": func() *types.Claims {
+			c, _ := ctx.GetClaims(r)
+			return c
+		},
 		"prettysize": prettysize,
 		"formattime": formattime,
 	}
@@ -24,20 +28,17 @@ func (ctx *Context) CreateTemplate(pagename string) *template.Template {
 }
 
 func (ctx *Context) StaticPage(name string) http.HandlerFunc {
-	t := ctx.CreateTemplate(name)
-	return ctx.OptionalSecure(func(w http.ResponseWriter, r *http.Request, c *types.Claims) {
-		t.ExecuteTemplate(w, "layout", map[string]any{
-			"Claims": c,
-		})
-	})
+	return func(w http.ResponseWriter, r *http.Request) {
+		t := ctx.CreateTemplate(name, r)
+		t.ExecuteTemplate(w, "layout", nil)
+	}
 }
 
 func (ctx *Context) Setup(r *mux.Router) {
-	r.HandleFunc("/", ctx.OptionalSecure(ctx.Index))
+	r.HandleFunc("/", ctx.Index)
 	r.HandleFunc("/login", ctx.OptionalSecure(ctx.Login))
 	r.HandleFunc("/mod", ctx.StaticPage("mod.html"))
 	r.PathPrefix("/assets").Handler(statigz.FileServer(Files, brotli.AddEncoding))
 
-	ctx.error_template = ctx.CreateTemplate("error.html")
 	r.NotFoundHandler = ctx.NotFound()
 }

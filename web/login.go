@@ -20,7 +20,6 @@ type LoginModel struct {
 	DiscordOauthLink string
 	GithubOauthLink  string
 	MesehubOauthLink string
-	Claims           *types.Claims
 }
 
 func (ctx *Context) Login(w http.ResponseWriter, r *http.Request, c *types.Claims) {
@@ -28,7 +27,6 @@ func (ctx *Context) Login(w http.ResponseWriter, r *http.Request, c *types.Claim
 
 	lm := &LoginModel{
 		Config: cfg,
-		Claims: c,
 	}
 
 	if cfg.GithubOAuthConfig != nil {
@@ -100,7 +98,7 @@ func (ctx *Context) Login(w http.ResponseWriter, r *http.Request, c *types.Claim
 		}
 	}
 
-	t := ctx.CreateTemplate("login.html")
+	t := ctx.CreateTemplate("login.html", r)
 	err := t.ExecuteTemplate(w, "layout", lm)
 	if err != nil {
 		panic(err)

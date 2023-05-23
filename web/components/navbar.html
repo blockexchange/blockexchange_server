@@ -23,9 +23,9 @@
                     <i class="fa fa-search"></i> Search
                 </a>
             </li>
-            {{if .Claims}}
+            {{if Claims}}
             <li class="nav-item">
-                <a href="{{BaseURL}}schema/{{.Claims.Username}}" class="nav-link">
+                <a href="{{BaseURL}}schema/{{Claims.Username}}" class="nav-link">
                     <i class="fa fa-home"></i> My schemas
                 </a>
             </li>
@@ -34,22 +34,22 @@
                     <i class="fas fa-upload"></i> Schema import
                 </a>
             </li>
-            {{end}}
-            {{if .Claims.IsAdmin}}
+            {{if Claims.IsAdmin}}
             <li class="nav-item">
                 <a href="{{BaseURL}}tags" class="nav-link">
                     <i class="fas fa-tags"></i> Tags
                 </a>
             </li>
             {{end}}
+            {{end}}
         </ul>
-        {{if .Claims}}
+        {{if Claims}}
         <form class="d-flex">
             <div class="btn btn-light">
                 <a href="{{BaseURL}}profile">
                     <i class="fas fa-user"></i>
                     <span>
-                        Logged in as <b>{{.Claims.Username}}</b>
+                        Logged in as <b>{{Claims.Username}}</b>
                     </span>
                 </a>
             </div>

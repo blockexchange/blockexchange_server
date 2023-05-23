@@ -8,7 +8,7 @@
             </div>
             <div class="card-body">
                 <h5 class="card-title">Login</h5>
-                {{if .Claims}}
+                {{if Claims}}
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="logout"/>
                     <button type="submit" class="btn btn-secondary">Logout</button>
@@ -18,7 +18,7 @@
                     Profile
                 </a>
                 {{end}}
-                {{if not .Claims}}
+                {{if not Claims}}
                 <form method="POST">
                     <input type="hidden" name="action" value="login"/>
                     <input type="text" name="username" placeholder="Username" value="{{.Username}}" class="form-control {{if .LoginError}}is-invalid{{end}}"/>
