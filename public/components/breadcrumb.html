@@ -7,7 +7,7 @@
             {{ if eq .Link ""}}
                 {{.Name}}
             {{else}}
-                <a href="{{$baseurl}}{{.Link}}">{{.Name}}</a>
+                <a href="{{BaseURL}}{{.Link}}">{{.Name}}</a>
             {{end}}
         </li>
         {{end}}
