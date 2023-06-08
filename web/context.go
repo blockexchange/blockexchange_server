@@ -37,6 +37,7 @@ func (ctx *Context) StaticPage(name string) http.HandlerFunc {
 func (ctx *Context) Setup(r *mux.Router) {
 	r.HandleFunc("/", ctx.Index)
 	r.HandleFunc("/login", ctx.OptionalSecure(ctx.Login))
+	r.HandleFunc("/profile", ctx.Secure(ctx.Profile))
 	r.HandleFunc("/mod", ctx.StaticPage("mod.html"))
 	r.PathPrefix("/assets").Handler(statigz.FileServer(Files, brotli.AddEncoding))
 
