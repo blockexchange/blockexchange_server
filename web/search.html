@@ -1,6 +1,6 @@
 {{define "title"}}Search{{end}}
 {{define "content"}}
-{{ block "breadcrumb" .Data.Breadcrumb }}{{end}}
+{{ block "breadcrumb" .Breadcrumb }}{{end}}
 <h3>Schema Search</h3>
 
 <form method="GET">
@@ -10,7 +10,7 @@
                 name="q"
                 class="form-control"
                 placeholder="Search term (for example 'mesecons')"
-                value="{{.Data.Query}}"
+                value="{{.Query}}"
             />
         </div>
         <div class="col-md-2">
@@ -18,8 +18,8 @@
                 <span class="input-group-text">Tag</span>
                 <select class="form-select" name="tagid">
                     <option></option>
-                    {{ $seltag := .Data.TagID }}
-                    {{ range .Data.Tags }}
+                    {{ $seltag := .TagID }}
+                    {{ range .Tags }}
                     <option value="{{.ID}}" {{if eq .ID $seltag}}selected{{end}}>
                         {{ .Name }}
                     </option>
@@ -36,7 +36,7 @@
     </div>
 </form>
 
-{{ block "schema_list" .Data.SchemaList }}{{ end }}
-{{ block "pager" .Data.Pager }}{{ end }}
+{{ block "schema_list" .SchemaList }}{{ end }}
+{{ block "pager" .Pager }}{{ end }}
 
 {{end}}

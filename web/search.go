@@ -72,6 +72,5 @@ func (ctx *Context) Search(w http.ResponseWriter, r *http.Request, c *types.Clai
 	)
 
 	t := ctx.CreateTemplate("search.html", r)
-	t.ExecuteTemplate(w, "layout", m)
-	//TODO: find error here ^
+	err = t.ExecuteTemplate(w, "layout", m)
 }
