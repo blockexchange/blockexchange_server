@@ -3,7 +3,7 @@
 <h3>Signup</h3>
 
 <form method="POST">
-    <input type="hidden" name="captcha_id" value="{{.Data.CaptchaID}}"/>
+    <input type="hidden" name="captcha_id" value="{{.CaptchaID}}"/>
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
@@ -11,19 +11,19 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label>Username</label>
-                        <input type="text" class="form-control" name="username" placeholder="Username" value="{{.Data.Username}}"/>
+                        <input type="text" class="form-control" name="username" placeholder="Username" value="{{.Username}}"/>
                     </div>
                     <div class="mb-3">
                         <label>Mail (optional)</label>
-                        <input type="text" class="form-control" name="mail" placeholder="Mail" value="{{.Data.Mail}}"/>
+                        <input type="text" class="form-control" name="mail" placeholder="Mail" value="{{.Mail}}"/>
                     </div>
                     <div class="mb-3">
                         <label>Password (6 characters minimum)</label>
-                        <input type="password" class="form-control" name="password" placeholder="Password" value="{{.Data.Password}}"/>
-                        <input type="password" class="form-control" name="password2" placeholder="Password (repeat)" value="{{.Data.Password2}}"/>
+                        <input type="password" class="form-control" name="password" placeholder="Password" value="{{.Password}}"/>
+                        <input type="password" class="form-control" name="password2" placeholder="Password (repeat)" value="{{.Password2}}"/>
                     </div>
                     <div class="mb-3">
-                        <img src="{{.BaseURL}}/api/captcha/{{.Data.CaptchaID}}.png" class="rounded mx-auto d-block" style="background-color: white;">
+                        <img src="{{BaseURL}}/api/captcha/{{.CaptchaID}}.png" class="rounded mx-auto d-block" style="background-color: white;">
                     </div>
                     <div class="mb-3">
                         <label>Captcha</label>
@@ -33,10 +33,10 @@
                         Submit
                     </button>
                     &nbsp;
-                    {{if .Data.Err}}
+                    {{if .Err}}
                     <div class="alert alert-danger">
                         <i class="fa fa-triangle-exclamation"></i>
-                        <b>Error:</b> {{.Data.Err}}
+                        <b>Error:</b> {{.Err}}
                     </div>
                     {{end}}
                 </div>

@@ -1,7 +1,6 @@
-package pages
+package web
 
 import (
-	"blockexchange/controller"
 	"blockexchange/core"
 	"blockexchange/types"
 	"errors"
@@ -21,21 +20,19 @@ type SignupModel struct {
 	Err       error
 }
 
-func Signup(rc *controller.RenderContext) error {
+func (ctx *Context) Signup(w http.ResponseWriter, r *http.Request) {
 	m := &SignupModel{
 		CaptchaID: captcha.New(),
 	}
 
-	r := rc.Request()
 	if r.Method == http.MethodPost {
-		m.Err = handleSignup(rc, m)
+		m.Err = handleSignup(ctx, w, r, m)
 	}
 
-	return rc.Render("pages/signup.html", m)
+	ctx.ExecuteTemplate(w, r, "signup.html", m)
 }
 
-func handleSignup(rc *controller.RenderContext, m *SignupModel) error {
-	r := rc.Request()
+func handleSignup(ctx *Context, w http.ResponseWriter, r *http.Request, m *SignupModel) error {
 	r.ParseForm()
 	m.Username = r.FormValue("username")
 	m.Password = r.FormValue("password")
@@ -48,7 +45,7 @@ func handleSignup(rc *controller.RenderContext, m *SignupModel) error {
 		return errors.New("invalid username, allowed characters: a-zA-Z0-9_.-")
 	}
 
-	existing_user, err := rc.Repositories().UserRepo.GetUserByName(m.Username)
+	existing_user, err := ctx.Repos.UserRepo.GetUserByName(m.Username)
 	if err != nil {
 		return err
 	}
@@ -85,12 +82,12 @@ func handleSignup(rc *controller.RenderContext, m *SignupModel) error {
 		Hash:    string(hash),
 		Mail:    &m.Mail,
 	}
-	err = rc.Repositories().UserRepo.CreateUser(user)
+	err = ctx.Repos.UserRepo.CreateUser(user)
 	if err != nil {
 		return err
 	}
 
-	err = rc.Repositories().AccessTokenRepo.CreateAccessToken(&types.AccessToken{
+	err = ctx.Repos.AccessTokenRepo.CreateAccessToken(&types.AccessToken{
 		Name:    "default",
 		Created: time.Now().Unix() * 1000,
 		Expires: (time.Now().Unix() + (3600 * 24 * 7 * 4)) * 1000,
@@ -108,8 +105,8 @@ func handleSignup(rc *controller.RenderContext, m *SignupModel) error {
 		return err
 	}
 
-	rc.SetToken(token, dur)
-	rc.Redirect(rc.BaseURL() + "/profile")
+	ctx.SetClaims(w, token, dur)
+	http.Redirect(w, r, ctx.Config.BaseURL+"/profile", http.StatusSeeOther)
 
 	return nil
 }

@@ -3,6 +3,7 @@ package web
 import (
 	"blockexchange/types"
 	"blockexchange/web/oauth"
+	"bytes"
 	"embed"
 	"html/template"
 	"net/http"
@@ -35,8 +36,20 @@ func (ctx *Context) StaticPage(name string) http.HandlerFunc {
 	}
 }
 
+func (ctx *Context) ExecuteTemplate(w http.ResponseWriter, r *http.Request, name string, data any) {
+	t := ctx.CreateTemplate(name, r)
+	buf := bytes.NewBuffer([]byte{})
+	err := t.ExecuteTemplate(buf, "layout", data)
+	if err != nil {
+		ctx.RenderError(w, r, 500, err)
+	} else {
+		w.Write(buf.Bytes())
+	}
+}
+
 func (ctx *Context) Setup(r *mux.Router) {
 	r.HandleFunc("/", ctx.Index)
+	r.HandleFunc("/signup", ctx.Signup)
 	r.HandleFunc("/login", ctx.OptionalSecure(ctx.Login))
 	r.HandleFunc("/search", ctx.OptionalSecure(ctx.Search))
 	r.HandleFunc("/profile", ctx.Secure(ctx.Profile, permissionCheck(types.JWTPermissionManagement)))
