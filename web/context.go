@@ -53,6 +53,7 @@ func (ctx *Context) Setup(r *mux.Router) {
 	r.HandleFunc("/login", ctx.OptionalSecure(ctx.Login))
 	r.HandleFunc("/search", ctx.OptionalSecure(ctx.Search))
 	r.HandleFunc("/profile", ctx.Secure(ctx.Profile, permissionCheck(types.JWTPermissionManagement)))
+	r.HandleFunc("/import", ctx.Secure(ctx.SchemaImport, permissionCheck(types.JWTPermissionManagement)))
 	r.HandleFunc("/users", ctx.Users)
 	r.HandleFunc("/mod", ctx.StaticPage("mod.html"))
 	r.PathPrefix("/assets").Handler(statigz.FileServer(Files, brotli.AddEncoding))
