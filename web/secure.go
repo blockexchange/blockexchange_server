@@ -12,6 +12,20 @@ import (
 type SecureHandlerFunc func(http.ResponseWriter, *http.Request, *types.Claims)
 type ClaimsCheck func(*types.Claims) (bool, error)
 
+func permissionCheck(req_perms ...types.JWTPermission) ClaimsCheck {
+	return func(c *types.Claims) (bool, error) {
+		if len(req_perms) > 0 && c == nil {
+			return false, errors.New("no credentials found")
+		}
+		for _, req_perm := range req_perms {
+			if !c.HasPermission(req_perm) {
+				return false, errors.New("forbidden")
+			}
+		}
+		return true, nil
+	}
+}
+
 var err_unauthorized = errors.New("unauthorized")
 var err_forbidden = errors.New("forbidden")
 
