@@ -2,6 +2,7 @@ package web
 
 import (
 	"blockexchange/types"
+	"blockexchange/web/oauth"
 	"embed"
 	"html/template"
 	"net/http"
@@ -42,6 +43,16 @@ func (ctx *Context) Setup(r *mux.Router) {
 	r.HandleFunc("/users", ctx.Users)
 	r.HandleFunc("/mod", ctx.StaticPage("mod.html"))
 	r.PathPrefix("/assets").Handler(statigz.FileServer(Files, brotli.AddEncoding))
+
+	if ctx.Config.DiscordOAuthConfig != nil {
+		r.Handle("/api/oauth_callback/discord", NewHandler(&oauth.DiscordOauth{}, ctx))
+	}
+	if ctx.Config.GithubOAuthConfig != nil {
+		r.Handle("/api/oauth_callback/github", NewHandler(&oauth.GithubOauth{}, ctx))
+	}
+	if ctx.Config.MesehubOAuthConfig != nil {
+		r.Handle("/api/oauth_callback/mesehub", NewHandler(&oauth.MesehubOauth{}, ctx))
+	}
 
 	r.NotFoundHandler = ctx.NotFound()
 }
