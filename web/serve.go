@@ -10,6 +10,7 @@ import (
 
 	"github.com/dchest/captcha"
 	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 
@@ -64,8 +65,10 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	//ctrl := controller.NewController(db_, cfg)
 	//pages.SetupRoutes(ctrl, r, cfg)
 
+	CSRF := csrf.Protect([]byte(cfg.Key))
+
 	// main entry
-	http.Handle("/", r)
+	http.Handle("/", CSRF(r))
 
 	// metrics
 	http.Handle("/metrics", promhttp.Handler())

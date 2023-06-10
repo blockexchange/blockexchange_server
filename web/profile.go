@@ -6,14 +6,18 @@ import (
 	"blockexchange/types"
 	"blockexchange/web/components"
 	"errors"
+	"html/template"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/csrf"
 )
 
 type ProfileModel struct {
 	UpdateError error
 	User        *types.User
 	AccessToken *components.AccessTokenModel
+	CSRFField   template.HTML
 }
 
 func updateProfileData(m *ProfileModel, ur db.UserRepository, r *http.Request, c *types.Claims) error {
@@ -51,6 +55,7 @@ func updateProfileData(m *ProfileModel, ur db.UserRepository, r *http.Request, c
 func (ctx *Context) Profile(w http.ResponseWriter, r *http.Request, c *types.Claims) {
 	m := &ProfileModel{
 		AccessToken: components.AccessToken(&ctx.Repos.AccessTokenRepo, r, c),
+		CSRFField:   csrf.TemplateField(r),
 	}
 
 	if r.Method == http.MethodPost {
@@ -97,6 +102,5 @@ func (ctx *Context) Profile(w http.ResponseWriter, r *http.Request, c *types.Cla
 		}
 	}
 
-	t := ctx.CreateTemplate("profile.html", r)
-	t.ExecuteTemplate(w, "layout", m)
+	ctx.ExecuteTemplate(w, r, "profile.html", m)
 }
