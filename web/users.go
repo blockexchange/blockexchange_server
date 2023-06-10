@@ -34,6 +34,5 @@ func (ctx *Context) Users(w http.ResponseWriter, r *http.Request) {
 		components.BreadcrumbEntry{Name: "Users"},
 	)
 
-	t := ctx.CreateTemplate("users.html", r)
-	t.ExecuteTemplate(w, "layout", m)
+	ctx.ExecuteTemplate(w, r, "users.html", m)
 }

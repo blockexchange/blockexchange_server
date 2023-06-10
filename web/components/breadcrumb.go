@@ -2,7 +2,6 @@ package components
 
 type BreadcrumbModel struct {
 	Entries []BreadcrumbEntry
-	BaseURL string
 }
 
 type BreadcrumbEntry struct {
