@@ -4,6 +4,7 @@
 
 <form method="POST" enctype="multipart/form-data">
     <h5>Block Exchange and WorldEdit format supported</h5>
+    {{ .CSRFField }}
     <div class="row">
         <div class="col-md-4">
             <input type="file" name="file" accept=".zip,.we" class="form-control"/>

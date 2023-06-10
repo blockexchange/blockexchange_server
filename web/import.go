@@ -8,18 +8,22 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"html/template"
 	"io"
 	"math/rand"
 	"mime/multipart"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/gorilla/csrf"
 )
 
 type ImportModel struct {
 	ImportError    error
 	ImportedSchema *types.Schema
 	FileSize       int
+	CSRFField      template.HTML
 }
 
 func handleImport(repos *db.Repositories, r *http.Request, c *types.Claims, m *ImportModel) {
@@ -49,7 +53,7 @@ func handleImport(repos *db.Repositories, r *http.Request, c *types.Claims, m *I
 	} else if strings.HasSuffix(handler.Filename, ".zip") {
 		schema, err = handleBXImport(repos, c, handler, buf)
 	} else {
-		err = errors.New("Unrecognized file extension")
+		err = errors.New("unrecognized file extension")
 	}
 
 	if err != nil {
@@ -208,7 +212,9 @@ func handleWeImport(repos *db.Repositories, c *types.Claims, handler *multipart.
 }
 
 func (ctx *Context) SchemaImport(w http.ResponseWriter, r *http.Request, c *types.Claims) {
-	m := &ImportModel{}
+	m := &ImportModel{
+		CSRFField: csrf.TemplateField(r),
+	}
 
 	if r.Method == http.MethodPost {
 		handleImport(ctx.Repos, r, c, m)

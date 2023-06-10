@@ -22,6 +22,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	r := mux.NewRouter()
 	r.Use(prometheusMiddleware)
 	r.Use(loggingMiddleware)
+	r.Use(csrf.Protect([]byte(cfg.Key)))
 
 	// cache/store setup
 	var cache core.Cache = core.NewNoOpCache()
@@ -60,15 +61,8 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	}
 	ctx.Setup(r)
 
-	// controller setup and routing
-	// TODO: deprecated
-	//ctrl := controller.NewController(db_, cfg)
-	//pages.SetupRoutes(ctrl, r, cfg)
-
-	CSRF := csrf.Protect([]byte(cfg.Key))
-
 	// main entry
-	http.Handle("/", CSRF(r))
+	http.Handle("/", r)
 
 	// metrics
 	http.Handle("/metrics", promhttp.Handler())
