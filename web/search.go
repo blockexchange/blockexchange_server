@@ -71,6 +71,5 @@ func (ctx *Context) Search(w http.ResponseWriter, r *http.Request, c *types.Clai
 		components.BreadcrumbEntry{Name: "Search"},
 	)
 
-	t := ctx.CreateTemplate("search.html", r)
-	t.ExecuteTemplate(w, "layout", m)
+	ctx.ExecuteTemplate(w, r, "search.html", m)
 }

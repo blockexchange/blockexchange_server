@@ -26,6 +26,18 @@ type ImportModel struct {
 	CSRFField      template.HTML
 }
 
+func (ctx *Context) SchemaImport(w http.ResponseWriter, r *http.Request, c *types.Claims) {
+	m := &ImportModel{
+		CSRFField: csrf.TemplateField(r),
+	}
+
+	if r.Method == http.MethodPost {
+		handleImport(ctx.Repos, r, c, m)
+	}
+
+	ctx.ExecuteTemplate(w, r, "import.html", m)
+}
+
 func handleImport(repos *db.Repositories, r *http.Request, c *types.Claims, m *ImportModel) {
 	err := r.ParseMultipartForm(1000 * 1000 * 10)
 	if err != nil {
@@ -209,16 +221,4 @@ func handleWeImport(repos *db.Repositories, c *types.Claims, handler *multipart.
 	}
 
 	return repos.SchemaRepo.GetSchemaById(schema.ID)
-}
-
-func (ctx *Context) SchemaImport(w http.ResponseWriter, r *http.Request, c *types.Claims) {
-	m := &ImportModel{
-		CSRFField: csrf.TemplateField(r),
-	}
-
-	if r.Method == http.MethodPost {
-		handleImport(ctx.Repos, r, c, m)
-	}
-
-	ctx.ExecuteTemplate(w, r, "import.html", m)
 }

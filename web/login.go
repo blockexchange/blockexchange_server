@@ -98,10 +98,5 @@ func (ctx *Context) Login(w http.ResponseWriter, r *http.Request, c *types.Claim
 		}
 	}
 
-	t := ctx.CreateTemplate("login.html", r)
-	err := t.ExecuteTemplate(w, "layout", lm)
-	if err != nil {
-		panic(err)
-		//ctx.RenderError(w, r, 500, err)
-	}
+	ctx.ExecuteTemplate(w, r, "login.html", lm)
 }
