@@ -18,11 +18,8 @@ var Files embed.FS
 
 func (ctx *Context) CreateTemplate(pagename string, r *http.Request) *template.Template {
 	funcs := template.FuncMap{
-		"BaseURL": func() string { return ctx.BaseURL },
-		"Claims": func() *types.Claims {
-			c, _ := ctx.GetClaims(r)
-			return c
-		},
+		"BaseURL":    func() string { return ctx.BaseURL },
+		"Claims":     func() (*types.Claims, error) { return ctx.GetClaims(r) },
 		"prettysize": prettysize,
 		"formattime": formattime,
 	}
