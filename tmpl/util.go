@@ -1,7 +1,6 @@
 package tmpl
 
 import (
-	"blockexchange/types"
 	"bytes"
 	"embed"
 	"html/template"
@@ -20,7 +19,7 @@ type TemplateUtil struct {
 
 func (tu *TemplateUtil) CreateTemplate(pagename string, r *http.Request) *template.Template {
 	funcs := template.FuncMap{
-		"Claims": func() (*types.Claims, error) { return tu.GetClaims(r) },
+		"Claims": func() (any, error) { return tu.GetClaims(r) },
 	}
 	tu.AddFuncs(funcs, r)
 	return template.Must(template.New("").Funcs(funcs).ParseFS(tu.Files, "components/*.html", pagename))
