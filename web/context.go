@@ -1,12 +1,15 @@
 package web
 
 import (
+	"blockexchange/core"
+	"blockexchange/db"
 	"blockexchange/types"
 	"blockexchange/web/oauth"
-	"bytes"
 	"embed"
+	"fmt"
 	"html/template"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/vearutop/statigz"
@@ -16,35 +19,44 @@ import (
 //go:embed *
 var Files embed.FS
 
-func (ctx *Context) CreateTemplate(pagename string, r *http.Request) *template.Template {
-	funcs := template.FuncMap{
-		"BaseURL":    func() string { return ctx.BaseURL },
-		"Claims":     func() (*types.Claims, error) { return ctx.GetClaims(r) },
-		"prettysize": prettysize,
-		"formattime": formattime,
-	}
-	return template.Must(template.New("").Funcs(funcs).ParseFS(Files, "components/*.html", pagename))
+type Context struct {
+	JWTKey       string
+	CookieName   string
+	CookieDomain string
+	CookiePath   string
+	CookieSecure bool
+	BaseURL      string
+	Repos        *db.Repositories
+	Config       *core.Config
+	tu           *TemplateUtil
 }
 
-func (ctx *Context) StaticPage(name string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		t := ctx.CreateTemplate(name, r)
-		t.ExecuteTemplate(w, "layout", nil)
-	}
-}
-
-func (ctx *Context) ExecuteTemplate(w http.ResponseWriter, r *http.Request, name string, data any) {
-	t := ctx.CreateTemplate(name, r)
-	buf := bytes.NewBuffer([]byte{})
-	err := t.ExecuteTemplate(buf, "layout", data)
-	if err != nil {
-		ctx.RenderError(w, r, 500, err)
+func prettysize(num int) string {
+	if num > (1000 * 1000) {
+		return fmt.Sprintf("%d MB", num/(1000*1000))
+	} else if num > 1000 {
+		return fmt.Sprintf("%d kB", num/(1000))
 	} else {
-		w.Write(buf.Bytes())
+		return fmt.Sprintf("%d bytes", num)
 	}
+}
+
+func formattime(ts int64) string {
+	t := time.UnixMilli(ts)
+	return t.Format(time.UnixDate)
 }
 
 func (ctx *Context) Setup(r *mux.Router) {
+	ctx.tu = &TemplateUtil{
+		Files: Files,
+		AddFuncs: func(funcs template.FuncMap, r *http.Request) {
+			funcs["BaseURL"] = func() string { return ctx.Config.BaseURL }
+			funcs["Claims"] = func() (*types.Claims, error) { return ctx.GetClaims(r) }
+			funcs["prettysize"] = prettysize
+			funcs["formattime"] = formattime
+		},
+	}
+
 	r.HandleFunc("/", ctx.Index)
 	r.HandleFunc("/signup", ctx.Signup)
 	r.HandleFunc("/login", ctx.OptionalSecure(ctx.Login))
@@ -52,7 +64,7 @@ func (ctx *Context) Setup(r *mux.Router) {
 	r.HandleFunc("/profile", ctx.Secure(ctx.Profile, permissionCheck(types.JWTPermissionManagement)))
 	r.HandleFunc("/import", ctx.Secure(ctx.SchemaImport, permissionCheck(types.JWTPermissionManagement)))
 	r.HandleFunc("/users", ctx.Users)
-	r.HandleFunc("/mod", ctx.StaticPage("mod.html"))
+	r.HandleFunc("/mod", ctx.tu.StaticPage("mod.html"))
 	r.PathPrefix("/assets").Handler(statigz.FileServer(Files, brotli.AddEncoding))
 
 	if ctx.Config.DiscordOAuthConfig != nil {

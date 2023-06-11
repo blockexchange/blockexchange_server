@@ -33,7 +33,7 @@ func (ctx *Context) OptionalSecure(h SecureHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims, err := ctx.GetClaims(r)
 		if err != nil {
-			ctx.RenderError(w, r, 500, err)
+			ctx.tu.RenderError(w, r, 500, err)
 			return
 		}
 
@@ -45,22 +45,22 @@ func (ctx *Context) Secure(h SecureHandlerFunc, checks ...ClaimsCheck) http.Hand
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims, err := ctx.GetClaims(r)
 		if err != nil {
-			ctx.RenderError(w, r, 500, err)
+			ctx.tu.RenderError(w, r, 500, err)
 			return
 		}
 		if claims == nil {
-			ctx.RenderError(w, r, 401, err_unauthorized)
+			ctx.tu.RenderError(w, r, 401, err_unauthorized)
 			return
 		}
 
 		for _, c := range checks {
 			ok, err := c(claims)
 			if err != nil {
-				ctx.RenderError(w, r, 500, err)
+				ctx.tu.RenderError(w, r, 500, err)
 				return
 			}
 			if !ok {
-				ctx.RenderError(w, r, 403, err_forbidden)
+				ctx.tu.RenderError(w, r, 403, err_forbidden)
 				return
 			}
 		}

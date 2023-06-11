@@ -17,7 +17,7 @@ func (ctx *Context) Users(w http.ResponseWriter, r *http.Request) {
 
 	count, err := ctx.Repos.UserRepo.CountUsers()
 	if err != nil {
-		ctx.RenderError(w, r, 500, err)
+		ctx.tu.RenderError(w, r, 500, err)
 		return
 	}
 
@@ -25,7 +25,7 @@ func (ctx *Context) Users(w http.ResponseWriter, r *http.Request) {
 
 	m.Users, err = ctx.Repos.UserRepo.GetUsers(20, m.Pager.Offset)
 	if err != nil {
-		ctx.RenderError(w, r, 500, err)
+		ctx.tu.RenderError(w, r, 500, err)
 		return
 	}
 
@@ -34,5 +34,5 @@ func (ctx *Context) Users(w http.ResponseWriter, r *http.Request) {
 		components.BreadcrumbEntry{Name: "Users"},
 	)
 
-	ctx.ExecuteTemplate(w, r, "users.html", m)
+	ctx.tu.ExecuteTemplate(w, r, "users.html", m)
 }

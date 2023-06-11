@@ -21,7 +21,7 @@ type SearchModel struct {
 func (ctx *Context) Search(w http.ResponseWriter, r *http.Request, c *types.Claims) {
 	tags, err := ctx.Repos.TagRepo.GetAll()
 	if err != nil {
-		ctx.RenderError(w, r, 500, err)
+		ctx.tu.RenderError(w, r, 500, err)
 		return
 	}
 
@@ -35,7 +35,7 @@ func (ctx *Context) Search(w http.ResponseWriter, r *http.Request, c *types.Clai
 	if tagidstr != "" {
 		tagid, err := strconv.ParseInt(tagidstr, 10, 64)
 		if err != nil {
-			ctx.RenderError(w, r, 500, err)
+			ctx.tu.RenderError(w, r, 500, err)
 			return
 		}
 
@@ -53,7 +53,7 @@ func (ctx *Context) Search(w http.ResponseWriter, r *http.Request, c *types.Clai
 
 	count, err := ctx.Repos.SchemaSearchRepo.Count(q)
 	if err != nil {
-		ctx.RenderError(w, r, 500, err)
+		ctx.tu.RenderError(w, r, 500, err)
 		return
 	}
 
@@ -61,7 +61,7 @@ func (ctx *Context) Search(w http.ResponseWriter, r *http.Request, c *types.Clai
 
 	list, err := ctx.Repos.SchemaSearchRepo.Search(q, m.Limit, m.Pager.Offset)
 	if err != nil {
-		ctx.RenderError(w, r, 500, err)
+		ctx.tu.RenderError(w, r, 500, err)
 		return
 	}
 	m.SchemaList = components.SchemaList(c, list, true)
@@ -71,5 +71,5 @@ func (ctx *Context) Search(w http.ResponseWriter, r *http.Request, c *types.Clai
 		components.BreadcrumbEntry{Name: "Search"},
 	)
 
-	ctx.ExecuteTemplate(w, r, "search.html", m)
+	ctx.tu.ExecuteTemplate(w, r, "search.html", m)
 }

@@ -35,7 +35,7 @@ func (ctx *Context) SchemaImport(w http.ResponseWriter, r *http.Request, c *type
 		handleImport(ctx.Repos, r, c, m)
 	}
 
-	ctx.ExecuteTemplate(w, r, "import.html", m)
+	ctx.tu.ExecuteTemplate(w, r, "import.html", m)
 }
 
 func handleImport(repos *db.Repositories, r *http.Request, c *types.Claims, m *ImportModel) {

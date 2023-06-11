@@ -29,7 +29,7 @@ func (ctx *Context) Signup(w http.ResponseWriter, r *http.Request) {
 		m.Err = handleSignup(ctx, w, r, m)
 	}
 
-	ctx.ExecuteTemplate(w, r, "signup.html", m)
+	ctx.tu.ExecuteTemplate(w, r, "signup.html", m)
 }
 
 func handleSignup(ctx *Context, w http.ResponseWriter, r *http.Request, m *SignupModel) error {

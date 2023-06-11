@@ -51,7 +51,7 @@ func (ctx *Context) Login(w http.ResponseWriter, r *http.Request, c *types.Claim
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			ctx.RenderError(w, r, 500, err)
+			ctx.tu.RenderError(w, r, 500, err)
 			return
 		}
 
@@ -62,7 +62,7 @@ func (ctx *Context) Login(w http.ResponseWriter, r *http.Request, c *types.Claim
 
 			user, err := ctx.Repos.UserRepo.GetUserByName(lm.Username)
 			if err != nil {
-				ctx.RenderError(w, r, 500, err)
+				ctx.tu.RenderError(w, r, 500, err)
 				return
 			}
 
@@ -83,7 +83,7 @@ func (ctx *Context) Login(w http.ResponseWriter, r *http.Request, c *types.Claim
 			dur := time.Duration(7 * 24 * time.Hour)
 			token, err := core.CreateJWT(user, permissions, dur)
 			if err != nil {
-				ctx.RenderError(w, r, 500, err)
+				ctx.tu.RenderError(w, r, 500, err)
 				return
 			}
 
@@ -98,5 +98,5 @@ func (ctx *Context) Login(w http.ResponseWriter, r *http.Request, c *types.Claim
 		}
 	}
 
-	ctx.ExecuteTemplate(w, r, "login.html", lm)
+	ctx.tu.ExecuteTemplate(w, r, "login.html", lm)
 }

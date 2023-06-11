@@ -61,19 +61,19 @@ func (ctx *Context) Profile(w http.ResponseWriter, r *http.Request, c *types.Cla
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			ctx.RenderError(w, r, 500, err)
+			ctx.tu.RenderError(w, r, 500, err)
 			return
 		}
 		if r.FormValue("action") == "update_profile" {
 			m.User, err = ctx.Repos.UserRepo.GetUserById(c.UserID)
 			if err != nil {
-				ctx.RenderError(w, r, 500, err)
+				ctx.tu.RenderError(w, r, 500, err)
 				return
 			}
 
 			err = updateProfileData(m, ctx.Repos.UserRepo, r, c)
 			if err != nil {
-				ctx.RenderError(w, r, 500, err)
+				ctx.tu.RenderError(w, r, 500, err)
 				return
 			}
 
@@ -81,7 +81,7 @@ func (ctx *Context) Profile(w http.ResponseWriter, r *http.Request, c *types.Cla
 			dur := time.Duration(24 * 180 * time.Hour)
 			token, err := core.CreateJWT(m.User, permissions, dur)
 			if err != nil {
-				ctx.RenderError(w, r, 500, err)
+				ctx.tu.RenderError(w, r, 500, err)
 				return
 			}
 
@@ -93,14 +93,14 @@ func (ctx *Context) Profile(w http.ResponseWriter, r *http.Request, c *types.Cla
 		var err error
 		m.User, err = ctx.Repos.UserRepo.GetUserById(c.UserID)
 		if err != nil {
-			ctx.RenderError(w, r, 500, err)
+			ctx.tu.RenderError(w, r, 500, err)
 			return
 		}
 		if m.User == nil {
-			ctx.RenderError(w, r, 404, errors.New("not found"))
+			ctx.tu.RenderError(w, r, 404, errors.New("not found"))
 			return
 		}
 	}
 
-	ctx.ExecuteTemplate(w, r, "profile.html", m)
+	ctx.tu.ExecuteTemplate(w, r, "profile.html", m)
 }
