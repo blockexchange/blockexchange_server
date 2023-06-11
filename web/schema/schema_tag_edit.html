@@ -1,0 +1,54 @@
+{{define "title"}}Schema Tag Editor{{end}}
+{{define "content"}}
+<script>
+var formSubmitting = false;
+var setFormSubmitting = function() { formSubmitting = true; };
+window.onbeforeunload = function() { return formSubmitting ? null : "" };
+</script>
+
+<h3>
+    Schema Tag Editor
+    <small class="text-muted">{{.Schema.Name}}</small>
+</h3>
+<form method="POST" onsubmit="setFormSubmitting()">
+    {{ CSRFField }}
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th>Tag</th>
+                <th>Description</th>
+                <th>Assigned</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .Tags }}
+            <tr {{if .Selected}}class="table-primary"{{end}}>
+                <td>
+                    <span class="badge bg-success">
+                        <i class="fas fa-tag"></i>
+                        {{.Name}}
+                    </span>
+                </td>
+                <td>{{.Description}}</td>
+                <td>
+                    <input type="checkbox" name="tag_assigned_{{.ID}}" class="form-check-input" {{if .Selected}}checked=""{{end}}/>
+                </td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+
+    <div class="col-md-12">
+        <div class="btn-group float-end">
+            <button class="btn btn-sm btn-success" name="action" value="save">
+                <i class="fa fa-save"></i> Save
+            </button>
+            <a class="btn btn-sm btn-warning" href="../{{.Schema.Name}}">
+                <i class="fa fa-trash"></i> Abort
+            </a>
+        </div>
+    </div>
+
+</form>
+
+{{end}}

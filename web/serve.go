@@ -2,22 +2,37 @@ package web
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"time"
 
 	"blockexchange/api"
-	"blockexchange/controller"
 	"blockexchange/core"
-	"blockexchange/public"
-	"blockexchange/public/pages"
+	"blockexchange/tmpl"
 
 	"github.com/dchest/captcha"
 	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+func prettysize(num int) string {
+	if num > (1000 * 1000) {
+		return fmt.Sprintf("%d MB", num/(1000*1000))
+	} else if num > 1000 {
+		return fmt.Sprintf("%d kB", num/(1000))
+	} else {
+		return fmt.Sprintf("%d bytes", num)
+	}
+}
+
+func formattime(ts int64) string {
+	t := time.UnixMilli(ts)
+	return t.Format(time.UnixDate)
+}
 
 func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 
@@ -49,12 +64,31 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	}
 	a.SetupRoutes(r, cfg)
 
-	// controller setup and routing
-	ctrl := controller.NewController(db_, cfg)
-	pages.SetupRoutes(ctrl, r, cfg)
+	tmplRoute := r.NewRoute().Subrouter()
+	tmplRoute.Use(csrf.Protect([]byte(cfg.Key)))
 
-	// assets
-	r.PathPrefix("/assets/").Handler(HandleAssets(public.Files, !cfg.WebDev))
+	tu := &tmpl.TemplateUtil{
+		Files: Files,
+		AddFuncs: func(funcs template.FuncMap, r *http.Request) {
+			funcs["BaseURL"] = func() string { return cfg.BaseURL }
+			funcs["prettysize"] = prettysize
+			funcs["formattime"] = formattime
+			funcs["CSRFField"] = func() template.HTML { return csrf.TemplateField(r) }
+		},
+		JWTKey:       cfg.Key,
+		CookieName:   cfg.CookieName,
+		CookieDomain: cfg.CookieDomain,
+		CookiePath:   cfg.CookiePath,
+		CookieSecure: cfg.CookieSecure,
+	}
+
+	// templates, pages
+	ctx := &Context{
+		tu:     tu,
+		Config: cfg,
+		Repos:  a.Repositories,
+	}
+	ctx.Setup(tmplRoute)
 
 	// main entry
 	http.Handle("/", r)

@@ -1,0 +1,56 @@
+{{define "title"}}Profile{{end}}
+{{define "content"}}
+{{if .UpdateError}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-danger">
+            <b>Error:</b> {{.UpdateError}}
+        </div>
+    </div>
+</div>
+{{end}}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Update profile
+            </div>
+            <div class="card-body">
+                <form method="POST" action="profile">
+                    <label>Username</label>
+                    <input type="text" class="form-control" name="username" placeholder="Username" value="{{.User.Name}}">
+                    <label>E-Mail</label>
+                    <input type="text" class="form-control" name="mail" placeholder="E-Mail" value="{{if not .User.Mail}}{{else}}{{.User.Mail}}{{end}}">
+                    <div class="alert alert-success">
+                        <i class="fa fa-circle-info"></i>
+                        E-Mail address is optional but strongly encouraged as it is the only recovery-option for local accounts
+                    </div>
+                    <input type="hidden" name="action" value="update_profile">
+                    {{ CSRFField }}
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa fa-save"></i>
+                        Update profile
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Profile info
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li> ID: <b>{{.User.ID}}</b></li>
+                    <li> Name: <b>{{.User.Name}}</b></li>
+                    <li> Type: <span class="badge bg-success">{{.User.Type}}</span></li>
+                    <li> Role: <b>{{.User.Role}}</b></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+&nbsp;
+{{block "access_token" .AccessToken}}{{end}}
+{{end}}

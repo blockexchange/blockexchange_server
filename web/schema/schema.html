@@ -1,0 +1,222 @@
+{{define "title"}}Schema{{end}}
+
+{{define "header"}}
+{{ range $name, $content := .AdditionalMetaTags }}
+    <meta name="{{$name}}" content="{{$content}}"/>
+{{ end }}
+{{end}}
+
+{{define "content"}}
+{{ block "breadcrumb" .Breadcrumb }}{{end}}
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>
+            {{ .Schema.Name }}
+            <small class="text-muted">by {{ .Schema.UserName }}</small>
+            &nbsp;
+            {{ if Claims }}
+                <form method="POST" style="display: inline;">
+                {{ CSRFField }}
+                {{ if .Starred }}
+                    <input type="hidden" name="action" value="unstar"/>
+                    <button class="btn btn-xs btn-outline-primary">
+                        <i class="fa fa-star" style="color: yellow;"></i>
+                        <span class="badge bg-secondary rounded-pill">{{ .Schema.Stars }}</span>
+                        Unstar
+                    </button>
+                {{else}}
+                    <input type="hidden" name="action" value="star"/>
+                    <button class="btn btn-xs btn-outline-primary">
+                        <i class="fa-regular fa-star"></i>
+                        <span class="badge bg-secondary rounded-pill">{{ .Schema.Stars }}</span>
+                        Star
+                    </button>
+                {{end}}
+                </form>
+            {{else}}
+                {{ if gt .Schema.Stars 0 }}
+                    <i class="fa fa-star" style="color: yellow;"></i>
+                    <span class="badge bg-secondary rounded-pill">{{ .Schema.Stars }}</span>
+                {{else}}
+                    <i class="fa-regular fa-star"></i>
+                {{end}}
+            {{end}}
+        </h3>
+    </div>
+    <div class="col-md-6">
+        {{ if Claims }}
+        {{ if or (eq .Schema.UserName Claims.Username) (Claims.IsAdmin) }}
+        <form method="POST">
+            {{ CSRFField }}
+            <input type="hidden" name="action" value="update-screenshot">
+            <div class="btn-group float-end">
+                <a class="btn btn-sm btn-secondary" href="./{{.Schema.Name}}/edit">
+                    <i class="fa fa-edit"></i> Edit
+                </a>
+                <button class="btn btn-sm btn-secondary" href="./{{.Schema.Name}}">
+                    <i class="fa fa-image"></i> Update screenshot
+                </button>
+                <a class="btn btn-sm btn-danger" href="./{{.Schema.Name}}/delete">
+                    <i class="fa fa-trash"></i> Delete
+                </a>
+            </div>
+        </form>
+        {{end}}
+        {{end}}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Details</h5>
+                <ul>
+                    <li>
+                        <b>Created: </b>{{ formattime .Schema.Created }}
+                    </li>
+                    <li>
+                        <b>Changed: </b>{{ formattime .Schema.Mtime }}
+                    </li>
+                    <li>
+                        <b>Size: </b>{{ prettysize .Schema.TotalSize }}
+                    </li>
+                    <li>
+                        <b>Dimensions: </b>
+                        {{ .Schema.SizeX }} / 
+                        {{ .Schema.SizeY }} / 
+                        {{ .Schema.SizeZ }} nodes
+                    </li>
+                    <li>
+                        <b>Parts: </b>{{ .Schema.TotalParts }}
+                    </li>
+                    <li>
+                        <b>Downloads: </b>{{ .Schema.Downloads }}
+                    </li>
+                    <li>
+                        <b>License: </b>
+                        {{if eq .Schema.License "CC0"}}
+                            <img src="{{BaseURL}}/assets/pics/license_cc0.png">
+                        {{else if eq .Schema.License "CC-BY-SA"}}
+                            <img src="{{BaseURL}}/assets/pics/license_cc-by-sa.png">
+                        {{else}}
+                            {{ .Schema.License }}
+                        {{end}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    Description
+                    {{ if Claims }}
+                    {{ if eq .Schema.UserName Claims.Username}}
+                    <div class="btn-group float-end">
+                        <a class="btn btn-sm btn-secondary" href="./{{.Schema.Name}}/edit">
+                            <i class="fa fa-edit"></i> Edit
+                        </a>
+                    </div>
+                    {{end}}
+                    {{end}}
+                </h5>
+                <pre>{{.Schema.Description}}</pre>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Used mods</h5>
+                <details>
+                    <summary>Click to open</summary>
+                    <ul>
+                    {{range .Schema.Mods}}
+                        <li>
+                            <span class="badge bg-primary">{{.}}</span>
+                        </li>
+                    {{end}}
+                    </ul>
+                </details>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    Tags
+                    {{ if Claims }}
+                    {{ if eq .Schema.UserName Claims.Username}}
+                    <div class="btn-group float-end">
+                        <a class="btn btn-sm btn-secondary" href="./{{.Schema.Name}}/edit-tags">
+                            <i class="fa fa-edit"></i> Edit
+                        </a>
+                    </div>
+                    {{end}}
+                    {{end}}
+                </h5>
+                {{range .Schema.Tags}}
+                <span class="badge bg-success">
+                    <i class="fas fa-tag"></i>
+                    {{.}}
+                </span>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Preview</h5>
+                <div class="text-center">
+                    <img src="{{BaseURL}}/api/schema/{{.Schema.ID}}/screenshot" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Download</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card bg-secondary">
+                            <div class="card-header">Online</div>
+                            <div class="card-body">
+                                <p>To download the schematic with the <a href="{{BaseURL}}mod">blockexchange</a> mod:</p>
+                                <p>See where it fits with <b>/bx_pos1</b> and <b>/bx_allocate {{.Schema.UserName}} {{.Schema.Name}}</b></p>
+                                <p>and load it with <b>/bx_load {{.Schema.UserName}} {{.Schema.Name}}</b></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-secondary">
+                            <div class="card-header">Offline</div>
+                            <div class="card-body">
+                                <a download class="btn btn-sm btn-primary" href="{{BaseURL}}api/export_bx/{{.Schema.ID}}/{{.Schema.Name}}.zip">
+                                    <i class="fa fa-download"></i>
+                                    Export as Blockexchange Schema
+                                </a>
+                                {{if lt .Schema.TotalParts 100}}
+                                &nbsp;
+                                <a download class="btn btn-sm btn-primary" href="{{BaseURL}}api/export_we/{{.Schema.ID}}/{{.Schema.Name}}.we">
+                                    <i class="fa fa-download"></i>
+                                    Export as Worldedit Schema
+                                </a>
+                                {{end}}
+                                <hr>
+                                <p>To import a BX schema copy the zip file to the <b>bxschems</b> folder in your world directory</p>
+                                <p>See where it fits with <b>/bx_pos1</b> and <b>/bx_allocate_local {{.Schema.Name}}</b></p>
+                                <p>and load it with <b>/bx_load_local {{.Schema.Name}}</b></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}
