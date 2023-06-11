@@ -23,5 +23,5 @@ func NewSchemaContext(tu *tmpl.TemplateUtil, repos db.Repositories, BaseURL stri
 
 func (ctx *SchemaContext) Setup(r *mux.Router) {
 	r.HandleFunc("/schema/{username}/{schemaname}", ctx.tu.OptionalSecure(ctx.Schema))
-
+	r.HandleFunc("/schema/{username}", ctx.tu.OptionalSecure(ctx.UserSchema))
 }
