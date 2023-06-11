@@ -105,7 +105,7 @@ func handleSignup(ctx *Context, w http.ResponseWriter, r *http.Request, m *Signu
 		return err
 	}
 
-	ctx.SetClaims(w, token, dur)
+	ctx.tu.SetClaims(w, token, dur)
 	http.Redirect(w, r, ctx.Config.BaseURL+"/profile", http.StatusSeeOther)
 
 	return nil

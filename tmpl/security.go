@@ -1,4 +1,4 @@
-package web
+package tmpl
 
 import (
 	"blockexchange/types"
@@ -12,7 +12,7 @@ import (
 type SecureHandlerFunc func(http.ResponseWriter, *http.Request, *types.Claims)
 type ClaimsCheck func(*types.Claims) (bool, error)
 
-func permissionCheck(req_perms ...types.JWTPermission) ClaimsCheck {
+func PermissionCheck(req_perms ...types.JWTPermission) ClaimsCheck {
 	return func(c *types.Claims) (bool, error) {
 		if len(req_perms) > 0 && c == nil {
 			return false, errors.New("no credentials found")
@@ -29,11 +29,11 @@ func permissionCheck(req_perms ...types.JWTPermission) ClaimsCheck {
 var err_unauthorized = errors.New("unauthorized")
 var err_forbidden = errors.New("forbidden")
 
-func (ctx *Context) OptionalSecure(h SecureHandlerFunc) http.HandlerFunc {
+func (ctx *TemplateUtil) OptionalSecure(h SecureHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims, err := ctx.GetClaims(r)
 		if err != nil {
-			ctx.tu.RenderError(w, r, 500, err)
+			ctx.RenderError(w, r, 500, err)
 			return
 		}
 
@@ -41,26 +41,26 @@ func (ctx *Context) OptionalSecure(h SecureHandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (ctx *Context) Secure(h SecureHandlerFunc, checks ...ClaimsCheck) http.HandlerFunc {
+func (ctx *TemplateUtil) Secure(h SecureHandlerFunc, checks ...ClaimsCheck) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims, err := ctx.GetClaims(r)
 		if err != nil {
-			ctx.tu.RenderError(w, r, 500, err)
+			ctx.RenderError(w, r, 500, err)
 			return
 		}
 		if claims == nil {
-			ctx.tu.RenderError(w, r, 401, err_unauthorized)
+			ctx.RenderError(w, r, 401, err_unauthorized)
 			return
 		}
 
 		for _, c := range checks {
 			ok, err := c(claims)
 			if err != nil {
-				ctx.tu.RenderError(w, r, 500, err)
+				ctx.RenderError(w, r, 500, err)
 				return
 			}
 			if !ok {
-				ctx.tu.RenderError(w, r, 403, err_forbidden)
+				ctx.RenderError(w, r, 403, err_forbidden)
 				return
 			}
 		}
@@ -69,7 +69,7 @@ func (ctx *Context) Secure(h SecureHandlerFunc, checks ...ClaimsCheck) http.Hand
 	}
 }
 
-func (ctx *Context) CreateJWT(c *types.Claims, d time.Duration) (string, error) {
+func (ctx *TemplateUtil) CreateJWT(c *types.Claims, d time.Duration) (string, error) {
 	c.RegisteredClaims = &jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(d)),
 	}
@@ -77,7 +77,7 @@ func (ctx *Context) CreateJWT(c *types.Claims, d time.Duration) (string, error) 
 	return t.SignedString([]byte(ctx.JWTKey))
 }
 
-func (ctx *Context) ParseJWT(token string) (*types.Claims, error) {
+func (ctx *TemplateUtil) ParseJWT(token string) (*types.Claims, error) {
 	t, err := jwt.ParseWithClaims(token, &types.Claims{}, func(token *jwt.Token) (any, error) {
 		return []byte(ctx.JWTKey), nil
 	})
@@ -98,7 +98,7 @@ func (ctx *Context) ParseJWT(token string) (*types.Claims, error) {
 	return claims, nil
 }
 
-func (ctx *Context) GetClaims(r *http.Request) (*types.Claims, error) {
+func (ctx *TemplateUtil) GetClaims(r *http.Request) (*types.Claims, error) {
 	co, err := r.Cookie(ctx.CookieName)
 	if err == http.ErrNoCookie {
 		return nil, nil
@@ -115,7 +115,7 @@ func (ctx *Context) GetClaims(r *http.Request) (*types.Claims, error) {
 	return c, nil
 }
 
-func (ctx *Context) SetClaims(w http.ResponseWriter, token string, d time.Duration) {
+func (ctx *TemplateUtil) SetClaims(w http.ResponseWriter, token string, d time.Duration) {
 	c := &http.Cookie{
 		Name:     ctx.CookieName,
 		Value:    token,
@@ -128,6 +128,6 @@ func (ctx *Context) SetClaims(w http.ResponseWriter, token string, d time.Durati
 	http.SetCookie(w, c)
 }
 
-func (ctx *Context) ClearClaims(w http.ResponseWriter) {
+func (ctx *TemplateUtil) ClearClaims(w http.ResponseWriter) {
 	ctx.SetClaims(w, "", time.Duration(0))
 }

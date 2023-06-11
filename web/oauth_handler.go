@@ -124,7 +124,7 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.ctx.SetClaims(w, token, dur)
+	h.ctx.tu.SetClaims(w, token, dur)
 
 	target := h.ctx.Config.BaseURL + "/profile"
 	http.Redirect(w, r, target, http.StatusSeeOther)

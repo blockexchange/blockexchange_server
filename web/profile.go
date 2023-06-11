@@ -85,7 +85,7 @@ func (ctx *Context) Profile(w http.ResponseWriter, r *http.Request, c *types.Cla
 				return
 			}
 
-			ctx.SetClaims(w, token, dur)
+			ctx.tu.SetClaims(w, token, dur)
 		}
 	}
 

@@ -15,7 +15,7 @@
             {{ .Schema.Name }}
             <small class="text-muted">by {{ .Schema.UserName }}</small>
             &nbsp;
-            {{ if .Claims }}
+            {{ if Claims }}
                 <form method="POST" style="display: inline;">
                 {{ if .Starred }}
                     <input type="hidden" name="action" value="unstar"/>
@@ -44,8 +44,8 @@
         </h3>
     </div>
     <div class="col-md-6">
-        {{ if .Claims }}
-        {{ if or (eq .Schema.UserName .Claims.Username) (.Claims.IsAdmin) }}
+        {{ if Claims }}
+        {{ if or (eq .Schema.UserName Claims.Username) (Claims.IsAdmin) }}
         <form method="POST">
             <input type="hidden" name="action" value="update-screenshot">
             <div class="btn-group float-end">
@@ -109,8 +109,8 @@
             <div class="card-body">
                 <h5 class="card-title">
                     Description
-                    {{ if .Claims }}
-                    {{ if eq .Schema.UserName .Claims.Username}}
+                    {{ if Claims }}
+                    {{ if eq .Schema.UserName Claims.Username}}
                     <div class="btn-group float-end">
                         <a class="btn btn-sm btn-secondary" href="./{{.Schema.Name}}/edit">
                             <i class="fa fa-edit"></i> Edit
@@ -143,8 +143,8 @@
             <div class="card-body">
                 <h5 class="card-title">
                     Tags
-                    {{ if .Claims }}
-                    {{ if eq .Schema.UserName .Claims.Username}}
+                    {{ if Claims }}
+                    {{ if eq .Schema.UserName Claims.Username}}
                     <div class="btn-group float-end">
                         <a class="btn btn-sm btn-secondary" href="./{{.Schema.Name}}/edit-tags">
                             <i class="fa fa-edit"></i> Edit

@@ -3,12 +3,12 @@ package web
 import (
 	"blockexchange/core"
 	"blockexchange/db"
+	"blockexchange/tmpl"
 	"blockexchange/types"
 	"blockexchange/web/oauth"
+	"blockexchange/web/schema"
 	"embed"
 	"fmt"
-	"html/template"
-	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -20,15 +20,9 @@ import (
 var Files embed.FS
 
 type Context struct {
-	JWTKey       string
-	CookieName   string
-	CookieDomain string
-	CookiePath   string
-	CookieSecure bool
-	BaseURL      string
-	Repos        *db.Repositories
-	Config       *core.Config
-	tu           *TemplateUtil
+	Repos  *db.Repositories
+	Config *core.Config
+	tu     *tmpl.TemplateUtil
 }
 
 func prettysize(num int) string {
@@ -47,22 +41,12 @@ func formattime(ts int64) string {
 }
 
 func (ctx *Context) Setup(r *mux.Router) {
-	ctx.tu = &TemplateUtil{
-		Files: Files,
-		AddFuncs: func(funcs template.FuncMap, r *http.Request) {
-			funcs["BaseURL"] = func() string { return ctx.Config.BaseURL }
-			funcs["Claims"] = func() (*types.Claims, error) { return ctx.GetClaims(r) }
-			funcs["prettysize"] = prettysize
-			funcs["formattime"] = formattime
-		},
-	}
-
 	r.HandleFunc("/", ctx.Index)
 	r.HandleFunc("/signup", ctx.Signup)
-	r.HandleFunc("/login", ctx.OptionalSecure(ctx.Login))
-	r.HandleFunc("/search", ctx.OptionalSecure(ctx.Search))
-	r.HandleFunc("/profile", ctx.Secure(ctx.Profile, permissionCheck(types.JWTPermissionManagement)))
-	r.HandleFunc("/import", ctx.Secure(ctx.SchemaImport, permissionCheck(types.JWTPermissionManagement)))
+	r.HandleFunc("/login", ctx.tu.OptionalSecure(ctx.Login))
+	r.HandleFunc("/search", ctx.tu.OptionalSecure(ctx.Search))
+	r.HandleFunc("/profile", ctx.tu.Secure(ctx.Profile, tmpl.PermissionCheck(types.JWTPermissionManagement)))
+	r.HandleFunc("/import", ctx.tu.Secure(ctx.SchemaImport, tmpl.PermissionCheck(types.JWTPermissionManagement)))
 	r.HandleFunc("/users", ctx.Users)
 	r.HandleFunc("/mod", ctx.tu.StaticPage("mod.html"))
 	r.PathPrefix("/assets").Handler(statigz.FileServer(Files, brotli.AddEncoding))
@@ -76,6 +60,9 @@ func (ctx *Context) Setup(r *mux.Router) {
 	if ctx.Config.MesehubOAuthConfig != nil {
 		r.Handle("/api/oauth_callback/mesehub", NewHandler(&oauth.MesehubOauth{}, ctx))
 	}
+
+	sc := schema.NewSchemaContext(ctx.tu, *ctx.Repos, ctx.Config.BaseURL)
+	sc.Setup(r)
 
 	r.NotFoundHandler = ctx.NotFound()
 }

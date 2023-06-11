@@ -1,6 +1,7 @@
-package web
+package tmpl
 
 import (
+	"blockexchange/types"
 	"bytes"
 	"embed"
 	"html/template"
@@ -8,12 +9,19 @@ import (
 )
 
 type TemplateUtil struct {
-	Files    embed.FS
-	AddFuncs func(funcs template.FuncMap, r *http.Request)
+	Files        embed.FS
+	AddFuncs     func(funcs template.FuncMap, r *http.Request)
+	JWTKey       string
+	CookieName   string
+	CookieDomain string
+	CookiePath   string
+	CookieSecure bool
 }
 
 func (tu *TemplateUtil) CreateTemplate(pagename string, r *http.Request) *template.Template {
-	funcs := template.FuncMap{}
+	funcs := template.FuncMap{
+		"Claims": func() (*types.Claims, error) { return tu.GetClaims(r) },
+	}
 	tu.AddFuncs(funcs, r)
 	return template.Must(template.New("").Funcs(funcs).ParseFS(tu.Files, "components/*.html", pagename))
 }

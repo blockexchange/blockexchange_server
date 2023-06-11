@@ -2,11 +2,13 @@ package web
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"time"
 
 	"blockexchange/api"
 	"blockexchange/core"
+	"blockexchange/tmpl"
 
 	"github.com/dchest/captcha"
 	"github.com/go-redis/redis/v8"
@@ -48,16 +50,25 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	}
 	a.SetupRoutes(r, cfg)
 
-	// templates, pages
-	ctx := &Context{
+	tu := &tmpl.TemplateUtil{
+		Files: Files,
+		AddFuncs: func(funcs template.FuncMap, r *http.Request) {
+			funcs["BaseURL"] = func() string { return cfg.BaseURL }
+			funcs["prettysize"] = prettysize
+			funcs["formattime"] = formattime
+		},
 		JWTKey:       cfg.Key,
 		CookieName:   cfg.CookieName,
 		CookieDomain: cfg.CookieDomain,
 		CookiePath:   cfg.CookiePath,
 		CookieSecure: cfg.CookieSecure,
-		BaseURL:      cfg.BaseURL,
-		Config:       cfg,
-		Repos:        a.Repositories,
+	}
+
+	// templates, pages
+	ctx := &Context{
+		tu:     tu,
+		Config: cfg,
+		Repos:  a.Repositories,
 	}
 	ctx.Setup(r)
 

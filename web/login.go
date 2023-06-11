@@ -87,12 +87,12 @@ func (ctx *Context) Login(w http.ResponseWriter, r *http.Request, c *types.Claim
 				return
 			}
 
-			ctx.SetClaims(w, token, dur)
+			ctx.tu.SetClaims(w, token, dur)
 			http.Redirect(w, r, "login", http.StatusSeeOther)
 			return
 
 		case "logout":
-			ctx.ClearClaims(w)
+			ctx.tu.ClearClaims(w)
 			http.Redirect(w, r, "login", http.StatusSeeOther)
 			return
 		}
