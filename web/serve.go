@@ -39,7 +39,6 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	r := mux.NewRouter()
 	r.Use(prometheusMiddleware)
 	r.Use(loggingMiddleware)
-	r.Use(csrf.Protect([]byte(cfg.Key)))
 
 	// cache/store setup
 	var cache core.Cache = core.NewNoOpCache()
@@ -65,6 +64,9 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	}
 	a.SetupRoutes(r, cfg)
 
+	tmplRoute := r.NewRoute().Subrouter()
+	tmplRoute.Use(csrf.Protect([]byte(cfg.Key)))
+
 	tu := &tmpl.TemplateUtil{
 		Files: Files,
 		AddFuncs: func(funcs template.FuncMap, r *http.Request) {
@@ -86,7 +88,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 		Config: cfg,
 		Repos:  a.Repositories,
 	}
-	ctx.Setup(r)
+	ctx.Setup(tmplRoute)
 
 	// main entry
 	http.Handle("/", r)
