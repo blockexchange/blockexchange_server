@@ -11,8 +11,7 @@
         </tr>
     </thead>
     <tbody>
-        {{ $baseurl := .BaseURL }}
-        {{ range .Data.Tags}}
+        {{ range .Tags}}
         <tr>
             <td>{{ .ID }}</td>
             <td>

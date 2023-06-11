@@ -6,20 +6,16 @@ import (
 	"blockexchange/types"
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
 	"time"
-
-	"github.com/gorilla/csrf"
 )
 
 type AccessTokenModel struct {
-	Err       error
-	Message   string
-	Tokens    []*types.AccessToken
-	Username  string
-	CSRFField template.HTML
+	Err      error
+	Message  string
+	Tokens   []*types.AccessToken
+	Username string
 }
 
 func handleAccessTokenAdd(repo *db.AccessTokenRepository, r *http.Request, c *types.Claims, m *AccessTokenModel) error {
@@ -69,8 +65,7 @@ func handleAccessTokenRemove(repo *db.AccessTokenRepository, r *http.Request, c 
 
 func AccessToken(repo *db.AccessTokenRepository, r *http.Request, c *types.Claims) *AccessTokenModel {
 	m := &AccessTokenModel{
-		Username:  c.Username,
-		CSRFField: csrf.TemplateField(r),
+		Username: c.Username,
 	}
 	if r.Method == http.MethodPost {
 		m.Err = r.ParseForm()

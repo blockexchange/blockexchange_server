@@ -17,6 +17,7 @@
             &nbsp;
             {{ if Claims }}
                 <form method="POST" style="display: inline;">
+                {{ CSRFField }}
                 {{ if .Starred }}
                     <input type="hidden" name="action" value="unstar"/>
                     <button class="btn btn-xs btn-outline-primary">
@@ -47,6 +48,7 @@
         {{ if Claims }}
         {{ if or (eq .Schema.UserName Claims.Username) (Claims.IsAdmin) }}
         <form method="POST">
+            {{ CSRFField }}
             <input type="hidden" name="action" value="update-screenshot">
             <div class="btn-group float-end">
                 <a class="btn btn-sm btn-secondary" href="./{{.Schema.Name}}/edit">

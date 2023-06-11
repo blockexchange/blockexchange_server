@@ -71,6 +71,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 			funcs["BaseURL"] = func() string { return cfg.BaseURL }
 			funcs["prettysize"] = prettysize
 			funcs["formattime"] = formattime
+			funcs["CSRFField"] = func() template.HTML { return csrf.TemplateField(r) }
 		},
 		JWTKey:       cfg.Key,
 		CookieName:   cfg.CookieName,

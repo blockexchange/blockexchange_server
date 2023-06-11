@@ -19,7 +19,6 @@
                     </thead>
                     <tbody>
                         {{$username := .Username}}
-                        {{$CSRFField := .CSRFField}}
                         {{range .Tokens}}
                         <tr>
                             <td>{{.Name}}</td>
@@ -34,7 +33,7 @@
                                     <input type="hidden" name="action" value="remove_token">
                                     <input type="hidden" name="token_id" value="{{.ID}}">
                                     <input type="hidden" name="token_name" value="{{.Name}}">
-                                    {{ $CSRFField }}
+                                    {{ CSRFField }}
                                     <button class="btn btn-danger">
                                         <i class="fa fa-minus"></i>
                                         Remove
@@ -60,7 +59,7 @@
                                 <td></td>
                                 <td>
                                     <input type="hidden" name="action" value="add_token">
-                                    {{ .CSRFField }}
+                                    {{ CSRFField }}
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fa fa-plus"></i>
                                         Create

@@ -12,6 +12,7 @@
                 <form method="POST" style="display: inline;">
                     <input type="hidden" name="action" value="logout"/>
                     <button type="submit" class="btn btn-secondary">Logout</button>
+                    {{ CSRFField }}
                 </form>
                 <a href="{{BaseURL}}profile" class="btn btn-primary">
                     <i class="fas fa-user"></i>
@@ -21,6 +22,7 @@
                 {{if not Claims}}
                 <form method="POST">
                     <input type="hidden" name="action" value="login"/>
+                    {{ CSRFField }}
                     <input type="text" name="username" placeholder="Username" value="{{.Username}}" class="form-control {{if .LoginError}}is-invalid{{end}}"/>
                     <input type="password" name="password" placeholder="Password" value="{{.Password}}" class="form-control {{if .LoginError}}is-invalid{{end}}"/>
                     {{if .LoginError}}
