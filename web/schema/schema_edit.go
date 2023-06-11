@@ -1,7 +1,6 @@
 package schema
 
 import (
-	"blockexchange/controller"
 	"blockexchange/public/components"
 	"blockexchange/types"
 	"errors"
@@ -13,68 +12,73 @@ type SchemaEditModel struct {
 	Breadcrumb *components.BreadcrumbModel
 }
 
-func schemaEditPost(rc *controller.RenderContext) error {
-	r := rc.Request()
-	sr := rc.Repositories().SchemaRepo
+func (sc *SchemaContext) schemaEditPost(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	sr := sc.repos.SchemaRepo
 
 	err := r.ParseForm()
 	if err != nil {
-		return err
+		sc.tu.RenderError(w, r, 500, err)
+		return
 	}
 
-	claims := rc.Claims()
 	username, schemaname := extractUsernameSchema(r)
 	schema, err := sr.GetSchemaByUsernameAndName(username, schemaname)
 	if err != nil {
-		return err
+		sc.tu.RenderError(w, r, 500, err)
+		return
 	}
 	if schema == nil {
-		return errors.New("not found")
+		sc.tu.RenderError(w, r, 404, errors.New("not found"))
+		return
 	}
 	if claims.UserID != schema.UserID {
-		return errors.New("not allowed")
+		sc.tu.RenderError(w, r, 403, errors.New("not allowed"))
+		return
 	}
 
 	newSchemaName := r.FormValue("name")
 	newSchema, err := sr.GetSchemaByUsernameAndName(username, newSchemaName)
 	if err != nil {
-		return err
+		sc.tu.RenderError(w, r, 403, err)
+		return
 	}
 	if newSchema != nil && newSchema.ID != schema.ID {
-		return errors.New("schema name already taken")
+		sc.tu.RenderError(w, r, 403, errors.New("schema name already taken"))
+		return
 	}
 
 	schema.Description = r.FormValue("description")
 	schema.License = r.FormValue("license")
 	schema.Name = newSchemaName
 
-	rc.Redirect("../" + schema.Name)
+	err = sr.UpdateSchema(schema)
+	if err != nil {
+		sc.tu.RenderError(w, r, 500, err)
+		return
+	}
 
-	return sr.UpdateSchema(schema)
+	http.Redirect(w, r, sc.BaseURL+"/schema/"+username+"/"+schema.Name, http.StatusSeeOther)
 }
 
-func SchemaEdit(rc *controller.RenderContext) error {
-	r := rc.Request()
+func (sc *SchemaContext) SchemaEdit(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 
 	if r.Method == http.MethodPost {
-		return schemaEditPost(rc)
+		sc.schemaEditPost(w, r, claims)
+		return
 	}
 
-	schema, err := searchSchema(rc.Repositories().SchemaSearchRepo, r)
+	schema, err := searchSchema(sc.repos.SchemaSearchRepo, r)
 	if err != nil {
-		return err
+		sc.tu.RenderError(w, r, 500, err)
+		return
 	}
 	if schema == nil {
-		return errors.New("not found")
+		sc.tu.RenderError(w, r, 404, errors.New("not found"))
+		return
 	}
 
-	//TODO: edit stuff on POST
 	m := SchemaEditModel{
 		Schema: schema,
-	}
-
-	if m.Schema == nil {
-		return errors.New("not found")
 	}
 
 	m.Breadcrumb = components.Breadcrumb(
@@ -85,5 +89,5 @@ func SchemaEdit(rc *controller.RenderContext) error {
 		components.BreadcrumbEntry{Name: "Edit"},
 	)
 
-	return rc.Render("pages/schema/schema_edit.html", m)
+	sc.tu.ExecuteTemplate(w, r, "schema/schema_edit.html", m)
 }
