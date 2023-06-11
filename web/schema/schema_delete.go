@@ -1,8 +1,8 @@
 package schema
 
 import (
-	"blockexchange/public/components"
 	"blockexchange/types"
+	"blockexchange/web/components"
 	"errors"
 	"net/http"
 )
