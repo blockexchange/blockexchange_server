@@ -1,4 +1,11 @@
 {{define "title"}}Schema{{end}}
+
+{{define "header"}}
+{{ range $name, $content := .AdditionalMetaTags }}
+    <meta name="{{$name}}" content="{{$content}}"/>
+{{ end }}
+{{end}}
+
 {{define "content"}}
 {{ block "breadcrumb" .Breadcrumb }}{{end}}
 

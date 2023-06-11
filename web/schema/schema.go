@@ -6,15 +6,17 @@ import (
 	"blockexchange/types"
 	"blockexchange/web/components"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
 type SchemaModel struct {
-	Schema     *types.SchemaSearchResult
-	Starred    bool
-	Breadcrumb *components.BreadcrumbModel
+	Schema             *types.SchemaSearchResult
+	Starred            bool
+	Breadcrumb         *components.BreadcrumbModel
+	AdditionalMetaTags map[string]string
 }
 
 func extractUsernameSchema(r *http.Request) (string, string) {
@@ -65,17 +67,6 @@ func (sc *SchemaContext) Schema(w http.ResponseWriter, r *http.Request, claims *
 		}
 	}
 
-	/*
-		rc.AddMetaTag("og:title", fmt.Sprintf("%s by %s", schema.Name, schema.UserName))
-		rc.AddMetaTag("og:site_name", "Block exchange")
-		rc.AddMetaTag("og:type", "Schematic")
-		rc.AddMetaTag("og:url", fmt.Sprintf("%s/schema/%s/%s", rc.Config().BaseURL, schema.UserName, schema.Name))
-		rc.AddMetaTag("og:image", fmt.Sprintf("%s/api/schema/%d/screenshot", rc.Config().BaseURL, schema.ID))
-		if schema.Description != "" {
-			rc.AddMetaTag("og:description", schema.Description)
-		}
-	*/
-
 	if r.Method == http.MethodPost && claims != nil {
 		r.ParseForm()
 		switch r.FormValue("action") {
@@ -111,6 +102,16 @@ func (sc *SchemaContext) Schema(w http.ResponseWriter, r *http.Request, claims *
 			components.BreadcrumbEntry{Name: schema.UserName, Link: "/schema/" + schema.UserName},
 			components.BreadcrumbEntry{Name: schema.Name},
 		),
+		AdditionalMetaTags: make(map[string]string),
+	}
+
+	m.AdditionalMetaTags["og:title"] = fmt.Sprintf("%s by %s", schema.Name, schema.UserName)
+	m.AdditionalMetaTags["og:site_name"] = "Block exchange"
+	m.AdditionalMetaTags["og:type"] = "Schematic"
+	m.AdditionalMetaTags["og:url"] = fmt.Sprintf("%s/schema/%s/%s", sc.BaseURL, schema.UserName, schema.Name)
+	m.AdditionalMetaTags["og:image"] = fmt.Sprintf("%s/api/schema/%d/screenshot", sc.BaseURL, schema.ID)
+	if schema.Description != "" {
+		m.AdditionalMetaTags["og:description"] = schema.Description
 	}
 
 	if claims != nil {
