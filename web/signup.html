@@ -4,6 +4,7 @@
 
 <form method="POST">
     <input type="hidden" name="captcha_id" value="{{.CaptchaID}}"/>
+    {{ CSRFField }}
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
