@@ -23,7 +23,7 @@ require (
 )
 
 require (
-	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -44,7 +44,7 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.10.1 // indirect
-	github.com/vearutop/statigz v1.3.0
+	github.com/vearutop/statigz v1.4.0
 	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/image v0.5.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
