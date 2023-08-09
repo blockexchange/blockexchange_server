@@ -1,4 +1,4 @@
-FROM golang:1.20.7 as stage1
+FROM golang:1.21.0 as stage1
 WORKDIR /data
 COPY go.mod go.sum ./
 RUN go mod download
