@@ -43,11 +43,11 @@ func main() {
 	jobs.Start(db_)
 
 	// set up server
-	server := &http.Server{Addr: ":8080", Handler: nil}
 	api, err := web.Serve(db_, cfg)
 	if err != nil {
 		panic(err)
 	}
+	server := &http.Server{Addr: ":8080", Handler: nil}
 
 	go func() {
 		// listen to web requests

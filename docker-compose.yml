@@ -63,7 +63,7 @@ services:
    - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
 
  integration-test:
-  image: golang:1.18.0
+  image: golang:1.20.0
   depends_on:
    - postgres
   volumes:
