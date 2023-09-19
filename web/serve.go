@@ -34,7 +34,7 @@ func formattime(ts int64) string {
 	return t.Format(time.UnixDate)
 }
 
-func Serve(db_ *sqlx.DB, cfg *core.Config) error {
+func Serve(db_ *sqlx.DB, cfg *core.Config) (*api.Api, error) {
 
 	r := mux.NewRouter()
 	r.Use(prometheusMiddleware)
@@ -60,7 +60,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	// api setup and routing
 	a, err := api.NewApi(db_, cache)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	a.SetupRoutes(r, cfg)
 
@@ -96,5 +96,5 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) error {
 	// metrics
 	http.Handle("/metrics", promhttp.Handler())
 
-	return http.ListenAndServe(":8080", nil)
+	return a, nil
 }

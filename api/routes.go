@@ -12,6 +12,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *core.Config) {
 
 	// api surface
 	r.Handle("/api/info", InfoHandler{Config: cfg})
+	r.HandleFunc("/api/healthcheck", api.Healthcheck)
 	r.HandleFunc("/api/token", api.RequestToken).Methods(http.MethodPost)
 	r.PathPrefix("/api/captcha/").Handler(captcha.Server(350, 250))
 

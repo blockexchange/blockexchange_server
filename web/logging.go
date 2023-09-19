@@ -11,6 +11,11 @@ func loggingMiddleware(next http.Handler) http.Handler {
 		rw := NewResponseWriter(w)
 		next.ServeHTTP(rw, r)
 
+		if r.URL.Path == "/api/healthcheck" {
+			// don't log healthchecks
+			return
+		}
+
 		logrus.WithFields(logrus.Fields{
 			"origin": r.Header.Get("X-Forwarded-For"),
 			"method": r.Method,
