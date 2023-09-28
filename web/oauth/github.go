@@ -5,6 +5,7 @@ import (
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -48,6 +49,10 @@ func (o *GithubOauth) RequestAccessToken(code string, cfg *core.Config) (string,
 	if err != nil {
 		return "", err
 	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("unexpected response-status: %d", resp.StatusCode)
+	}
 
 	tokenData := AccessTokenResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&tokenData)
@@ -71,6 +76,10 @@ func (o *GithubOauth) RequestUserInfo(access_token string, cfg *core.Config) (*O
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("unexpected user-info response-status: %d", resp.StatusCode)
 	}
 
 	userData := GithubUserResponse{}

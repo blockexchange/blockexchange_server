@@ -44,6 +44,10 @@ func (o *MesehubOauth) RequestAccessToken(code string, cfg *core.Config) (string
 	if err != nil {
 		return "", err
 	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("unexpected response-status: %d", resp.StatusCode)
+	}
 
 	tokenData := AccessTokenResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&tokenData)
@@ -67,6 +71,10 @@ func (o *MesehubOauth) RequestUserInfo(access_token string, cfg *core.Config) (*
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("unexpected user-info response-status: %d", resp.StatusCode)
 	}
 
 	userData := MesehubUserResponse{}
