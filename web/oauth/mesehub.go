@@ -25,7 +25,7 @@ func (o *MesehubOauth) RequestAccessToken(code string, cfg *core.Config) (string
 	accessTokenReq["client_secret"] = cfg.MesehubOAuthConfig.Secret
 	accessTokenReq["code"] = code
 	accessTokenReq["grant_type"] = "authorization_code"
-	accessTokenReq["redirect_uri"] = cfg.BaseURL + "/api/oauth_callback/mesehub"
+	accessTokenReq["redirect_uri"] = cfg.BaseURL + "api/oauth_callback/mesehub"
 
 	data, err := json.Marshal(accessTokenReq)
 	if err != nil {
