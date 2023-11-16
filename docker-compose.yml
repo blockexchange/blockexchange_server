@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
  postgres:
-  image: postgres:14.3
+  image: postgres:16.1
   restart: always
   ports:
    - "5432:5432"
@@ -16,13 +16,13 @@ services:
    - "log_statement=all"
 
  blockexchange:
-  image: golang:1.20.0
+  image: golang:1.21.4
   depends_on:
    - postgres
   volumes:
    - ".:/data"
-   - "go_build_cache:/root/.cache/go-build"
-   - "go_mod_cache:/root/go"
+   - "go_dir:/go"
+   - "go_cache:/.cache"
   environment:
    - PGUSER=postgres
    - PGPASSWORD=enter
@@ -46,7 +46,7 @@ services:
   command: ["go", "run", "."]
 
  minetest:
-  image: registry.gitlab.com/minetest/minetest/server:5.6.0
+  image: registry.gitlab.com/minetest/minetest/server:5.7.0
   user: root
   volumes:
    - "world_data:/root/.minetest/worlds/world"
@@ -56,20 +56,25 @@ services:
    - "30000:30000/udp"
 
  mod-integration-test:
-  image: registry.gitlab.com/minetest/minetest/server:5.6.0
+  image: registry.gitlab.com/minetest/minetest/server:5.7.0
   user: root
   volumes:
    - "./dev/minetest-test.conf:/etc/minetest/minetest.conf:ro"
    - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
+  environment:
+   http_proxy: ""
+   https_proxy: ""
+   HTTP_PROXY: ""
+   HTTPS_PROXY: ""
 
  integration-test:
-  image: golang:1.20.0
+  image: golang:1.21.4
   depends_on:
    - postgres
   volumes:
    - ".:/data"
-   - "go_build_cache:/root/.cache/go-build"
-   - "go_mod_cache:/root/go"
+   - "go_dir:/go"
+   - "go_cache:/.cache"
   environment:
    - PGUSER=postgres
    - PGPASSWORD=enter
@@ -83,5 +88,5 @@ services:
 volumes:
   postgres: {}
   world_data: {}
-  go_build_cache: {}
-  go_mod_cache: {}
+  go_cache: {}
+  go_dir: {}
