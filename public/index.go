@@ -7,7 +7,8 @@ import (
 )
 
 type IndexModel struct {
-	Webdev bool
+	Webdev  bool
+	BaseURL string
 }
 
 func RenderIndex(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +27,8 @@ func RenderIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	m := &IndexModel{
-		Webdev: os.Getenv("WEBDEV") == "true",
+		Webdev:  os.Getenv("WEBDEV") == "true",
+		BaseURL: os.Getenv("BASE_URL"),
 	}
 	t.Execute(w, m)
 }

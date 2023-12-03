@@ -15,16 +15,9 @@ export default {
 		<div class="text-center">
 			<h3>
 				Blockexchange
-				<small class="text-muted">start</small>
+				<small class="text-muted">profile</small>
 			</h3>
 			<hr/>
-			<router-link to="/profile" class="btn btn-primary">
-				<i class="fa fa-user"></i> Profile
-			</router-link>
-			&nbsp;
-			<a class="btn btn-secondary" href="https://github.com/blockexchange/blockexchange_server" target="new">
-				<i class="fa-brands fa-github"></i> Source
-			</a>
 		</div>
 	</default-layout>
 	`

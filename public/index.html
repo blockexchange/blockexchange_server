@@ -6,8 +6,8 @@
 		<meta name="theme-color" content="#000">
 
 		<!-- styles -->
-		<link rel="stylesheet" href="node_modules/bootswatch/dist/darkly/bootstrap.min.css"/>
-		<link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css"/>
+		<link rel="stylesheet" href="{{.BaseURL}}node_modules/bootswatch/dist/darkly/bootstrap.min.css"/>
+		<link rel="stylesheet" href="{{.BaseURL}}node_modules/@fortawesome/fontawesome-free/css/all.min.css"/>
 		<title>Blockexchange</title>
 	</head>
 	<body>
@@ -26,16 +26,16 @@
 
 		<!-- app bootstrap -->
 		{{if .Webdev}}
-		<script src="node_modules/vue/dist/vue.global.js"></script>
-		<script src="node_modules/vue-router/dist/vue-router.global.js"></script>
+		<script src="{{.BaseURL}}node_modules/vue/dist/vue.global.js"></script>
+		<script src="{{.BaseURL}}node_modules/vue-router/dist/vue-router.global.js"></script>
 		{{else}}
-		<script src="node_modules/vue/dist/vue.global.prod.js"></script>
-		<script src="node_modules/vue-router/dist/vue-router.global.prod.js"></script>
+		<script src="{{.BaseURL}}node_modules/vue/dist/vue.global.prod.js"></script>
+		<script src="{{.BaseURL}}node_modules/vue-router/dist/vue-router.global.prod.js"></script>
 		{{end}}
 		{{if .Webdev}}
-		<script src="js/main.js" type="module"></script>
+		<script src="{{.BaseURL}}js/main.js" type="module"></script>
 		{{else}}
-		<script src="js/bundle.js"></script>
+		<script src="{{.BaseURL}}js/bundle.js"></script>
 		{{end}}
 	</body>
 </html>

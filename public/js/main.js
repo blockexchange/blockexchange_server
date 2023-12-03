@@ -4,7 +4,7 @@ import routes from './routes.js';
 function start(){
 	// create router instance
 	const router = VueRouter.createRouter({
-		history: VueRouter.createWebHashHistory(),
+		history: VueRouter.createWebHistory(),
 		routes: routes
 	});
 
