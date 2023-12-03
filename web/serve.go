@@ -2,37 +2,24 @@ package web
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
+	"os"
 	"time"
 
 	"blockexchange/api"
 	"blockexchange/core"
-	"blockexchange/tmpl"
+	"blockexchange/public"
 
 	"github.com/dchest/captcha"
 	"github.com/go-redis/redis/v8"
-	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
+	"github.com/vearutop/statigz"
+	"github.com/vearutop/statigz/brotli"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
-
-func prettysize(num int) string {
-	if num > (1000 * 1000) {
-		return fmt.Sprintf("%d MB", num/(1000*1000))
-	} else if num > 1000 {
-		return fmt.Sprintf("%d kB", num/(1000))
-	} else {
-		return fmt.Sprintf("%d bytes", num)
-	}
-}
-
-func formattime(ts int64) string {
-	t := time.UnixMilli(ts)
-	return t.Format(time.UnixDate)
-}
 
 func Serve(db_ *sqlx.DB, cfg *core.Config) (*api.Api, error) {
 
@@ -64,31 +51,20 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) (*api.Api, error) {
 	}
 	a.SetupRoutes(r, cfg)
 
-	tmplRoute := r.NewRoute().Subrouter()
-	tmplRoute.Use(csrf.Protect([]byte(cfg.Key)))
+	// index.html or /
+	r.HandleFunc("/", public.RenderIndex)
+	r.HandleFunc("/index.html", public.RenderIndex)
 
-	tu := &tmpl.TemplateUtil{
-		Files: Files,
-		AddFuncs: func(funcs template.FuncMap, r *http.Request) {
-			funcs["BaseURL"] = func() string { return cfg.BaseURL }
-			funcs["prettysize"] = prettysize
-			funcs["formattime"] = formattime
-			funcs["CSRFField"] = func() template.HTML { return csrf.TemplateField(r) }
-		},
-		JWTKey:       cfg.Key,
-		CookieName:   cfg.CookieName,
-		CookieDomain: cfg.CookieDomain,
-		CookiePath:   cfg.CookiePath,
-		CookieSecure: cfg.CookieSecure,
-	}
+	// static files
+	if cfg.WebDev {
+		logrus.WithFields(logrus.Fields{"dir": "public"}).Info("Using live mode")
+		fs := http.FileServer(http.FS(os.DirFS("public")))
+		r.PathPrefix("/").HandlerFunc(fs.ServeHTTP)
 
-	// templates, pages
-	ctx := &Context{
-		tu:     tu,
-		Config: cfg,
-		Repos:  a.Repositories,
+	} else {
+		logrus.Info("Using embed mode")
+		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding))
 	}
-	ctx.Setup(tmplRoute)
 
 	// main entry
 	http.Handle("/", r)
