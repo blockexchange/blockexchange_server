@@ -1,5 +1,6 @@
 import App from './app.js';
 import routes from './routes.js';
+import { fetch_info } from './service/info.js';
 
 function start(){
 	// create router instance
@@ -14,4 +15,5 @@ function start(){
 	app.mount("#app");
 }
 
-start();
+fetch_info()
+.then(() => start());
