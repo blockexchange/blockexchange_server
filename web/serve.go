@@ -54,6 +54,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) (*api.Api, error) {
 	// index.html or /
 	r.HandleFunc("/", public.RenderIndex)
 	r.HandleFunc("/index.html", public.RenderIndex)
+	r.HandleFunc("/login", public.RenderIndex)
 	r.HandleFunc("/profile", public.RenderIndex) //TODO: better url handling
 
 	// static files

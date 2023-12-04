@@ -1,9 +1,9 @@
-import DefaultLayout from "../layouts/DefaultLayout.js";
+import Breadcrumb from "../Breadcrumb.js";
 import { START } from "../Breadcrumb.js";
 
 export default {
 	components: {
-		"default-layout": DefaultLayout
+        "bread-crumb": Breadcrumb
 	},
 	data: function() {
 		return {
@@ -11,7 +11,7 @@ export default {
 		};
 	},
 	template: /*html*/`
-	<default-layout icon="home" title="Start" :breadcrumb="breadcrumb">
+		<bread-crumb :items="breadcrumb"/>
 		<div class="text-center">
 			<h3>
 				Blockexchange
@@ -26,6 +26,5 @@ export default {
 				<i class="fa-brands fa-github"></i> Source
 			</a>
 		</div>
-	</default-layout>
 	`
 };

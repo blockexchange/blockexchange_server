@@ -15,7 +15,7 @@ export default {
 		<div class="text-center">
 			<h3>
 				Blockexchange
-				<small class="text-muted">profile</small>
+				<small class="text-muted">login</small>
 			</h3>
 			<hr/>
 		</div>
