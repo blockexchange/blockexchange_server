@@ -8,37 +8,35 @@ type OAuthConfig struct {
 }
 
 type Config struct {
-	WebDev                 bool
-	BaseURL                string
-	Name                   string
-	Owner                  string
-	Key                    string
-	GithubOAuthConfig      *OAuthConfig
-	DiscordOAuthConfig     *OAuthConfig
-	MesehubOAuthConfig     *OAuthConfig
-	GoogleSiteVerification string
-	CookiePath             string
-	CookieDomain           string
-	CookieSecure           bool
-	CookieName             string
-	RedisHost              string
-	RedisPort              string
+	WebDev             bool
+	BaseURL            string
+	Name               string
+	Owner              string
+	Key                string
+	GithubOAuthConfig  *OAuthConfig
+	DiscordOAuthConfig *OAuthConfig
+	MesehubOAuthConfig *OAuthConfig
+	CookiePath         string
+	CookieDomain       string
+	CookieSecure       bool
+	CookieName         string
+	RedisHost          string
+	RedisPort          string
 }
 
 func CreateConfig() (*Config, error) {
 	cfg := &Config{
-		Name:                   os.Getenv("BLOCKEXCHANGE_NAME"),
-		Owner:                  os.Getenv("BLOCKEXCHANGE_OWNER"),
-		Key:                    os.Getenv("BLOCKEXCHANGE_KEY"),
-		WebDev:                 os.Getenv("WEBDEV") == "true",
-		BaseURL:                os.Getenv("BASE_URL"),
-		CookiePath:             os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
-		CookieDomain:           os.Getenv("BLOCKEXCHANGE_COOKIE_DOMAIN"),
-		CookieSecure:           os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
-		CookieName:             "blockexchange",
-		GoogleSiteVerification: os.Getenv("GOOGLE_SITE_VERIFICATION"),
-		RedisHost:              os.Getenv("REDIS_HOST"),
-		RedisPort:              os.Getenv("REDIS_PORT"),
+		Name:         os.Getenv("BLOCKEXCHANGE_NAME"),
+		Owner:        os.Getenv("BLOCKEXCHANGE_OWNER"),
+		Key:          os.Getenv("BLOCKEXCHANGE_KEY"),
+		WebDev:       os.Getenv("WEBDEV") == "true",
+		BaseURL:      os.Getenv("BASE_URL"),
+		CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
+		CookieDomain: os.Getenv("BLOCKEXCHANGE_COOKIE_DOMAIN"),
+		CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
+		CookieName:   "blockexchange",
+		RedisHost:    os.Getenv("REDIS_HOST"),
+		RedisPort:    os.Getenv("REDIS_PORT"),
 	}
 
 	if os.Getenv("DISCORD_APP_ID") != "" {
