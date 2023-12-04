@@ -1,7 +1,7 @@
 package api
 
 import (
-	"blockexchange/core"
+	"blockexchange/types"
 	"encoding/json"
 	"net/http/httptest"
 	"testing"
@@ -14,7 +14,7 @@ func TestInfo(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	i := InfoHandler{
-		Config: &core.Config{},
+		Config: &types.Config{},
 	}
 	i.ServeHTTP(w, r)
 

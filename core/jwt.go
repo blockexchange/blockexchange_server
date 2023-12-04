@@ -28,13 +28,17 @@ func GetPermissions(user *types.User, management bool) []types.JWTPermission {
 	return permissions
 }
 
-func CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Duration) (string, error) {
-	c := types.Claims{
+func CreateClaims(user *types.User, permissions []types.JWTPermission) *types.Claims {
+	return &types.Claims{
 		UserID:      *user.ID,
 		Username:    user.Name,
 		Type:        user.Type,
 		Permissions: permissions,
 	}
+}
+
+func CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Duration) (string, error) {
+	c := CreateClaims(user, permissions)
 
 	if user.Mail != nil {
 		c.Mail = *user.Mail

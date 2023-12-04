@@ -1,4 +1,4 @@
-package core
+package types
 
 import "os"
 
@@ -17,14 +17,13 @@ type Config struct {
 	DiscordOAuthConfig *OAuthConfig
 	MesehubOAuthConfig *OAuthConfig
 	CookiePath         string
-	CookieDomain       string
 	CookieSecure       bool
 	CookieName         string
 	RedisHost          string
 	RedisPort          string
 }
 
-func CreateConfig() (*Config, error) {
+func CreateConfig() *Config {
 	cfg := &Config{
 		Name:         os.Getenv("BLOCKEXCHANGE_NAME"),
 		Owner:        os.Getenv("BLOCKEXCHANGE_OWNER"),
@@ -32,7 +31,6 @@ func CreateConfig() (*Config, error) {
 		WebDev:       os.Getenv("WEBDEV") == "true",
 		BaseURL:      os.Getenv("BASE_URL"),
 		CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
-		CookieDomain: os.Getenv("BLOCKEXCHANGE_COOKIE_DOMAIN"),
 		CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
 		CookieName:   "blockexchange",
 		RedisHost:    os.Getenv("REDIS_HOST"),
@@ -60,5 +58,5 @@ func CreateConfig() (*Config, error) {
 		}
 	}
 
-	return cfg, nil
+	return cfg
 }

@@ -9,6 +9,7 @@ import (
 	"blockexchange/api"
 	"blockexchange/core"
 	"blockexchange/public"
+	"blockexchange/types"
 
 	"github.com/dchest/captcha"
 	"github.com/go-redis/redis/v8"
@@ -21,7 +22,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func Serve(db_ *sqlx.DB, cfg *core.Config) (*api.Api, error) {
+func Serve(db_ *sqlx.DB, cfg *types.Config) (*api.Api, error) {
 
 	r := mux.NewRouter()
 	r.Use(prometheusMiddleware)
@@ -45,7 +46,7 @@ func Serve(db_ *sqlx.DB, cfg *core.Config) (*api.Api, error) {
 	captcha.SetCustomStore(captchaStore)
 
 	// api setup and routing
-	a, err := api.NewApi(db_, cache)
+	a, err := api.NewApi(db_, cache, cfg)
 	if err != nil {
 		return nil, err
 	}

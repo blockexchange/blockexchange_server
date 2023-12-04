@@ -3,6 +3,7 @@ package api
 import (
 	"blockexchange/core"
 	"blockexchange/db"
+	"blockexchange/types"
 	"sync/atomic"
 
 	"github.com/minetest-go/colormapping"
@@ -12,6 +13,7 @@ import (
 
 type Api struct {
 	*db.Repositories
+	cfg          *types.Config
 	Cache        core.Cache
 	ColorMapping *colormapping.ColorMapping
 	Running      *atomic.Bool
@@ -21,7 +23,7 @@ func (a *Api) Stop() {
 	a.Running.Store(false)
 }
 
-func NewApi(db_ *sqlx.DB, cache core.Cache) (*Api, error) {
+func NewApi(db_ *sqlx.DB, cache core.Cache, cfg *types.Config) (*Api, error) {
 	cm := colormapping.NewColorMapping()
 	err := cm.LoadDefaults()
 	if err != nil {
@@ -33,6 +35,7 @@ func NewApi(db_ *sqlx.DB, cache core.Cache) (*Api, error) {
 
 	return &Api{
 		Repositories: db.NewRepositories(db_),
+		cfg:          cfg,
 		Cache:        cache,
 		ColorMapping: cm,
 		Running:      running,

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"blockexchange/core"
+	"blockexchange/types"
 	"net/http"
 )
 
@@ -21,7 +21,7 @@ type Info struct {
 }
 
 type InfoHandler struct {
-	Config *core.Config
+	Config *types.Config
 }
 
 func (h InfoHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
