@@ -10,11 +10,46 @@ export default {
 						</router-link>
 					</li>
 					<li class="nav-item">
-						<router-link to="/profile" class="nav-link">
-							<i class="fa fa-user"></i> Profile
+						<router-link to="/" class="nav-link">
+							<i class="fa fa-download"></i> Mod/Installation
+						</router-link>
+					</li>
+					<li class="nav-item">
+						<router-link to="/" class="nav-link">
+							<i class="fa fa-users"></i> Users
+						</router-link>
+					</li>
+					<li class="nav-item">
+						<router-link to="/" class="nav-link">
+							<i class="fa fa-search"></i> Search
+						</router-link>
+					</li>
+					<li class="nav-item">
+						<router-link to="/" class="nav-link">
+							<i class="fa fa-home"></i> My schemas
+						</router-link>
+					</li>
+					<li class="nav-item">
+						<router-link to="/" class="nav-link">
+							<i class="fa fa-upload"></i> Schema import
+						</router-link>
+					</li>
+					<li class="nav-item">
+						<router-link to="/" class="nav-link">
+							<i class="fa fa-tags"></i> Tags
 						</router-link>
 					</li>
 				</ul>
+				<form class="d-flex">
+					<div class="btn btn-secondary">
+						<router-link to="/profile">
+							<i class="fas fa-user"></i>
+							<span>
+								Logged in as <b>username</b>
+							</span>
+						</router-link>
+					</div>
+				</form>
 			</div>
 		</nav>
 	`
