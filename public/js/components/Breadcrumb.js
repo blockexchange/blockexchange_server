@@ -30,3 +30,11 @@ export default {
 };
 
 export const START = { name: "Start", icon: "home", link: "/" };
+export const LOGIN = { name: "Login", icon: "sign-in", link: "/login" };
+export const PROFILE = { name: "Profile", icon: "user", link: "/profile" };
+export const MOD = { name: "Mod/Installation", icon: "download", link: "/mod" };
+export const USERS = { name: "Users", icon: "users", link: "/users" };
+export const SEARCH = { name: "Search", icon: "search", link: "/search" };
+export const MY_SCHEMAS = { name: "My schemas", icon: "home", link: "/schemas" };
+export const SCHEMA_IMPORT = { name: "Schema import", icon: "download", link: "/import" };
+export const TAGS = { name: "Tags", icon: "tags", link: "/tags" };

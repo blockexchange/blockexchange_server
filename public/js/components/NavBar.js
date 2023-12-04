@@ -2,7 +2,7 @@ export default {
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
-				<router-link to="/" class="navbar-brand">Blockexchange</router-link>
+				<router-link to="/" class="navbar-brand">Block exchange</router-link>
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item">
 						<router-link to="/login" class="nav-link">
@@ -10,17 +10,17 @@ export default {
 						</router-link>
 					</li>
 					<li class="nav-item">
-						<router-link to="/" class="nav-link">
+						<router-link to="/mod" class="nav-link">
 							<i class="fa fa-download"></i> Mod/Installation
 						</router-link>
 					</li>
 					<li class="nav-item">
-						<router-link to="/" class="nav-link">
+						<router-link to="/users" class="nav-link">
 							<i class="fa fa-users"></i> Users
 						</router-link>
 					</li>
 					<li class="nav-item">
-						<router-link to="/" class="nav-link">
+						<router-link to="/search" class="nav-link">
 							<i class="fa fa-search"></i> Search
 						</router-link>
 					</li>
@@ -30,12 +30,12 @@ export default {
 						</router-link>
 					</li>
 					<li class="nav-item">
-						<router-link to="/" class="nav-link">
+						<router-link to="/import" class="nav-link">
 							<i class="fa fa-upload"></i> Schema import
 						</router-link>
 					</li>
 					<li class="nav-item">
-						<router-link to="/" class="nav-link">
+						<router-link to="/tags" class="nav-link">
 							<i class="fa fa-tags"></i> Tags
 						</router-link>
 					</li>

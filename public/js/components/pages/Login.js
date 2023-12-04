@@ -1,5 +1,4 @@
-import Breadcrumb from "../Breadcrumb.js";
-import { START } from "../Breadcrumb.js";
+import Breadcrumb, { LOGIN, START } from "../Breadcrumb.js";
 
 export default {
 	components: {
@@ -7,17 +6,10 @@ export default {
 	},
 	data: function() {
 		return {
-			breadcrumb: [START]
+			breadcrumb: [START, LOGIN]
 		};
 	},
 	template: /*html*/`
 		<bread-crumb :items="breadcrumb"/>
-		<div class="text-center">
-			<h3>
-				Blockexchange
-				<small class="text-muted">login</small>
-			</h3>
-			<hr/>
-		</div>
 	`
 };

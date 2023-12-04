@@ -1,4 +1,4 @@
-import Breadcrumb, { START, PROFILE } from "../Breadcrumb.js";
+import Breadcrumb, { START, SEARCH } from "../Breadcrumb.js";
 
 export default {
 	components: {
@@ -6,7 +6,7 @@ export default {
 	},
 	data: function() {
 		return {
-			breadcrumb: [START, PROFILE]
+			breadcrumb: [START, SEARCH]
 		};
 	},
 	template: /*html*/`
