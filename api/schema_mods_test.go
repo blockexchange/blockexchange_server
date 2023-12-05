@@ -1,4 +1,4 @@
-package api
+package api_test
 
 import (
 	"blockexchange/testutils"
@@ -30,7 +30,7 @@ func TestSchemaMods(t *testing.T) {
 		"id": strconv.Itoa(int(schema.ID)),
 	})
 
-	Secure(api.CreateSchemaMods)(w, r)
+	api.Secure(api.CreateSchemaMods)(w, r)
 
 	assert.Equal(t, 204, w.Result().StatusCode)
 

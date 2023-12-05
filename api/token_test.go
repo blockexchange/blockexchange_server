@@ -1,4 +1,4 @@
-package api
+package api_test
 
 import (
 	"blockexchange/core"
@@ -15,6 +15,7 @@ import (
 
 func TestAccessTokenLogin(t *testing.T) {
 	api := NewTestApi(t)
+	c := core.New(types.CreateConfig())
 
 	user := &types.User{
 		Type: types.UserTypeLocal,
@@ -42,7 +43,7 @@ func TestAccessTokenLogin(t *testing.T) {
 	api.RequestToken(w, r)
 
 	assert.NotNil(t, w.Body)
-	info, err := core.ParseJWT(w.Body.String())
+	info, err := c.ParseJWT(w.Body.String())
 	assert.NoError(t, err)
 	assert.NotNil(t, info)
 	assert.Equal(t, user.Name, info.Username)
@@ -50,6 +51,7 @@ func TestAccessTokenLogin(t *testing.T) {
 
 func TestInvalidAccessTokenLogin(t *testing.T) {
 	api := NewTestApi(t)
+	c := core.New(types.CreateConfig())
 
 	user := &types.User{
 		Type: types.UserTypeLocal,
@@ -77,7 +79,7 @@ func TestInvalidAccessTokenLogin(t *testing.T) {
 	api.RequestToken(w, r)
 
 	assert.NotNil(t, w.Body)
-	info, err := core.ParseJWT(w.Body.String())
+	info, err := c.ParseJWT(w.Body.String())
 	assert.Error(t, err)
 	assert.Nil(t, info)
 }

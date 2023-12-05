@@ -1,6 +1,7 @@
-package api
+package api_test
 
 import (
+	"blockexchange/api"
 	"blockexchange/core"
 	"blockexchange/testutils"
 	"blockexchange/types"
@@ -9,9 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func NewTestApi(t *testing.T) *Api {
+func NewTestApi(t *testing.T) *api.Api {
 	db_ := testutils.CreateTestDatabase(t)
-	api, err := NewApi(db_, core.NewNoOpCache(), types.CreateConfig())
+	api, err := api.NewApi(db_, core.NewNoOpCache(), types.CreateConfig())
 	assert.NoError(t, err)
 	return api
 }

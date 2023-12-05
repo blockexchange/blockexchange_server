@@ -3,7 +3,6 @@ package core
 import (
 	"blockexchange/types"
 	"errors"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -37,25 +36,25 @@ func CreateClaims(user *types.User, permissions []types.JWTPermission) *types.Cl
 	}
 }
 
-func CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Duration) (string, error) {
-	c := CreateClaims(user, permissions)
+func (c *Core) CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Duration) (string, error) {
+	cl := CreateClaims(user, permissions)
 
 	if user.Mail != nil {
-		c.Mail = *user.Mail
+		cl.Mail = *user.Mail
 	}
 
-	c.RegisteredClaims = &jwt.RegisteredClaims{
+	cl.RegisteredClaims = &jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(d)),
 	}
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, cl)
 
-	return t.SignedString([]byte(os.Getenv("BLOCKEXCHANGE_KEY")))
+	return t.SignedString([]byte(c.cfg.Key))
 
 }
 
-func ParseJWT(token string) (*types.Claims, error) {
+func (c *Core) ParseJWT(token string) (*types.Claims, error) {
 	t, err := jwt.ParseWithClaims(token, &types.Claims{}, func(token *jwt.Token) (any, error) {
-		return []byte(os.Getenv("BLOCKEXCHANGE_KEY")), nil
+		return []byte(c.cfg.Key), nil
 	})
 
 	if err != nil {

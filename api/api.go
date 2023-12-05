@@ -14,6 +14,7 @@ import (
 type Api struct {
 	*db.Repositories
 	cfg          *types.Config
+	core         *core.Core
 	Cache        core.Cache
 	ColorMapping *colormapping.ColorMapping
 	Running      *atomic.Bool
@@ -36,6 +37,7 @@ func NewApi(db_ *sqlx.DB, cache core.Cache, cfg *types.Config) (*Api, error) {
 	return &Api{
 		Repositories: db.NewRepositories(db_),
 		cfg:          cfg,
+		core:         core.New(cfg),
 		Cache:        cache,
 		ColorMapping: cm,
 		Running:      running,

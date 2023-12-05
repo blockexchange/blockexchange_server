@@ -1,4 +1,4 @@
-package api
+package api_test
 
 import (
 	"blockexchange/testutils"
@@ -31,7 +31,7 @@ func TestSchemaCreateNoUser(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
 
-	Secure(api.CreateSchema)(w, r)
+	api.Secure(api.CreateSchema)(w, r)
 	assert.Equal(t, 401, w.Result().StatusCode)
 }
 
@@ -54,7 +54,7 @@ func TestSchemaCreateInvalidUser(t *testing.T) {
 	w := httptest.NewRecorder()
 	testutils.Login(t, r, user)
 
-	Secure(api.CreateSchema)(w, r)
+	api.Secure(api.CreateSchema)(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 }
 
@@ -79,7 +79,7 @@ func TestSchemaCreate(t *testing.T) {
 	w := httptest.NewRecorder()
 	testutils.Login(t, r, user)
 
-	Secure(api.CreateSchema)(w, r)
+	api.Secure(api.CreateSchema)(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 
 	err = json.NewDecoder(w.Body).Decode(&schema)
@@ -103,7 +103,7 @@ func TestSchemaCreate(t *testing.T) {
 	w = httptest.NewRecorder()
 	testutils.Login(t, r, user)
 
-	Secure(api.UpdateSchema)(w, r)
+	api.Secure(api.UpdateSchema)(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 
 	// update infos
@@ -112,7 +112,7 @@ func TestSchemaCreate(t *testing.T) {
 	w = httptest.NewRecorder()
 	testutils.Login(t, r, user)
 
-	Secure(api.UpdateSchemaInfo)(w, r)
+	api.Secure(api.UpdateSchemaInfo)(w, r)
 	fmt.Println(w.Body.String())
 	assert.Equal(t, 200, w.Result().StatusCode)
 
@@ -139,7 +139,7 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	w := httptest.NewRecorder()
 	testutils.Login(t, r, user)
 
-	Secure(api.CreateSchema)(w, r)
+	api.Secure(api.CreateSchema)(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 
 	err = json.NewDecoder(w.Body).Decode(&schema)
@@ -191,7 +191,7 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
 	testutils.Login(t, r, user)
 
-	Secure(api.UpdateSchema)(w, r)
+	api.Secure(api.UpdateSchema)(w, r)
 
 	schema3, err := api.SchemaRepo.GetSchemaById(schema2.ID)
 	assert.NoError(t, err)

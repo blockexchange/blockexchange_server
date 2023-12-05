@@ -39,7 +39,7 @@ func (api *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 
 	permissions := core.GetPermissions(user, true)
 	dur := time.Duration(7 * 24 * time.Hour)
-	token, err := core.CreateJWT(user, permissions, dur)
+	token, err := api.core.CreateJWT(user, permissions, dur)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
