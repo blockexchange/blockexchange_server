@@ -49,6 +49,18 @@ func (c *Core) SetClaims(w http.ResponseWriter, token string, d time.Duration) {
 	http.SetCookie(w, co)
 }
 
+func (c *Core) RemoveClaims(w http.ResponseWriter) {
+	co := &http.Cookie{
+		Name:     c.cfg.CookieName,
+		Value:    "",
+		Path:     c.cfg.CookiePath,
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   c.cfg.CookieSecure,
+	}
+	http.SetCookie(w, co)
+}
+
 func (c *Core) GetClaims(r *http.Request) (*types.Claims, error) {
 	var token string
 	authorization := r.Header.Get("Authorization")
@@ -58,6 +70,9 @@ func (c *Core) GetClaims(r *http.Request) (*types.Claims, error) {
 	} else {
 		// token in cookie
 		co, err := r.Cookie(c.cfg.CookieName)
+		if err == http.ErrNoCookie {
+			return nil, nil
+		}
 		if err != nil {
 			return nil, err
 		}

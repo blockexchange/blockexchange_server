@@ -53,3 +53,7 @@ func (api *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 	c, err := api.core.GetClaims(r)
 	Send(w, c, err)
 }
+
+func (api *Api) Logout(w http.ResponseWriter, r *http.Request) {
+	api.core.RemoveClaims(w)
+}

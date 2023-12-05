@@ -1,6 +1,7 @@
 import App from './app.js';
 import routes from './routes.js';
 import { fetch_info } from './service/info.js';
+import { check_login } from './service/login.js';
 
 function start(){
 	// create router instance
@@ -15,5 +16,5 @@ function start(){
 	app.mount("#app");
 }
 
-fetch_info()
+Promise.all([check_login(), fetch_info()])
 .then(() => start());
