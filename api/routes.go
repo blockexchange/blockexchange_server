@@ -19,6 +19,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	// ui api
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
+	r.HandleFunc("/api/register", api.Register).Methods(http.MethodPost)
+	r.HandleFunc("/api/captcha", api.CreateCaptcha).Methods(http.MethodGet)
 
 	r.HandleFunc("/api/export_we/{id}/{filename}", api.ExportWorldeditSchema).Methods(http.MethodGet)
 	r.HandleFunc("/api/export_bx/{id}/{filename}", api.ExportBXSchema).Methods(http.MethodGet)
