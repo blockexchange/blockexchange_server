@@ -15,7 +15,7 @@ import (
 
 func TestAccessTokenLogin(t *testing.T) {
 	api := NewTestApi(t)
-	c := core.New(types.CreateConfig())
+	c := core.New(types.CreateConfig(), nil)
 
 	user := &types.User{
 		Type: types.UserTypeLocal,
@@ -51,7 +51,7 @@ func TestAccessTokenLogin(t *testing.T) {
 
 func TestInvalidAccessTokenLogin(t *testing.T) {
 	api := NewTestApi(t)
-	c := core.New(types.CreateConfig())
+	c := core.New(types.CreateConfig(), nil)
 
 	user := &types.User{
 		Type: types.UserTypeLocal,

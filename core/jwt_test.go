@@ -64,7 +64,7 @@ func TestCreateJWT(t *testing.T) {
 		Type: types.UserTypeGithub,
 	}
 	permissions := []types.JWTPermission{types.JWTPermissionUpload}
-	c := core.New(types.CreateConfig())
+	c := core.New(types.CreateConfig(), nil)
 
 	token, err := c.CreateJWT(&user, permissions, time.Duration(30*time.Second))
 	if err != nil {

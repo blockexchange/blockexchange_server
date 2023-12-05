@@ -10,17 +10,20 @@ import (
 
 func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
-	// api surface
+	// common api
 	r.Handle("/api/info", InfoHandler{Config: cfg})
 	r.HandleFunc("/api/healthcheck", api.Healthcheck)
-	r.HandleFunc("/api/token", api.RequestToken).Methods(http.MethodPost)
-	r.PathPrefix("/api/captcha/").Handler(captcha.Server(350, 250))
 
 	// ui api
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 	r.HandleFunc("/api/register", api.Register).Methods(http.MethodPost)
+	r.HandleFunc("/api/register/check", api.CheckRegister).Methods(http.MethodPost)
 	r.HandleFunc("/api/captcha", api.CreateCaptcha).Methods(http.MethodGet)
+	r.PathPrefix("/api/captcha/").Handler(captcha.Server(350, 250))
+
+	// mod api
+	r.HandleFunc("/api/token", api.RequestToken).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/export_we/{id}/{filename}", api.ExportWorldeditSchema).Methods(http.MethodGet)
 	r.HandleFunc("/api/export_bx/{id}/{filename}", api.ExportBXSchema).Methods(http.MethodGet)

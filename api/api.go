@@ -34,10 +34,12 @@ func NewApi(db_ *sqlx.DB, cache core.Cache, cfg *types.Config) (*Api, error) {
 	running := &atomic.Bool{}
 	running.Store(true)
 
+	repos := db.NewRepositories(db_)
+
 	return &Api{
-		Repositories: db.NewRepositories(db_),
+		Repositories: repos,
 		cfg:          cfg,
-		core:         core.New(cfg),
+		core:         core.New(cfg, repos),
 		Cache:        cache,
 		ColorMapping: cm,
 		Running:      running,

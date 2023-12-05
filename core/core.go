@@ -1,13 +1,18 @@
 package core
 
-import "blockexchange/types"
+import (
+	"blockexchange/db"
+	"blockexchange/types"
+)
 
 type Core struct {
-	cfg *types.Config
+	cfg   *types.Config
+	repos *db.Repositories
 }
 
-func New(cfg *types.Config) *Core {
+func New(cfg *types.Config, repos *db.Repositories) *Core {
 	return &Core{
-		cfg: cfg,
+		cfg:   cfg,
+		repos: repos,
 	}
 }
