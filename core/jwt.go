@@ -3,6 +3,7 @@ package core
 import (
 	"blockexchange/types"
 	"errors"
+	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -34,6 +35,40 @@ func CreateClaims(user *types.User, permissions []types.JWTPermission) *types.Cl
 		Type:        user.Type,
 		Permissions: permissions,
 	}
+}
+
+func (c *Core) SetClaims(w http.ResponseWriter, token string, d time.Duration) {
+	co := &http.Cookie{
+		Name:     c.cfg.CookieName,
+		Value:    token,
+		Path:     c.cfg.CookiePath,
+		Expires:  time.Now().Add(d),
+		HttpOnly: true,
+		Secure:   c.cfg.CookieSecure,
+	}
+	http.SetCookie(w, co)
+}
+
+func (c *Core) GetClaims(r *http.Request) (*types.Claims, error) {
+	var token string
+	authorization := r.Header.Get("Authorization")
+	if authorization != "" {
+		// token in header
+		token = authorization
+	} else {
+		// token in cookie
+		co, err := r.Cookie(c.cfg.CookieName)
+		if err != nil {
+			return nil, err
+		}
+		token = co.Value
+	}
+	if token == "" {
+		// no token found
+		return nil, nil
+	}
+
+	return c.ParseJWT(token)
 }
 
 func (c *Core) CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Duration) (string, error) {

@@ -29,15 +29,13 @@ type SecureHandler func(w http.ResponseWriter, r *http.Request, ctx *SecureConte
 
 func (a *Api) Secure(h SecureHandler) Handler {
 	return func(w http.ResponseWriter, r *http.Request) {
-		authorization := r.Header.Get("Authorization")
-		if authorization == "" {
-			SendError(w, http.StatusUnauthorized, "no jwt found")
-			return
-		}
-
-		claims, err := a.core.ParseJWT(authorization)
+		claims, err := a.core.GetClaims(r)
 		if err != nil {
 			SendError(w, http.StatusForbidden, err.Error())
+			return
+		}
+		if claims == nil {
+			SendError(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 

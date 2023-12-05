@@ -45,23 +45,11 @@ func (api *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	api.SetClaims(w, token, dur)
+	api.core.SetClaims(w, token, dur)
 	Send(w, core.CreateClaims(user, permissions), nil)
 }
 
-func (api *Api) SetClaims(w http.ResponseWriter, token string, d time.Duration) {
-	c := &http.Cookie{
-		Name:     api.cfg.CookieName,
-		Value:    token,
-		Path:     api.cfg.CookiePath,
-		Expires:  time.Now().Add(d),
-		HttpOnly: true,
-		Secure:   api.cfg.CookieSecure,
-	}
-	http.SetCookie(w, c)
-}
-
 func (api *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
-
-	// TODO
+	c, err := api.core.GetClaims(r)
+	Send(w, c, err)
 }
