@@ -113,6 +113,6 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	target := h.BaseURL + "/#/profile"
+	target := h.BaseURL + "/profile"
 	http.Redirect(w, r, target, http.StatusSeeOther)
 }

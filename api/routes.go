@@ -54,7 +54,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/schemapart_first/{schema_id}", api.GetFirstSchemaPart)
 
 	// oauth
-	if cfg.GithubOAuthConfig.ClientID != "" {
+	if cfg.GithubOAuthConfig != nil {
 		oauth_handler := &oauth.OauthHandler{
 			Core:     api.core,
 			Impl:     &oauth.GithubOauth{},
@@ -64,10 +64,10 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 			Type:     types.UserTypeGithub,
 			Callback: api.OauthCallback,
 		}
-		r.Handle("/oauth_callback/github", oauth_handler)
+		r.Handle("/api/oauth_callback/github", oauth_handler)
 	}
 
-	if cfg.DiscordOAuthConfig.ClientID != "" {
+	if cfg.DiscordOAuthConfig != nil {
 		oauth_handler := &oauth.OauthHandler{
 			Core:     api.core,
 			Impl:     &oauth.DiscordOauth{},
@@ -77,10 +77,10 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 			Type:     types.UserTypeDiscord,
 			Callback: api.OauthCallback,
 		}
-		r.Handle("/oauth_callback/discord", oauth_handler)
+		r.Handle("/api/oauth_callback/discord", oauth_handler)
 	}
 
-	if cfg.MesehubOAuthConfig.ClientID != "" {
+	if cfg.MesehubOAuthConfig != nil {
 		oauth_handler := &oauth.OauthHandler{
 			Core:     api.core,
 			Impl:     &oauth.MesehubOauth{},
@@ -90,6 +90,6 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 			Type:     types.UserTypeMesehub,
 			Callback: api.OauthCallback,
 		}
-		r.Handle("/oauth_callback/mesehub", oauth_handler)
+		r.Handle("/api/oauth_callback/mesehub", oauth_handler)
 	}
 }
