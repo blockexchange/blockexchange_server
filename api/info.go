@@ -9,7 +9,6 @@ type OauthInfo struct {
 	GithubID  string `json:"github_id"`
 	DiscordID string `json:"discord_id"`
 	MesehubID string `json:"mesehub_id"`
-	BaseURL   string `json:"base_url"`
 }
 
 type Info struct {
@@ -17,6 +16,7 @@ type Info struct {
 	VersionMinor int        `json:"api_version_minor"`
 	Name         string     `json:"name"`
 	Owner        string     `json:"owner"`
+	BaseURL      string     `json:"base_url"`
 	Oauth        *OauthInfo `json:"oauth"`
 }
 
@@ -25,9 +25,7 @@ type InfoHandler struct {
 }
 
 func (h InfoHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	oauth := OauthInfo{
-		BaseURL: h.Config.BaseURL,
-	}
+	oauth := OauthInfo{}
 
 	if h.Config.GithubOAuthConfig != nil {
 		oauth.GithubID = h.Config.GithubOAuthConfig.ClientID
@@ -46,6 +44,7 @@ func (h InfoHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		VersionMinor: 1,
 		Name:         h.Config.Name,
 		Owner:        h.Config.Owner,
+		BaseURL:      h.Config.BaseURL,
 		Oauth:        &oauth,
 	}
 

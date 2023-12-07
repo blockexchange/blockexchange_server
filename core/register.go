@@ -10,7 +10,7 @@ import (
 )
 
 func (c *Core) Register(rr *types.RegisterRequest, ut types.UserType) (*types.User, error) {
-	resp, err := c.CheckRegister(rr)
+	resp, err := c.CheckRegister(rr, ut)
 	if err != nil {
 		return nil, err
 	}
@@ -18,9 +18,13 @@ func (c *Core) Register(rr *types.RegisterRequest, ut types.UserType) (*types.Us
 		return nil, fmt.Errorf("register error")
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(rr.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
+	hash := []byte("invalid")
+
+	if ut == types.UserTypeGithub {
+		hash, err = bcrypt.GenerateFromPassword([]byte(rr.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	user := &types.User{
@@ -50,7 +54,7 @@ func (c *Core) Register(rr *types.RegisterRequest, ut types.UserType) (*types.Us
 	return user, nil
 }
 
-func (c *Core) CheckRegister(rr *types.RegisterRequest) (*types.CheckRegisterResponse, error) {
+func (c *Core) CheckRegister(rr *types.RegisterRequest, ut types.UserType) (*types.CheckRegisterResponse, error) {
 	resp := &types.CheckRegisterResponse{}
 	if !ValidateName(rr.Name) || rr.Name == "" {
 		resp.ErrInvalidUsername = true
@@ -66,14 +70,17 @@ func (c *Core) CheckRegister(rr *types.RegisterRequest) (*types.CheckRegisterRes
 		return resp, nil
 	}
 
-	if len(rr.Password) < 6 {
-		resp.ErrPasswordTooShort = true
-		return resp, nil
-	}
+	if ut == types.UserTypeLocal {
+		// additional checks fr local user
+		if len(rr.Password) < 6 {
+			resp.ErrPasswordTooShort = true
+			return resp, nil
+		}
 
-	if !captcha.VerifyString(rr.CaptchaID, rr.CaptchaAnswer) {
-		resp.ErrCaptcha = true
-		return resp, nil
+		if !captcha.VerifyString(rr.CaptchaID, rr.CaptchaAnswer) {
+			resp.ErrCaptcha = true
+			return resp, nil
+		}
 	}
 
 	resp.Success = true

@@ -26,7 +26,7 @@ func CreateName(n int) string {
 	return string(b)
 }
 
-func CreateUser(repo db.UserRepository, t *testing.T, user *types.User) *types.User {
+func CreateUser(repo *db.UserRepository, t *testing.T, user *types.User) *types.User {
 	if user == nil {
 		// create new user
 		user = &types.User{}
@@ -44,7 +44,7 @@ func CreateUser(repo db.UserRepository, t *testing.T, user *types.User) *types.U
 	return user
 }
 
-func CreateAccessToken(repo db.AccessTokenRepository, t *testing.T, token *types.AccessToken) *types.AccessToken {
+func CreateAccessToken(repo *db.AccessTokenRepository, t *testing.T, token *types.AccessToken) *types.AccessToken {
 	if token == nil {
 		token = &types.AccessToken{}
 	}

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"blockexchange/api/oauth"
 	"blockexchange/types"
 	"net/http"
 
@@ -52,4 +53,43 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/schemapart_count/by-mtime/{schema_id}/{mtime}", api.CountNextSchemaPartByMtime)
 	r.HandleFunc("/api/schemapart_first/{schema_id}", api.GetFirstSchemaPart)
 
+	// oauth
+	if cfg.GithubOAuthConfig.ClientID != "" {
+		oauth_handler := &oauth.OauthHandler{
+			Core:     api.core,
+			Impl:     &oauth.GithubOauth{},
+			UserRepo: api.UserRepo,
+			Config:   cfg.GithubOAuthConfig,
+			BaseURL:  api.cfg.BaseURL,
+			Type:     types.UserTypeGithub,
+			Callback: api.OauthCallback,
+		}
+		r.Handle("/oauth_callback/github", oauth_handler)
+	}
+
+	if cfg.DiscordOAuthConfig.ClientID != "" {
+		oauth_handler := &oauth.OauthHandler{
+			Core:     api.core,
+			Impl:     &oauth.DiscordOauth{},
+			UserRepo: api.UserRepo,
+			Config:   cfg.DiscordOAuthConfig,
+			BaseURL:  api.cfg.BaseURL,
+			Type:     types.UserTypeDiscord,
+			Callback: api.OauthCallback,
+		}
+		r.Handle("/oauth_callback/discord", oauth_handler)
+	}
+
+	if cfg.MesehubOAuthConfig.ClientID != "" {
+		oauth_handler := &oauth.OauthHandler{
+			Core:     api.core,
+			Impl:     &oauth.MesehubOauth{},
+			UserRepo: api.UserRepo,
+			Config:   cfg.MesehubOAuthConfig,
+			BaseURL:  api.cfg.BaseURL,
+			Type:     types.UserTypeMesehub,
+			Callback: api.OauthCallback,
+		}
+		r.Handle("/oauth_callback/mesehub", oauth_handler)
+	}
 }
