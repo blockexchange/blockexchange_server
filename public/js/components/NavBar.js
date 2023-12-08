@@ -1,4 +1,10 @@
+import { is_logged_in, get_claims } from "../service/login.js";
+
 export default {
+	computed: {
+		is_logged_in,
+		claims: get_claims
+	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
@@ -24,28 +30,28 @@ export default {
 							<i class="fa fa-search"></i> Search
 						</router-link>
 					</li>
-					<li class="nav-item">
+					<li class="nav-item" v-if="is_logged_in">
 						<router-link to="/" class="nav-link">
 							<i class="fa fa-home"></i> My schemas
 						</router-link>
 					</li>
-					<li class="nav-item">
+					<li class="nav-item" v-if="is_logged_in">
 						<router-link to="/import" class="nav-link">
 							<i class="fa fa-upload"></i> Schema import
 						</router-link>
 					</li>
-					<li class="nav-item">
+					<li class="nav-item" v-if="is_logged_in">
 						<router-link to="/tags" class="nav-link">
 							<i class="fa fa-tags"></i> Tags
 						</router-link>
 					</li>
 				</ul>
-				<form class="d-flex">
+				<form class="d-flex" v-if="is_logged_in">
 					<div class="btn btn-secondary">
 						<router-link to="/profile">
 							<i class="fas fa-user"></i>
 							<span>
-								Logged in as <b>username</b>
+								Logged in as <b>{{claims.username}}</b>
 							</span>
 						</router-link>
 					</div>

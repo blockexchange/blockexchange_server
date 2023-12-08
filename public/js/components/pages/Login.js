@@ -16,7 +16,7 @@ export default {
         "bread-crumb": Breadcrumb
     },
     computed: {
-        is_logged_in: is_logged_in,
+        is_logged_in,
         get_github_id,
         get_discord_id,
         get_mesehub_id,
@@ -46,7 +46,7 @@ export default {
                     this.error_message = "Login failed!";
                 } else {
                     // go to base page
-                    this.$router.push("/");
+                    this.$router.push("/profile");
                 }
             });
         },
@@ -90,17 +90,17 @@ export default {
                     </div>
                     <div class="col-md-6">
                         <h5>Login with external provider</h5>
-                        <a :href="github_href" class="btn btn-secondary w-100" v-if="get_github_id">
+                        <a :href="github_href" class="btn btn-secondary w-100" v-bind:class="{disabled:is_logged_in}" v-if="get_github_id">
                             <i class="fab fa-github"></i>
                             Login with Github
                         </a>
                         &nbsp;
-                        <a :href="discord_href" class="btn btn-secondary w-100" v-if="get_discord_id">
+                        <a :href="discord_href" class="btn btn-secondary w-100" v-bind:class="{disabled:is_logged_in}" v-if="get_discord_id">
                             <i class="fab fa-discord"></i>
                             Login with Discord
                         </a>
                         &nbsp;
-                        <a :href="mesehub_href" class="btn btn-secondary w-100" v-if="get_mesehub_id">
+                        <a :href="mesehub_href" class="btn btn-secondary w-100" v-bind:class="{disabled:is_logged_in}" v-if="get_mesehub_id">
                             <img :src="get_base_url + 'pics/default_mese_crystal.png'">
                             Login with Mesehub
                         </a>
