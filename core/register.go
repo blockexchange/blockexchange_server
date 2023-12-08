@@ -71,7 +71,7 @@ func (c *Core) CheckRegister(rr *types.RegisterRequest, ut types.UserType) (*typ
 	}
 
 	if ut == types.UserTypeLocal {
-		// additional checks fr local user
+		// additional checks for local user
 		if len(rr.Password) < 6 {
 			resp.ErrPasswordTooShort = true
 			return resp, nil

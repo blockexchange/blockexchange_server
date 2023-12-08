@@ -31,8 +31,8 @@ func (r UserRepository) GetUserByName(name string) (*types.User, error) {
 	return users, err
 }
 
-func (r UserRepository) GetUserByExternalId(external_id string) (*types.User, error) {
-	users, err := dbutil.Select(r.db, &types.User{}, "where external_id = $1", external_id)
+func (r UserRepository) GetUserByExternalIdAndType(external_id string, ut types.UserType) (*types.User, error) {
+	users, err := dbutil.Select(r.db, &types.User{}, "where external_id = $1 and type = $2", external_id, ut)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
