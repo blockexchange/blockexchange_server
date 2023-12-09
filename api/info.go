@@ -9,6 +9,7 @@ type OauthInfo struct {
 	GithubID  string `json:"github_id"`
 	DiscordID string `json:"discord_id"`
 	MesehubID string `json:"mesehub_id"`
+	CDBID     string `json:"cdb_id"`
 }
 
 type Info struct {
@@ -29,6 +30,10 @@ func (h InfoHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	if h.Config.GithubOAuthConfig != nil {
 		oauth.GithubID = h.Config.GithubOAuthConfig.ClientID
+	}
+
+	if h.Config.CDBOAuthConfig != nil {
+		oauth.CDBID = h.Config.CDBOAuthConfig.ClientID
 	}
 
 	if h.Config.DiscordOAuthConfig != nil {

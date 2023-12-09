@@ -4,42 +4,31 @@ import (
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"mime/multipart"
 	"net/http"
-	"strconv"
 )
 
-type CDBAccessTokenRequest struct {
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
-	Code         string `json:"code"`
-}
-
 type CDBUserResponse struct {
-	ID    int    `json:"id"`
-	Login string `json:"login"`
+	Username string `json:"username"`
 }
 
 type CDBOauth struct{}
 
 func (o *CDBOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuthConfig) (string, error) {
-	accessTokenReq := GithubAccessTokenRequest{
-		ClientID:     cfg.ClientID,
-		ClientSecret: cfg.Secret,
-		Code:         code,
-	}
+	var data bytes.Buffer
+	w := multipart.NewWriter(&data)
+	w.WriteField("grant_type", "authorization_code")
+	w.WriteField("client_id", cfg.ClientID)
+	w.WriteField("client_secret", cfg.Secret)
+	w.WriteField("code", code)
+	w.Close()
 
-	data, err := json.Marshal(accessTokenReq)
+	req, err := http.NewRequest("POST", "https://content.minetest.net/oauth/token/", &data)
 	if err != nil {
 		return "", err
 	}
-
-	// TODO
-	req, err := http.NewRequest("POST", "https://github.com/login/oauth/access_token", bytes.NewBuffer(data))
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", w.FormDataContentType())
 
 	client := http.Client{}
 	resp, err := client.Do(req)
@@ -47,6 +36,9 @@ func (o *CDBOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuthConf
 		return "", err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("unexpected status-code: %d", resp.StatusCode)
+	}
 
 	tokenData := AccessTokenResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&tokenData)
@@ -59,7 +51,7 @@ func (o *CDBOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuthConf
 
 func (o *CDBOauth) RequestUserInfo(access_token string, cfg *types.OAuthConfig) (*OauthUserInfo, error) {
 	// fetch user data
-	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
+	req, err := http.NewRequest("GET", "https://content.minetest.net/api/whoami/", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -74,16 +66,15 @@ func (o *CDBOauth) RequestUserInfo(access_token string, cfg *types.OAuthConfig) 
 	}
 	defer resp.Body.Close()
 
-	userData := GithubUserResponse{}
+	userData := CDBUserResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&userData)
 	if err != nil {
 		return nil, err
 	}
 
-	external_id := strconv.Itoa(userData.ID)
 	info := OauthUserInfo{
-		Name:       userData.Login,
-		ExternalID: external_id,
+		Name:       userData.Username,
+		ExternalID: userData.Username,
 	}
 
 	return &info, nil

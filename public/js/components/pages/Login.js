@@ -1,5 +1,5 @@
 import { login, logout, is_logged_in } from "../../service/login.js";
-import { get_github_id, get_discord_id, get_mesehub_id, get_base_url } from "../../service/info.js";
+import { get_github_id, get_cdb_id, get_discord_id, get_mesehub_id, get_base_url } from "../../service/info.js";
 import Breadcrumb, { LOGIN, START } from "../Breadcrumb.js";
 
 export default {
@@ -18,6 +18,7 @@ export default {
     computed: {
         is_logged_in,
         get_github_id,
+        get_cdb_id,
         get_discord_id,
         get_mesehub_id,
         get_base_url,
@@ -27,6 +28,9 @@ export default {
         github_href: function() {
 			return `https://github.com/login/oauth/authorize?client_id=${get_github_id()}`;
 		},
+        cdb_href: function() {
+            return `https://content.minetest.net/oauth/authorize/?response_type=code&client_id=${get_cdb_id()}&redirect_uri=${encodeURIComponent(get_base_url()+'/api/oauth_callback/cdb')}`;
+        },
 		discord_href: function() {
 			return `https://discord.com/api/oauth2/authorize?client_id=${get_discord_id()}&redirect_uri=${encodeURIComponent(get_base_url()+'/api/oauth_callback/discord')}&response_type=code&scope=identify`;
 		},
@@ -93,6 +97,11 @@ export default {
                         <a :href="github_href" class="btn btn-secondary w-100" v-bind:class="{disabled:is_logged_in}" v-if="get_github_id">
                             <i class="fab fa-github"></i>
                             Login with Github
+                        </a>
+                        &nbsp;
+                        <a :href="cdb_href" class="btn btn-secondary w-100" v-bind:class="{disabled:is_logged_in}" v-if="get_cdb_id">
+                            <img :src="get_base_url + '/pics/contentdb.png'" height="24" width="24">
+                            Login with ContentDB
                         </a>
                         &nbsp;
                         <a :href="discord_href" class="btn btn-secondary w-100" v-bind:class="{disabled:is_logged_in}" v-if="get_discord_id">
