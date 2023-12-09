@@ -28,10 +28,10 @@ export default {
 			return `https://github.com/login/oauth/authorize?client_id=${get_github_id()}&scope=user:email`;
 		},
 		discord_href: function() {
-			return `https://discord.com/api/oauth2/authorize?client_id=${get_discord_id()}&redirect_uri=${encodeURIComponent(get_base_url()+'/oauth_callback/discord')}&response_type=code&scope=identify%20email`;
+			return `https://discord.com/api/oauth2/authorize?client_id=${get_discord_id()}&redirect_uri=${encodeURIComponent(get_base_url()+'/api/oauth_callback/discord')}&response_type=code&scope=identify%20email`;
 		},
 		mesehub_href: function() {
-			return `https://git.minetest.land/login/oauth/authorize?client_id=${get_mesehub_id()}&redirect_uri=${encodeURIComponent(get_base_url()+'/oauth_callback/mesehub')}&response_type=code&state=STATE&scope=email`;
+			return `https://git.minetest.land/login/oauth/authorize?client_id=${get_mesehub_id()}&redirect_uri=${encodeURIComponent(get_base_url()+'/api/oauth_callback/mesehub')}&response_type=code&state=STATE&scope=email`;
 		},
     },
     methods: {
@@ -101,7 +101,7 @@ export default {
                         </a>
                         &nbsp;
                         <a :href="mesehub_href" class="btn btn-secondary w-100" v-bind:class="{disabled:is_logged_in}" v-if="get_mesehub_id">
-                            <img :src="get_base_url + 'pics/default_mese_crystal.png'">
+                            <img :src="get_base_url + '/pics/default_mese_crystal.png'">
                             Login with Mesehub
                         </a>
                     </div>

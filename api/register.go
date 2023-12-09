@@ -14,7 +14,7 @@ func (api *Api) CheckRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := api.core.CheckRegister(rr, types.UserTypeLocal)
+	resp, err := api.core.CheckRegisterLocal(rr)
 	Send(w, resp, err)
 }
 
@@ -26,7 +26,7 @@ func (api *Api) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = api.core.Register(rr, types.UserTypeLocal)
+	_, err = api.core.RegisterLocal(rr)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -24,12 +26,13 @@ func (o *MesehubOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuth
 	accessTokenReq["client_secret"] = cfg.Secret
 	accessTokenReq["code"] = code
 	accessTokenReq["grant_type"] = "authorization_code"
-	accessTokenReq["redirect_uri"] = baseurl + "/oauth_callback/mesehub"
+	accessTokenReq["redirect_uri"] = baseurl + "/api/oauth_callback/mesehub"
 
 	data, err := json.Marshal(accessTokenReq)
 	if err != nil {
 		return "", err
 	}
+	fmt.Printf("Req: %s\n", data)
 
 	req, err := http.NewRequest("POST", "https://git.minetest.land/login/oauth/access_token", bytes.NewBuffer(data))
 	if err != nil {
@@ -44,6 +47,7 @@ func (o *MesehubOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuth
 		return "", err
 	}
 	if resp.StatusCode != 200 {
+		io.Copy(os.Stdout, resp.Body)
 		return "", fmt.Errorf("invalid status code in token-response: %d", resp.StatusCode)
 	}
 	defer resp.Body.Close()

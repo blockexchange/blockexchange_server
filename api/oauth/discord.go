@@ -23,7 +23,7 @@ func (o *DiscordOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuth
 	q := url.Values{}
 	q.Add("client_id", cfg.ClientID)
 	q.Add("client_secret", cfg.Secret)
-	q.Add("redirect_uri", baseurl+"/oauth_callback/discord")
+	q.Add("redirect_uri", baseurl+"/api/oauth_callback/discord")
 	q.Add("code", code)
 	q.Add("grant_type", "authorization_code")
 	q.Add("scope", "identify email connections")

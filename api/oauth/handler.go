@@ -67,20 +67,14 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// check if there is already a user by that name
-	user, err := h.UserRepo.GetUserByName(info.Name)
+	user, err := h.UserRepo.GetUserByExternalIdAndType(info.ExternalID, h.Type)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
 	if user == nil {
-		// check register
-		rr := &types.RegisterRequest{
-			Name: info.Name,
-			Mail: info.Email,
-		}
-		user, err := h.Core.Register(rr, h.Type)
+		user, err := h.Core.RegisterOauth(info.Name, info.ExternalID, h.Type)
 		if err != nil {
 			SendError(w, 500, err.Error())
 			return
@@ -89,7 +83,6 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		logrus.WithFields(logrus.Fields{
 			"name":        user.Name,
 			"type":        user.Type,
-			"mail":        user.Mail,
 			"external_id": user.ExternalID,
 		}).Debug("created new user")
 
@@ -100,12 +93,6 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		// user already registered, check if they are logging in from the same provider
-		if user.Type != h.Type {
-			SendError(w, 500, "user already registered from a different provider")
-			return
-		}
-
 		err = h.Callback(w, user, false)
 		if err != nil {
 			SendError(w, 500, err.Error())
