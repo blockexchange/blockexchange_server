@@ -89,10 +89,6 @@ func (c *Core) GetClaims(r *http.Request) (*types.Claims, error) {
 func (c *Core) CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Duration) (string, error) {
 	cl := CreateClaims(user, permissions)
 
-	if user.Mail != nil {
-		cl.Mail = *user.Mail
-	}
-
 	cl.RegisteredClaims = &jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(d)),
 	}

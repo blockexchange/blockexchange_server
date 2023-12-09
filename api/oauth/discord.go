@@ -4,7 +4,6 @@ import (
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -26,7 +25,7 @@ func (o *DiscordOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuth
 	q.Add("redirect_uri", baseurl+"/api/oauth_callback/discord")
 	q.Add("code", code)
 	q.Add("grant_type", "authorization_code")
-	q.Add("scope", "identify email connections")
+	q.Add("scope", "identify connections")
 
 	buf := bytes.NewBufferString(q.Encode())
 
@@ -82,13 +81,8 @@ func (o *DiscordOauth) RequestUserInfo(access_token string, cfg *types.OAuthConf
 		return nil, err
 	}
 
-	if !userData.Verified {
-		return nil, errors.New("mail-address not verified")
-	}
-
 	info := OauthUserInfo{
 		Name:       userData.Username,
-		Email:      userData.Email,
 		ExternalID: userData.ID,
 	}
 

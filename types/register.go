@@ -3,7 +3,6 @@ package types
 type RegisterRequest struct {
 	Name          string `json:"name"`
 	Password      string `json:"password"`
-	Mail          string `json:"mail"`
 	CaptchaID     string `json:"captcha_id"`
 	CaptchaAnswer string `json:"captcha_answer"`
 }

@@ -82,7 +82,6 @@ func (c *Core) RegisterLocal(rr *types.RegisterRequest) (*types.User, error) {
 		Type:    types.UserTypeLocal,
 		Role:    types.UserRoleDefault,
 		Hash:    string(hash),
-		Mail:    &rr.Mail,
 	}
 	err = c.repos.UserRepo.CreateUser(user)
 	if err != nil {

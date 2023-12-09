@@ -23,7 +23,6 @@ type User struct {
 	Type       UserType `json:"type"`
 	Role       UserRole `json:"role"`
 	ExternalID *string  `json:"external_id"`
-	Mail       *string  `json:"mail"`
 }
 
 func (u *User) Columns(action string) []string {
@@ -31,7 +30,7 @@ func (u *User) Columns(action string) []string {
 	if action != "insert" {
 		cols = append(cols, "id")
 	}
-	cols = append(cols, "created", "name", "hash", "type", "role", "external_id", "mail")
+	cols = append(cols, "created", "name", "hash", "type", "role", "external_id")
 	return cols
 }
 
@@ -40,7 +39,7 @@ func (u *User) Table() string {
 }
 
 func (u *User) Scan(action string, r func(dest ...any) error) error {
-	return r(&u.ID, &u.Created, &u.Name, &u.Hash, &u.Type, &u.Role, &u.ExternalID, &u.Mail)
+	return r(&u.ID, &u.Created, &u.Name, &u.Hash, &u.Type, &u.Role, &u.ExternalID)
 }
 
 func (u *User) Values(action string) []any {
@@ -48,6 +47,6 @@ func (u *User) Values(action string) []any {
 	if action != "insert" {
 		vals = append(vals, u.ID)
 	}
-	vals = append(vals, u.Created, u.Name, u.Hash, u.Type, u.Role, u.ExternalID, u.Mail)
+	vals = append(vals, u.Created, u.Name, u.Hash, u.Type, u.Role, u.ExternalID)
 	return vals
 }

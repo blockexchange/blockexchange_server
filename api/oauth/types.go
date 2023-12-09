@@ -11,7 +11,6 @@ type AccessTokenResponse struct {
 
 type OauthUserInfo struct {
 	Name       string
-	Email      string
 	ExternalID string
 }
 

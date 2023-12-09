@@ -25,13 +25,13 @@ export default {
             return this.username != "" && this.password != "";
         },
         github_href: function() {
-			return `https://github.com/login/oauth/authorize?client_id=${get_github_id()}&scope=user:email`;
+			return `https://github.com/login/oauth/authorize?client_id=${get_github_id()}`;
 		},
 		discord_href: function() {
-			return `https://discord.com/api/oauth2/authorize?client_id=${get_discord_id()}&redirect_uri=${encodeURIComponent(get_base_url()+'/api/oauth_callback/discord')}&response_type=code&scope=identify%20email`;
+			return `https://discord.com/api/oauth2/authorize?client_id=${get_discord_id()}&redirect_uri=${encodeURIComponent(get_base_url()+'/api/oauth_callback/discord')}&response_type=code&scope=identify`;
 		},
 		mesehub_href: function() {
-			return `https://git.minetest.land/login/oauth/authorize?client_id=${get_mesehub_id()}&redirect_uri=${encodeURIComponent(get_base_url()+'/api/oauth_callback/mesehub')}&response_type=code&state=STATE&scope=email`;
+			return `https://git.minetest.land/login/oauth/authorize?client_id=${get_mesehub_id()}&redirect_uri=${encodeURIComponent(get_base_url()+'/api/oauth_callback/mesehub')}&response_type=code&state=STATE`;
 		},
     },
     methods: {

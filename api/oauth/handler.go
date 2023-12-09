@@ -57,11 +57,6 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if info.Email == "" {
-		SendError(w, 500, "empty email")
-		return
-	}
-
 	if info.ExternalID == "" {
 		SendError(w, 500, "empty external_id")
 		return
