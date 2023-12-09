@@ -14,6 +14,7 @@ type Config struct {
 	Owner              string
 	Key                string
 	GithubOAuthConfig  *OAuthConfig
+	CDBOAuthConfig     *OAuthConfig
 	DiscordOAuthConfig *OAuthConfig
 	MesehubOAuthConfig *OAuthConfig
 	CookiePath         string
@@ -41,6 +42,13 @@ func CreateConfig() *Config {
 		cfg.DiscordOAuthConfig = &OAuthConfig{
 			ClientID: os.Getenv("DISCORD_APP_ID"),
 			Secret:   os.Getenv("DISCORD_APP_SECRET"),
+		}
+	}
+
+	if os.Getenv("CDB_APP_ID") != "" {
+		cfg.CDBOAuthConfig = &OAuthConfig{
+			ClientID: os.Getenv("CDB_APP_ID"),
+			Secret:   os.Getenv("CDB_APP_SECRET"),
 		}
 	}
 

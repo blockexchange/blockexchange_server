@@ -8,6 +8,7 @@ const (
 	UserTypeLocal   UserType = "LOCAL"
 	UserTypeDiscord UserType = "DISCORD"
 	UserTypeMesehub UserType = "MESEHUB"
+	UserTypeCDB     UserType = "CDB"
 )
 
 const (

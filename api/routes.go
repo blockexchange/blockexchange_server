@@ -67,6 +67,19 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 		r.Handle("/api/oauth_callback/github", oauth_handler)
 	}
 
+	if cfg.CDBOAuthConfig != nil {
+		oauth_handler := &oauth.OauthHandler{
+			Core:     api.core,
+			Impl:     &oauth.CDBOauth{},
+			UserRepo: api.UserRepo,
+			Config:   cfg.CDBOAuthConfig,
+			BaseURL:  api.cfg.BaseURL,
+			Type:     types.UserTypeCDB,
+			Callback: api.OauthCallback,
+		}
+		r.Handle("/api/oauth_callback/cdb", oauth_handler)
+	}
+
 	if cfg.DiscordOAuthConfig != nil {
 		oauth_handler := &oauth.OauthHandler{
 			Core:     api.core,
