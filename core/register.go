@@ -62,18 +62,18 @@ func (c *Core) RegisterOauth(name string, external_id string, ut types.UserType)
 	return user, nil
 }
 
-func (c *Core) RegisterLocal(rr *types.RegisterRequest) (*types.User, error) {
+func (c *Core) RegisterLocal(rr *types.RegisterRequest) (*types.User, *types.CheckRegisterResponse, error) {
 	resp, err := c.CheckRegisterLocal(rr)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if !resp.Success {
-		return nil, fmt.Errorf("register error")
+		return nil, resp, nil
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(rr.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	user := &types.User{
@@ -85,7 +85,7 @@ func (c *Core) RegisterLocal(rr *types.RegisterRequest) (*types.User, error) {
 	}
 	err = c.repos.UserRepo.CreateUser(user)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	err = c.repos.AccessTokenRepo.CreateAccessToken(&types.AccessToken{
@@ -96,17 +96,20 @@ func (c *Core) RegisterLocal(rr *types.RegisterRequest) (*types.User, error) {
 		UserID:  *user.ID,
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return user, nil
+	return user, resp, nil
 }
 
 func (c *Core) CheckRegisterLocal(rr *types.RegisterRequest) (*types.CheckRegisterResponse, error) {
-	resp := &types.CheckRegisterResponse{}
+	resp := &types.CheckRegisterResponse{
+		Success: true,
+	}
+
 	if !ValidateName(rr.Name) || rr.Name == "" {
 		resp.ErrInvalidUsername = true
-		return resp, nil
+		resp.Success = false
 	}
 
 	existing_user, err := c.repos.UserRepo.GetUserByName(rr.Name)
@@ -115,19 +118,18 @@ func (c *Core) CheckRegisterLocal(rr *types.RegisterRequest) (*types.CheckRegist
 	}
 	if existing_user != nil {
 		resp.ErrUsernameTaken = true
-		return resp, nil
+		resp.Success = false
 	}
 
 	if len(rr.Password) < 6 {
 		resp.ErrPasswordTooShort = true
-		return resp, nil
+		resp.Success = false
 	}
 
 	if !captcha.VerifyString(rr.CaptchaID, rr.CaptchaAnswer) {
 		resp.ErrCaptcha = true
-		return resp, nil
+		resp.Success = false
 	}
 
-	resp.Success = true
 	return resp, nil
 }

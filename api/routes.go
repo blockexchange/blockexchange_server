@@ -20,7 +20,6 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 	r.HandleFunc("/api/login", api.Logout).Methods(http.MethodDelete)
 	r.HandleFunc("/api/register", api.Register).Methods(http.MethodPost)
-	r.HandleFunc("/api/register/check", api.CheckRegister).Methods(http.MethodPost)
 	r.HandleFunc("/api/captcha", api.CreateCaptcha).Methods(http.MethodGet)
 	r.PathPrefix("/api/captcha/").Handler(captcha.Server(300, 200))
 
