@@ -1,2 +1,2 @@
 
-export const get_info = () => fetch("api/info").then(r => r.json());
+export const get_info = () => fetch(`${BaseURL}/api/info`).then(r => r.json());

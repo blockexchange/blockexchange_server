@@ -1,2 +1,2 @@
 
-export const create_captcha = () => fetch(`api/captcha`).then(r => r.text());
+export const create_captcha = () => fetch(`${BaseURL}/api/captcha`).then(r => r.text());
