@@ -2,6 +2,7 @@ import Import from './components/pages/Import.js';
 import Login from './components/pages/Login.js';
 import Mod from './components/pages/Mod.js';
 import Profile from './components/pages/Profile.js';
+import Register from './components/pages/Register.js';
 import Search from './components/pages/Search.js';
 import Start from './components/pages/Start.js';
 import Tags from './components/pages/Tags.js';
@@ -13,6 +14,8 @@ export default [{
 	path: "/profile", component: Profile
 },{
 	path: "/login", component: Login
+},{
+	path: "/register", component: Register
 },{
 	path: "/mod", component: Mod
 },{

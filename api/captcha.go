@@ -7,5 +7,6 @@ import (
 )
 
 func (api *Api) CreateCaptcha(w http.ResponseWriter, r *http.Request) {
-	Send(w, captcha.New(), nil)
+	c := captcha.New()
+	w.Write([]byte(c))
 }

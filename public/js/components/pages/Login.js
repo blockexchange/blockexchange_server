@@ -90,6 +90,7 @@ export default {
                                 Logout
                                 <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
                             </a>
+                            Register a new account <router-link to="/register">here</router-link>
                         </form>
                     </div>
                     <div class="col-md-6">
