@@ -1,4 +1,4 @@
-package web
+package middleware
 
 import (
 	"net/http"
@@ -41,7 +41,7 @@ func init() {
 	prometheus.Register(responseHistogram)
 }
 
-func prometheusMiddleware(next http.Handler) http.Handler {
+func PrometheusMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		timer := prometheus.NewTimer(responseHistogram)
 		rw := NewResponseWriter(w)

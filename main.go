@@ -1,10 +1,10 @@
 package main
 
 import (
+	"blockexchange/api"
 	"blockexchange/db"
 	"blockexchange/jobs"
 	"blockexchange/types"
-	"blockexchange/web"
 	"context"
 	"net/http"
 	"os"
@@ -39,7 +39,7 @@ func main() {
 
 	// set up server
 	cfg := types.CreateConfig()
-	api, err := web.Serve(db_, cfg)
+	api, err := api.NewApi(db_, cfg)
 	if err != nil {
 		panic(err)
 	}
