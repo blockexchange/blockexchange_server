@@ -7,11 +7,14 @@ import Search from './components/pages/Search.js';
 import Start from './components/pages/Start.js';
 import Tags from './components/pages/Tags.js';
 import Users from './components/pages/Users.js';
+import UserDetail from './components/pages/UserDetail.js';
 
 export default [{
 	path: "/", component: Start
 },{
 	path: "/profile", component: Profile
+},{
+	path: "/user/:username", component: UserDetail, props: true
 },{
 	path: "/login", component: Login
 },{

@@ -1,11 +1,11 @@
-import { search_user } from "../api/user.js";
+import { search_users } from "../api/user.js";
 import format_time from "../util/format_time.js";
 
 export default {
     props: ["name"],
     mounted: function() {
         if (this.name) {
-            search_user({ name: this.name })
+            search_users({ name: this.name })
             .then(u => this.user = u[0]);
         }
     },

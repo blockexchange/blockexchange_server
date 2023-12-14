@@ -35,7 +35,12 @@ func (api *Api) GetUser(w http.ResponseWriter, r *http.Request) {
 	Send(w, user, nil)
 }
 
-func (api *Api) SearchUser(w http.ResponseWriter, r *http.Request) {
+func (api *Api) CountUsers(w http.ResponseWriter, r *http.Request) {
+	count, err := api.UserRepo.CountUsers()
+	Send(w, count, err)
+}
+
+func (api *Api) SearchUsers(w http.ResponseWriter, r *http.Request) {
 	search := &types.UserSearch{}
 	err := json.NewDecoder(r.Body).Decode(search)
 	if err != nil {

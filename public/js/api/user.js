@@ -1,5 +1,6 @@
+export const count_users = () => fetch(`${BaseURL}/api/user-count`).then(r => r.json());
 
-export const search_user = search => fetch(`${BaseURL}/api/user-search`, {
+export const search_users = search => fetch(`${BaseURL}/api/user-search`, {
     method: "POST",
     body: JSON.stringify(search)
 })

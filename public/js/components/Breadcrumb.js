@@ -39,3 +39,7 @@ export const SEARCH = { name: "Search", icon: "search", link: "/search" };
 export const MY_SCHEMAS = { name: "My schemas", icon: "home", link: "/schemas" };
 export const SCHEMA_IMPORT = { name: "Schema import", icon: "download", link: "/import" };
 export const TAGS = { name: "Tags", icon: "tags", link: "/tags" };
+
+export const USER_DETAIL = username => {
+    return { name: `Profile for ${username}`, icon: "user", link: `/user/${username}` };
+};

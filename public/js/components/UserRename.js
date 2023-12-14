@@ -1,5 +1,5 @@
 import { get_claims } from "../service/login.js";
-import { search_user, save_user, get_user } from "../api/user.js";
+import { search_users, save_user, get_user } from "../api/user.js";
 import { check_login } from "../service/login.js";
 
 export default {
@@ -14,7 +14,7 @@ export default {
     },
     methods: {
         rename: function() {
-            search_user({ name: this.name })
+            search_users({ name: this.name })
             .then(list => {
                 this.username_taken = list.length > 0;
                 if (this.username_taken) {

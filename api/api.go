@@ -85,6 +85,8 @@ func NewApi(db_ *sqlx.DB, cfg *types.Config) (*Api, error) {
 		"/",
 		"/index.html",
 		"/login",
+		"/user/{username}",
+		"/users",
 		"/register",
 		"/profile",
 	}
