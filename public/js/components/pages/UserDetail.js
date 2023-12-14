@@ -3,7 +3,7 @@ import UserProfile from "../UserProfile.js";
 
 export default {
 	components: {
-        "bread-crumb": Breadcrumb,
+		"bread-crumb": Breadcrumb,
 		"user-profile": UserProfile
 	},
 	props: ["username"],
@@ -15,8 +15,8 @@ export default {
 	template: /*html*/`
 		<bread-crumb :items="breadcrumb"/>
 		<div class="row">
-            <div class="col-md-4"></div>
-            <div class="col-md-4 card" style="padding: 20px;">
+			<div class="col-md-4"></div>
+			<div class="col-md-4 card" style="padding: 20px;">
 				<user-profile :name="username"/>
 			</div>
 			<div class="col-md-4"></div>

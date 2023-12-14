@@ -34,15 +34,21 @@ export default {
         }
     },
     template: /*html*/`
-    <slot name="header"></slot>
-    <slot name="body" :list="list"></slot>
-    <div class="btn-group">
-        <router-link
-            :to="$router.currentRoute.value.path + '?page=' + i"
-            v-for="i in pages"
-            class="btn btn-xs btn-secondary">
-            {{i}}
-        </router-link>
-    </div>
+    <table>
+        <thead>
+            <slot name="header"></slot>
+        </thead>
+        <tbody>
+            <slot name="body" :list="list"></slot>
+        </tbody>
+        <div class="btn-group">
+            <router-link
+                :to="$router.currentRoute.value.path + '?page=' + i"
+                v-for="i in pages"
+                class="btn btn-xs btn-secondary">
+                {{i}}
+            </router-link>
+        </div>
+    </table>
     `
 };

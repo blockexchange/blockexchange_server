@@ -25,35 +25,36 @@ export default {
 	},
 	template: /*html*/`
 		<bread-crumb :items="breadcrumb"/>
-		<table class="table table-dark table-condensed table-striped">
-			<paged-content
-				:fetch_entries="fetch_entries"
-				:count_entries="count_entries">
-				<template #header>
-					<tr>
-						<th>Name</th>
-						<th>Created</th>
-						<th>Type</th>
-						<th>Role</th>
-					</tr>
-				</template>
-				<template #body="{ list }">
-					<tr v-for="entry in list">
-						<td>
-							<router-link :to="'/user/' + entry.name">
-								{{entry.name}}
-							</router-link>
-						</td>
-						<td>{{format_time(entry.created / 1000)}}</td>
-						<td>
-							<span class="badge bg-secondary">{{entry.type}}</span>
-						</td>
-						<td>
-							<span class="badge bg-secondary">{{entry.role}}</span>
-						</td>
-					</tr>
-				</template>
-			</paged-content>
-		</table>
+		<paged-content
+			class="table table-dark table-condensed table-striped"
+			:fetch_entries="fetch_entries"
+			:count_entries="count_entries">
+			<template #header>
+				<tr>
+					<th>Name</th>
+					<th class="d-none d-sm-table-cell">Created</th>
+					<th class="d-none d-sm-table-cell">Type</th>
+					<th class="d-none d-sm-table-cell">Role</th>
+				</tr>
+			</template>
+			<template #body="{ list }">
+				<tr v-for="entry in list">
+					<td>
+						<router-link :to="'/user/' + entry.name">
+							{{entry.name}}
+						</router-link>
+					</td>
+					<td class="d-none d-sm-table-cell">
+						{{format_time(entry.created / 1000)}}
+					</td>
+					<td class="d-none d-sm-table-cell">
+						<span class="badge bg-secondary">{{entry.type}}</span>
+					</td>
+					<td class="d-none d-sm-table-cell">
+						<span class="badge bg-secondary">{{entry.role}}</span>
+					</td>
+				</tr>
+			</template>
+		</paged-content>
 	`
 };

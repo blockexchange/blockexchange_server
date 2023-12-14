@@ -8,8 +8,8 @@ export default {
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
-				<router-link to="/" class="navbar-brand">Block exchange</router-link>
-				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+				<router-link to="/" class="navbar-brand d-none d-lg-inline">Block exchange</router-link>
+				<ul class="navbar-nav me-auto">
 					<li class="nav-item">
 						<router-link to="/login" class="nav-link">
 							<i class="fa fa-sign-in"></i> Login
