@@ -22,9 +22,7 @@ export default {
 
     },
     template: /*html*/`
-    <table>
-        <slot name="header"></slot>
-        <slot name="body" :list="list"></slot>
-    </table>
+    <slot name="header"></slot>
+    <slot name="body" :list="list"></slot>
     `
 };
