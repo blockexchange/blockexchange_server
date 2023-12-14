@@ -1,7 +1,7 @@
 import Breadcrumb, { START, REGISTER } from "../Breadcrumb.js";
 import { create_captcha } from "../../api/captcha.js";
 import { register } from "../../api/register.js";
-import { login } from "../../api/login.js";
+import { login } from "../../service/login.js";
 
 export default {
 	components: {
@@ -60,45 +60,47 @@ export default {
 		<div class="row">
             <div class="col-md-4"></div>
             <div class="col-md-4 card" style="padding: 20px;">
-				<h5>Register a new account</h5>
-				<div class="input-group has-validation">
-					<input type="text"
-						v-model="name" class="form-control w-100"
-						v-bind:class="{'is-invalid': register_result.error_username_taken || register_result.error_invalid_username}"
-						placeholder="Username"/>
-					<div class="invalid-feedback" v-if="register_result.error_username_taken">
-						Username is already taken
+				<form @submit.prevent>
+					<h5>Register a new account</h5>
+					<div class="input-group has-validation">
+						<input type="text"
+							v-model="name" class="form-control w-100"
+							v-bind:class="{'is-invalid': register_result.error_username_taken || register_result.error_invalid_username}"
+							placeholder="Username"/>
+						<div class="invalid-feedback" v-if="register_result.error_username_taken">
+							Username is already taken
+						</div>
+						<div class="invalid-feedback" v-if="register_result.error_invalid_username">
+							Username is invalid, allowed chars: a to z, A to Z, 0 to 9 and -, _
+						</div>
 					</div>
-					<div class="invalid-feedback" v-if="register_result.error_invalid_username">
-						Username is invalid, allowed chars: a to z, A to Z, 0 to 9 and -, _
+					<div class="input-group has-validation">
+						<input type="password" v-model="password" class="form-control w-100"
+							v-bind:class="{'is-invalid': register_result.error_password_too_short}"
+							placeholder="Password"/>
+						<div class="invalid-feedback" v-if="register_result.error_password_too_short">
+							Password-length must be 6 characters or more
+						</div>
 					</div>
-				</div>
-				<div class="input-group has-validation">
-					<input type="password" v-model="password" class="form-control w-100"
-						v-bind:class="{'is-invalid': register_result.error_password_too_short}"
-						placeholder="Password"/>
-					<div class="invalid-feedback" v-if="register_result.error_password_too_short">
-						Password-length must be 6 characters or more
+					<input type="password" v-model="password2" class="form-control w-100" placeholder="Retype password"/>
+					<img :src="captcha_src" v-if="captcha_src">
+					<div class="alert alert-secondary" v-if="!captcha_src">
+						<i class="fa fa-spinner fa-spin"></i>
+						Loading captcha
 					</div>
-				</div>
-				<input type="password" v-model="password2" class="form-control w-100" placeholder="Retype password"/>
-				<img :src="captcha_src" v-if="captcha_src">
-				<div class="alert alert-secondary" v-if="!captcha_src">
-					<i class="fa fa-spinner fa-spin"></i>
-					Loading captcha
-				</div>
-				<div class="input-group has-validation">
-					<input type="text" v-model="captcha_answer" class="form-control w-100"
-						v-bind:class="{'is-invalid': register_result.error_captcha}"
-						placeholder="Captcha answer"/>
-					<div class="invalid-feedback" v-if="register_result.error_captcha">
-						Captcha answer invalid
+					<div class="input-group has-validation">
+						<input type="text" v-model="captcha_answer" class="form-control w-100"
+							v-bind:class="{'is-invalid': register_result.error_captcha}"
+							placeholder="Captcha answer"/>
+						<div class="invalid-feedback" v-if="register_result.error_captcha">
+							Captcha answer invalid
+						</div>
 					</div>
-				</div>
-				<button class="btn btn-primary w-100" :disabled="!can_register" v-on:click="register">
-					<i class="fa fa-user-plus"></i>
-					Register
-				</button>
+					<button type="submit" class="btn btn-primary w-100" :disabled="!can_register" v-on:click="register">
+						<i class="fa fa-user-plus"></i>
+						Register
+					</button>
+				</form>
 			</div>
 			<div class="col-md-4"></div>
 		</div>
