@@ -1,4 +1,4 @@
-import Breadcrumb, { START, USER_DETAIL } from "../Breadcrumb.js";
+import Breadcrumb, { START, USERS, USER_DETAIL } from "../Breadcrumb.js";
 import UserProfile from "../UserProfile.js";
 
 export default {
@@ -9,7 +9,7 @@ export default {
 	props: ["username"],
 	data: function() {
 		return {
-			breadcrumb: [START, USER_DETAIL(this.username)]
+			breadcrumb: [START, USERS, USER_DETAIL(this.username)]
 		};
 	},
 	template: /*html*/`
