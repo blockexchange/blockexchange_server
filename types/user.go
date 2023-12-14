@@ -17,13 +17,19 @@ const (
 )
 
 type User struct {
-	ID         *int64 `json:"id"`
-	Created    int64  `json:"created"`
-	Name       string `json:"name"`
-	Hash       string
+	ID         *int64   `json:"id"`
+	Created    int64    `json:"created"`
+	Name       string   `json:"name"`
+	Hash       string   `json:"-"` // not exported
 	Type       UserType `json:"type"`
 	Role       UserRole `json:"role"`
 	ExternalID *string  `json:"external_id"`
+}
+
+type UserSearch struct {
+	Name   *string `json:"name"`
+	Limit  *int    `json:"limit"`
+	Offset *int    `json:"offset"`
 }
 
 func (u *User) Columns(action string) []string {

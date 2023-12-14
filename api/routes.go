@@ -23,6 +23,10 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/captcha", api.CreateCaptcha).Methods(http.MethodGet)
 	r.PathPrefix("/api/captcha/").Handler(captcha.Server(300, 200))
 
+	r.HandleFunc("/api/user-search", api.SearchUser).Methods(http.MethodPost)
+	r.HandleFunc("/api/user/{user_id}", api.GetUser).Methods(http.MethodGet)
+	r.HandleFunc("/api/user/{user_id}", api.Secure(api.SaveUser)).Methods(http.MethodPost)
+
 	// mod api
 	r.HandleFunc("/api/token", api.RequestToken).Methods(http.MethodPost)
 

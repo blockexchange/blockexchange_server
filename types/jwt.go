@@ -17,7 +17,6 @@ type Claims struct {
 	*jwt.RegisteredClaims
 	Username    string          `json:"username"`
 	UserID      int64           `json:"user_id"`
-	Mail        string          `json:"mail"`
 	Type        UserType        `json:"type"`
 	Permissions []JWTPermission `json:"permissions"`
 }
