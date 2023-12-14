@@ -88,9 +88,13 @@ func (api *Api) SaveUser(w http.ResponseWriter, r *http.Request, ctx *SecureCont
 		SendError(w, 500, fmt.Sprintf("user decode error: %s", err.Error()))
 		return
 	}
+	if sent_user.ID == nil {
+		SendError(w, 500, "no id")
+		return
+	}
 
 	// check if the requested user is the same
-	if !claims.HasPermission(types.JWTPermissionAdmin) && user_id != claims.ID {
+	if !claims.HasPermission(types.JWTPermissionAdmin) && *sent_user.ID != claims.UserID {
 		SendError(w, 403, fmt.Sprintf("not authorized to get user '%s'", user_id))
 		return
 	}

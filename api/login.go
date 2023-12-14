@@ -51,6 +51,23 @@ func (api *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 	c, err := api.core.GetClaims(r)
+	if r.URL.Query().Get("renew") == "true" || c.ExpiresAt.Before(time.Now().Add(1*time.Hour)) {
+		// renew claims
+		user, err := api.UserRepo.GetUserById(c.UserID)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+		dur := time.Duration(7 * 24 * time.Hour)
+		permissions := core.GetPermissions(user, true)
+		token, err := api.core.CreateJWT(user, permissions, dur)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+		api.core.SetClaims(w, token, dur)
+		c = core.CreateClaims(user, permissions)
+	}
 	Send(w, c, err)
 }
 
