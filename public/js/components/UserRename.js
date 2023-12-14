@@ -25,7 +25,8 @@ export default {
                     user.name = this.name;
                     return save_user(user);
                 })
-                .then(() => check_login(true));
+                .then(() => check_login(true))
+                .then(() => location.reload());
             });
         }
     },
