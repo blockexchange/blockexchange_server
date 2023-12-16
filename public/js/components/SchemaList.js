@@ -13,7 +13,7 @@ export default {
     },
     template: /*html*/`
     <div class="row">
-        <div class="col-md-2" style="padding-bottom: 10px;" v-for="schema in list">
+        <div class="col-md-2" style="padding-bottom: 10px;" :key="schema.id" v-for="schema in list">
             <div class="card" style="height: 400px;">
                 <router-link :to="schema_link(schema)">
                     <img
