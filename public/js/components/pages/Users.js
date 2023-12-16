@@ -1,12 +1,12 @@
 import Breadcrumb, { START, USERS } from "../Breadcrumb.js";
-import PagedContent from "../PagedContent.js";
+import PagedTable from "../PagedTable.js";
 import format_time from "../../util/format_time.js";
 import { count_users, search_users } from "../../api/user.js";
 
 export default {
 	components: {
         "bread-crumb": Breadcrumb,
-		"paged-content": PagedContent
+		"paged-table": PagedTable
 	},
 	data: function() {
 		return {
@@ -25,7 +25,7 @@ export default {
 	},
 	template: /*html*/`
 		<bread-crumb :items="breadcrumb"/>
-		<paged-content
+		<paged-table
 			class="table table-dark table-condensed table-striped"
 			:fetch_entries="fetch_entries"
 			:count_entries="count_entries">
@@ -55,6 +55,6 @@ export default {
 					</td>
 				</tr>
 			</template>
-		</paged-content>
+		</paged-table>
 	`
 };

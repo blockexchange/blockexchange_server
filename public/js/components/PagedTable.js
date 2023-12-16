@@ -1,9 +1,12 @@
+
+
 export default {
-    props: ["fetch_entries", "count_entries", "per_page"],
+    props: ["fetch_entries", "count_entries"],
     data: function() {
         return {
             list: [],
             busy: false,
+            per_page: 20,
             total_count: 0,
             current_page: 1
         };
@@ -17,11 +20,10 @@ export default {
     methods: {
         update: function() {
             this.busy = true;
-            this.list = [];
             this.current_page = this.$route.query.page || 1;
             this.count_entries()
             .then(c => this.total_count = c)
-            .then(() => this.fetch_entries(+this.per_page, (this.current_page-1)*this.per_page))
+            .then(() => this.fetch_entries(this.per_page, (this.current_page-1)*this.per_page))
             .then(list => this.list = list)
             .then(() => this.busy = false);
         },
@@ -40,7 +42,13 @@ export default {
         }
     },
     template: /*html*/`
-        <slot name="body" :list="list"></slot>
+    <table>
+        <thead>
+            <slot name="header"></slot>
+        </thead>
+        <tbody>
+            <slot name="body" :list="list"></slot>
+        </tbody>
         <div class="btn-group">
             <router-link
                 :to="get_route(i)"
@@ -49,5 +57,6 @@ export default {
                 {{i}}
             </router-link>
         </div>
+    </table>
     `
 };

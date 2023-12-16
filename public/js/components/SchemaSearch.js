@@ -4,9 +4,9 @@ import { get_tags } from "../api/tags.js";
 import debounce from "../util/debounce.js";
 
 import SchemaList from "./SchemaList.js";
+import PagedContent from "./PagedContent.js";
 
 const store = Vue.reactive({
-    list: [],
     count: 0,
     busy: false,
     keywords: "",
@@ -23,7 +23,8 @@ get_tags().then(tags => {
 
 export default {
     components: {
-        "schema-list": SchemaList
+        "schema-list": SchemaList,
+        "paged-content": PagedContent
     },
     data: () => store,
     mounted: function() {
@@ -44,17 +45,24 @@ export default {
         "tag_id": "get_count"
     },
     methods: {
-        search_body: function() {
+        search_body: function(limit, offset) {
             return {
                 keywords: this.keywords ? this.keywords : null,
                 tag_id: this.tag_id >= 0 ? this.tag_id : null,
                 complete: true,
-                limit: 24
+                limit: limit,
+                offset: offset
             };
+        },
+        fetch_entries: function(limit, offset) {
+            return schema_search(this.search_body(limit, offset));
+        },
+        count_entries: function() {
+            return schema_count(this.search_body());
         },
         get_count: debounce(function() {
             this.busy = true;
-            schema_count(this.search_body())
+            schema_count(this.search_body(24))
             .then(c => this.count = c)
             .then(() => this.busy = false);
         }, 250),
@@ -66,12 +74,6 @@ export default {
                     q: this.keywords ? this.keywords : undefined,
                     tag_id: this.tag_id >= 0 ? this.tag_id : undefined
                 }
-            });
-
-            schema_search(this.search_body())
-            .then(list => {
-                this.list = list;
-                this.busy = false;
             });
         }
     },
@@ -96,6 +98,13 @@ export default {
         </div>
     </div>
     <hr>
-    <schema-list :list="list"/>
+    <paged-content
+        :fetch_entries="fetch_entries"
+        :count_entries="count_entries"
+        per_page="24">
+        <template #body="{ list }">
+            <schema-list :list="list"/>
+        </template>
+    </paged-content>
     `
 };
