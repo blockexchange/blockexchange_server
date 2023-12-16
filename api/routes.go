@@ -34,6 +34,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/export_we/{id}/{filename}", api.ExportWorldeditSchema).Methods(http.MethodGet)
 	r.HandleFunc("/api/export_bx/{id}/{filename}", api.ExportBXSchema).Methods(http.MethodGet)
 
+	r.HandleFunc("/api/tags", api.GetTags).Methods(http.MethodGet)
+
 	r.HandleFunc("/api/schema/{id}", api.GetSchema).Methods(http.MethodGet)
 	r.HandleFunc("/api/schema", api.Secure(api.CreateSchema)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{id}", api.Secure(api.UpdateSchema)).Methods(http.MethodPut)
@@ -46,6 +48,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	r.HandleFunc("/api/search/schema/byname/{user_name}/{schema_name}", api.SearchSchemaByNameAndUser)
 	r.HandleFunc("/api/search/schema", api.SearchSchema).Methods(http.MethodPost)
+	r.HandleFunc("/api/count/schema", api.CountSchema).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/schemapart", api.Secure(api.CreateSchemaPart)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", api.GetSchemaPart).Methods(http.MethodGet)
