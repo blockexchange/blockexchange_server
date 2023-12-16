@@ -8,6 +8,7 @@ import Start from './components/pages/Start.js';
 import Tags from './components/pages/Tags.js';
 import Users from './components/pages/Users.js';
 import UserDetail from './components/pages/UserDetail.js';
+import SchemaDetail from './components/pages/SchemaDetail.js';
 
 export default [{
 	path: "/", component: Start
@@ -25,6 +26,8 @@ export default [{
 	path: "/users", component: Users
 },{
 	path: "/search", component: Search
+},{
+	path: "/schema/:username/:name", component: SchemaDetail, props: true
 },{
 	path: "/import", component: Import
 },{

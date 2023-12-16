@@ -48,7 +48,8 @@ export default {
             return {
                 keywords: this.keywords ? this.keywords : null,
                 tag_id: this.tag_id >= 0 ? this.tag_id : null,
-                complete: true
+                complete: true,
+                limit: 24
             };
         },
         get_count: debounce(function() {

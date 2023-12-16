@@ -43,3 +43,7 @@ export const TAGS = { name: "Tags", icon: "tags", link: "/tags" };
 export const USER_DETAIL = username => {
     return { name: `Profile for ${username}`, icon: "user", link: `/user/${username}` };
 };
+
+export const SCHEMA_DETAIL = (username, name) => {
+    return { name: `Schema ${name}`, icon: "bookmark", link: `/schema/${username}/${name}` };
+};
