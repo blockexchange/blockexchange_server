@@ -9,9 +9,10 @@ import (
 type IndexModel struct {
 	Webdev  bool
 	BaseURL string
+	Meta    map[string]string
 }
 
-func RenderIndex(w http.ResponseWriter, r *http.Request) {
+func RenderIndex(w http.ResponseWriter, r *http.Request, meta map[string]string) {
 	data, err := Webapp.ReadFile("index.html")
 	if err != nil {
 		w.WriteHeader(500)
@@ -29,6 +30,7 @@ func RenderIndex(w http.ResponseWriter, r *http.Request) {
 	m := &IndexModel{
 		Webdev:  os.Getenv("WEBDEV") == "true",
 		BaseURL: os.Getenv("BASE_URL"),
+		Meta:    meta,
 	}
 	t.Execute(w, m)
 }

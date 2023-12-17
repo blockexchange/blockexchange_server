@@ -78,22 +78,11 @@ func NewApi(db_ *sqlx.DB, cfg *types.Config) (*Api, error) {
 		ColorMapping: cm,
 		Running:      running,
 	}
-	a.SetupRoutes(r, cfg)
 
-	// index.html or urls that point to it
-	indexUrls := []string{
-		"/",
-		"/index.html",
-		"/login",
-		"/user/{username}",
-		"/users",
-		"/search",
-		"/register",
-		"/profile",
-	}
-	for _, u := range indexUrls {
-		r.HandleFunc(u, public.RenderIndex)
-	}
+	// api surface
+	a.SetupRoutes(r, cfg)
+	// client app routes
+	a.SetupWebRoutes(r, cfg)
 
 	// static files
 	if cfg.WebDev {
