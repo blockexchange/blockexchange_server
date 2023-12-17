@@ -41,11 +41,17 @@ export default {
     },
     template: /*html*/`
         <slot name="body" :list="list"></slot>
-        <div class="btn-group">
+        <slot name="busy" v-if="busy">
+            <div class="alert alert-primary">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </div>
+        </slot>
+        <div class="btn-group" v-if="!busy">
             <router-link
                 :to="get_route(i)"
                 v-for="i in pages"
-                class="btn btn-xs btn-secondary">
+                class="btn btn-xs btn-secondary"
+                v-bind:class="{disabled: this.current_page == i}">
                 {{i}}
             </router-link>
         </div>

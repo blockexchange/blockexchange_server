@@ -27,7 +27,7 @@ export default {
         "paged-content": PagedContent
     },
     data: () => store,
-    mounted: function() {
+    created: function() {
         // get data from query
         if (!this.keywords && this.$route.query.q) {
             this.keywords = this.$route.query.q;
@@ -62,7 +62,7 @@ export default {
         },
         get_count: debounce(function() {
             this.busy = true;
-            schema_count(this.search_body(24))
+            schema_count(this.search_body())
             .then(c => this.count = c)
             .then(() => this.busy = false);
         }, 250),
