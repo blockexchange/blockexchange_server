@@ -9,13 +9,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (api *Api) SetupWebRoutes(r *mux.Router, cfg *types.Config) {
+func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 	// index.html or urls that point to it
 	indexUrls := []string{
 		"/",
 		"/index.html",
 		"/login",
 		"/user/{username}",
+		"/schema/{username}",
 		"/users",
 		"/search",
 		"/register",

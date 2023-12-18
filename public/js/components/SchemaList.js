@@ -36,7 +36,7 @@ export default {
                     </p>
                     </h5>
                     <p>
-                        <span class="badge bg-success" v-for="tag in schema.tags">
+                        <span class="badge bg-success" v-for="tag in schema.tags" style="margin-right: 5px;">
                             <i class="fas fa-tag"></i>
                             {{tag}}
                         </span>                    

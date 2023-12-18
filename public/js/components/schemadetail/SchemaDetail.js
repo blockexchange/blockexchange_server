@@ -4,7 +4,9 @@ import format_time from "../../util/format_time.js";
 import ModalPrompt from "../ModalPrompt.js";
 
 import { schema_update, schema_set_tags, schema_update_screenshot, schema_delete } from "../../api/schema.js";
+import { get_schema_star, star_schema, unstar_schema, count_schema_stars } from "../../api/schema_star.js";
 import { get_tags } from "../../service/tags.js";
+import { is_logged_in } from "../../service/login.js";
 
 export default {
     components: {
@@ -15,19 +17,37 @@ export default {
         username: { type: String, required: true },
         allow_edit: { type: Boolean, default: false }
     },
+    mounted: function() {
+        this.update_star();
+    },
     data: function() {
         return {
             BaseURL,
             edit_mode: false,
             error_response: null,
             screenshot_busy: false,
-            delete_prompt: false
+            delete_prompt: false,
+            schema_star: null
         };
     },
     methods: {
         format_size,
         format_time,
         get_tags,
+        update_star: function() {
+            if (is_logged_in()) {
+                get_schema_star(this.schema.id)
+                .then(s => this.schema_star = s)
+                .then(() => count_schema_stars(this.schema.id))
+                .then(count => this.schema.stars = count);
+            }
+        },
+        star: function() {
+            star_schema(this.schema.id).then(() => this.update_star());
+        },
+        unstar: function() {
+            unstar_schema(this.schema.id).then(() => this.update_star());
+        },
         save: function() {
             this.error_response = null;
             schema_update(this.schema)
@@ -49,8 +69,11 @@ export default {
         },
         delete_schema: function() {
             schema_delete(this.schema.id)
-            .then(() => this.$router.push(`/`));
+            .then(() => this.$router.push(`/schema/${this.username}`));
         }
+    },
+    computed: {
+        logged_in: is_logged_in
     },
     template: /*html*/`
     <div>
@@ -73,10 +96,10 @@ export default {
                     {{schema.name}}
                     <small class="text-muted">by {{username}}</small>
                     &nbsp;
-                    <button class="btn btn-outline-primary">
-                        <i class="fa fa-star" v-bind:style="{color: 'yellow'}"></i>
+                    <button class="btn btn-outline-primary" :disabled="!logged_in" v-on:click="schema_star ? unstar() : star()">
+                        <i class="fa fa-star" v-bind:style="{color: schema_star ? 'yellow' : ''}"></i>
                         <span class="badge bg-secondary rouded-pill">{{schema.stars}}</span>
-                        Star
+                        {{ schema_star ? 'Unstar' : 'Star' }}
                     </button>
                 </h3>
                 <div v-else class="input-group has-validation">

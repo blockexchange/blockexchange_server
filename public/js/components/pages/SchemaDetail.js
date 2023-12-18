@@ -1,4 +1,4 @@
-import Breadcrumb, { START, SCHEMA_DETAIL } from "../Breadcrumb.js";
+import Breadcrumb, { START, USER_SCHEMAS, SCHEMA_DETAIL } from "../Breadcrumb.js";
 import LoadingBlock from "../LoadingBlock.js";
 import SchemaDetail from "../schemadetail/SchemaDetail.js";
 
@@ -14,7 +14,7 @@ export default {
 	},
 	data: function() {
 		return {
-			breadcrumb: [START, SCHEMA_DETAIL(this.username, this.name)],
+			breadcrumb: [START, USER_SCHEMAS(this.username), SCHEMA_DETAIL(this.username, this.name)],
 			BaseURL
 		};
 	},

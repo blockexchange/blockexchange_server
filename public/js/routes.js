@@ -9,6 +9,7 @@ import Tags from './components/pages/Tags.js';
 import Users from './components/pages/Users.js';
 import UserDetail from './components/pages/UserDetail.js';
 import SchemaDetail from './components/pages/SchemaDetail.js';
+import UserSchemas from './components/pages/UserSchemas.js';
 
 export default [{
 	path: "/", component: Start
@@ -28,6 +29,8 @@ export default [{
 	path: "/search", component: Search
 },{
 	path: "/schema/:username/:name", component: SchemaDetail, props: true
+},{
+	path: "/schema/:username", component: UserSchemas, props: true
 },{
 	path: "/import", component: Import
 },{

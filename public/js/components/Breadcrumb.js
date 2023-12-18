@@ -44,6 +44,10 @@ export const USER_DETAIL = username => {
     return { name: `Profile for ${username}`, icon: "user", link: `/user/${username}` };
 };
 
+export const USER_SCHEMAS = username => {
+    return { name: `Schematics for ${username}`, icon: "user", link: `/schema/${username}` };
+};
+
 export const SCHEMA_DETAIL = (username, name) => {
     return { name: `Schema ${name}`, icon: "bookmark", link: `/schema/${username}/${name}` };
 };

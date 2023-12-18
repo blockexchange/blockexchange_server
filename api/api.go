@@ -82,7 +82,7 @@ func NewApi(db_ *sqlx.DB, cfg *types.Config) (*Api, error) {
 	// api surface
 	a.SetupRoutes(r, cfg)
 	// client app routes
-	a.SetupWebRoutes(r, cfg)
+	a.SetupSPARoutes(r, cfg)
 
 	// static files
 	if cfg.WebDev {

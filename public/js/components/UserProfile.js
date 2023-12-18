@@ -28,6 +28,9 @@ export default {
                 <b>Role:</b> <span class="badge bg-secondary">{{user.role}}</span>
             </li>
         </ul>
+        <router-link :to="'/schema/' + user.name" class="btn btn-xs btn-outline-success">
+            Show all schematics of {{user.name}}
+        </router-link>
     </div>
 	`
 };

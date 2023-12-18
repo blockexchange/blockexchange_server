@@ -45,6 +45,11 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/schema/{id}/update", api.Secure(api.UpdateSchemaInfo)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{id}/tags", api.Secure(api.UpdateSchemaTags)).Methods(http.MethodPost)
 
+	r.HandleFunc("/api/schema/{schema_id}/star", api.Secure(api.GetSchemaStar)).Methods(http.MethodGet)
+	r.HandleFunc("/api/schema/{schema_id}/star/count", api.CountSchemaStars).Methods(http.MethodGet)
+	r.HandleFunc("/api/schema/{schema_id}/star", api.Secure(api.StarSchema)).Methods(http.MethodPut)
+	r.HandleFunc("/api/schema/{schema_id}/star", api.Secure(api.UnStarSchema)).Methods(http.MethodDelete)
+
 	r.HandleFunc("/api/schema/{schema_id}/screenshot/update", api.Secure(api.UpdateSchemaPreview)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{schema_id}/screenshot", api.GetFirstSchemaScreenshot)
 
