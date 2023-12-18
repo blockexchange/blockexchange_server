@@ -35,7 +35,7 @@ func (a *Api) Secure(h SecureHandler) Handler {
 			return
 		}
 		if claims == nil {
-			SendError(w, http.StatusUnauthorized, err.Error())
+			SendError(w, http.StatusUnauthorized, "unauthorized")
 			return
 		}
 

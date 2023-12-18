@@ -61,5 +61,9 @@ export default {
                 Username is already taken
             </div>
         </div>
+        <div class="alert alert-warning">
+            <i class="fa fa-triangle-exclamation"></i>
+            <b>Warning:</b> Changing the user name affects all your schematic urls
+        </div>
     `
 };

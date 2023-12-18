@@ -28,6 +28,10 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/user/{user_id}", api.GetUser).Methods(http.MethodGet)
 	r.HandleFunc("/api/user/{user_id}", api.Secure(api.SaveUser)).Methods(http.MethodPost)
 
+	r.HandleFunc("/api/accesstoken", api.Secure(api.GetAccessTokens)).Methods(http.MethodGet)
+	r.HandleFunc("/api/accesstoken", api.Secure(api.CreateAccessToken)).Methods(http.MethodPost)
+	r.HandleFunc("/api/accesstoken/{id}", api.Secure(api.DeleteAccessToken)).Methods(http.MethodDelete)
+
 	// mod api
 	r.HandleFunc("/api/token", api.RequestToken).Methods(http.MethodPost)
 

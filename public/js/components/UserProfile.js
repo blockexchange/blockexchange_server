@@ -16,7 +16,7 @@ export default {
                 <b>Username:</b> {{user.name}}
             </li>
             <li>
-                <b>Created:</b> {{format_time(user.created/1000)}}
+                <b>Created:</b> {{format_time(user.created)}}
             </li>
             <li>
                 <b>ID:</b> <span class="badge bg-success">{{user.id}}</span>

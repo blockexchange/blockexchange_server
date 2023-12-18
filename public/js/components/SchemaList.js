@@ -13,6 +13,12 @@ export default {
     },
     template: /*html*/`
     <div class="row">
+        <div class="col-md-12" v-if="list && list.length == 0">
+            <div class="alert alert-secondary">
+                <i class="fa fa-circle-info"></i>
+                No schematics found
+            </div>
+        </div>
         <div class="col-md-2" style="padding-bottom: 10px;" :key="schema.id" v-for="schema in list">
             <div class="card" style="min-height: 400px;">
                 <router-link :to="schema_link(schema)">

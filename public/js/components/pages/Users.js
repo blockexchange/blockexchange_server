@@ -45,7 +45,7 @@ export default {
 						</router-link>
 					</td>
 					<td class="d-none d-sm-table-cell">
-						{{format_time(entry.created / 1000)}}
+						{{format_time(entry.created)}}
 					</td>
 					<td class="d-none d-sm-table-cell">
 						<span class="badge bg-secondary">{{entry.type}}</span>

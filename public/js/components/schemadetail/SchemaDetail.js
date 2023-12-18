@@ -140,8 +140,8 @@ export default {
                     <div class="card-body">
                         <h5 class="card-title">Details</h5>
                         <ul>
-                            <li><b>Created:</b> {{format_time(schema.created / 1000)}}</li>
-                            <li><b>Modified:</b> {{format_time(schema.mtime / 1000)}}</li>
+                            <li><b>Created:</b> {{format_time(schema.created)}}</li>
+                            <li><b>Modified:</b> {{format_time(schema.mtime)}}</li>
                             <li><b>Size:</b> {{format_size(schema.total_size)}}</li>
                             <li><b>Dimensions:</b> {{schema.size_x}} / {{schema.size_y}} / {{schema.size_z}} nodes</li>
                             <li><b>Parts:</b> {{schema.total_parts}}</li>
