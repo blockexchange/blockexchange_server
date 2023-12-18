@@ -1,9 +1,12 @@
-import { is_logged_in, get_claims } from "../service/login.js";
+import { is_logged_in, get_claims, has_permission } from "../service/login.js";
 
 export default {
 	computed: {
 		is_logged_in,
 		claims: get_claims
+	},
+	methods: {
+		has_permission
 	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -46,7 +49,7 @@ export default {
 						</router-link>
 					</li>
 				</ul>
-				<form class="d-flex" v-if="is_logged_in">
+				<form class="d-flex" v-if="is_logged_in && has_permission('ADMIN')">
 					<div class="btn btn-secondary">
 						<router-link to="/profile">
 							<i class="fas fa-user"></i>
