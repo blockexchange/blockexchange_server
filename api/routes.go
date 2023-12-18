@@ -37,6 +37,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	r.HandleFunc("/api/export_we/{id}/{filename}", api.ExportWorldeditSchema).Methods(http.MethodGet)
 	r.HandleFunc("/api/export_bx/{id}/{filename}", api.ExportBXSchema).Methods(http.MethodGet)
+	r.HandleFunc("/api/import/{filename}", api.Secure(api.ImportSchematic)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/tags", api.GetTags).Methods(http.MethodGet)
 

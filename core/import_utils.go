@@ -1,9 +1,30 @@
 package core
 
 import (
+	"blockexchange/types"
 	"fmt"
 	"math/rand"
 )
+
+func (c *Core) PostImport(schema *types.Schema) (*types.Schema, error) {
+	schema.Complete = true
+	err := c.repos.SchemaRepo.UpdateSchema(schema)
+	if err != nil {
+		return nil, fmt.Errorf("update error: %v", err)
+	}
+
+	err = c.repos.SchemaRepo.CalculateStats(schema.ID)
+	if err != nil {
+		return nil, fmt.Errorf("stats calc error: %v", err)
+	}
+
+	_, err = UpdatePreview(schema, c.repos)
+	if err != nil {
+		return nil, fmt.Errorf("preview update error: %v", err)
+	}
+
+	return c.repos.SchemaRepo.GetSchemaById(schema.ID)
+}
 
 func (c *Core) FindUnusedSchemaname(schemaname, username string) (string, error) {
 	if schemaname == "" || !ValidateName(schemaname) {

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (c *Core) ImportWE(data []byte, username string) (*types.Schema, error) {
+func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema, error) {
 	entries, modnames, err := worldedit.Parse(data)
 	if err != nil {
 		return nil, err
@@ -19,7 +19,7 @@ func (c *Core) ImportWE(data []byte, username string) (*types.Schema, error) {
 		return nil, err
 	}
 
-	newSchemaName, err := c.FindUnusedSchemaname("", username)
+	newSchemaName, err := c.FindUnusedSchemaname(schemaname, username)
 	if err != nil {
 		return nil, err
 	}

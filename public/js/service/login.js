@@ -9,6 +9,7 @@ export const is_logged_in = () => store.claims != null;
 export const get_claims = () => store.claims;
 
 export const get_user_id = () => store.claims ? store.claims.user_id : null;
+export const get_username = () => store.claims ? store.claims.username : null;
 export const has_permission = permission => store.claims ? store.claims.permissions.includes(permission) : false;
 
 export const check_login = renew => fetch_claims(renew).then(c => {

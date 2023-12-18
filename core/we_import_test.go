@@ -24,7 +24,7 @@ func TestWEImport(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, data)
 
-	s, err := c.ImportWE(data, u.Name)
+	s, err := c.ImportWE(data, u.Name, "we_import")
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 }
