@@ -15,7 +15,7 @@ export default {
 			<h3>
 				Blockexchange
 				<small class="text-muted">
-					- exchange your schemas across worlds with ease
+					- exchange your schematics across worlds with ease
 				</small>
 			</h3>
 			<hr/>

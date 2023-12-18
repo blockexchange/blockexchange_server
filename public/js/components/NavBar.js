@@ -31,8 +31,8 @@ export default {
 						</router-link>
 					</li>
 					<li class="nav-item" v-if="is_logged_in">
-						<router-link to="/" class="nav-link">
-							<i class="fa fa-home"></i> My schemas
+						<router-link :to="'/schema/' + claims.username" class="nav-link">
+							<i class="fa fa-home"></i> My schematics
 						</router-link>
 					</li>
 					<li class="nav-item" v-if="is_logged_in">

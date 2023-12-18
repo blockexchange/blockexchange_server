@@ -210,8 +210,72 @@ export default {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Preview</h5>
-                        <div class="text-center">
+                        <div class="text-center" style="min-height: 600px;">
                             <img :src="BaseURL + '/api/schema/' + schema.id + '/screenshot'" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="card">
+                    <div class="card-header">
+                        Download
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Online</h5>
+                                <ul>
+                                    <li>
+                                        Download and install the <router-link to="/mod">blockexchange</router-link>-mod
+                                    </li>
+                                    <li>
+                                        Select the origin position with <b class="text-muted">/bx_pos2</b>
+                                    </li>
+                                    <li>
+                                        Check if the placement fits with <b class="text-muted">/bx_allocate {{username}} {{schema.name}}</b>
+                                    </li>
+                                    <li>
+                                        Place the schematic with <b class="text-muted">/bx_load {{username}} {{schema.name}}</b>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Offline</h5>
+                                <div class="btn-group">
+                                    <a class="btn btn-outline-primary"
+                                        :href="BaseURL + '/api/export_bx/' + schema.id + '/' + schema.name + '.zip'">
+                                        <i class="fa fa-download"></i>
+                                        Download as BX schematic
+                                    </a>
+                                    <a class="btn btn-outline-primary" v-if="schema.total_parts < 200"
+                                        :href="BaseURL + '/api/export_we/' + schema.id + '/' + schema.name + '.we'">
+                                        <i class="fa fa-download"></i>
+                                        Download as WE schematic
+                                        <i class="fa fa-triangle-exclamation"
+                                            v-if="schema.total_parts > 50"
+                                            style="color: yellow;"
+                                            title="WE-Import might be slow due to schematic size"></i>
+                                    </a>
+                                </div>
+                                <ul>
+                                    <li>
+                                        Download and install the <router-link to="/mod">blockexchange</router-link>-mod
+                                    </li>
+                                    <li>
+                                        Download the Blockexchange schematic with the above button and place it in the
+                                        <b class="text-muted">{world-folder}/bxschems/</b> folder
+                                    </li>
+                                    <li>
+                                        Select the origin position with <b class="text-muted">/bx_pos2</b>
+                                    </li>
+                                    <li>
+                                        Check if the placement fits with <b class="text-muted">/bx_allocate_local {{schema.name}}</b>
+                                    </li>
+                                    <li>
+                                        Place the schematic with <b class="text-muted">/bx_load_local {{schema.name}}</b>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
