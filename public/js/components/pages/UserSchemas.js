@@ -21,7 +21,8 @@ export default {
             return {
                 user_name: this.username,
                 limit: limit,
-                offset: offset
+                offset: offset,
+                complete: true
             };
         },
         fetch_entries: function(limit, offset) {
