@@ -1,20 +1,13 @@
 package testutils
 
 import (
-	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/types"
 	"math/rand"
-	"net/http"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
@@ -26,7 +19,7 @@ func CreateName(n int) string {
 	return string(b)
 }
 
-func CreateUser(repo db.UserRepository, t *testing.T, user *types.User) *types.User {
+func CreateUser(repo *db.UserRepository, t *testing.T, user *types.User) *types.User {
 	if user == nil {
 		// create new user
 		user = &types.User{}
@@ -44,23 +37,11 @@ func CreateUser(repo db.UserRepository, t *testing.T, user *types.User) *types.U
 	return user
 }
 
-func CreateAccessToken(repo db.AccessTokenRepository, t *testing.T, token *types.AccessToken) *types.AccessToken {
+func CreateAccessToken(repo *db.AccessTokenRepository, t *testing.T, token *types.AccessToken) *types.AccessToken {
 	if token == nil {
 		token = &types.AccessToken{}
 	}
 
 	assert.NoError(t, repo.CreateAccessToken(token))
 	return token
-}
-
-func Login(t *testing.T, r *http.Request, user *types.User) {
-	permissions := []types.JWTPermission{
-		types.JWTPermissionUpload,
-		types.JWTPermissionManagement,
-		types.JWTPermissionOverwrite,
-		types.JWTPermissionAdmin,
-	}
-	token, err := core.CreateJWT(user, permissions, time.Duration(1*time.Hour))
-	assert.NoError(t, err)
-	r.Header.Set("Authorization", token)
 }

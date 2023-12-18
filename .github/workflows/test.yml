@@ -34,11 +34,18 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: 1.20.x
+
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Install npm modules
+      run: |
+        cd public && npm ci && npm run jshint && npm run bundle
+
     - name: Test
       run: |
         go test ./... -coverprofile=profile.cov
+
     - uses: shogo82148/actions-goveralls@v1.8.0
       with:
         path-to-profile: profile.cov

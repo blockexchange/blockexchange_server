@@ -1,10 +1,10 @@
 package main
 
 import (
-	"blockexchange/core"
+	"blockexchange/api"
 	"blockexchange/db"
 	"blockexchange/jobs"
-	"blockexchange/web"
+	"blockexchange/types"
 	"context"
 	"net/http"
 	"os"
@@ -34,19 +34,18 @@ func main() {
 		}
 	}
 
-	cfg, err := core.CreateConfig()
-	if err != nil {
-		panic(err)
-	}
-
 	// start background jobs
 	jobs.Start(db_)
 
 	// set up server
-	api, err := web.Serve(db_, cfg)
+	cfg := types.CreateConfig()
+	api, router, err := api.NewApi(db_, cfg)
 	if err != nil {
 		panic(err)
 	}
+	// main entry
+	http.Handle("/", router)
+
 	server := &http.Server{Addr: ":8080", Handler: nil}
 
 	go func() {

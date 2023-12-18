@@ -1,4 +1,4 @@
-package api
+package api_test
 
 import (
 	"blockexchange/testutils"
@@ -24,13 +24,13 @@ func TestSchemaMods(t *testing.T) {
 	// Create
 	r := httptest.NewRequest("POST", "http://", bytes.NewBuffer(buf))
 	w := httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
 	r = mux.SetURLVars(r, map[string]string{
 		"id": strconv.Itoa(int(schema.ID)),
 	})
 
-	Secure(api.CreateSchemaMods)(w, r)
+	api.Secure(api.CreateSchemaMods)(w, r)
 
 	assert.Equal(t, 204, w.Result().StatusCode)
 
@@ -41,7 +41,7 @@ func TestSchemaMods(t *testing.T) {
 	// Get
 	r = httptest.NewRequest("GET", "http://", nil)
 	w = httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
 	r = mux.SetURLVars(r, map[string]string{
 		"id": strconv.Itoa(int(schema.ID)),

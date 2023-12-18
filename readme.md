@@ -194,3 +194,4 @@ Code: MIT
 ## Other assets
 
 * `public/pics/default_mese_crystal.png` CC BY-SA 3.0 https://github.com/minetest/minetest_game
+* `public/pics/contentdb.png` GPL v3 https://github.com/minetest/contentdb

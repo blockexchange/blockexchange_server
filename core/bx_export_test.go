@@ -47,8 +47,7 @@ func TestExportBXSchema(t *testing.T) {
 
 	// import
 
-	r := bytes.NewReader(buf.Bytes())
-	res, err := ImportBXSchema(r, int64(buf.Len()))
+	res, err := ParseBXContent(buf.Bytes())
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 	assert.NotNil(t, res.Mods)

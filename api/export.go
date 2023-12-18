@@ -4,6 +4,7 @@ import (
 	"blockexchange/core"
 	"blockexchange/types"
 	"blockexchange/worldedit"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -29,6 +30,7 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 		return schemapart, err
 	}
 
+	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", vars["filename"]))
 	err = worldedit.Export(w, it)
 	if err != nil {
 		SendError(w, 500, err.Error())

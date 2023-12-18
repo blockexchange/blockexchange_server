@@ -1,7 +1,6 @@
 package api
 
 import (
-	"blockexchange/core"
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
@@ -28,17 +27,15 @@ func (ctx *SecureContext) CheckPermission(w http.ResponseWriter, permission type
 type Handler func(w http.ResponseWriter, r *http.Request)
 type SecureHandler func(w http.ResponseWriter, r *http.Request, ctx *SecureContext)
 
-func Secure(h SecureHandler) Handler {
+func (a *Api) Secure(h SecureHandler) Handler {
 	return func(w http.ResponseWriter, r *http.Request) {
-		authorization := r.Header.Get("Authorization")
-		if authorization == "" {
-			SendError(w, http.StatusUnauthorized, "no jwt found")
-			return
-		}
-
-		claims, err := core.ParseJWT(authorization)
+		claims, err := a.core.GetClaims(r)
 		if err != nil {
 			SendError(w, http.StatusForbidden, err.Error())
+			return
+		}
+		if claims == nil {
+			SendError(w, http.StatusUnauthorized, "unauthorized")
 			return
 		}
 

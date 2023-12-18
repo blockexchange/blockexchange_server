@@ -2,6 +2,7 @@ package api
 
 import (
 	"blockexchange/core"
+	"blockexchange/types"
 	"bytes"
 	"fmt"
 	"image/png"
@@ -113,7 +114,7 @@ func (api Api) UpdateSchemaPreview(w http.ResponseWriter, r *http.Request, ctx *
 		return
 	}
 
-	if schema.UserID != ctx.Claims.UserID {
+	if schema.UserID != ctx.Claims.UserID && !ctx.Claims.HasPermission(types.JWTPermissionAdmin) {
 		SendError(w, 403, "you are not the owner of the schema")
 		return
 	}

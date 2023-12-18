@@ -37,6 +37,18 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 	Send(w, schema, err)
 }
 
+func (api *Api) CountSchema(w http.ResponseWriter, r *http.Request) {
+	search := &types.SchemaSearchRequest{}
+	err := json.NewDecoder(r.Body).Decode(search)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	c, err := api.SchemaSearchRepo.Count(search)
+	Send(w, c, err)
+}
+
 func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 	search := &types.SchemaSearchRequest{}
 	err := json.NewDecoder(r.Body).Decode(search)
@@ -45,6 +57,16 @@ func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	list, err := api.SchemaSearchRepo.Search(search, 100, 0)
+	// apply sane defaults
+	if search.Limit == nil || *search.Limit > 100 || *search.Limit <= 0 {
+		l := 100
+		search.Limit = &l
+	}
+	if search.Offset == nil || *search.Offset > 10000 || *search.Offset < 0 {
+		o := 0
+		search.Offset = &o
+	}
+
+	list, err := api.SchemaSearchRepo.Search(search, *search.Limit, *search.Offset)
 	Send(w, list, err)
 }

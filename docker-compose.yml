@@ -4,8 +4,6 @@ services:
  postgres:
   image: postgres:16.1
   restart: always
-  ports:
-   - "5432:5432"
   environment:
    POSTGRES_PASSWORD: enter
   volumes:
@@ -37,7 +35,7 @@ services:
    - BLOCKEXCHANGE_COOKIE_DOMAIN=localhost
    - BLOCKEXCHANGE_COOKIE_SECURE=false
    - BLOCKEXCHANGE_TEST_DATA=true
-   - BASE_URL=http://localhost:8080/
+   - BASE_URL=http://localhost:8080
    - WEBDEV=true
    - ENABLE_SIGNUP=true
   ports:

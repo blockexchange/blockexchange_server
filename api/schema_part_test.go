@@ -1,4 +1,4 @@
-package api
+package api_test
 
 import (
 	"blockexchange/testutils"
@@ -27,9 +27,9 @@ func TestCreateSchemaPart(t *testing.T) {
 
 	r := httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
-	Secure(api.CreateSchemaPart)(w, r)
+	api.Secure(api.CreateSchemaPart)(w, r)
 
 	assert.Equal(t, 200, w.Result().StatusCode)
 
@@ -161,9 +161,9 @@ func TestCreateSchemaPartInvalidSchemaID(t *testing.T) {
 
 	r := httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
-	Secure(api.CreateSchemaPart)(w, r)
+	api.Secure(api.CreateSchemaPart)(w, r)
 
 	assert.Equal(t, 500, w.Result().StatusCode)
 }

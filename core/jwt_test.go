@@ -1,6 +1,7 @@
-package core
+package core_test
 
 import (
+	"blockexchange/core"
 	"blockexchange/types"
 	"testing"
 	"time"
@@ -18,7 +19,7 @@ func contains(s []types.JWTPermission, e types.JWTPermission) bool {
 }
 
 func TestGetPermissions(t *testing.T) {
-	permissions := GetPermissions(&types.User{
+	permissions := core.GetPermissions(&types.User{
 		Role: types.UserRoleDefault,
 	}, true)
 
@@ -27,7 +28,7 @@ func TestGetPermissions(t *testing.T) {
 	assert.True(t, contains(permissions, types.JWTPermissionOverwrite))
 	assert.False(t, contains(permissions, types.JWTPermissionAdmin))
 
-	permissions = GetPermissions(&types.User{
+	permissions = core.GetPermissions(&types.User{
 		Role: types.UserRoleDefault,
 	}, false)
 
@@ -36,7 +37,7 @@ func TestGetPermissions(t *testing.T) {
 	assert.True(t, contains(permissions, types.JWTPermissionOverwrite))
 	assert.False(t, contains(permissions, types.JWTPermissionAdmin))
 
-	permissions = GetPermissions(&types.User{
+	permissions = core.GetPermissions(&types.User{
 		Role: types.UserRoleAdmin,
 	}, true)
 
@@ -45,7 +46,7 @@ func TestGetPermissions(t *testing.T) {
 	assert.True(t, contains(permissions, types.JWTPermissionOverwrite))
 	assert.True(t, contains(permissions, types.JWTPermissionAdmin))
 
-	permissions = GetPermissions(&types.User{
+	permissions = core.GetPermissions(&types.User{
 		Role: types.UserRoleAdmin,
 	}, false)
 
@@ -63,13 +64,14 @@ func TestCreateJWT(t *testing.T) {
 		Type: types.UserTypeGithub,
 	}
 	permissions := []types.JWTPermission{types.JWTPermissionUpload}
+	c := core.New(types.CreateConfig(), nil)
 
-	token, err := CreateJWT(&user, permissions, time.Duration(30*time.Second))
+	token, err := c.CreateJWT(&user, permissions, time.Duration(30*time.Second))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	info, err := ParseJWT(token)
+	info, err := c.ParseJWT(token)
 	if err != nil {
 		t.Fatal(err)
 	}

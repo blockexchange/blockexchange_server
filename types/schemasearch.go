@@ -22,6 +22,8 @@ type SchemaSearchRequest struct {
 	Complete       *bool   `json:"complete"`
 	OrderDirection *string `json:"order_direction"`
 	OrderColumn    *string `json:"order_column"`
+	Limit          *int    `json:"limit"`
+	Offset         *int    `json:"offset"`
 }
 
 type SchemaSearchResult struct {

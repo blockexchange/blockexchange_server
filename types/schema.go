@@ -2,6 +2,11 @@ package types
 
 import "encoding/json"
 
+type SchemaUpdateError struct {
+	NameTaken   bool `json:"name_taken"`
+	NameInvalid bool `json:"name_invalid"`
+}
+
 // used for the database and GET requests
 type Schema struct {
 	ID           int64  `json:"id"`

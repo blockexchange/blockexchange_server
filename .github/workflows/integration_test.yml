@@ -13,11 +13,24 @@ jobs:
       with:
         fetch-depth: 0
         submodules: recursive
+
+    - name: Install npm modules
+      run: |
+        cd public && npm ci && npm run jshint && npm run bundle
+
     - name: Start  services
       run: |
         docker-compose up -d postgres
         sleep 10
         docker-compose up -d blockexchange
-        sleep 20
+
+    - name: Wait for services to come up
+      uses: cygnetdigital/wait_for_response@v2.0.0
+      with:
+        url: 'http://localhost:8080/'
+        responseCode: '200'
+        timeout: 120000
+        interval: 1000
+
     - name: Execute tests
       run: docker-compose up --exit-code-from mod-integration-test mod-integration-test

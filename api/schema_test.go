@@ -1,11 +1,10 @@
-package api
+package api_test
 
 import (
 	"blockexchange/testutils"
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http/httptest"
 	"strconv"
 	"testing"
@@ -31,7 +30,7 @@ func TestSchemaCreateNoUser(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
 
-	Secure(api.CreateSchema)(w, r)
+	api.Secure(api.CreateSchema)(w, r)
 	assert.Equal(t, 401, w.Result().StatusCode)
 }
 
@@ -52,9 +51,9 @@ func TestSchemaCreateInvalidUser(t *testing.T) {
 	assert.NoError(t, err)
 	r := httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
-	Secure(api.CreateSchema)(w, r)
+	api.Secure(api.CreateSchema)(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 }
 
@@ -77,9 +76,9 @@ func TestSchemaCreate(t *testing.T) {
 	assert.NoError(t, err)
 	r := httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
-	Secure(api.CreateSchema)(w, r)
+	api.Secure(api.CreateSchema)(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 
 	err = json.NewDecoder(w.Body).Decode(&schema)
@@ -94,26 +93,25 @@ func TestSchemaCreate(t *testing.T) {
 	assert.Equal(t, schema.Created, schema2.Created)
 
 	// update
-	schema.Name = "something else"
+	schema.Name = "something"
 
 	data, err = json.Marshal(schema)
 	assert.NoError(t, err)
 	r = httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
 	w = httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
-	Secure(api.UpdateSchema)(w, r)
+	api.Secure(api.UpdateSchema)(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 
 	// update infos
 	r = httptest.NewRequest("POST", "http://", nil)
 	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
 	w = httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
-	Secure(api.UpdateSchemaInfo)(w, r)
-	fmt.Println(w.Body.String())
+	api.Secure(api.UpdateSchemaInfo)(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 
 }
@@ -137,9 +135,9 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	assert.NoError(t, err)
 	r := httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
-	Secure(api.CreateSchema)(w, r)
+	api.Secure(api.CreateSchema)(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 
 	err = json.NewDecoder(w.Body).Decode(&schema)
@@ -189,9 +187,9 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	r = httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w = httptest.NewRecorder()
 	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
-	Secure(api.UpdateSchema)(w, r)
+	api.Secure(api.UpdateSchema)(w, r)
 
 	schema3, err := api.SchemaRepo.GetSchemaById(schema2.ID)
 	assert.NoError(t, err)

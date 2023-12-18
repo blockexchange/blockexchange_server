@@ -3,7 +3,7 @@ package core
 import (
 	"blockexchange/types"
 	"errors"
-	"os"
+	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -28,30 +28,79 @@ func GetPermissions(user *types.User, management bool) []types.JWTPermission {
 	return permissions
 }
 
-func CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Duration) (string, error) {
-	c := types.Claims{
+func CreateClaims(user *types.User, permissions []types.JWTPermission) *types.Claims {
+	return &types.Claims{
 		UserID:      *user.ID,
 		Username:    user.Name,
 		Type:        user.Type,
 		Permissions: permissions,
 	}
+}
 
-	if user.Mail != nil {
-		c.Mail = *user.Mail
+func (c *Core) SetClaims(w http.ResponseWriter, token string, d time.Duration) {
+	co := &http.Cookie{
+		Name:     c.cfg.CookieName,
+		Value:    token,
+		Path:     c.cfg.CookiePath,
+		Expires:  time.Now().Add(d),
+		HttpOnly: true,
+		Secure:   c.cfg.CookieSecure,
+	}
+	http.SetCookie(w, co)
+}
+
+func (c *Core) RemoveClaims(w http.ResponseWriter) {
+	co := &http.Cookie{
+		Name:     c.cfg.CookieName,
+		Value:    "",
+		Path:     c.cfg.CookiePath,
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   c.cfg.CookieSecure,
+	}
+	http.SetCookie(w, co)
+}
+
+func (c *Core) GetClaims(r *http.Request) (*types.Claims, error) {
+	var token string
+	authorization := r.Header.Get("Authorization")
+	if authorization != "" {
+		// token in header
+		token = authorization
+	} else {
+		// token in cookie
+		co, err := r.Cookie(c.cfg.CookieName)
+		if err == http.ErrNoCookie {
+			return nil, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		token = co.Value
+	}
+	if token == "" {
+		// no token found
+		return nil, nil
 	}
 
-	c.RegisteredClaims = &jwt.RegisteredClaims{
+	return c.ParseJWT(token)
+}
+
+func (c *Core) CreateJWT(user *types.User, permissions []types.JWTPermission, d time.Duration) (string, error) {
+	cl := CreateClaims(user, permissions)
+
+	cl.RegisteredClaims = &jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(d)),
 	}
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, cl)
 
-	return t.SignedString([]byte(os.Getenv("BLOCKEXCHANGE_KEY")))
+	return t.SignedString([]byte(c.cfg.Key))
 
 }
 
-func ParseJWT(token string) (*types.Claims, error) {
+func (c *Core) ParseJWT(token string) (*types.Claims, error) {
 	t, err := jwt.ParseWithClaims(token, &types.Claims{}, func(token *jwt.Token) (any, error) {
-		return []byte(os.Getenv("BLOCKEXCHANGE_KEY")), nil
+		return []byte(c.cfg.Key), nil
 	})
 
 	if err != nil {

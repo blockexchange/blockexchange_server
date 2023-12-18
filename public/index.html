@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html style="height: 100%">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta name="theme-color" content="#000">
+		{{range $key, $value := .Meta}}
+		<meta name="{{$key}}" content="{{$value}}"/>
+		{{end}}
+
+		<link rel="icon" href="{{.BaseURL}}/pics/bx_big.png" type="image/png">
+		<link rel="stylesheet" href="{{.BaseURL}}/node_modules/bootswatch/dist/darkly/bootstrap.min.css"/>
+		<link rel="stylesheet" href="{{.BaseURL}}/node_modules/@fortawesome/fontawesome-free/css/all.min.css"/>
+		<title>Block exchange</title>
+	</head>
+	<body>
+		<!-- app root -->
+		<app id="app">
+			<div class="row">
+				<div class="col-4"></div>
+				<div class="col-4 text-center">
+					<div style="height: 250px;"></div>
+					<i class="fa fa-spinner fa-spin"></i>
+					Loading the Block exchange app...
+				</div>
+				<div class="col-4"></div>
+			</div>
+		</app>
+		<script>
+			window.BaseURL = "{{.BaseURL}}";
+		</script>
+
+		<!-- app bootstrap -->
+		{{if .Webdev}}
+		<script src="{{.BaseURL}}/node_modules/vue/dist/vue.global.js"></script>
+		<script src="{{.BaseURL}}/node_modules/vue-router/dist/vue-router.global.js"></script>
+		{{else}}
+		<script src="{{.BaseURL}}/node_modules/vue/dist/vue.global.prod.js"></script>
+		<script src="{{.BaseURL}}/node_modules/vue-router/dist/vue-router.global.prod.js"></script>
+		{{end}}
+		{{if .Webdev}}
+		<script src="{{.BaseURL}}/js/main.js" type="module"></script>
+		{{else}}
+		<script src="{{.BaseURL}}/js/bundle.js"></script>
+		{{end}}
+	</body>
+</html>

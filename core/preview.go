@@ -17,6 +17,7 @@ func init() {
 	}
 }
 
+// TODO: (c *Core)
 func UpdatePreview(schema *types.Schema, repo *db.Repositories) (*types.SchemaScreenshot, error) {
 
 	renderer := render.NewISORenderer(repo.SchemaPartRepo.GetBySchemaIDAndOffset, cm)
