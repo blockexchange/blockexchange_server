@@ -39,6 +39,11 @@ export default {
     template: /*html*/`
     <div>
         <h5>Manage access-tokens</h5>
+        <div class="alert alert-secondary">
+            <i class="fa fa-circle-info"></i>
+            <b>Note:</b> Access-tokens serve as a time-limited login mechanism.
+            Tokens with long expiration-times should only be used on trusted servers.
+        </div>
         <table class="table table-striped table-condensed table-dark">
             <thead>
                 <tr>
