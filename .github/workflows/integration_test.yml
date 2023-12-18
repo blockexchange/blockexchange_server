@@ -13,6 +13,11 @@ jobs:
       with:
         fetch-depth: 0
         submodules: recursive
+
+    - name: Install npm modules
+      run: |
+        cd public && npm ci && npm run jshint && npm run bundle
+
     - name: Start  services
       run: |
         docker-compose up -d postgres
