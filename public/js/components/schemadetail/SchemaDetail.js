@@ -2,6 +2,7 @@ import format_size from "../../util/format_size.js";
 import format_time from "../../util/format_time.js";
 
 import ModalPrompt from "../ModalPrompt.js";
+import ClipboardCopy from "../ClipboardCopy.js";
 
 import { schema_update, schema_set_tags, schema_update_screenshot, schema_delete } from "../../api/schema.js";
 import { get_schema_star, star_schema, unstar_schema, count_schema_stars } from "../../api/schema_star.js";
@@ -10,7 +11,8 @@ import { is_logged_in } from "../../service/login.js";
 
 export default {
     components: {
-        "modal-prompt": ModalPrompt
+        "modal-prompt": ModalPrompt,
+        "clipboard-copy": ClipboardCopy
     },
     props: {
         schema: { type: Object, required: true },
@@ -230,13 +232,13 @@ export default {
                                         Download and install the <router-link to="/mod">blockexchange</router-link>-mod
                                     </li>
                                     <li>
-                                        Select the origin position with <b class="text-muted">/bx_pos2</b>
+                                        Select the origin position with <clipboard-copy :text="'/bx_pos1'"></clipboard-copy>
                                     </li>
                                     <li>
-                                        Check if the placement fits with <b class="text-muted">/bx_allocate {{username}} {{schema.name}}</b>
+                                        Check if the placement fits with <clipboard-copy :text="'/bx_allocate ' + username + ' ' + schema.name"></clipboard-copy>
                                     </li>
                                     <li>
-                                        Place the schematic with <b class="text-muted">/bx_load {{username}} {{schema.name}}</b>
+                                        Place the schematic with <clipboard-copy :text="'/bx_load ' + username + ' ' + schema.name"></clipboard-copy>
                                     </li>
                                 </ul>
                             </div>
@@ -267,13 +269,13 @@ export default {
                                         <b class="text-muted">{world-folder}/bxschems/</b> folder
                                     </li>
                                     <li>
-                                        Select the origin position with <b class="text-muted">/bx_pos2</b>
+                                        Select the origin position with <clipboard-copy :text="'/bx_pos1'"></clipboard-copy>
                                     </li>
                                     <li>
-                                        Check if the placement fits with <b class="text-muted">/bx_allocate_local {{schema.name}}</b>
+                                        Check if the placement fits with <clipboard-copy :text="'/bx_allocate_locale ' + username + ' ' + schema.name"></clipboard-copy>
                                     </li>
                                     <li>
-                                        Place the schematic with <b class="text-muted">/bx_load_local {{schema.name}}</b>
+                                        Place the schematic with <clipboard-copy :text="'/bx_load_local ' + username + ' ' + schema.name"></clipboard-copy>
                                     </li>
                                 </ul>
                             </div>

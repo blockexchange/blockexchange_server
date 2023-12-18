@@ -1,8 +1,13 @@
 import { get_access_tokens, create_access_token, delete_access_token } from "../api/access_token.js";
 import format_time from "../util/format_time.js";
 
+import ClipboardCopy from "./ClipboardCopy.js";
+
 export default {
     props: ["username"],
+    components: {
+		"clipboard-copy": ClipboardCopy
+    },
     data: function() {
         return {
             list: [],
@@ -59,7 +64,7 @@ export default {
                 <tr v-for="at in list" :key="at.id" v-bind:class="{'table-warning': is_expired(at)}">
                     <td>{{at.name}}</td>
                     <td>
-                        <pre>/bx_login {{username}} {{at.token}}</pre>
+                        <clipboard-copy :text="'/bx_login ' + username + ' ' + at.token"></clipboard-copy>
                     </td>
                     <td>{{format_time(at.created)}}</td>
                     <td>{{format_time(at.expires)}}</td>
