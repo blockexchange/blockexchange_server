@@ -6,7 +6,7 @@ COPY public/ .
 RUN npm run jshint && \
 	npm run bundle
 
-FROM golang:1.21.4 as go-app
+FROM golang:1.21.5 as go-app
 WORKDIR /data
 COPY go.mod go.sum ./
 RUN go mod download
@@ -16,7 +16,7 @@ RUN go vet && \
 	go test ./... && \
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
 
-FROM alpine:3.18.5
+FROM alpine:3.19.0
 COPY --from=go-app /data/blockexchange /
 EXPOSE 8080
 
