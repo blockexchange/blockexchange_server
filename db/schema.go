@@ -83,8 +83,8 @@ func (repo SchemaRepository) IncrementDownloads(id int64) error {
 	return err
 }
 
-func (repo SchemaRepository) DeleteSchema(id, user_id int64) error {
-	_, err := repo.DB.Exec("delete from schema where id = $1 and user_id = $2", id, user_id)
+func (repo SchemaRepository) DeleteSchema(id int64) error {
+	_, err := repo.DB.Exec("delete from schema where id = $1", id)
 	return err
 }
 

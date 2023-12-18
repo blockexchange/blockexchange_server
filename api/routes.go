@@ -37,11 +37,13 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/tags", api.GetTags).Methods(http.MethodGet)
 
 	r.HandleFunc("/api/schema/{id}", api.GetSchema).Methods(http.MethodGet)
+	r.HandleFunc("/api/schema/{id}", api.Secure(api.DeleteSchema)).Methods(http.MethodDelete)
 	r.HandleFunc("/api/schema", api.Secure(api.CreateSchema)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{id}", api.Secure(api.UpdateSchema)).Methods(http.MethodPut)
 	r.HandleFunc("/api/schema/{id}/mods", api.GetSchemaMods).Methods(http.MethodGet)
 	r.HandleFunc("/api/schema/{id}/mods", api.Secure(api.CreateSchemaMods)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{id}/update", api.Secure(api.UpdateSchemaInfo)).Methods(http.MethodPost)
+	r.HandleFunc("/api/schema/{id}/tags", api.Secure(api.UpdateSchemaTags)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/schema/{schema_id}/screenshot/update", api.Secure(api.UpdateSchemaPreview)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{schema_id}/screenshot", api.GetFirstSchemaScreenshot)
@@ -52,7 +54,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	r.HandleFunc("/api/schemapart", api.Secure(api.CreateSchemaPart)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", api.GetSchemaPart).Methods(http.MethodGet)
-	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", api.Secure(api.DeleteSchemaPart)).Methods("DELETE")
+	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}", api.Secure(api.DeleteSchemaPart)).Methods(http.MethodDelete)
 	r.HandleFunc("/api/schemapart/{schema_id}/{x}/{y}/{z}/delete", api.Secure(api.DeleteSchemaPart)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schemapart_chunk/{schema_id}/{x}/{y}/{z}", api.GetSchemaPartChunk)
 	r.HandleFunc("/api/schemapart_next/{schema_id}/{x}/{y}/{z}", api.GetNextSchemaPart)

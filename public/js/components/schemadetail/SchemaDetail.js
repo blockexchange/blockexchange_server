@@ -1,9 +1,15 @@
 import format_size from "../../util/format_size.js";
 import format_time from "../../util/format_time.js";
 
-import { schema_update } from "../../api/schema.js";
+import ModalPrompt from "../ModalPrompt.js";
+
+import { schema_update, schema_set_tags, schema_update_screenshot, schema_delete } from "../../api/schema.js";
+import { get_tags } from "../../service/tags.js";
 
 export default {
+    components: {
+        "modal-prompt": ModalPrompt
+    },
     props: {
         schema: { type: Object, required: true },
         username: { type: String, required: true },
@@ -12,23 +18,55 @@ export default {
     data: function() {
         return {
             BaseURL,
-            edit_mode: false
+            edit_mode: false,
+            error_response: null,
+            screenshot_busy: false,
+            delete_prompt: false
         };
     },
     methods: {
         format_size,
         format_time,
+        get_tags,
         save: function() {
+            this.error_response = null;
             schema_update(this.schema)
             .then(() => {
-                // ok
+                // set tags
+                schema_set_tags(this.schema.id, this.schema.tags);
+
+                this.edit_mode = false;
+                this.$router.push(`/schema/${this.username}/${this.schema.name}`);
             })
-            .catch(e => console.error(e))
-            .finally(() => this.edit_mode = false);
+            .catch(e => {
+                this.error_response = e;
+            });
+        },
+        update_screenshot: function() {
+            this.screenshot_busy = true;
+            schema_update_screenshot(this.schema.id)
+            .then(() => this.screenshot_busy = false);
+        },
+        delete_schema: function() {
+            schema_delete(this.schema.id)
+            .then(() => this.$router.push(`/`));
         }
     },
     template: /*html*/`
     <div>
+        <modal-prompt v-if="delete_prompt" title="Confirm deletion" v-on:close="delete_prompt = false">
+            <template #body>
+                <p>Confirm deletion of schematic <b>{{schema.name}}</b></p>
+            </template>
+            <template #footer>
+                <a class="btn btn-secondary" v-on:click="delete_prompt = false">
+                    <i class="fa fa-times"></i> Abort
+                </a>
+                <a class="btn btn-danger" v-on:click="delete_schema">
+                    <i class="fa fa-trash"></i> Delete
+                </a>
+            </template>
+        </modal-prompt>
         <div class="row">
             <div class="col-md-6">
                 <h3 v-if="!edit_mode">
@@ -41,17 +79,27 @@ export default {
                         Star
                     </button>
                 </h3>
-                <input v-else type="text" class="form-control" v-model="schema.name">
+                <div v-else class="input-group has-validation">
+                    <input type="text" class="form-control" v-model="schema.name" v-bind:class="{'is-invalid': error_response}">
+                    <div class="invalid-feedback" v-if="error_response && error_response.name_taken">
+                        Schema name already taken
+                    </div>
+                    <div class="invalid-feedback" v-if="error_response && error_response.name_invalid">
+                        Schema name invalid, allowed chars: a to z, A to Z, 0 to 9 and -, _
+                    </div>
+                </div>
             </div>
             <div class="col-md-6">
                 <div class="btn-group float-end" v-if="allow_edit && !edit_mode">
                     <a class="btn btn-sm btn-secondary" v-on:click="edit_mode = true">
                         <i class="fa fa-edit"></i> Edit
                     </a>
-                    <a class="btn btn-sm btn-secondary">
-                        <i class="fa fa-image"></i> Update screenshot
+                    <a class="btn btn-sm btn-secondary" v-bind:class="{'disabled': screenshot_busy}" v-on:click="update_screenshot">
+                        <i v-if="screenshot_busy" class="fa fa-spinner fa-spin"></i>
+                        <i v-else class="fa fa-image"></i>
+                        Update screenshot
                     </a>
-                    <a class="btn btn-sm btn-danger">
+                    <a class="btn btn-sm btn-danger" v-on:click="delete_prompt = true">
                         <i class="fa fa-trash"></i> Delete
                     </a>
                 </div>
@@ -117,10 +165,21 @@ export default {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Tags</h5>
-                        <span class="badge bg-success" v-for="tag in schema.tags" style="margin-right: 5px;">
+                        <span v-if="!edit_mode" class="badge bg-success" v-for="tag in schema.tags" style="margin-right: 5px;">
                             <i class="fas fa-tag"></i>
                             {{tag}}
                         </span>
+                        <div v-else>
+                            <ul>
+                                <li v-for="tag in get_tags()">
+                                    <input type="checkbox" class="form-check-input" :value="tag.name" v-model="schema.tags"/>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-tag"></i>
+                                        {{tag.name}}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -13,7 +13,13 @@ func SendError(w http.ResponseWriter, code int, message string) {
 	logrus.Error("web.SendError: " + message)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(types.ErrorResponse{Message: message})
+	json.NewEncoder(w).Encode(types.ErrorResponse{Message: message, Status: code})
+}
+
+func SendErrorResponse(w http.ResponseWriter, code int, resp any) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(resp)
 }
 
 func SendText(w http.ResponseWriter, txt string) {
