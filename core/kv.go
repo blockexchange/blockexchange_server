@@ -24,8 +24,11 @@ func (l *RedisKV) Set(key, value string, exp time.Duration) {
 }
 
 func (l *RedisKV) Get(key string) *string {
-	//cmd := l.rc.Get(context.Background(), key)
-	return nil
+	s, err := l.rc.Get(context.Background(), key).Result()
+	if err != nil {
+		return nil
+	}
+	return &s
 }
 
 // local
