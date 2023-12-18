@@ -43,13 +43,13 @@ export default {
 							<i class="fa fa-upload"></i> Schematic import
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="is_logged_in">
+					<li class="nav-item" v-if="is_logged_in && has_permission('ADMIN')">
 						<router-link to="/tags" class="nav-link">
 							<i class="fa fa-tags"></i> Tags
 						</router-link>
 					</li>
 				</ul>
-				<form class="d-flex" v-if="is_logged_in && has_permission('ADMIN')">
+				<form class="d-flex" v-if="is_logged_in">
 					<div class="btn btn-secondary">
 						<router-link to="/profile">
 							<i class="fas fa-user"></i>
