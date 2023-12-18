@@ -24,7 +24,7 @@ func TestSchemaMods(t *testing.T) {
 	// Create
 	r := httptest.NewRequest("POST", "http://", bytes.NewBuffer(buf))
 	w := httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
 	r = mux.SetURLVars(r, map[string]string{
 		"id": strconv.Itoa(int(schema.ID)),
@@ -41,7 +41,7 @@ func TestSchemaMods(t *testing.T) {
 	// Get
 	r = httptest.NewRequest("GET", "http://", nil)
 	w = httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
 	r = mux.SetURLVars(r, map[string]string{
 		"id": strconv.Itoa(int(schema.ID)),

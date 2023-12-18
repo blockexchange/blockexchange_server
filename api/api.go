@@ -37,7 +37,7 @@ func (a *Api) Stop() {
 	a.Running.Store(false)
 }
 
-func NewApi(db_ *sqlx.DB, cfg *types.Config) (*Api, error) {
+func NewApi(db_ *sqlx.DB, cfg *types.Config) (*Api, *mux.Router, error) {
 	r := mux.NewRouter()
 	r.Use(middleware.PrometheusMiddleware)
 	r.Use(middleware.LoggingMiddleware)
@@ -62,7 +62,7 @@ func NewApi(db_ *sqlx.DB, cfg *types.Config) (*Api, error) {
 	cm := colormapping.NewColorMapping()
 	err := cm.LoadDefaults()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	running := &atomic.Bool{}
@@ -95,11 +95,10 @@ func NewApi(db_ *sqlx.DB, cfg *types.Config) (*Api, error) {
 		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding))
 	}
 
-	// main entry
-	http.Handle("/", r)
+	return a, r, nil
+}
 
+func init() {
 	// metrics
 	http.Handle("/metrics", promhttp.Handler())
-
-	return a, nil
 }

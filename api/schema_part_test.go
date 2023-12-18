@@ -27,7 +27,7 @@ func TestCreateSchemaPart(t *testing.T) {
 
 	r := httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
 	api.Secure(api.CreateSchemaPart)(w, r)
 
@@ -161,7 +161,7 @@ func TestCreateSchemaPartInvalidSchemaID(t *testing.T) {
 
 	r := httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
-	testutils.Login(t, r, user)
+	Login(t, r, user)
 
 	api.Secure(api.CreateSchemaPart)(w, r)
 

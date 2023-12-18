@@ -8,14 +8,11 @@ import (
 )
 
 func TestBXImport(t *testing.T) {
-	f, err := os.Open("testdata/blockexchange.zip")
+	data, err := os.ReadFile("testdata/blockexchange.zip")
 	assert.NoError(t, err)
-	assert.NotNil(t, f)
+	assert.NotNil(t, data)
 
-	stat, err := f.Stat()
-	assert.NoError(t, err)
-
-	res, err := ImportBXSchema(f, stat.Size())
+	res, err := ParseBXContent(data)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 
