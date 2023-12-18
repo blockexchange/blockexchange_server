@@ -31,7 +31,6 @@ func (o *MesehubOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuth
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("Req: %s\n", data)
 
 	req, err := http.NewRequest("POST", "https://git.minetest.land/login/oauth/access_token", bytes.NewBuffer(data))
 	if err != nil {

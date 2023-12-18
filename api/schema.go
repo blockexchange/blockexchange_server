@@ -88,20 +88,55 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}).Trace("PUT /api/schema")
 
 	if !ctx.CheckPermission(w, types.JWTPermissionManagement) {
+		SendError(w, 403, "not a management token")
 		return
 	}
 
-	schema := types.Schema{}
-	err := json.NewDecoder(r.Body).Decode(&schema)
+	updated_schema := types.Schema{}
+	err := json.NewDecoder(r.Body).Decode(&updated_schema)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	schema.UserID = ctx.Claims.UserID
-	schema.Created = time.Now().Unix() * 1000
+	// fetch saved schema
+	schema, err := api.SchemaRepo.GetSchemaById(updated_schema.ID)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	if schema == nil {
+		SendError(w, 404, "not found")
+		return
+	}
 
-	err = api.SchemaRepo.UpdateSchema(&schema)
+	// check permissions
+	is_admin := ctx.CheckPermission(w, types.JWTPermissionAdmin)
+	if !is_admin && schema.UserID != ctx.Claims.UserID {
+		// not an admin and not the owner
+		SendError(w, 403, "unauthorized")
+		return
+	}
+
+	// check if the name already exists
+	existing_schema, err := api.SchemaRepo.GetSchemaByUserIDAndName(schema.UserID, updated_schema.Name)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	if existing_schema != nil && existing_schema.ID != schema.ID {
+		// another schema with the same name already exists
+		SendError(w, http.StatusConflict, "name already exists")
+		return
+	}
+
+	// apply modifiable fields
+	schema.Mtime = time.Now().Unix() * 1000
+	schema.Name = updated_schema.Name
+	schema.License = updated_schema.License
+	schema.Description = updated_schema.Description
+
+	err = api.SchemaRepo.UpdateSchema(schema)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

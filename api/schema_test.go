@@ -5,7 +5,6 @@ import (
 	"blockexchange/types"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http/httptest"
 	"strconv"
 	"testing"
@@ -113,7 +112,6 @@ func TestSchemaCreate(t *testing.T) {
 	testutils.Login(t, r, user)
 
 	api.Secure(api.UpdateSchemaInfo)(w, r)
-	fmt.Println(w.Body.String())
 	assert.Equal(t, 200, w.Result().StatusCode)
 
 }

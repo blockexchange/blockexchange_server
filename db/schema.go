@@ -3,7 +3,6 @@ package db
 import (
 	"blockexchange/types"
 	"database/sql"
-	"fmt"
 
 	"github.com/minetest-go/dbutil"
 )
@@ -21,9 +20,17 @@ func (repo SchemaRepository) GetSchemaById(id int64) (*types.Schema, error) {
 	}
 }
 
+func (repo SchemaRepository) GetSchemaByUserIDAndName(user_id int64, name string) (*types.Schema, error) {
+	schema, err := dbutil.Select(repo.DB, &types.Schema{}, "where user_id = $1 and name = $2", user_id, name)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	} else {
+		return schema, err
+	}
+}
+
 func (repo SchemaRepository) GetSchemaByUsernameAndName(username, schemaname string) (*types.Schema, error) {
 	schema, err := dbutil.Select(repo.DB, &types.Schema{}, "where user_id = (select id from public.user where name = $1) and name = $2", username, schemaname)
-	fmt.Printf("schema: %v, err = %v\n", schema, err)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else {
