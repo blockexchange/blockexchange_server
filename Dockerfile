@@ -1,14 +1,23 @@
-FROM golang:1.21.4 as stage1
+FROM node:20.5.1-alpine as node-app
+WORKDIR /public
+COPY /public/package-lock.json /public/package.json ./
+RUN npm ci
+COPY public/ .
+RUN npm run jshint && \
+	npm run bundle
+
+FROM golang:1.21.4 as go-app
 WORKDIR /data
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
+COPY --from=node-app /public /data/public
 RUN go vet && \
 	go test ./... && \
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
 
 FROM alpine:3.18.5
-COPY --from=stage1 /data/blockexchange /
+COPY --from=go-app /data/blockexchange /
 EXPOSE 8080
 
 CMD ["/blockexchange"]
