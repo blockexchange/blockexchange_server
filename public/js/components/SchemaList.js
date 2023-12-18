@@ -31,14 +31,17 @@ export default {
                     <h5 class="card-title">
                         <p>
                         <router-link :to="schema_link(schema)">
+                            <i class="fa fa-landmark"></i>
                             {{schema.name}}
                         </router-link>
-                    </p>
-                    <p>
-                        <small class="text-muted">{{schema.username}}</small>
-                        &nbsp;
                         <i class="fa fa-star" v-bind:style="{ color: schema.stars ? 'yellow' : '' }"></i>
                         <span class="badge bg-secondary rounded-pill">{{schema.stars}}</span>
+                    </p>
+                    <p>
+                        <router-link :to="'/user/' + schema.username" class="text-muted">
+                            <i class="fa fa-user"></i>
+                            {{schema.username}}
+                        </router-link>
                     </p>
                     </h5>
                     <p>

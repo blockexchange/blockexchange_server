@@ -156,6 +156,7 @@ export default {
                                 <select v-else class="form-control" v-model="schema.license">
                                     <option value="CC0">CC0</option>
                                     <option value="CC-BY-SA">CC-BY-SA</option>
+                                    <option value="MIT">MIT</option>
                                     <option value="Proprietary">Proprietary</option>
                                 </select>
                             </li>
