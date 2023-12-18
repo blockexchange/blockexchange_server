@@ -37,7 +37,7 @@ export default {
 					</li>
 					<li class="nav-item" v-if="is_logged_in">
 						<router-link to="/import" class="nav-link">
-							<i class="fa fa-upload"></i> Schema import
+							<i class="fa fa-upload"></i> Schematic import
 						</router-link>
 					</li>
 					<li class="nav-item" v-if="is_logged_in">

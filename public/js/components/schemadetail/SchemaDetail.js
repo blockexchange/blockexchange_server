@@ -105,10 +105,10 @@ export default {
                 <div v-else class="input-group has-validation">
                     <input type="text" class="form-control" v-model="schema.name" v-bind:class="{'is-invalid': error_response}">
                     <div class="invalid-feedback" v-if="error_response && error_response.name_taken">
-                        Schema name already taken
+                        Schematic name already taken
                     </div>
                     <div class="invalid-feedback" v-if="error_response && error_response.name_invalid">
-                        Schema name invalid, allowed chars: a to z, A to Z, 0 to 9 and -, _
+                        Schematic name invalid, allowed chars: a to z, A to Z, 0 to 9 and -, _
                     </div>
                 </div>
             </div>

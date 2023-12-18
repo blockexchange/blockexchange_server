@@ -37,7 +37,7 @@ export const MOD = { name: "Mod/Installation", icon: "download", link: "/mod" };
 export const USERS = { name: "Users", icon: "users", link: "/users" };
 export const SEARCH = { name: "Search", icon: "search", link: "/search" };
 export const MY_SCHEMAS = { name: "My schemas", icon: "home", link: "/schemas" };
-export const SCHEMA_IMPORT = { name: "Schema import", icon: "upload", link: "/import" };
+export const SCHEMA_IMPORT = { name: "Schematic import", icon: "upload", link: "/import" };
 export const TAGS = { name: "Tags", icon: "tags", link: "/tags" };
 
 export const USER_DETAIL = username => {
@@ -49,5 +49,5 @@ export const USER_SCHEMAS = username => {
 };
 
 export const SCHEMA_DETAIL = (username, name) => {
-    return { name: `Schema ${name}`, icon: "bookmark", link: `/schema/${username}/${name}` };
+    return { name: `Schematic ${name}`, icon: "bookmark", link: `/schema/${username}/${name}` };
 };
