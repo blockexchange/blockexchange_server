@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const MAX_SIZE = 30 * 1000 * 1000
+const MAX_SIZE = 100 * 1000 * 1000
 
 func (api *Api) ImportSchematic(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
@@ -23,7 +23,7 @@ func (api *Api) ImportSchematic(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 	if len(data) > MAX_SIZE {
-		SendError(w, 500, fmt.Sprintf("filesize larger that %d", MAX_SIZE))
+		SendError(w, 500, fmt.Sprintf("filesize larger that %d bytes", MAX_SIZE))
 		return
 	}
 

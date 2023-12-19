@@ -23,6 +23,7 @@ require (
 )
 
 require (
+	github.com/Shopify/go-lua v0.0.0-20221004153744-91867de107cf // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect

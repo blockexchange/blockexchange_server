@@ -5,8 +5,55 @@ import (
 	"os"
 	"testing"
 
+	"github.com/Shopify/go-lua"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestLuaParser(t *testing.T) {
+	L := lua.NewState()
+	err := lua.DoString(L, "return { {x=1}, {x=2} }")
+	assert.NoError(t, err)
+
+	// root table
+	assert.True(t, L.IsTable(L.Top()))
+	L.Length(L.Top())
+	assert.True(t, L.IsNumber(L.Top()))
+	length, ok := L.ToNumber(L.Top())
+	assert.True(t, ok)
+	assert.Equal(t, float64(2), length)
+	L.Pop(1)
+
+	// get first entry
+	L.PushNumber(1)
+	L.Table(L.Top() - 1)
+	assert.True(t, L.IsTable(L.Top()))
+
+	// { x=1 }
+	assert.True(t, L.IsTable(L.Top()))
+	L.PushString("x")
+	assert.True(t, L.IsString(L.Top()))
+	L.Table(L.Top() - 1)
+	assert.True(t, L.IsNumber(L.Top()))
+	length, ok = L.ToNumber(L.Top())
+	assert.True(t, ok)
+	assert.Equal(t, float64(1), length)
+	L.Pop(2)
+
+	// get second entry
+	L.PushNumber(2)
+	L.Table(L.Top() - 1)
+	assert.True(t, L.IsTable(L.Top()))
+
+	// { x=2 }
+	assert.True(t, L.IsTable(L.Top()))
+	L.PushString("x")
+	assert.True(t, L.IsString(L.Top()))
+	L.Table(L.Top() - 1)
+	assert.True(t, L.IsNumber(L.Top()))
+	length, ok = L.ToNumber(L.Top())
+	assert.True(t, ok)
+	assert.Equal(t, float64(2), length)
+}
 
 func TestParseWorldedit(t *testing.T) {
 	data, err := os.ReadFile("testdata/plain_chest.we")
@@ -50,4 +97,16 @@ func TestParseWorldedit2(t *testing.T) {
 	assert.NotNil(t, entries)
 
 	assert.Equal(t, 21382, len(entries))
+}
+
+func TestParseWorldedit3(t *testing.T) {
+	data, err := os.ReadFile("testdata/deathstar.we")
+	assert.NoError(t, err)
+	assert.NotNil(t, data)
+
+	entries, _, err := worldedit.Parse(data)
+	assert.NoError(t, err)
+	assert.NotNil(t, entries)
+
+	assert.Equal(t, 53646, len(entries))
 }
