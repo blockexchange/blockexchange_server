@@ -1,8 +1,8 @@
 package core
 
 import (
+	"blockexchange/schematic/worldedit"
 	"blockexchange/types"
-	"blockexchange/worldedit"
 	"fmt"
 	"time"
 )

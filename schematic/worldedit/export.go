@@ -10,30 +10,30 @@ import (
 	"strings"
 )
 
-func Export(w io.Writer, it types.SchemaPartIterator) error {
-	// add header
-	_, err := w.Write([]byte("5:return {"))
-	if err != nil {
-		return err
-	}
+type Exporter struct {
+	w          io.Writer
+	intialized bool
+}
 
-	for {
-		schemapart, err := it()
+func NewExporter(w io.Writer) *Exporter {
+	return &Exporter{w: w, intialized: false}
+}
+
+func (e *Exporter) Export(schemapart *types.SchemaPart) error {
+	if !e.intialized {
+		_, err := e.w.Write([]byte("5:return {"))
 		if err != nil {
 			return err
 		}
-		if schemapart == nil {
-			// done
-			break
-		}
-		err = exportSchemaPart(w, schemapart)
-		if err != nil {
-			return err
-		}
+		e.intialized = true
 	}
 
+	return exportSchemaPart(e.w, schemapart)
+}
+
+func (e *Exporter) Close() error {
 	// add footer
-	_, err = w.Write([]byte("}"))
+	_, err := e.w.Write([]byte("}"))
 	return err
 }
 

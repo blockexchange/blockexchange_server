@@ -1,7 +1,7 @@
 package worldedit_test
 
 import (
-	"blockexchange/worldedit"
+	"blockexchange/schematic/worldedit"
 	"os"
 	"testing"
 

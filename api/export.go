@@ -2,8 +2,8 @@ package api
 
 import (
 	"blockexchange/core"
+	"blockexchange/schematic/worldedit"
 	"blockexchange/types"
-	"blockexchange/worldedit"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -50,21 +50,33 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var schemapart *types.SchemaPart
-	it := func() (*types.SchemaPart, error) {
-		var err error
-		if schemapart == nil {
-			schemapart, err = api.SchemaPartRepo.GetFirstBySchemaID(int64(id))
-		} else {
-			schemapart, err = api.SchemaPartRepo.GetNextBySchemaIDAndOffset(int64(id), schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
-		}
-		return schemapart, err
-	}
-
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", vars["filename"]))
-	err = worldedit.Export(w, it)
+	e := worldedit.NewExporter(w)
+
+	schemapart, err := api.SchemaPartRepo.GetFirstBySchemaID(int64(id))
+	err = e.Export(schemapart)
 	if err != nil {
 		SendError(w, 500, err.Error())
+		return
+	}
+
+	for {
+		schemapart, err = api.SchemaPartRepo.GetNextBySchemaIDAndOffset(int64(id), schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
+		if schemapart != nil {
+			err = e.Export(schemapart)
+			if err != nil {
+				SendError(w, 500, err.Error())
+				return
+			}
+		} else {
+			break
+		}
+	}
+
+	err = e.Close()
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
 	}
 
 	err = api.incrementDownloadstats(int64(id), r)
