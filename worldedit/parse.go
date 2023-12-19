@@ -2,6 +2,7 @@ package worldedit
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Shopify/go-lua"
 )
@@ -73,6 +74,9 @@ func Parse(data []byte) ([]*WEEntry, []string, error) {
 			return nil, nil, fmt.Errorf("nil entry for name in %d", i)
 		}
 
+		// set modname flag
+		modname_map[strings.Split(*name, ":")[0]] = true
+
 		entry := &WEEntry{
 			Name: *name,
 			X:    *x,
@@ -101,10 +105,42 @@ func Parse(data []byte) ([]*WEEntry, []string, error) {
 		L.PushString("meta")
 		L.Table(L.Top() - 1)
 		if L.IsTable(L.Top()) {
-			L.PushString("fields")
-			L.Table(L.Top() - 1)
+			entry.Meta = &WEMeta{
+				Fields:    WEFields{},
+				Inventory: WEInventory{},
+			}
 
+			L.PushString("fields")
+			L.Table(L.Top() - 1) // entry.meta.fields
+
+			L.PushNil() // value
+			for L.Next(-2) {
+				key := lua.CheckString(L, -2)
+				value := lua.CheckString(L, -1)
+				entry.Meta.Fields[key] = value
+				L.Pop(1) // value
+			}
 			L.Pop(1) // entry.meta.fields
+
+			L.PushString("inventory")
+			L.Table(L.Top() - 1) // entry.meta.inventory
+			L.PushNil()          // value
+			for L.Next(-2) {
+				key := lua.CheckString(L, -2)
+				inv := []string{}
+
+				L.PushNil() // {}
+				for L.Next(-2) {
+					entry := lua.CheckString(L, -1)
+					inv = append(inv, entry)
+					L.Pop(1) // {}
+				}
+				entry.Meta.Inventory[key] = inv
+
+				L.Pop(1) // value
+			}
+
+			L.Pop(1) // entry.meta.inventory
 		}
 
 		L.Pop(1) // entry.meta
@@ -117,69 +153,6 @@ func Parse(data []byte) ([]*WEEntry, []string, error) {
 	}
 
 	return entries, modnames, nil
-
-	/*
-		lv := L.Get(-1)
-		tbl, ok := lv.(*lua.LTable)
-		if !ok {
-			return nil, nil, errors.New("root table not found")
-		}
-
-		entry_count := L.ObjLen(tbl)
-		entries := make([]*WEEntry, entry_count)
-		modname_map := make(map[string]bool)
-
-		for i := 1; i <= entry_count; i++ {
-			entrytbl := L.GetTable(tbl, lua.LNumber(i))
-
-			// common entries
-			entry, err := parseWEEntry(L, entrytbl)
-			if err != nil {
-				return nil, nil, err
-			}
-			entries[i-1] = entry
-
-			// set modname flag
-			modname_map[strings.Split(entry.Name, ":")[0]] = true
-
-			metatbl := L.GetTable(entrytbl, lua.LString("meta"))
-			if metatbl != lua.LNil {
-				entry.Meta = &WEMeta{
-					Fields:    make(WEFields),
-					Inventory: make(WEInventory),
-				}
-
-				// fields
-				fieldvalue := L.GetTable(metatbl, lua.LString("fields"))
-				if fieldvalue != lua.LNil {
-					fieldstbl := fieldvalue.(*lua.LTable)
-					fieldstbl.ForEach(func(key, value lua.LValue) {
-						entry.Meta.Fields[key.String()] = value.String()
-					})
-				}
-
-				invvalue := L.GetTable(metatbl, lua.LString("inventory"))
-				if invvalue != lua.LNil {
-					invtbl := invvalue.(*lua.LTable)
-					invtbl.ForEach(func(key, value lua.LValue) {
-						stacks := make([]string, 0)
-						stacktbl := value.(*lua.LTable)
-						stacktbl.ForEach(func(_, stack lua.LValue) {
-							stacks = append(stacks, stack.String())
-						})
-						entry.Meta.Inventory[key.String()] = stacks
-					})
-				}
-			}
-		}
-
-		modnames := make([]string, 0)
-		for m := range modname_map {
-			modnames = append(modnames, m)
-		}
-
-		return entries, modnames, nil
-	*/
 }
 
 func get_table_integer(L *lua.State, key string) (*int, error) {
