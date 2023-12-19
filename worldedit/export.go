@@ -107,7 +107,8 @@ func exportNode(w io.Writer, x, y, z int, mapblock *parser.ParsedSchemaPart, sch
 			fields := mapblock.Meta.Metadata.Meta[key].Fields
 			fieldparts := make([]string, 0)
 			for k, v := range fields {
-				rv := strings.ReplaceAll(v, "\"", "\\\"")
+				rv := strings.ReplaceAll(v, "\\", "\\\\")
+				rv = strings.ReplaceAll(rv, "\"", "\\\"")
 				rv = strings.ReplaceAll(rv, "\n", "\\n")
 				fieldparts = append(fieldparts, fmt.Sprintf("[\"%s\"]=\"%s\"", k, rv))
 			}
