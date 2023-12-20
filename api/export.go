@@ -54,6 +54,11 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 	e := worldedit.NewExporter(w)
 
 	schemapart, err := api.SchemaPartRepo.GetFirstBySchemaID(int64(id))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
 	err = e.Export(schemapart)
 	if err != nil {
 		SendError(w, 500, err.Error())
@@ -62,6 +67,11 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		schemapart, err = api.SchemaPartRepo.GetNextBySchemaIDAndOffset(int64(id), schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
 		if schemapart != nil {
 			err = e.Export(schemapart)
 			if err != nil {
