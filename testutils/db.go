@@ -21,7 +21,7 @@ func CreateTestDatabase(t *testing.T) *sqlx.DB {
 	db_, err := db.Init()
 	assert.NoError(t, err)
 	assert.NotNil(t, db_)
-	db.Migrate(db_.DB)
+	assert.NoError(t, db.Migrate(db_.DB))
 
 	return db_
 }

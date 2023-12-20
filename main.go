@@ -24,7 +24,10 @@ func main() {
 	}
 
 	// migrate database
-	db.Migrate(db_.DB)
+	err = db.Migrate(db_.DB)
+	if err != nil {
+		panic(err)
+	}
 
 	// populate database with test data (users, tokens)
 	if os.Getenv("BLOCKEXCHANGE_TEST_DATA") == "true" {
