@@ -13,3 +13,5 @@ export const save_user = user => fetch(`${BaseURL}/api/user/${user.id}`, {
 .then(r => r.json());
 
 export const get_user = id => fetch(`${BaseURL}/api/user/${id}`).then(r => r.json());
+
+export const count_user_schema_stars = id => fetch(`${BaseURL}/api/user/${id}/schemastars`).then(r => r.json());

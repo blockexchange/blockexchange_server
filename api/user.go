@@ -35,6 +35,20 @@ func (api *Api) GetUser(w http.ResponseWriter, r *http.Request) {
 	Send(w, user, nil)
 }
 
+func (api *Api) CountUserSchemaStars(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	user_id := vars["user_id"]
+
+	id, err := strconv.ParseInt(user_id, 10, 64)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("user_id parse error: %s", err.Error()))
+		return
+	}
+
+	c, err := api.Repositories.SchemaStarRepo.CountByUserID(id)
+	Send(w, c, err)
+}
+
 func (api *Api) CountUsers(w http.ResponseWriter, r *http.Request) {
 	count, err := api.UserRepo.CountUsers()
 	Send(w, count, err)
