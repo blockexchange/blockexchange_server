@@ -139,8 +139,10 @@ export default {
         <div class="row">
             <div class="col-md-4">
                 <div class="card">
+                    <div class="card-header">
+                        Details
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Details</h5>
                         <ul>
                             <li><b>Created:</b> {{format_time(schema.created)}}</li>
                             <li><b>Modified:</b> {{format_time(schema.mtime)}}</li>
@@ -167,30 +169,32 @@ export default {
                 </div>
                 <br>
                 <div class="card">
+                    <div class="card-header">
+                        Description
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Description</h5>
                         <pre v-if="!edit_mode">{{schema.description}}</pre>
                         <textarea v-else v-model="schema.description" rows="10" class="form-control"></textarea>
                     </div>
                 </div>
                 <br>
                 <div class="card">
+                    <div class="card-header">
+                        Used mods
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Used mods</h5>
-                        <details>
-                            <summary>Click to open</summary>
-                            <ul>
-                                <li v-for="mod in schema.mods">
-                                    <span class="badge bg-primary">{{mod}}</span>
-                                </li>
-                            </ul>
-                        </details>
+                        <span v-for="mod in schema.mods" class="badge bg-primary" style="margin-right: 5px;">
+                            <i class="fa fa-box-archive"></i>
+                            {{mod}}
+                        </span>
                     </div>
                 </div>
                 <br>
                 <div class="card">
+                    <div class="card-header">
+                        Tags
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Tags</h5>
                         <span v-if="!edit_mode" class="badge bg-success" v-for="tag in schema.tags" style="margin-right: 5px;">
                             <i class="fas fa-tag"></i>
                             {{tag}}
@@ -211,8 +215,10 @@ export default {
             </div>
             <div class="col-md-8">
                 <div class="card">
+                    <div class="card-header">
+                        Preview
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Preview</h5>
                         <div class="text-center" style="min-height: 600px;">
                             <img :src="BaseURL + '/api/schema/' + schema.id + '/screenshot'" class="img-fluid">
                         </div>
