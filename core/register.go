@@ -1,10 +1,11 @@
 package core
 
 import (
-	"blockexchange/oauth"
 	"blockexchange/types"
 	"fmt"
 	"time"
+
+	"github.com/minetest-go/oauth"
 
 	"github.com/dchest/captcha"
 	"golang.org/x/crypto/bcrypt"

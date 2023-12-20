@@ -1,6 +1,6 @@
 module blockexchange
 
-go 1.20
+go 1.21.5
 
 require (
 	github.com/Shopify/go-lua v0.0.0-20221004153744-91867de107cf
@@ -24,6 +24,7 @@ require (
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/minetest-go/oauth v0.0.0-20231220101117-1c1c7b78a59d // indirect
 )
 
 require (

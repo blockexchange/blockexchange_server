@@ -1,9 +1,10 @@
 package types
 
 import (
-	"blockexchange/oauth"
 	"fmt"
 	"os"
+
+	"github.com/minetest-go/oauth"
 )
 
 type OauthLogin struct {

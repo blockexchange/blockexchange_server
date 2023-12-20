@@ -14,7 +14,7 @@ services:
    - "log_statement=all"
 
  blockexchange:
-  image: golang:1.21.4
+  image: golang:1.21.5
   depends_on:
    - postgres
   volumes:

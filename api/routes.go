@@ -1,9 +1,10 @@
 package api
 
 import (
-	"blockexchange/oauth"
 	"blockexchange/types"
 	"net/http"
+
+	"github.com/minetest-go/oauth"
 
 	"github.com/dchest/captcha"
 	"github.com/gorilla/mux"

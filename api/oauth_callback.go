@@ -2,10 +2,11 @@ package api
 
 import (
 	"blockexchange/core"
-	"blockexchange/oauth"
 	"blockexchange/types"
 	"net/http"
 	"time"
+
+	"github.com/minetest-go/oauth"
 )
 
 func (api *Api) OauthCallback(w http.ResponseWriter, r *http.Request, user_info *oauth.OauthUserInfo) error {
