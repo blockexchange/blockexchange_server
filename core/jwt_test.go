@@ -61,7 +61,7 @@ func TestCreateJWT(t *testing.T) {
 	user := types.User{
 		Name: "dummy",
 		ID:   &id,
-		Type: types.UserTypeGithub,
+		Type: types.UserTypeLocal,
 	}
 	permissions := []types.JWTPermission{types.JWTPermissionUpload}
 	c := core.New(types.CreateConfig(), nil)

@@ -1,7 +1,6 @@
 package oauth
 
 import (
-	"blockexchange/types"
 	"bytes"
 	"encoding/json"
 	"net/http"
@@ -17,12 +16,11 @@ type GithubAccessTokenRequest struct {
 type GithubUserResponse struct {
 	ID    int    `json:"id"`
 	Login string `json:"login"`
-	Email string `json:"email"`
 }
 
 type GithubOauth struct{}
 
-func (o *GithubOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuthConfig) (string, error) {
+func (o *GithubOauth) RequestAccessToken(code, baseurl string, cfg *OAuthConfig) (string, error) {
 	accessTokenReq := GithubAccessTokenRequest{
 		ClientID:     cfg.ClientID,
 		ClientSecret: cfg.Secret,
@@ -57,7 +55,7 @@ func (o *GithubOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuthC
 	return tokenData.AccessToken, nil
 }
 
-func (o *GithubOauth) RequestUserInfo(access_token string, cfg *types.OAuthConfig) (*OauthUserInfo, error) {
+func (o *GithubOauth) RequestUserInfo(access_token string, cfg *OAuthConfig) (*OauthUserInfo, error) {
 	// fetch user data
 	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
 	if err != nil {
@@ -82,6 +80,7 @@ func (o *GithubOauth) RequestUserInfo(access_token string, cfg *types.OAuthConfi
 
 	external_id := strconv.Itoa(userData.ID)
 	info := OauthUserInfo{
+		Provider:   ProviderTypeGithub,
 		Name:       userData.Login,
 		ExternalID: external_id,
 	}

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"blockexchange/api/oauth"
+	"blockexchange/oauth"
 	"blockexchange/types"
 	"net/http"
 
@@ -75,12 +75,9 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	// oauth
 	if cfg.GithubOAuthConfig != nil {
 		oauth_handler := &oauth.OauthHandler{
-			Core:     api.core,
 			Impl:     &oauth.GithubOauth{},
-			UserRepo: api.UserRepo,
 			Config:   cfg.GithubOAuthConfig,
 			BaseURL:  api.cfg.BaseURL,
-			Type:     types.UserTypeGithub,
 			Callback: api.OauthCallback,
 		}
 		r.Handle("/api/oauth_callback/github", oauth_handler)
@@ -88,12 +85,9 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	if cfg.CDBOAuthConfig != nil {
 		oauth_handler := &oauth.OauthHandler{
-			Core:     api.core,
 			Impl:     &oauth.CDBOauth{},
-			UserRepo: api.UserRepo,
 			Config:   cfg.CDBOAuthConfig,
 			BaseURL:  api.cfg.BaseURL,
-			Type:     types.UserTypeCDB,
 			Callback: api.OauthCallback,
 		}
 		r.Handle("/api/oauth_callback/cdb", oauth_handler)
@@ -101,12 +95,9 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	if cfg.DiscordOAuthConfig != nil {
 		oauth_handler := &oauth.OauthHandler{
-			Core:     api.core,
 			Impl:     &oauth.DiscordOauth{},
-			UserRepo: api.UserRepo,
 			Config:   cfg.DiscordOAuthConfig,
 			BaseURL:  api.cfg.BaseURL,
-			Type:     types.UserTypeDiscord,
 			Callback: api.OauthCallback,
 		}
 		r.Handle("/api/oauth_callback/discord", oauth_handler)
@@ -114,12 +105,9 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	if cfg.MesehubOAuthConfig != nil {
 		oauth_handler := &oauth.OauthHandler{
-			Core:     api.core,
 			Impl:     &oauth.MesehubOauth{},
-			UserRepo: api.UserRepo,
 			Config:   cfg.MesehubOAuthConfig,
 			BaseURL:  api.cfg.BaseURL,
-			Type:     types.UserTypeMesehub,
 			Callback: api.OauthCallback,
 		}
 		r.Handle("/api/oauth_callback/mesehub", oauth_handler)

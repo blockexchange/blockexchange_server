@@ -4,11 +4,7 @@ type UserType string
 type UserRole string
 
 const (
-	UserTypeGithub  UserType = "GITHUB"
-	UserTypeLocal   UserType = "LOCAL"
-	UserTypeDiscord UserType = "DISCORD"
-	UserTypeMesehub UserType = "MESEHUB"
-	UserTypeCDB     UserType = "CDB"
+	UserTypeLocal UserType = "LOCAL"
 )
 
 const (

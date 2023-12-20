@@ -1,7 +1,6 @@
 package oauth
 
 import (
-	"blockexchange/types"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -15,7 +14,7 @@ type CDBUserResponse struct {
 
 type CDBOauth struct{}
 
-func (o *CDBOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuthConfig) (string, error) {
+func (o *CDBOauth) RequestAccessToken(code, baseurl string, cfg *OAuthConfig) (string, error) {
 	var data bytes.Buffer
 	w := multipart.NewWriter(&data)
 	w.WriteField("grant_type", "authorization_code")
@@ -49,7 +48,7 @@ func (o *CDBOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuthConf
 	return tokenData.AccessToken, nil
 }
 
-func (o *CDBOauth) RequestUserInfo(access_token string, cfg *types.OAuthConfig) (*OauthUserInfo, error) {
+func (o *CDBOauth) RequestUserInfo(access_token string, cfg *OAuthConfig) (*OauthUserInfo, error) {
 	// fetch user data
 	req, err := http.NewRequest("GET", "https://content.minetest.net/api/whoami/", nil)
 	if err != nil {
@@ -73,6 +72,7 @@ func (o *CDBOauth) RequestUserInfo(access_token string, cfg *types.OAuthConfig) 
 	}
 
 	info := OauthUserInfo{
+		Provider:   ProviderTypeCDB,
 		Name:       userData.Username,
 		ExternalID: userData.Username,
 	}

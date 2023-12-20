@@ -1,9 +1,6 @@
 package oauth
 
 import (
-	"blockexchange/core"
-	"blockexchange/db"
-	"blockexchange/types"
 	"encoding/json"
 	"net/http"
 
@@ -12,12 +9,9 @@ import (
 
 type OauthHandler struct {
 	Impl     OauthImplementation
-	UserRepo *db.UserRepository
-	Core     *core.Core
-	Config   *types.OAuthConfig
+	Config   *OAuthConfig
 	BaseURL  string
-	Type     types.UserType
-	Callback SuccessCallback
+	Callback OauthCallback
 }
 
 func SendJson(w http.ResponseWriter, o any) {
@@ -62,39 +56,10 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.UserRepo.GetUserByExternalIdAndType(info.ExternalID, h.Type)
+	err = h.Callback(w, r, info)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	if user == nil {
-		user, err := h.Core.RegisterOauth(info.Name, info.ExternalID, h.Type)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-
-		logrus.WithFields(logrus.Fields{
-			"name":        user.Name,
-			"type":        user.Type,
-			"external_id": user.ExternalID,
-		}).Debug("created new user")
-
-		err = h.Callback(w, user, true)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-
-	} else {
-		err = h.Callback(w, user, false)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-	}
-
-	target := h.BaseURL + "/profile"
-	http.Redirect(w, r, target, http.StatusSeeOther)
 }

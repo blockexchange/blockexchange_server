@@ -1,11 +1,9 @@
 package types
 
-import "os"
-
-type OAuthConfig struct {
-	ClientID string
-	Secret   string
-}
+import (
+	"blockexchange/oauth"
+	"os"
+)
 
 type Config struct {
 	WebDev             bool
@@ -13,10 +11,10 @@ type Config struct {
 	Name               string
 	Owner              string
 	Key                string
-	GithubOAuthConfig  *OAuthConfig
-	CDBOAuthConfig     *OAuthConfig
-	DiscordOAuthConfig *OAuthConfig
-	MesehubOAuthConfig *OAuthConfig
+	GithubOAuthConfig  *oauth.OAuthConfig
+	CDBOAuthConfig     *oauth.OAuthConfig
+	DiscordOAuthConfig *oauth.OAuthConfig
+	MesehubOAuthConfig *oauth.OAuthConfig
 	CookiePath         string
 	CookieSecure       bool
 	CookieName         string
@@ -39,28 +37,28 @@ func CreateConfig() *Config {
 	}
 
 	if os.Getenv("DISCORD_APP_ID") != "" {
-		cfg.DiscordOAuthConfig = &OAuthConfig{
+		cfg.DiscordOAuthConfig = &oauth.OAuthConfig{
 			ClientID: os.Getenv("DISCORD_APP_ID"),
 			Secret:   os.Getenv("DISCORD_APP_SECRET"),
 		}
 	}
 
 	if os.Getenv("CDB_APP_ID") != "" {
-		cfg.CDBOAuthConfig = &OAuthConfig{
+		cfg.CDBOAuthConfig = &oauth.OAuthConfig{
 			ClientID: os.Getenv("CDB_APP_ID"),
 			Secret:   os.Getenv("CDB_APP_SECRET"),
 		}
 	}
 
 	if os.Getenv("GITHUB_APP_ID") != "" {
-		cfg.GithubOAuthConfig = &OAuthConfig{
+		cfg.GithubOAuthConfig = &oauth.OAuthConfig{
 			ClientID: os.Getenv("GITHUB_APP_ID"),
 			Secret:   os.Getenv("GITHUB_APP_SECRET"),
 		}
 	}
 
 	if os.Getenv("MESEHUB_APP_ID") != "" {
-		cfg.MesehubOAuthConfig = &OAuthConfig{
+		cfg.MesehubOAuthConfig = &oauth.OAuthConfig{
 			ClientID: os.Getenv("MESEHUB_APP_ID"),
 			Secret:   os.Getenv("MESEHUB_APP_SECRET"),
 		}

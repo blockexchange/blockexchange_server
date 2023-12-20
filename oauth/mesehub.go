@@ -1,7 +1,6 @@
 package oauth
 
 import (
-	"blockexchange/types"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -14,12 +13,11 @@ import (
 type MesehubUserResponse struct {
 	ID    int    `json:"id"`
 	Login string `json:"login"`
-	Email string `json:"email"`
 }
 
 type MesehubOauth struct{}
 
-func (o *MesehubOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuthConfig) (string, error) {
+func (o *MesehubOauth) RequestAccessToken(code, baseurl string, cfg *OAuthConfig) (string, error) {
 	accessTokenReq := make(map[string]string)
 	accessTokenReq["client_id"] = cfg.ClientID
 	accessTokenReq["client_secret"] = cfg.Secret
@@ -59,7 +57,7 @@ func (o *MesehubOauth) RequestAccessToken(code, baseurl string, cfg *types.OAuth
 	return tokenData.AccessToken, nil
 }
 
-func (o *MesehubOauth) RequestUserInfo(access_token string, cfg *types.OAuthConfig) (*OauthUserInfo, error) {
+func (o *MesehubOauth) RequestUserInfo(access_token string, cfg *OAuthConfig) (*OauthUserInfo, error) {
 	req, err := http.NewRequest("GET", "https://git.minetest.land/api/v1/user", nil)
 	if err != nil {
 		return nil, nil
@@ -86,6 +84,7 @@ func (o *MesehubOauth) RequestUserInfo(access_token string, cfg *types.OAuthConf
 
 	external_id := strconv.Itoa(userData.ID)
 	info := OauthUserInfo{
+		Provider:   ProviderTypeMesehub,
 		Name:       userData.Login,
 		ExternalID: external_id,
 	}
