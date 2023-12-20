@@ -31,6 +31,8 @@
 		</script>
 
 		<!-- app bootstrap -->
+		<script src="{{.BaseURL}}/node_modules/marked/lib/marked.umd.js"></script>
+		<script src="{{.BaseURL}}/node_modules/dompurify/dist/purify.min.js"></script>
 		{{if .Webdev}}
 		<script src="{{.BaseURL}}/node_modules/vue/dist/vue.global.js"></script>
 		<script src="{{.BaseURL}}/node_modules/vue-router/dist/vue-router.global.js"></script>

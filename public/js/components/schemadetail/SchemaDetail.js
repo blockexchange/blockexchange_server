@@ -72,6 +72,9 @@ export default {
         delete_schema: function() {
             schema_delete(this.schema.id)
             .then(() => this.$router.push(`/schema/${this.username}`));
+        },
+        markdown: function(txt) {
+            return DOMPurify.sanitize(marked.parse(txt));
         }
     },
     computed: {
@@ -176,7 +179,7 @@ export default {
                         <p v-if="!edit_mode">{{schema.short_description}}</p>
                         <input v-else type="text" class="form-control" v-model="schema.short_description" placeholder="Short description"/>
                         <hr>
-                        <pre v-if="!edit_mode">{{schema.description}}</pre>
+                        <div v-if="!edit_mode" v-html="markdown(schema.description)"></div>
                         <textarea v-else v-model="schema.description" rows="10" class="form-control"></textarea>
                     </div>
                 </div>

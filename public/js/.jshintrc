@@ -6,6 +6,8 @@
   "globals": {
     "Vue": true,
     "VueRouter": true,
-    "BaseURL": true
+    "BaseURL": true,
+    "marked": true,
+    "DOMPurify": true
   }
 }
