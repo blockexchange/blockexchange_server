@@ -173,6 +173,9 @@ export default {
                         Description
                     </div>
                     <div class="card-body">
+                        <p v-if="!edit_mode">{{schema.short_description}}</p>
+                        <input v-else type="text" class="form-control" v-model="schema.short_description" placeholder="Short description"/>
+                        <hr>
                         <pre v-if="!edit_mode">{{schema.description}}</pre>
                         <textarea v-else v-model="schema.description" rows="10" class="form-control"></textarea>
                     </div>
@@ -183,6 +186,15 @@ export default {
                         Used mods
                     </div>
                     <div class="card-body">
+                        <a v-if="!edit_mode && schema.cdb_collection"
+                            class="btn btn-xs btn-outline-success"
+                            target="new"
+                            :href="'https://content.minetest.net/collections/' + schema.cdb_collection + '/'">
+                            <i class="fa fa-box-archive"></i>
+                            Open CDB Mod collection
+                        </a>
+                        <hr v-if="schema.cdb_collection">
+                        <input v-if="edit_mode" type="text" class="form-control" v-model="schema.cdb_collection" placeholder="CDB Collection in the 'username/collectionname' form"/>
                         <span v-for="mod in schema.mods" class="badge bg-primary" style="margin-right: 5px;">
                             <i class="fa fa-box-archive"></i>
                             {{mod}}

@@ -46,7 +46,7 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 
 		meta := map[string]string{
 			"og:site_name":   "Blockexchange",
-			"og:description": schema.Description,
+			"og:description": schema.ShortDescription,
 			"og:title":       fmt.Sprintf("'%s' by %s", schema.Name, username),
 			"og:type":        "Schematic",
 			"og:url":         fmt.Sprintf("%s/schema/%s/%s", api.cfg.BaseURL, username, schema.Name),
