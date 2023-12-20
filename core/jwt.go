@@ -45,6 +45,7 @@ func (c *Core) SetClaims(w http.ResponseWriter, token string, d time.Duration) {
 		Expires:  time.Now().Add(d),
 		HttpOnly: true,
 		Secure:   c.cfg.CookieSecure,
+		SameSite: http.SameSiteStrictMode,
 	}
 	http.SetCookie(w, co)
 }
@@ -57,6 +58,7 @@ func (c *Core) RemoveClaims(w http.ResponseWriter) {
 		MaxAge:   -1,
 		HttpOnly: true,
 		Secure:   c.cfg.CookieSecure,
+		SameSite: http.SameSiteStrictMode,
 	}
 	http.SetCookie(w, co)
 }
