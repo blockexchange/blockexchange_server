@@ -1,6 +1,7 @@
 package core
 
 import (
+	"blockexchange/oauth"
 	"blockexchange/types"
 	"fmt"
 	"time"
@@ -9,8 +10,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (c *Core) RegisterOauth(name string, external_id string, ut types.UserType) (*types.User, error) {
-	new_name := name
+func (c *Core) RegisterOauth(user_info *oauth.OauthUserInfo) (*types.User, error) {
+	new_name := user_info.Name
 	user, err := c.repos.UserRepo.GetUserByName(new_name)
 	if err != nil {
 		return nil, err
@@ -20,7 +21,7 @@ func (c *Core) RegisterOauth(name string, external_id string, ut types.UserType)
 		// add a suffix
 		i := 2
 		for {
-			new_name = fmt.Sprintf("%s_%d", name, i)
+			new_name = fmt.Sprintf("%s_%d", user_info.Name, i)
 			user, err = c.repos.UserRepo.GetUserByName(new_name)
 			if err != nil {
 				return nil, err
@@ -38,9 +39,10 @@ func (c *Core) RegisterOauth(name string, external_id string, ut types.UserType)
 	user = &types.User{
 		Created:    time.Now().Unix() * 1000,
 		Name:       new_name,
-		Type:       ut,
+		Type:       types.UserType(user_info.Provider),
 		Role:       types.UserRoleDefault,
-		ExternalID: &external_id,
+		ExternalID: &user_info.ExternalID,
+		AvatarURL:  user_info.AvatarURL,
 	}
 	err = c.repos.UserRepo.CreateUser(user)
 	if err != nil {

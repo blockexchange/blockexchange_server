@@ -1,0 +1,1 @@
+alter table public.user add avatar_url varchar not null default '';

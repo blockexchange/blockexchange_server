@@ -88,6 +88,7 @@ func (o *GithubOauth) RequestUserInfo(access_token string, cfg *OAuthConfig) (*O
 		Provider:   ProviderTypeGithub,
 		Name:       userData.Login,
 		ExternalID: external_id,
+		AvatarURL:  fmt.Sprintf("https://github.com/%s.png", userData.Login),
 	}
 
 	return &info, nil

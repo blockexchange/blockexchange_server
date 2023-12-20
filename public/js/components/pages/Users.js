@@ -40,6 +40,7 @@ export default {
 			<template #body="{ list }">
 				<tr v-for="entry in list">
 					<td>
+						<img v-if="entry.avatar_url" :src="entry.avatar_url" height="32" width="32" style="margin-right: 10px;"/>
 						<router-link :to="'/user/' + entry.name">
 							{{entry.name}}
 						</router-link>

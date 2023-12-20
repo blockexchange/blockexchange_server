@@ -13,6 +13,12 @@ type CDBUserResponse struct {
 	Username string `json:"username"`
 }
 
+type CDBUser struct {
+	Username      string `json:"username"`
+	DisplayName   string `json:"display_name"`
+	ProfilePicURL string `json:"profile_pic_url"` // "/uploads/xyz.jpg"
+}
+
 type CDBOauth struct{}
 
 func (o *CDBOauth) LoginURL(cfg *OAuthConfig) string {
@@ -80,6 +86,35 @@ func (o *CDBOauth) RequestUserInfo(access_token string, cfg *OAuthConfig) (*Oaut
 		Provider:   ProviderTypeCDB,
 		Name:       userData.Username,
 		ExternalID: userData.Username,
+	}
+
+	// fetch user profile
+	req, err = http.NewRequest("GET", fmt.Sprintf("https://content.minetest.net/api/users/%s/", userData.Username), nil)
+	if err != nil {
+		return nil, fmt.Errorf("new user-profile request error: %v", err)
+	}
+	req.Header.Set("Accept", "application/json")
+
+	resp, err = client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("get user-profile error: %v", err)
+	}
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("unexpected status-code from user-profile api: %d", resp.StatusCode)
+	}
+	defer resp.Body.Close()
+
+	userProfile := CDBUser{}
+	err = json.NewDecoder(resp.Body).Decode(&userProfile)
+	if err != nil {
+		return nil, fmt.Errorf("user-profile response error: %v", err)
+	}
+
+	if userProfile.ProfilePicURL != "" {
+		info.AvatarURL = fmt.Sprintf("https://content.minetest.net%s", userProfile.ProfilePicURL)
+	}
+	if userProfile.DisplayName != "" {
+		info.DisplayName = userProfile.DisplayName
 	}
 
 	return &info, nil

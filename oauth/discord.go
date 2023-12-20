@@ -9,8 +9,10 @@ import (
 )
 
 type DiscordResponse struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
+	ID         string `json:"id"`
+	Username   string `json:"username"`
+	AvatarHash string `json:"avatar"`
+	GlobalName string `json:"global_name"`
 }
 
 type DiscordOauth struct{}
@@ -83,9 +85,11 @@ func (o *DiscordOauth) RequestUserInfo(access_token string, cfg *OAuthConfig) (*
 	}
 
 	info := OauthUserInfo{
-		Provider:   ProviderTypeDiscord,
-		Name:       userData.Username,
-		ExternalID: userData.ID,
+		Provider:    ProviderTypeDiscord,
+		Name:        userData.Username,
+		ExternalID:  userData.ID,
+		DisplayName: userData.GlobalName,
+		AvatarURL:   fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userData.ID, userData.AvatarHash),
 	}
 
 	return &info, nil

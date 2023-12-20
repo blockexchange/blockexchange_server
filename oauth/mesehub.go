@@ -92,6 +92,7 @@ func (o *MesehubOauth) RequestUserInfo(access_token string, cfg *OAuthConfig) (*
 		Provider:   ProviderTypeMesehub,
 		Name:       userData.Login,
 		ExternalID: external_id,
+		AvatarURL:  fmt.Sprintf("https://git.minetest.land/%s.png", userData.Login),
 	}
 
 	return &info, nil
