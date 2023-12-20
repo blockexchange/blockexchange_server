@@ -17,7 +17,6 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 		"/login",
 		"/import",
 		"/mod",
-		"/user/{username}",
 		"/schema/{username}",
 		"/users",
 		"/search",
@@ -52,6 +51,40 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 			"og:type":        "Schematic",
 			"og:url":         fmt.Sprintf("%s/schema/%s/%s", api.cfg.BaseURL, username, schema.Name),
 			"og:image":       fmt.Sprintf("%s/api/schema/%d/screenshot", api.cfg.BaseURL, schema.ID),
+		}
+
+		public.RenderIndex(w, r, meta)
+	})
+
+	r.HandleFunc("/user/{username}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		username := vars["username"]
+		user, err := api.UserRepo.GetUserByName(username)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		schematics, err := api.SchemaSearchRepo.Count(&types.SchemaSearchRequest{
+			UserID: user.ID,
+		})
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		stars, err := api.SchemaStarRepo.CountByUserID(*user.ID)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		meta := map[string]string{
+			"og:site_name":   "Blockexchange",
+			"og:title":       fmt.Sprintf("User '%s'", username),
+			"og:description": fmt.Sprintf("Schematics: %d, Stars: %d ★", schematics, stars),
+			"og:url":         fmt.Sprintf("%s/user/%s", api.cfg.BaseURL, username),
+			"og:image":       user.AvatarURL,
 		}
 
 		public.RenderIndex(w, r, meta)
