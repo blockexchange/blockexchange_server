@@ -15,11 +15,15 @@ type DiscordResponse struct {
 
 type DiscordOauth struct{}
 
-func (o *DiscordOauth) RequestAccessToken(code, baseurl string, cfg *OAuthConfig) (string, error) {
+func (o *DiscordOauth) LoginURL(cfg *OAuthConfig) string {
+	return fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&redirect_uri=%s&response_type=code&scope=identify", cfg.ClientID, url.QueryEscape(cfg.CallbackURL))
+}
+
+func (o *DiscordOauth) RequestAccessToken(code string, cfg *OAuthConfig) (string, error) {
 	q := url.Values{}
 	q.Add("client_id", cfg.ClientID)
 	q.Add("client_secret", cfg.Secret)
-	q.Add("redirect_uri", baseurl+"/api/oauth_callback/discord")
+	q.Add("redirect_uri", cfg.CallbackURL)
 	q.Add("code", code)
 	q.Add("grant_type", "authorization_code")
 	q.Add("scope", "identify connections")

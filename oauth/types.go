@@ -17,8 +17,10 @@ type OauthUserInfo struct {
 }
 
 type OAuthConfig struct {
-	ClientID string
-	Secret   string
+	Provider    ProviderType
+	ClientID    string
+	Secret      string
+	CallbackURL string
 }
 
 type ProviderType string
@@ -30,8 +32,10 @@ const (
 	ProviderTypeCDB     ProviderType = "CDB"
 )
 
-type OauthImplementation interface {
-	RequestAccessToken(code, baseurl string, cfg *OAuthConfig) (string, error)
+type OauthProvider interface {
+	// client login url
+	LoginURL(cfg *OAuthConfig) string
+	RequestAccessToken(code string, cfg *OAuthConfig) (string, error)
 	RequestUserInfo(access_token string, cfg *OAuthConfig) (*OauthUserInfo, error)
 }
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 )
 
 type CDBUserResponse struct {
@@ -14,7 +15,11 @@ type CDBUserResponse struct {
 
 type CDBOauth struct{}
 
-func (o *CDBOauth) RequestAccessToken(code, baseurl string, cfg *OAuthConfig) (string, error) {
+func (o *CDBOauth) LoginURL(cfg *OAuthConfig) string {
+	return fmt.Sprintf("https://content.minetest.net/oauth/authorize/?response_type=code&client_id=%s&redirect_uri=%s", cfg.ClientID, url.QueryEscape(cfg.CallbackURL))
+}
+
+func (o *CDBOauth) RequestAccessToken(code string, cfg *OAuthConfig) (string, error) {
 	var data bytes.Buffer
 	w := multipart.NewWriter(&data)
 	w.WriteField("grant_type", "authorization_code")

@@ -74,42 +74,26 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	// oauth
 	if cfg.GithubOAuthConfig != nil {
-		oauth_handler := &oauth.OauthHandler{
-			Impl:     &oauth.GithubOauth{},
-			Config:   cfg.GithubOAuthConfig,
-			BaseURL:  api.cfg.BaseURL,
-			Callback: api.OauthCallback,
-		}
+		oauth_handler := oauth.NewHandler(api.OauthCallback, cfg.GithubOAuthConfig)
+		cfg.OauthLogin.Github = oauth_handler.LoginURL()
 		r.Handle("/api/oauth_callback/github", oauth_handler)
 	}
 
 	if cfg.CDBOAuthConfig != nil {
-		oauth_handler := &oauth.OauthHandler{
-			Impl:     &oauth.CDBOauth{},
-			Config:   cfg.CDBOAuthConfig,
-			BaseURL:  api.cfg.BaseURL,
-			Callback: api.OauthCallback,
-		}
+		oauth_handler := oauth.NewHandler(api.OauthCallback, cfg.CDBOAuthConfig)
+		cfg.OauthLogin.CDB = oauth_handler.LoginURL()
 		r.Handle("/api/oauth_callback/cdb", oauth_handler)
 	}
 
 	if cfg.DiscordOAuthConfig != nil {
-		oauth_handler := &oauth.OauthHandler{
-			Impl:     &oauth.DiscordOauth{},
-			Config:   cfg.DiscordOAuthConfig,
-			BaseURL:  api.cfg.BaseURL,
-			Callback: api.OauthCallback,
-		}
+		oauth_handler := oauth.NewHandler(api.OauthCallback, cfg.DiscordOAuthConfig)
+		cfg.OauthLogin.Discord = oauth_handler.LoginURL()
 		r.Handle("/api/oauth_callback/discord", oauth_handler)
 	}
 
 	if cfg.MesehubOAuthConfig != nil {
-		oauth_handler := &oauth.OauthHandler{
-			Impl:     &oauth.MesehubOauth{},
-			Config:   cfg.MesehubOAuthConfig,
-			BaseURL:  api.cfg.BaseURL,
-			Callback: api.OauthCallback,
-		}
+		oauth_handler := oauth.NewHandler(api.OauthCallback, cfg.MesehubOAuthConfig)
+		cfg.OauthLogin.Mesehub = oauth_handler.LoginURL()
 		r.Handle("/api/oauth_callback/mesehub", oauth_handler)
 	}
 }

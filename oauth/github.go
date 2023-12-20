@@ -3,6 +3,7 @@ package oauth
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -20,7 +21,11 @@ type GithubUserResponse struct {
 
 type GithubOauth struct{}
 
-func (o *GithubOauth) RequestAccessToken(code, baseurl string, cfg *OAuthConfig) (string, error) {
+func (o *GithubOauth) LoginURL(cfg *OAuthConfig) string {
+	return fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s", cfg.ClientID)
+}
+
+func (o *GithubOauth) RequestAccessToken(code string, cfg *OAuthConfig) (string, error) {
 	accessTokenReq := GithubAccessTokenRequest{
 		ClientID:     cfg.ClientID,
 		ClientSecret: cfg.Secret,

@@ -2,8 +2,16 @@ package types
 
 import (
 	"blockexchange/oauth"
+	"fmt"
 	"os"
 )
+
+type OauthLogin struct {
+	Github  string `json:"github"`
+	Discord string `json:"discord"`
+	Mesehub string `json:"mesehub"`
+	CDB     string `json:"cdb"`
+}
 
 type Config struct {
 	WebDev             bool
@@ -12,6 +20,7 @@ type Config struct {
 	Owner              string
 	Key                string
 	GithubOAuthConfig  *oauth.OAuthConfig
+	OauthLogin         *OauthLogin
 	CDBOAuthConfig     *oauth.OAuthConfig
 	DiscordOAuthConfig *oauth.OAuthConfig
 	MesehubOAuthConfig *oauth.OAuthConfig
@@ -34,33 +43,42 @@ func CreateConfig() *Config {
 		CookieName:   "blockexchange",
 		RedisHost:    os.Getenv("REDIS_HOST"),
 		RedisPort:    os.Getenv("REDIS_PORT"),
+		OauthLogin:   &OauthLogin{},
 	}
 
 	if os.Getenv("DISCORD_APP_ID") != "" {
 		cfg.DiscordOAuthConfig = &oauth.OAuthConfig{
-			ClientID: os.Getenv("DISCORD_APP_ID"),
-			Secret:   os.Getenv("DISCORD_APP_SECRET"),
+			Provider:    oauth.ProviderTypeDiscord,
+			ClientID:    os.Getenv("DISCORD_APP_ID"),
+			Secret:      os.Getenv("DISCORD_APP_SECRET"),
+			CallbackURL: fmt.Sprintf("%s/api/oauth_callback/discord", cfg.BaseURL),
 		}
 	}
 
 	if os.Getenv("CDB_APP_ID") != "" {
 		cfg.CDBOAuthConfig = &oauth.OAuthConfig{
-			ClientID: os.Getenv("CDB_APP_ID"),
-			Secret:   os.Getenv("CDB_APP_SECRET"),
+			Provider:    oauth.ProviderTypeCDB,
+			ClientID:    os.Getenv("CDB_APP_ID"),
+			Secret:      os.Getenv("CDB_APP_SECRET"),
+			CallbackURL: fmt.Sprintf("%s/api/oauth_callback/cdb", cfg.BaseURL),
 		}
 	}
 
 	if os.Getenv("GITHUB_APP_ID") != "" {
 		cfg.GithubOAuthConfig = &oauth.OAuthConfig{
-			ClientID: os.Getenv("GITHUB_APP_ID"),
-			Secret:   os.Getenv("GITHUB_APP_SECRET"),
+			Provider:    oauth.ProviderTypeGithub,
+			ClientID:    os.Getenv("GITHUB_APP_ID"),
+			Secret:      os.Getenv("GITHUB_APP_SECRET"),
+			CallbackURL: fmt.Sprintf("%s/api/oauth_callback/github", cfg.BaseURL),
 		}
 	}
 
 	if os.Getenv("MESEHUB_APP_ID") != "" {
 		cfg.MesehubOAuthConfig = &oauth.OAuthConfig{
-			ClientID: os.Getenv("MESEHUB_APP_ID"),
-			Secret:   os.Getenv("MESEHUB_APP_SECRET"),
+			Provider:    oauth.ProviderTypeMesehub,
+			ClientID:    os.Getenv("MESEHUB_APP_ID"),
+			Secret:      os.Getenv("MESEHUB_APP_SECRET"),
+			CallbackURL: fmt.Sprintf("%s/api/oauth_callback/mesehub", cfg.BaseURL),
 		}
 	}
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 )
@@ -17,13 +18,17 @@ type MesehubUserResponse struct {
 
 type MesehubOauth struct{}
 
-func (o *MesehubOauth) RequestAccessToken(code, baseurl string, cfg *OAuthConfig) (string, error) {
+func (o *MesehubOauth) LoginURL(cfg *OAuthConfig) string {
+	return fmt.Sprintf("https://git.minetest.land/login/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code&state=STATE", cfg.ClientID, url.QueryEscape(cfg.CallbackURL))
+}
+
+func (o *MesehubOauth) RequestAccessToken(code string, cfg *OAuthConfig) (string, error) {
 	accessTokenReq := make(map[string]string)
 	accessTokenReq["client_id"] = cfg.ClientID
 	accessTokenReq["client_secret"] = cfg.Secret
 	accessTokenReq["code"] = code
 	accessTokenReq["grant_type"] = "authorization_code"
-	accessTokenReq["redirect_uri"] = baseurl + "/api/oauth_callback/mesehub"
+	accessTokenReq["redirect_uri"] = cfg.CallbackURL
 
 	data, err := json.Marshal(accessTokenReq)
 	if err != nil {

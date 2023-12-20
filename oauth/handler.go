@@ -1,33 +1,35 @@
 package oauth
 
 import (
-	"encoding/json"
 	"net/http"
-
-	"github.com/sirupsen/logrus"
 )
 
 type OauthHandler struct {
-	Impl     OauthImplementation
-	Config   *OAuthConfig
-	BaseURL  string
-	Callback OauthCallback
+	provider OauthProvider
+	cfg      *OAuthConfig
+	cb       OauthCallback
 }
 
-func SendJson(w http.ResponseWriter, o any) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(o)
+func NewHandler(cb OauthCallback, cfg *OAuthConfig) *OauthHandler {
+	var provider OauthProvider
+	switch cfg.Provider {
+	case ProviderTypeCDB:
+		provider = &CDBOauth{}
+	case ProviderTypeDiscord:
+		provider = &DiscordOauth{}
+	case ProviderTypeGithub:
+		provider = &GithubOauth{}
+	case ProviderTypeMesehub:
+		provider = &MesehubOauth{}
+	default:
+		panic("unkown provider-type: " + cfg.Provider)
+	}
+
+	return &OauthHandler{provider: provider, cfg: cfg, cb: cb}
 }
 
-func SendError(w http.ResponseWriter, code int, message string) {
-	logrus.WithFields(logrus.Fields{
-		"code":    code,
-		"message": message,
-	}).Error("http error")
-	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
-	w.WriteHeader(code)
-	w.Write([]byte(message))
+func (h *OauthHandler) LoginURL() string {
+	return h.provider.LoginURL(h.cfg)
 }
 
 func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -39,13 +41,13 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	code := list[0]
 
-	access_token, err := h.Impl.RequestAccessToken(code, h.BaseURL, h.Config)
+	access_token, err := h.provider.RequestAccessToken(code, h.cfg)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	info, err := h.Impl.RequestUserInfo(access_token, h.Config)
+	info, err := h.provider.RequestUserInfo(access_token, h.cfg)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -56,7 +58,7 @@ func (h *OauthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.Callback(w, r, info)
+	err = h.cb(w, r, info)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
