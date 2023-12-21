@@ -1,7 +1,10 @@
 import format_size from "../util/format_size.js";
 
 export default {
-    props: ["list"],
+    props: {
+        list: { type: Array },
+        show_not_found: { type: Boolean, default: true }
+    },
     methods: {
         format_size,
         preview_src: function(schema) {
@@ -13,7 +16,7 @@ export default {
     },
     template: /*html*/`
     <div class="row">
-        <div class="col-md-12" v-if="list && list.length == 0">
+        <div class="col-md-12" v-if="list && list.length == 0 && show_not_found">
             <div class="alert alert-secondary">
                 <i class="fa fa-circle-info"></i>
                 No schematics found

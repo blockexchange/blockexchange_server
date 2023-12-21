@@ -7,7 +7,7 @@ import ClipboardCopy from "../ClipboardCopy.js";
 import { schema_update, schema_set_tags, schema_update_screenshot, schema_delete } from "../../api/schema.js";
 import { get_schema_star, star_schema, unstar_schema, count_schema_stars } from "../../api/schema_star.js";
 import { get_tags } from "../../service/tags.js";
-import { is_logged_in } from "../../service/login.js";
+import { is_logged_in, has_permission } from "../../service/login.js";
 
 export default {
     components: {
@@ -35,7 +35,10 @@ export default {
     methods: {
         format_size,
         format_time,
-        get_tags,
+        has_permission,
+        get_tags: function() {
+            return get_tags().filter(t => !t.restricted || has_permission("ADMIN"));
+        },
         update_star: function() {
             if (is_logged_in()) {
                 get_schema_star(this.schema.id)

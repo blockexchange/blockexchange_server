@@ -18,7 +18,6 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 	}
 
 	if !ctx.CheckPermission(w, types.JWTPermissionManagement) {
-		SendError(w, 403, "not a management token")
 		return
 	}
 
@@ -33,7 +32,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 	}
 
 	// check permissions
-	is_admin := ctx.CheckPermission(w, types.JWTPermissionAdmin)
+	is_admin := ctx.HasPermission(types.JWTPermissionAdmin)
 	if !is_admin && schema.UserID != ctx.Claims.UserID {
 		// not an admin and not the owner
 		SendError(w, 403, "unauthorized")
@@ -59,7 +58,9 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 	}
 	tag_id_name_map := map[int64]string{}
 	tag_name_id_map := map[string]int64{}
+	restricted_id_map := map[int64]bool{}
 	for _, t := range tags {
+		restricted_id_map[t.ID] = t.Restricted
 		tag_id_name_map[t.ID] = t.Name
 		tag_name_id_map[t.Name] = t.ID
 	}
@@ -83,6 +84,11 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 		}
 
 		id := tag_name_id_map[new_tag_name]
+		if restricted_id_map[id] && !is_admin {
+			// only admins can change restricted tags
+			continue
+		}
+
 		err = api.SchemaTagRepo.Create(schema.ID, id)
 		if err != nil {
 			SendError(w, 500, err.Error())
@@ -95,6 +101,11 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 		if !new_tag_name_map[existing_tag] {
 			// tag removed
 			id := tag_name_id_map[existing_tag]
+			if restricted_id_map[id] && !is_admin {
+				// only admins can change restricted tags
+				continue
+			}
+
 			err = api.SchemaTagRepo.Delete(schema.ID, id)
 			if err != nil {
 				SendError(w, 500, err.Error())

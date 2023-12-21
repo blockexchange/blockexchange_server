@@ -1,5 +1,5 @@
 import { schema_search, schema_count } from "../api/schema.js";
-import { get_tags } from "../api/tags.js";
+import { get_tags } from "../service/tags.js";
 
 import debounce from "../util/debounce.js";
 
@@ -11,14 +11,7 @@ const store = Vue.reactive({
     busy: false,
     keywords: "",
     tag_id: -1,
-    tags: [],
-    tags_loaded: false
-});
-
-// load tags once
-get_tags().then(tags => {
-    store.tags = tags;
-    store.tags_loaded = true;
+    tags: []
 });
 
 export default {
@@ -28,6 +21,8 @@ export default {
     },
     data: () => store,
     created: function() {
+        this.tags = get_tags();
+
         // get data from query
         if (!this.keywords && this.$route.query.q) {
             this.keywords = this.$route.query.q;
@@ -78,7 +73,7 @@ export default {
         }
     },
     template: /*html*/`
-    <div class="row" v-if="tags_loaded">
+    <div class="row">
         <div class="col-md-8 col-xs-4">
             <input type="text" class="form-control" v-model="keywords" v-on:keyup.enter="search" placeholder="Keywords"/>
         </div>

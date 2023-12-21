@@ -88,7 +88,6 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}).Trace("PUT /api/schema")
 
 	if !ctx.CheckPermission(w, types.JWTPermissionManagement) {
-		SendError(w, 403, "not a management token")
 		return
 	}
 
@@ -111,7 +110,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 
 	// check permissions
-	is_admin := ctx.CheckPermission(w, types.JWTPermissionAdmin)
+	is_admin := ctx.HasPermission(types.JWTPermissionAdmin)
 	if !is_admin && schema.UserID != ctx.Claims.UserID {
 		// not an admin and not the owner
 		SendError(w, 403, "unauthorized")
@@ -227,7 +226,6 @@ func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}).Trace("DELETE /api/schema")
 
 	if !ctx.CheckPermission(w, types.JWTPermissionManagement) {
-		SendError(w, 403, "not a management token")
 		return
 	}
 
@@ -250,7 +248,7 @@ func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 
 	// check permissions
-	is_admin := ctx.CheckPermission(w, types.JWTPermissionAdmin)
+	is_admin := ctx.HasPermission(types.JWTPermissionAdmin)
 	if !is_admin && schema.UserID != ctx.Claims.UserID {
 		// not an admin and not the owner
 		SendError(w, 403, "unauthorized")

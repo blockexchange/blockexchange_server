@@ -16,8 +16,8 @@ func (repo TagRepository) Create(tag *types.Tag) error {
 	logrus.Trace("db.CreateTag", tag)
 	query := `
 		insert into
-		tag(name, description)
-		values(:name, :description)
+		tag(name, description, restricted)
+		values(:name, :description, :restricted)
 		returning id
 	`
 	stmt, err := repo.DB.PrepareNamed(query)
@@ -37,7 +37,8 @@ func (repo TagRepository) Update(tag *types.Tag) error {
 	update tag
 	set
 		name = :name,
-		description = :description
+		description = :description,
+		restricted = :restricted
 	where id = :id
 `
 	_, err := repo.DB.NamedExec(query, tag)

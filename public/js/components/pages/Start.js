@@ -1,8 +1,10 @@
 import Breadcrumb, { START } from "../Breadcrumb.js";
+import FeaturedSchemas from "../FeaturedSchemas.js";
 
 export default {
 	components: {
-        "bread-crumb": Breadcrumb
+        "bread-crumb": Breadcrumb,
+		"featured-schemas": FeaturedSchemas
 	},
 	data: function() {
 		return {
@@ -39,6 +41,8 @@ export default {
 				<i class="fa-brands fa-discord"></i> Join the discord community
 			</a>
 			<hr/>
+			<h5>Featured schematics</h5>
+			<featured-schemas/>
 		</div>
 	`
 };

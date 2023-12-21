@@ -10,11 +10,19 @@ type SecureContext struct {
 	Claims *types.Claims
 }
 
-func (ctx *SecureContext) CheckPermission(w http.ResponseWriter, permission types.JWTPermission) bool {
+func (ctx *SecureContext) HasPermission(permission types.JWTPermission) bool {
 	for _, p := range ctx.Claims.Permissions {
 		if p == permission {
 			return true
 		}
+	}
+
+	return false
+}
+
+func (ctx *SecureContext) CheckPermission(w http.ResponseWriter, permission types.JWTPermission) bool {
+	if ctx.HasPermission(permission) {
+		return true
 	}
 
 	// no permission found
