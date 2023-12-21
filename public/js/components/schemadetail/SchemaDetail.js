@@ -269,12 +269,12 @@ export default {
                             <div class="col-md-6">
                                 <h5>Offline</h5>
                                 <div class="btn-group">
-                                    <a class="btn btn-outline-primary"
+                                    <a class="btn btn-outline-success"
                                         :href="BaseURL + '/api/export_bx/' + schema.id + '/' + schema.name + '.zip'">
                                         <i class="fa fa-download"></i>
                                         Download as BX schematic
                                     </a>
-                                    <a class="btn btn-outline-primary" v-if="schema.total_parts < 200"
+                                    <a class="btn btn-outline-success" v-if="schema.total_parts < 200"
                                         :href="BaseURL + '/api/export_we/' + schema.id + '/' + schema.name + '.we'">
                                         <i class="fa fa-download"></i>
                                         Download as WE schematic
