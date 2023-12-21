@@ -7,16 +7,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type SchemaModRepository interface {
-	CreateSchemaMod(schema_mod *types.SchemaMod) error
-	GetSchemaModsBySchemaID(schema_id int64) ([]types.SchemaMod, error)
-}
-
-type DBSchemaModRepository struct {
+type SchemaModRepository struct {
 	DB *sqlx.DB
 }
 
-func (repo DBSchemaModRepository) GetSchemaModsBySchemaID(schema_id int64) ([]types.SchemaMod, error) {
+func (repo SchemaModRepository) GetSchemaModsBySchemaID(schema_id int64) ([]types.SchemaMod, error) {
 	list := []types.SchemaMod{}
 	query := `select * from schemamod where schema_id = $1`
 	err := repo.DB.Select(&list, query, schema_id)
@@ -27,7 +22,7 @@ func (repo DBSchemaModRepository) GetSchemaModsBySchemaID(schema_id int64) ([]ty
 	}
 }
 
-func (repo DBSchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {
+func (repo SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {
 	logrus.WithFields(logrus.Fields{
 		"schema_id": schema_mod.SchemaID,
 		"mod_name":  schema_mod.ModName,

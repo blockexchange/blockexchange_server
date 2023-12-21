@@ -7,13 +7,13 @@ type Repositories struct {
 	UserRepo                   *UserRepository
 	SchemaRepo                 *SchemaRepository
 	SchemaPartRepo             *SchemaPartRepository
-	SchemaModRepo              SchemaModRepository
+	SchemaModRepo              *SchemaModRepository
 	SchemaSearchRepo           *SchemaSearchRepository
-	SchemaScreenshotRepo       SchemaScreenshotRepository
+	SchemaScreenshotRepo       *SchemaScreenshotRepository
 	CollectionRepo             *CollectionRepository
 	CollectionSchemaRepository *CollectionSchemaRepository
-	TagRepo                    TagRepository
-	SchemaTagRepo              SchemaTagRepository
+	TagRepo                    *TagRepository
+	SchemaTagRepo              *SchemaTagRepository
 	SchemaStarRepo             *SchemaStarRepository
 }
 
@@ -23,13 +23,13 @@ func NewRepositories(db_ *sqlx.DB) *Repositories {
 		UserRepo:                   &UserRepository{db: db_.DB},
 		SchemaRepo:                 &SchemaRepository{DB: db_.DB},
 		SchemaPartRepo:             &SchemaPartRepository{DB: db_.DB},
-		SchemaModRepo:              &DBSchemaModRepository{DB: db_},
+		SchemaModRepo:              &SchemaModRepository{DB: db_},
 		SchemaSearchRepo:           &SchemaSearchRepository{DB: db_.DB},
-		SchemaScreenshotRepo:       DBSchemaScreenshotRepository{DB: db_},
+		SchemaScreenshotRepo:       &SchemaScreenshotRepository{DB: db_},
 		CollectionRepo:             &CollectionRepository{DB: db_.DB},
 		CollectionSchemaRepository: &CollectionSchemaRepository{DB: db_.DB},
-		TagRepo:                    &DBTagRepository{DB: db_},
-		SchemaTagRepo:              &DBSchemaTagRepository{DB: db_},
+		TagRepo:                    &TagRepository{DB: db_},
+		SchemaTagRepo:              &SchemaTagRepository{DB: db_},
 		SchemaStarRepo:             &SchemaStarRepository{DB: db_},
 	}
 }
