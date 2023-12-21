@@ -8,11 +8,24 @@ export default {
 	methods: {
 		has_permission
 	},
+	data: function() {
+		return {
+			collapsed: false
+		};
+	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
 				<router-link to="/" class="navbar-brand d-none d-lg-inline">Block exchange</router-link>
-				<ul class="navbar-nav me-auto">
+				<span class="d-inline d-lg-none">
+					<a class="btn btn-secondary btn-lg" v-if="!collapsed" v-on:click="collapsed = true">
+						<i class="fa fa-minus"></i>
+					</a>
+					<a class="btn btn-secondary btn-lg" v-if="collapsed" v-on:click="collapsed = false">
+						<i class="fa fa-plus"></i>
+					</a>
+				</span>
+				<ul class="navbar-nav me-auto" v-if="!collapsed">
 					<li class="nav-item">
 						<router-link to="/login" class="nav-link">
 							<i class="fa fa-sign-in"></i> Login
@@ -49,7 +62,7 @@ export default {
 						</router-link>
 					</li>
 				</ul>
-				<form class="d-flex" v-if="is_logged_in">
+				<form class="d-flex" v-if="is_logged_in && !collapsed">
 					<div class="btn btn-secondary">
 						<router-link to="/profile">
 							<i class="fas fa-user"></i>
