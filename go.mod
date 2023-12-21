@@ -8,12 +8,13 @@ require (
 	github.com/fogleman/gg v1.3.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.0
-	github.com/golang-migrate/migrate/v4 v4.16.2
+	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/gorilla/mux v1.8.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.9
 	github.com/minetest-go/colormapping v1.0.2
 	github.com/minetest-go/dbutil v1.0.7
+	github.com/minetest-go/oauth v0.0.0-20231220101117-1c1c7b78a59d
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/prometheus/client_golang v1.17.0
 	github.com/sirupsen/logrus v1.9.3
@@ -24,7 +25,6 @@ require (
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/minetest-go/oauth v0.0.0-20231220101117-1c1c7b78a59d // indirect
 )
 
 require (
