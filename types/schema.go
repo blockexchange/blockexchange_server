@@ -27,6 +27,7 @@ type Schema struct {
 	Views            int    `json:"views"`
 	License          string `json:"license"`
 	SearchTokens     string `json:"-"`
+	Stars            int    `json:"stars"`
 }
 
 func (s *Schema) UnmarshalJSON(data []byte) error {
@@ -78,6 +79,7 @@ func (a *Schema) Columns(action string) []string {
 		"downloads",
 		"views",
 		"license",
+		"stars",
 	}
 	switch action {
 	case "insert", "update":
@@ -105,6 +107,7 @@ func (a *Schema) Values(action string) []any {
 		a.Downloads,
 		a.Views,
 		a.License,
+		a.Stars,
 	}
 	switch action {
 	case "insert", "update":
@@ -133,5 +136,6 @@ func (a *Schema) Scan(action string, r func(dest ...any) error) error {
 		&a.Downloads,
 		&a.Views,
 		&a.License,
+		&a.Stars,
 	)
 }

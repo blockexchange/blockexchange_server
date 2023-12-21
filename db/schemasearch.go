@@ -77,7 +77,7 @@ func (repo SchemaSearchRepository) buildOrderQuery(query *strings.Builder, searc
 	if search.OrderColumn != nil && search.OrderDirection != nil && types.OrderColumns[*search.OrderColumn] && types.OrderDirections[*search.OrderDirection] {
 		query.WriteString(fmt.Sprintf(" order by %s %s", *search.OrderColumn, *search.OrderColumn))
 	} else {
-		query.WriteString(" order by s.created desc")
+		query.WriteString(" order by s.mtime desc")
 	}
 }
 

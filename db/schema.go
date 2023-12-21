@@ -117,7 +117,8 @@ func (repo SchemaRepository) CalculateStats(id int64) error {
 			coalesce(sum(length(data)) + sum(length(metadata)), 0)
 			from schemapart sp where sp.schema_id = s.id
 		),
-		total_parts = (select count(*) from schemapart sp where sp.schema_id = s.id)
+		total_parts = (select count(*) from schemapart sp where sp.schema_id = s.id),
+		stars = (select count(*) from user_schema_star where schema_id = $1)
 		where id = $1
 	`
 	_, err := repo.DB.Exec(q, id)

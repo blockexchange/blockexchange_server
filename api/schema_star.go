@@ -36,7 +36,14 @@ func (api *Api) StarSchema(w http.ResponseWriter, r *http.Request, ctx *SecureCo
 		SendError(w, 500, err.Error())
 		return
 	}
+
 	err = api.SchemaStarRepo.Create(schema_id, ctx.Claims.UserID)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	err = api.SchemaRepo.CalculateStats(schema_id)
 	Send(w, true, err)
 }
 
@@ -47,6 +54,13 @@ func (api *Api) UnStarSchema(w http.ResponseWriter, r *http.Request, ctx *Secure
 		SendError(w, 500, err.Error())
 		return
 	}
+
 	err = api.SchemaStarRepo.Delete(schema_id, ctx.Claims.UserID)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	err = api.SchemaRepo.CalculateStats(schema_id)
 	Send(w, true, err)
 }
