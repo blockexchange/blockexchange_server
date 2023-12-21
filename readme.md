@@ -112,11 +112,17 @@ services:
 
 Web- and backend development
 
+**NOTE**: make sure you checked out the submodules too
+
 Prerequisites:
 * docker
 * docker-compose
+* nodejs
 
 ```
+# install the frontend deps
+cd public && npm ci && cd ..
+
 # start the postgres database
 docker-compose up -d postgres
 
