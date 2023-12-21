@@ -296,7 +296,7 @@ export default {
                                         Select the origin position with <clipboard-copy :text="'/bx_pos1'"></clipboard-copy>
                                     </li>
                                     <li>
-                                        Check if the placement fits with <clipboard-copy :text="'/bx_allocate_locale ' + username + ' ' + schema.name"></clipboard-copy>
+                                        Check if the placement fits with <clipboard-copy :text="'/bx_allocate_local ' + username + ' ' + schema.name"></clipboard-copy>
                                     </li>
                                     <li>
                                         Place the schematic with <clipboard-copy :text="'/bx_load_local ' + username + ' ' + schema.name"></clipboard-copy>
