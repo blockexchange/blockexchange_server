@@ -15,7 +15,7 @@ import (
 
 func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(vars["schema_id"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -156,7 +156,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(vars["schema_id"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -230,7 +230,7 @@ func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 	// fetch schema
 	vars := mux.Vars(r)
-	id, err := strconv.ParseInt(vars["id"], 10, 64)
+	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

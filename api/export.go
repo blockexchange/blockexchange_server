@@ -43,7 +43,7 @@ func (api *Api) incrementDownloadstats(schema_id int64, r *http.Request) error {
 
 func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(vars["schema_id"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -73,7 +73,7 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(vars["schema_id"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

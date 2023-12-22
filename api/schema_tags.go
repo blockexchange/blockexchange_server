@@ -11,7 +11,7 @@ import (
 
 func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.ParseInt(vars["id"], 10, 64)
+	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

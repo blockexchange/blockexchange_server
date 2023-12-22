@@ -11,7 +11,7 @@ import (
 
 func (api *Api) GetSchemaMods(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(vars["schema_id"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -33,7 +33,7 @@ func (api *Api) GetSchemaMods(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(vars["schema_id"])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

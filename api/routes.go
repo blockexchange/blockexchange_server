@@ -37,20 +37,20 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	// mod api
 	r.HandleFunc("/api/token", api.RequestToken).Methods(http.MethodPost)
 
-	r.HandleFunc("/api/export_we/{id}/{filename}", api.ExportWorldeditSchema).Methods(http.MethodGet)
-	r.HandleFunc("/api/export_bx/{id}/{filename}", api.ExportBXSchema).Methods(http.MethodGet)
+	r.HandleFunc("/api/export_we/{schema_id}/{filename}", api.ExportWorldeditSchema).Methods(http.MethodGet)
+	r.HandleFunc("/api/export_bx/{schema_id}/{filename}", api.ExportBXSchema).Methods(http.MethodGet)
 	r.HandleFunc("/api/import/{filename}", api.Secure(api.ImportSchematic)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/tags", api.GetTags).Methods(http.MethodGet)
 
-	r.HandleFunc("/api/schema/{id}", api.GetSchema).Methods(http.MethodGet)
-	r.HandleFunc("/api/schema/{id}", api.Secure(api.DeleteSchema)).Methods(http.MethodDelete)
+	r.HandleFunc("/api/schema/{schema_id}", api.GetSchema).Methods(http.MethodGet)
+	r.HandleFunc("/api/schema/{schema_id}", api.Secure(api.DeleteSchema)).Methods(http.MethodDelete)
 	r.HandleFunc("/api/schema", api.Secure(api.CreateSchema)).Methods(http.MethodPost)
-	r.HandleFunc("/api/schema/{id}", api.Secure(api.UpdateSchema)).Methods(http.MethodPut)
-	r.HandleFunc("/api/schema/{id}/mods", api.GetSchemaMods).Methods(http.MethodGet)
-	r.HandleFunc("/api/schema/{id}/mods", api.Secure(api.CreateSchemaMods)).Methods(http.MethodPost)
-	r.HandleFunc("/api/schema/{id}/update", api.Secure(api.UpdateSchemaInfo)).Methods(http.MethodPost)
-	r.HandleFunc("/api/schema/{id}/tags", api.Secure(api.UpdateSchemaTags)).Methods(http.MethodPost)
+	r.HandleFunc("/api/schema/{schema_id}", api.Secure(api.UpdateSchema)).Methods(http.MethodPut)
+	r.HandleFunc("/api/schema/{schema_id}/mods", api.GetSchemaMods).Methods(http.MethodGet)
+	r.HandleFunc("/api/schema/{schema_id}/mods", api.Secure(api.CreateSchemaMods)).Methods(http.MethodPost)
+	r.HandleFunc("/api/schema/{schema_id}/update", api.Secure(api.UpdateSchemaInfo)).Methods(http.MethodPost)
+	r.HandleFunc("/api/schema/{schema_id}/tags", api.Secure(api.UpdateSchemaTags)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/schema/{schema_id}/star", api.Secure(api.GetSchemaStar)).Methods(http.MethodGet)
 	r.HandleFunc("/api/schema/{schema_id}/star/count", api.CountSchemaStars).Methods(http.MethodGet)
