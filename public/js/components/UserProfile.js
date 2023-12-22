@@ -67,9 +67,6 @@ export default {
                 <img v-if="data.user.avatar_url" :src="data.user.avatar_url" height="64" width="64"/>
             </div>
         </div>
-        <router-link :to="'/schema/' + data.user.name" class="btn btn-xs btn-outline-success">
-            Show all schematics of {{data.user.name}}
-        </router-link>
     </loading-block>
 	`
 };
