@@ -51,6 +51,10 @@ func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 		SendError(w, 500, err.Error())
 		return
 	}
+	if schema == nil {
+		SendError(w, 404, "not found")
+		return
+	}
 
 	if schema.UserID != ctx.Claims.UserID {
 		SendError(w, 403, "you are not the owner of the schema")
@@ -92,6 +96,22 @@ func (api *Api) UpdateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
 	if err != nil {
 		SendError(w, 500, err.Error())
+		return
+	}
+
+	// security check
+	schema, err := api.SchemaRepo.GetSchemaById(id)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	if schema == nil {
+		SendError(w, 404, "not found")
+		return
+	}
+
+	if !ctx.HasPermission(types.JWTPermissionAdmin) && schema.UserID != ctx.Claims.UserID {
+		SendError(w, 403, "you are not the owner of the schema")
 		return
 	}
 
