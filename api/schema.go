@@ -140,7 +140,6 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 
 	// apply modifiable fields
-	schema.Mtime = time.Now().Unix() * 1000
 	schema.Name = updated_schema.Name
 	schema.License = updated_schema.License
 	schema.Description = updated_schema.Description
