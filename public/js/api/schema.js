@@ -40,3 +40,8 @@ export const schema_delete = schema_id => fetch(`${BaseURL}/api/schema/${schema_
     method: "DELETE",
 })
 .then(r => r.json());
+
+export const schema_update_mods = schema_id => fetch(`/api/schema/${schema_id}/mods/update`, {
+    method: "POST"
+})
+.then(r => r.json());

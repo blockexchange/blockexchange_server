@@ -4,7 +4,7 @@ import format_time from "../../util/format_time.js";
 import ModalPrompt from "../ModalPrompt.js";
 import ClipboardCopy from "../ClipboardCopy.js";
 
-import { schema_update, schema_set_tags, schema_update_screenshot, schema_delete } from "../../api/schema.js";
+import { schema_update, schema_set_tags, schema_update_screenshot, schema_delete, schema_update_mods } from "../../api/schema.js";
 import { get_schema_star, star_schema, unstar_schema, count_schema_stars } from "../../api/schema_star.js";
 import { get_tags } from "../../service/tags.js";
 import { is_logged_in, has_permission } from "../../service/login.js";
@@ -28,6 +28,7 @@ export default {
             edit_mode: false,
             error_response: null,
             screenshot_busy: false,
+            mods_busy: false,
             delete_prompt: false,
             schema_star: null
         };
@@ -65,6 +66,14 @@ export default {
             })
             .catch(e => {
                 this.error_response = e;
+            });
+        },
+        update_mods: function() {
+            this.mods_busy = true;
+            schema_update_mods(this.schema.id)
+            .then(m => {
+                this.schema.mods = m;
+                this.mods_busy = false;
             });
         },
         update_screenshot: function() {
@@ -129,6 +138,11 @@ export default {
                         <i v-if="screenshot_busy" class="fa fa-spinner fa-spin"></i>
                         <i v-else class="fa fa-image"></i>
                         Update screenshot
+                    </a>
+                    <a class="btn btn-sm btn-secondary" v-bind:class="{'disabled': mods_busy}" v-on:click="update_mods">
+                        <i v-if="mods_busy" class="fa fa-spinner fa-spin"></i>
+                        <i v-else class="fa fa-box-archive"></i>
+                        Update modnames
                     </a>
                     <a class="btn btn-sm btn-danger" v-on:click="delete_prompt = true">
                         <i class="fa fa-trash"></i> Delete
