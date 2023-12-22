@@ -36,6 +36,12 @@ export const schema_update_screenshot = schema_id => fetch(`/api/schema/${schema
 })
 .then(r => r.json());
 
+export const schema_update_info = schema_id => fetch(`/api/schema/${schema_id}/update`, {
+    method: "POST"
+})
+.then(r => r.json());
+
+
 export const schema_delete = schema_id => fetch(`${BaseURL}/api/schema/${schema_id}`, {
     method: "DELETE",
 })

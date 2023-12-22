@@ -164,59 +164,76 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 
 	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
 	if err != nil {
-		SendError(w, 500, "GetSchemaById::"+err.Error())
+		SendError(w, 500, fmt.Sprintf("GetSchemaById: %s", err))
+		return
+	}
+	if schema == nil {
+		SendError(w, 404, "not found")
 		return
 	}
 
-	if schema.UserID != ctx.Claims.UserID {
+	if !ctx.HasPermission(types.JWTPermissionAdmin) && schema.UserID != ctx.Claims.UserID {
 		SendError(w, 403, "you are not the owner of the schema")
 		return
 	}
 
-	// schema is complete now, mark as initial
-	initial := !schema.Complete
+	notify_feed := false
+	if !schema.Complete {
+		// initial upload, complete schema
+		schema.Complete = true
+		schema.Created = time.Now().Unix() * 1000
+		// set notify
+		notify_feed = true
 
-	schema.Complete = true
-	schema.Created = time.Now().Unix() * 1000
-	err = api.SchemaRepo.UpdateSchema(schema)
-	if err != nil {
-		SendError(w, 500, "UpdateSchema::"+err.Error())
-		return
-	}
+		err = api.SchemaRepo.UpdateSchema(schema)
+		if err != nil {
+			SendError(w, 500, fmt.Sprintf("UpdateSchema: %s", err))
+			return
+		}
 
-	// update screenshot
-	screenshot, err := core.UpdatePreview(schema, api.Repositories)
-	if err != nil {
-		SendError(w, 500, "UpdatePreview::"+err.Error())
-		return
+		// update screenshot
+		_, err := api.core.UpdatePreview(schema)
+		if err != nil {
+			SendError(w, 500, fmt.Sprintf("UpdatePreview: %s", err))
+			return
+		}
+
 	}
 
 	// let the database calculate the size/count stats
 	err = api.SchemaRepo.CalculateStats(schema.ID)
 	if err != nil {
-		SendError(w, 500, "CalculateStats::"+err.Error())
+		SendError(w, 500, fmt.Sprintf("CalculateStats: %s", err))
 		return
 	}
 
 	// retrieve updated schema data from the db (size, count)
 	schema, err = api.SchemaRepo.GetSchemaById(schema.ID)
 	if err != nil {
-		SendError(w, 500, "GetSchemaById::"+err.Error())
+		SendError(w, 500, fmt.Sprintf("GetBySchemaID: %s", err))
 		return
 	}
 
-	if initial {
-		user, err := api.UserRepo.GetUserById(schema.UserID)
+	// process notifications
+	if notify_feed {
+		screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(schema.ID)
 		if err != nil {
-			SendError(w, 500, "GetUserById::"+err.Error())
+			SendError(w, 500, fmt.Sprintf("GetBySchemaID: %s", err))
 			return
 		}
 
-		// initial schema upload, send it to the feed async
-		go core.UpdateSchemaFeed(schema, user, screenshot)
+		user, err := api.UserRepo.GetUserById(schema.UserID)
+		if err != nil {
+			SendError(w, 500, fmt.Sprintf("GetUserById: %s", err))
+			return
+		}
+
+		if len(screenshots) > 0 {
+			go core.UpdateSchemaFeed(schema, user, screenshots[0])
+		}
 	}
 
-	w.WriteHeader(http.StatusOK)
+	Send(w, schema, nil)
 }
 
 func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {

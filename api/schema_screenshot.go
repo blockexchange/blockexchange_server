@@ -1,7 +1,6 @@
 package api
 
 import (
-	"blockexchange/core"
 	"blockexchange/types"
 	"bytes"
 	"fmt"
@@ -120,6 +119,6 @@ func (api Api) UpdateSchemaPreview(w http.ResponseWriter, r *http.Request, ctx *
 	}
 
 	// update screenshot
-	_, err = core.UpdatePreview(schema, api.Repositories)
+	_, err = api.core.UpdatePreview(schema)
 	Send(w, true, err)
 }

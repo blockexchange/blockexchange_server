@@ -4,7 +4,14 @@ import format_time from "../../util/format_time.js";
 import ModalPrompt from "../ModalPrompt.js";
 import ClipboardCopy from "../ClipboardCopy.js";
 
-import { schema_update, schema_set_tags, schema_update_screenshot, schema_delete, schema_update_mods } from "../../api/schema.js";
+import {
+    schema_update,
+    schema_set_tags,
+    schema_update_screenshot,
+    schema_delete,
+    schema_update_mods,
+    schema_update_info
+} from "../../api/schema.js";
 import { get_schema_star, star_schema, unstar_schema, count_schema_stars } from "../../api/schema_star.js";
 import { get_tags } from "../../service/tags.js";
 import { is_logged_in, has_permission } from "../../service/login.js";
@@ -76,6 +83,13 @@ export default {
                 this.mods_busy = false;
             });
         },
+        update_info: function() {
+            schema_update_info(this.schema.id)
+            .then(s => {
+                this.schema.total_size = s.total_size;
+                this.schema.total_parts = s.total_parts;
+            });
+        },
         update_screenshot: function() {
             this.screenshot_busy = true;
             schema_update_screenshot(this.schema.id)
@@ -143,6 +157,10 @@ export default {
                         <i v-if="mods_busy" class="fa fa-spinner fa-spin"></i>
                         <i v-else class="fa fa-box-archive"></i>
                         Update modnames
+                    </a>
+                    <a class="btn btn-sm btn-secondary" v-on:click="update_info">
+                        <i class="fa fa-chart-simple"></i>
+                        Update stats
                     </a>
                     <a class="btn btn-sm btn-danger" v-on:click="delete_prompt = true">
                         <i class="fa fa-trash"></i> Delete

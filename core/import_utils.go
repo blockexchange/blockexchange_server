@@ -18,7 +18,7 @@ func (c *Core) PostImport(schema *types.Schema) (*types.Schema, error) {
 		return nil, fmt.Errorf("stats calc error: %v", err)
 	}
 
-	_, err = UpdatePreview(schema, c.repos)
+	_, err = c.UpdatePreview(schema)
 	if err != nil {
 		return nil, fmt.Errorf("preview update error: %v", err)
 	}

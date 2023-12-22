@@ -12,19 +12,19 @@ type SchemaScreenshotRepository struct {
 }
 
 func (r SchemaScreenshotRepository) GetByID(id int64) (*types.SchemaScreenshot, error) {
-	result := types.SchemaScreenshot{}
-	err := r.DB.Get(&result, "select * from schema_screenshot where id = $1", id)
+	result := &types.SchemaScreenshot{}
+	err := r.DB.Get(result, "select * from schema_screenshot where id = $1", id)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	} else {
-		return &result, nil
+		return result, nil
 	}
 }
 
-func (r SchemaScreenshotRepository) GetBySchemaID(schema_id int64) ([]types.SchemaScreenshot, error) {
-	list := []types.SchemaScreenshot{}
+func (r SchemaScreenshotRepository) GetBySchemaID(schema_id int64) ([]*types.SchemaScreenshot, error) {
+	list := []*types.SchemaScreenshot{}
 	err := r.DB.Select(&list, "select * from schema_screenshot where schema_id = $1", schema_id)
 	if err != nil {
 		return nil, err
