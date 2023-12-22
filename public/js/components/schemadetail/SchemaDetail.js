@@ -274,12 +274,17 @@ export default {
                                         <i class="fa fa-download"></i>
                                         Download as BX schematic
                                     </a>
-                                    <a class="btn btn-outline-success" v-if="schema.total_parts < 200"
+                                    <a class="btn btn-outline-success"
+                                        v-bind:class="{disabled: schema.total_parts >= 200}"
                                         :href="BaseURL + '/api/export_we/' + schema.id + '/' + schema.name + '.we'">
                                         <i class="fa fa-download"></i>
                                         Download as WE schematic
                                         <i class="fa fa-triangle-exclamation"
-                                            v-if="schema.total_parts > 50"
+                                            v-if="schema.total_parts >= 200"
+                                            style="color: red;"
+                                            title="WE-Import disable due to schematic size"></i>
+                                        <i class="fa fa-triangle-exclamation"
+                                            v-else-if="schema.total_parts > 50"
                                             style="color: yellow;"
                                             title="WE-Import might be slow due to schematic size"></i>
                                     </a>
