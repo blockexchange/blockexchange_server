@@ -37,8 +37,13 @@ func (c *Core) FindUnusedSchemaname(schemaname, username string) (string, error)
 	if err != nil {
 		return "", fmt.Errorf("GetSchemaByUsernameAndName error: %v", err)
 	}
+	if existing_schema == nil {
+		// no previous schema and valid name
+		return newSchemaName, nil
+	}
+
+	// schema with that name already exists, add number to name
 	if existing_schema != nil {
-		// schema with that name already exists, add number to name
 		i := 2
 		for {
 			newSchemaName = fmt.Sprintf("%s_%d", schemaname, i)
@@ -56,5 +61,6 @@ func (c *Core) FindUnusedSchemaname(schemaname, username string) (string, error)
 		}
 	}
 
+	// nothing helped, fall back to random name
 	return fmt.Sprintf("import_%d", rand.Int()), nil
 }
