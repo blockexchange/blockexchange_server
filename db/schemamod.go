@@ -4,7 +4,6 @@ import (
 	"blockexchange/types"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
 )
 
 type SchemaModRepository struct {
@@ -23,11 +22,6 @@ func (repo SchemaModRepository) GetSchemaModsBySchemaID(schema_id int64) ([]type
 }
 
 func (repo SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {
-	logrus.WithFields(logrus.Fields{
-		"schema_id": schema_mod.SchemaID,
-		"mod_name":  schema_mod.ModName,
-	}).Trace("db.CreateSchemaMod")
-
 	query := `
 		insert into
 		schemamod(schema_id, mod_name)
@@ -39,4 +33,14 @@ func (repo SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) err
 		return err
 	}
 	return stmt.Get(&schema_mod.ID, schema_mod)
+}
+
+func (repo SchemaModRepository) RemoveSchemaMods(schema_id int64) error {
+	query := `
+		delete
+		from schemamod
+		where schema_id = $1
+	`
+	_, err := repo.DB.Exec(query, schema_id)
+	return err
 }

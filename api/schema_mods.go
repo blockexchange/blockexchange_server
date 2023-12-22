@@ -11,13 +11,13 @@ import (
 
 func (api *Api) GetSchemaMods(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["schema_id"])
+	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	list, err := api.SchemaModRepo.GetSchemaModsBySchemaID(int64(id))
+	list, err := api.SchemaModRepo.GetSchemaModsBySchemaID(id)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -33,7 +33,7 @@ func (api *Api) GetSchemaMods(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["schema_id"])
+	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -46,7 +46,7 @@ func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
+	schema, err := api.SchemaRepo.GetSchemaById(id)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -85,4 +85,41 @@ func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (api *Api) UpdateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	// extract modnames from schemaparts
+	modnames, err := api.core.ExtractModnames(id)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	// remove old modnames
+	err = api.Repositories.SchemaModRepo.RemoveSchemaMods(id)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	// add new modnames
+	for _, modname := range modnames {
+		err = api.Repositories.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
+			SchemaID: id,
+			ModName:  modname,
+		})
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+	}
+
+	Send(w, modnames, nil)
 }

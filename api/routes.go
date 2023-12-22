@@ -47,10 +47,12 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/schema/{schema_id}", api.Secure(api.DeleteSchema)).Methods(http.MethodDelete)
 	r.HandleFunc("/api/schema", api.Secure(api.CreateSchema)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{schema_id}", api.Secure(api.UpdateSchema)).Methods(http.MethodPut)
-	r.HandleFunc("/api/schema/{schema_id}/mods", api.GetSchemaMods).Methods(http.MethodGet)
-	r.HandleFunc("/api/schema/{schema_id}/mods", api.Secure(api.CreateSchemaMods)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{schema_id}/update", api.Secure(api.UpdateSchemaInfo)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{schema_id}/tags", api.Secure(api.UpdateSchemaTags)).Methods(http.MethodPost)
+
+	r.HandleFunc("/api/schema/{schema_id}/mods", api.GetSchemaMods).Methods(http.MethodGet)
+	r.HandleFunc("/api/schema/{schema_id}/mods", api.Secure(api.CreateSchemaMods)).Methods(http.MethodPost)
+	r.HandleFunc("/api/schema/{schema_id}/mods/update", api.Secure(api.UpdateSchemaMods)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/schema/{schema_id}/star", api.Secure(api.GetSchemaStar)).Methods(http.MethodGet)
 	r.HandleFunc("/api/schema/{schema_id}/star/count", api.CountSchemaStars).Methods(http.MethodGet)
