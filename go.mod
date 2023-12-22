@@ -12,7 +12,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.9
-	github.com/minetest-go/colormapping v1.0.2
+	github.com/minetest-go/colormapping v1.0.3
 	github.com/minetest-go/dbutil v1.0.7
 	github.com/minetest-go/oauth v1.0.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
