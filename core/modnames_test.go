@@ -8,17 +8,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWEImport(t *testing.T) {
+func TestExtractModnames(t *testing.T) {
 	c, repos := getTestCore(t)
 
 	u := testutils.CreateUser(repos.UserRepo, t, nil)
 	assert.NotNil(t, u)
 
-	data, err := os.ReadFile("testdata/plain_chest.we")
+	data, err := os.ReadFile("testdata/blockexchange.zip")
 	assert.NoError(t, err)
 	assert.NotNil(t, data)
 
-	s, err := c.ImportWE(data, u.Name, "we_import")
+	s, err := c.ImportBX(data, u.Name)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
+
+	nodenames, err := c.ExtractModnames(s.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, nodenames)
+	assert.Equal(t, 1, len(nodenames))
+	assert.Contains(t, nodenames, "default")
 }
