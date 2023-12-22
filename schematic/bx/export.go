@@ -1,4 +1,4 @@
-package core
+package bx
 
 import (
 	"archive/zip"
@@ -10,17 +10,24 @@ import (
 	"time"
 )
 
-func ExportBXSchema(w io.Writer, schema *types.Schema, mods []types.SchemaMod, it types.SchemaPartIterator) error {
+type Exporter struct {
+	w          *zip.Writer
+	intialized bool
+}
 
+func NewExporter(w io.Writer) *Exporter {
 	archive := zip.NewWriter(w)
-	defer archive.Close()
 
+	return &Exporter{w: archive, intialized: false}
+}
+
+func (e *Exporter) ExportMetadata(schema *types.Schema, mods []types.SchemaMod) error {
 	schema_data, err := json.Marshal(schema)
 	if err != nil {
 		return err
 	}
 
-	err = addDataToZip(archive, "schema.json", schema_data)
+	err = addDataToZip(e.w, "schema.json", schema_data)
 	if err != nil {
 		return err
 	}
@@ -35,33 +42,25 @@ func ExportBXSchema(w io.Writer, schema *types.Schema, mods []types.SchemaMod, i
 		return err
 	}
 
-	err = addDataToZip(archive, "mods.json", mods_data)
+	err = addDataToZip(e.w, "mods.json", mods_data)
 	if err != nil {
 		return err
 	}
 
-	for {
-		schemapart, err := it()
-		if err != nil {
-			return err
-		}
-		if schemapart == nil {
-			// done
-			break
-		}
+	return nil
+}
 
-		schemapart_data, err := json.Marshal(schemapart)
-		if err != nil {
-			return err
-		}
-
-		err = addDataToZip(archive, formatSchemapartFilename(schemapart), schemapart_data)
-		if err != nil {
-			return err
-		}
+func (e *Exporter) Export(schemapart *types.SchemaPart) error {
+	schemapart_data, err := json.Marshal(schemapart)
+	if err != nil {
+		return err
 	}
 
-	return nil
+	return addDataToZip(e.w, formatSchemapartFilename(schemapart), schemapart_data)
+}
+
+func (e *Exporter) Close() error {
+	return e.w.Close()
 }
 
 func formatSchemapartFilename(schemapart *types.SchemaPart) string {

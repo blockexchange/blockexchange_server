@@ -1,9 +1,8 @@
 package api
 
 import (
-	"blockexchange/core"
+	"blockexchange/schematic/bx"
 	"blockexchange/schematic/worldedit"
-	"blockexchange/types"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -53,34 +52,10 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", vars["filename"]))
 	e := worldedit.NewExporter(w)
 
-	schemapart, err := api.SchemaPartRepo.GetFirstBySchemaID(int64(id))
+	err = api.core.SchemapartCallback(int64(id), e.Export)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
-	}
-
-	err = e.Export(schemapart)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	for {
-		schemapart, err = api.SchemaPartRepo.GetNextBySchemaIDAndOffset(int64(id), schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-
-		if schemapart != nil {
-			err = e.Export(schemapart)
-			if err != nil {
-				SendError(w, 500, err.Error())
-				return
-			}
-		} else {
-			break
-		}
 	}
 
 	err = e.Close()
@@ -120,20 +95,23 @@ func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var schemapart *types.SchemaPart
-	it := func() (*types.SchemaPart, error) {
-		var err error
-		if schemapart == nil {
-			schemapart, err = api.SchemaPartRepo.GetFirstBySchemaID(int64(id))
-		} else {
-			schemapart, err = api.SchemaPartRepo.GetNextBySchemaIDAndOffset(int64(id), schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
-		}
-		return schemapart, err
-	}
-
-	err = core.ExportBXSchema(w, schema, schemamods, it)
+	e := bx.NewExporter(w)
+	err = e.ExportMetadata(schema, schemamods)
 	if err != nil {
 		SendError(w, 500, err.Error())
+		return
+	}
+
+	err = api.core.SchemapartCallback(int64(id), e.Export)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	err = e.Close()
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
 	}
 
 	err = api.incrementDownloadstats(int64(id), r)

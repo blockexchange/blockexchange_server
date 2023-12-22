@@ -1,6 +1,7 @@
-package core
+package bx_test
 
 import (
+	"blockexchange/schematic/bx"
 	"os"
 	"testing"
 
@@ -12,7 +13,7 @@ func TestBXImport(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, data)
 
-	res, err := ParseBXContent(data)
+	res, err := bx.ParseBXContent(data)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 
