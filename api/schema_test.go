@@ -98,7 +98,7 @@ func TestSchemaCreate(t *testing.T) {
 	data, err = json.Marshal(schema)
 	assert.NoError(t, err)
 	r = httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
-	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
+	r = mux.SetURLVars(r, map[string]string{"schema_id": strconv.Itoa(int(schema.ID))})
 	w = httptest.NewRecorder()
 	Login(t, r, user)
 
@@ -107,7 +107,7 @@ func TestSchemaCreate(t *testing.T) {
 
 	// update infos
 	r = httptest.NewRequest("POST", "http://", nil)
-	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
+	r = mux.SetURLVars(r, map[string]string{"schema_id": strconv.Itoa(int(schema.ID))})
 	w = httptest.NewRecorder()
 	Login(t, r, user)
 
@@ -145,7 +145,7 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 
 	// get by id
 	r = httptest.NewRequest("GET", "http://", nil)
-	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
+	r = mux.SetURLVars(r, map[string]string{"schema_id": strconv.Itoa(int(schema.ID))})
 	w = httptest.NewRecorder()
 
 	api.GetSchema(w, r)
@@ -163,7 +163,7 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	// download by id
 
 	r = httptest.NewRequest("GET", "http://", nil)
-	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
+	r = mux.SetURLVars(r, map[string]string{"schema_id": strconv.Itoa(int(schema.ID))})
 	q := r.URL.Query()
 	q.Add("download", "true")
 	r.URL.RawQuery = q.Encode()
@@ -186,7 +186,7 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 
 	r = httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
 	w = httptest.NewRecorder()
-	r = mux.SetURLVars(r, map[string]string{"id": strconv.Itoa(int(schema.ID))})
+	r = mux.SetURLVars(r, map[string]string{"schema_id": strconv.Itoa(int(schema.ID))})
 	Login(t, r, user)
 
 	api.Secure(api.UpdateSchema)(w, r)

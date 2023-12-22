@@ -27,7 +27,7 @@ func TestSchemaMods(t *testing.T) {
 	Login(t, r, user)
 
 	r = mux.SetURLVars(r, map[string]string{
-		"id": strconv.Itoa(int(schema.ID)),
+		"schema_id": strconv.Itoa(int(schema.ID)),
 	})
 
 	api.Secure(api.CreateSchemaMods)(w, r)
@@ -44,7 +44,7 @@ func TestSchemaMods(t *testing.T) {
 	Login(t, r, user)
 
 	r = mux.SetURLVars(r, map[string]string{
-		"id": strconv.Itoa(int(schema.ID)),
+		"schema_id": strconv.Itoa(int(schema.ID)),
 	})
 
 	api.GetSchemaMods(w, r)
