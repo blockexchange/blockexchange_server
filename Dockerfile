@@ -6,7 +6,7 @@ COPY public/ .
 RUN npm run jshint && \
 	npm run bundle
 
-FROM golang:1.21.5 as go-app
+FROM golang:1.21.6 as go-app
 WORKDIR /data
 COPY go.mod go.sum ./
 RUN go mod download
