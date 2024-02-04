@@ -22,7 +22,7 @@ export default {
                 No schematics found
             </div>
         </div>
-        <div class="col-md-2" style="padding-bottom: 10px;" :key="schema.id" v-for="schema in list">
+        <div style="padding-bottom: 10px; width: 320px; min-height: 450px;" :key="schema.id" v-for="schema in list">
             <div class="card" style="min-height: 400px;">
                 <router-link :to="schema_link(schema)">
                     <img
