@@ -11,6 +11,7 @@ type Cache interface {
 	Set(key string, value []byte, expire time.Duration) error
 	Get(key string) ([]byte, error)
 	Remove(key string) error
+	RemovePrefix(prefix string) error
 }
 
 // No-op
@@ -26,6 +27,10 @@ func (cache *NoOpCache) Get(key string) ([]byte, error) {
 }
 
 func (cache *NoOpCache) Remove(key string) error {
+	return nil
+}
+
+func (cache *NoOpCache) RemovePrefix(prefix string) error {
 	return nil
 }
 
@@ -64,4 +69,18 @@ func (cache *RedisCache) Remove(key string) error {
 	cmd := cache.RDB.Del(ctx, key)
 	_, err := cmd.Result()
 	return err
+}
+
+func (cache *RedisCache) RemovePrefix(prefix string) error {
+	keys, err := cache.RDB.Keys(ctx, prefix+"*").Result()
+	if err != nil {
+		return err
+	}
+	for _, key := range keys {
+		_, err := cache.RDB.Del(ctx, key).Result()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

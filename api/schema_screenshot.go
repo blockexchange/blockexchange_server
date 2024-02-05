@@ -13,8 +13,12 @@ import (
 	"github.com/nfnt/resize"
 )
 
+func getScreenshotPrefix(schema_id int) string {
+	return fmt.Sprintf("screenshot_%d_", schema_id)
+}
+
 func createScreenshotKey(schema_id int, height int, width int) string {
-	return fmt.Sprintf("screenshot_%d_%d_%d", schema_id, height, width)
+	return fmt.Sprintf("%s%d_%d", getScreenshotPrefix(schema_id), height, width)
 }
 
 func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) {
@@ -120,5 +124,12 @@ func (api Api) UpdateSchemaPreview(w http.ResponseWriter, r *http.Request, ctx *
 
 	// update screenshot
 	_, err = api.core.UpdatePreview(schema)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	// clear cache
+	err = api.Cache.RemovePrefix(getScreenshotPrefix(schema_id))
 	Send(w, true, err)
 }

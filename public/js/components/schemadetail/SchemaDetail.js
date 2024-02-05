@@ -32,6 +32,7 @@ export default {
     data: function() {
         return {
             BaseURL,
+            cache_counter: Date.now(),
             edit_mode: false,
             error_response: null,
             screenshot_busy: false,
@@ -93,7 +94,10 @@ export default {
         update_screenshot: function() {
             this.screenshot_busy = true;
             schema_update_screenshot(this.schema.id)
-            .then(() => this.screenshot_busy = false);
+            .then(() => {
+                this.screenshot_busy = false;
+                this.cache_counter = Date.now();
+            });
         },
         delete_schema: function() {
             schema_delete(this.schema.id)
@@ -270,7 +274,7 @@ export default {
                     </div>
                     <div class="card-body">
                         <div class="text-center" style="min-height: 600px;">
-                            <img :src="BaseURL + '/api/schema/' + schema.id + '/screenshot'" class="img-fluid">
+                            <img :src="BaseURL + '/api/schema/' + schema.id + '/screenshot?cachebust=' + cache_counter" class="img-fluid">
                         </div>
                     </div>
                 </div>
