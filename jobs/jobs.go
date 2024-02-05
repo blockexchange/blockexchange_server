@@ -1,6 +1,7 @@
 package jobs
 
 import (
+	"blockexchange/api"
 	"blockexchange/db"
 	"time"
 
@@ -8,20 +9,27 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func Start(db_ *sqlx.DB) {
+func Start(db_ *sqlx.DB, api *api.Api) {
 	schemarepo := db.SchemaRepository{DB: db_.DB}
-	go loop(schemarepo)
+	go cleanupSchemas(schemarepo)
+	go updateStats(api)
 }
 
-func loop(schemarepo db.SchemaRepository) {
+func updateStats(api *api.Api) {
 	for {
-		cleanupSchemas(schemarepo)
-		time.Sleep(5 * time.Minute)
+		err := api.UpdateStats()
+		if err != nil {
+			logrus.WithError(err).Error("stats update")
+		}
+		time.Sleep(30 * time.Minute)
 	}
 }
 
 func cleanupSchemas(schemarepo db.SchemaRepository) {
-	logrus.Trace("Removing old and incomplete schemas")
-	now := time.Now().Unix() * 1000
-	schemarepo.DeleteOldIncompleteSchema(now - (3600 * 1000 * 24))
+	for {
+		logrus.Trace("Removing old and incomplete schemas")
+		now := time.Now().Unix() * 1000
+		schemarepo.DeleteOldIncompleteSchema(now - (3600 * 1000 * 24))
+		time.Sleep(5 * time.Minute)
+	}
 }

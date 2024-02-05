@@ -124,3 +124,9 @@ func (repo SchemaRepository) CalculateStats(id int64) error {
 	_, err := repo.DB.Exec(q, id)
 	return err
 }
+
+func (r *SchemaRepository) GetTotalSize() (int64, error) {
+	row := r.DB.QueryRow("select sum(total_size) from schema")
+	var size int64
+	return size, row.Scan(&size)
+}

@@ -13,8 +13,8 @@ import (
 func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	// common api
-	r.Handle("/api/info", InfoHandler{Config: cfg})
-	r.HandleFunc("/api/healthcheck", api.Healthcheck)
+	r.HandleFunc("/api/info", api.GetInfo).Methods(http.MethodGet)
+	r.HandleFunc("/api/healthcheck", api.Healthcheck).Methods(http.MethodGet)
 
 	// ui api
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)

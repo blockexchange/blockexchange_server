@@ -1,10 +1,12 @@
 import Breadcrumb, { START } from "../Breadcrumb.js";
 import FeaturedSchemas from "../FeaturedSchemas.js";
+import Stats from "../Stats.js";
 
 export default {
 	components: {
         "bread-crumb": Breadcrumb,
-		"featured-schemas": FeaturedSchemas
+		"featured-schemas": FeaturedSchemas,
+		Stats
 	},
 	data: function() {
 		return {
@@ -20,6 +22,8 @@ export default {
 					- exchange your schematics across worlds with ease
 				</small>
 			</h3>
+			<hr/>
+			<Stats/>
 			<hr/>
 			<router-link to="/search" class="btn btn-primary">
 				<i class="fa fa-search"></i> Search

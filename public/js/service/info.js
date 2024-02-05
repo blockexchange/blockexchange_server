@@ -10,3 +10,4 @@ export const get_github_login = () => store.oauth_login.github;
 export const get_cdb_login = () => store.oauth_login.cdb;
 export const get_discord_login = () => store.oauth_login.discord;
 export const get_mesehub_login = () => store.oauth_login.mesehub;
+export const get_stats = () => store.stats;

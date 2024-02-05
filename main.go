@@ -37,19 +37,19 @@ func main() {
 		}
 	}
 
-	// start background jobs
-	jobs.Start(db_)
-
 	// set up server
 	cfg := types.CreateConfig()
 	api, router, err := api.NewApi(db_, cfg)
 	if err != nil {
 		panic(err)
 	}
+
 	// main entry
 	http.Handle("/", router)
-
 	server := &http.Server{Addr: ":8080", Handler: nil}
+
+	// start background jobs
+	jobs.Start(db_, api)
 
 	go func() {
 		// listen to web requests

@@ -15,6 +15,7 @@ type Repositories struct {
 	TagRepo                    *TagRepository
 	SchemaTagRepo              *SchemaTagRepository
 	SchemaStarRepo             *SchemaStarRepository
+	MetaRepository             *MetaRepository
 }
 
 func NewRepositories(db_ *sqlx.DB) *Repositories {
@@ -31,5 +32,6 @@ func NewRepositories(db_ *sqlx.DB) *Repositories {
 		TagRepo:                    &TagRepository{DB: db_},
 		SchemaTagRepo:              &SchemaTagRepository{DB: db_},
 		SchemaStarRepo:             &SchemaStarRepository{DB: db_},
+		MetaRepository:             &MetaRepository{db: db_.DB},
 	}
 }
