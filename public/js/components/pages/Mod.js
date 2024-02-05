@@ -16,6 +16,9 @@ export default {
 		<div class="row">
 			<div class="col-md-2"></div>
 			<div class="col-md-8">
+				<h5>Installation instructions (youtube)</h5>
+				<hr>
+				<iframe width="420" height="315" src="https://www.youtube.com/embed/x0geU_EyO-0"></iframe>
 				<h5>Installation instructions</h5>
 				<hr>
 				<p>Download the mod via "Content" tab in your minetest application</p>
