@@ -63,7 +63,7 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 
 		if data != nil && r.URL.Query().Get("cache") != "false" {
 			// cached data
-			w.Header().Set("Cache-Control", "max-age=345600")
+			w.Header().Set("Cache-Control", "max-age=1800") // 30 minutes clientside cache
 			w.Header().Set("Content-Type", "image/png")
 			w.Write(data)
 			return
