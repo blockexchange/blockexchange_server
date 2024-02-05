@@ -24,7 +24,8 @@ export default {
 			</h3>
 			<hr/>
 			<Stats/>
-			<hr/>
+			<br>
+			<br>
 			<router-link to="/search" class="btn btn-primary">
 				<i class="fa fa-search"></i> Search
 			</router-link>
