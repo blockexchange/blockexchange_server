@@ -9,7 +9,7 @@ import (
 )
 
 func PopulateTestData(_db *sqlx.DB) error {
-	userrepo := UserRepository{db: _db.DB}
+	userrepo := NewUserRepository(_db.DB)
 	tokenrepo := AccessTokenRepository{DB: _db.DB}
 
 	user, err := userrepo.GetUserByName("Testuser")

@@ -7,16 +7,24 @@ import (
 	"github.com/minetest-go/dbutil"
 )
 
+func NewAccessTokenRepository(DB *sql.DB) *AccessTokenRepository {
+	return &AccessTokenRepository{
+		DB:  DB,
+		dbu: dbutil.New(DB, dbutil.DialectPostgres, func() *types.AccessToken { return &types.AccessToken{} }),
+	}
+}
+
 type AccessTokenRepository struct {
-	DB *sql.DB
+	DB  *sql.DB
+	dbu *dbutil.DBUtil[*types.AccessToken]
 }
 
 func (r AccessTokenRepository) GetAccessTokensByUserID(user_id int64) ([]*types.AccessToken, error) {
-	return dbutil.SelectMulti(r.DB, func() *types.AccessToken { return &types.AccessToken{} }, "where user_id = $1", user_id)
+	return r.dbu.SelectMulti("where user_id = %s", user_id)
 }
 
 func (r AccessTokenRepository) GetAccessTokenByTokenAndUserID(token string, user_id int64) (*types.AccessToken, error) {
-	at, err := dbutil.Select(r.DB, &types.AccessToken{}, "where token = $1 and user_id = $2", token, user_id)
+	at, err := r.dbu.Select("where token = %s and user_id = %s", token, user_id)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -24,7 +32,7 @@ func (r AccessTokenRepository) GetAccessTokenByTokenAndUserID(token string, user
 }
 
 func (r AccessTokenRepository) CreateAccessToken(access_token *types.AccessToken) error {
-	return dbutil.InsertReturning(r.DB, access_token, "id", &access_token.ID)
+	return r.dbu.InsertReturning(access_token, "id", &access_token.ID)
 }
 
 func (r AccessTokenRepository) IncrementAccessTokenUseCount(id int64) error {
