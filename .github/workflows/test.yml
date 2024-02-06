@@ -7,8 +7,12 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
+      redis:
+        image: redis:6.2.0-alpine
+        ports:
+          - 6379:6379
       postgres:
-        image: postgres:12
+        image: postgres:16.1
         ports:
           - 5432:5432
         env:
@@ -27,6 +31,8 @@ jobs:
       PGHOST: localhost
       PGDATABASE: postgres
       PGPORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       LOGLEVEL: debug
 
     steps:

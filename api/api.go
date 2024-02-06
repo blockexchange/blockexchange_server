@@ -28,7 +28,7 @@ type Api struct {
 	*db.Repositories
 	cfg          *types.Config
 	core         *core.Core
-	Cache        core.Cache
+	Cache        *core.RedisCache
 	ColorMapping *colormapping.ColorMapping
 	Running      *atomic.Bool
 }
@@ -43,20 +43,20 @@ func NewApi(db_ *sqlx.DB, cfg *types.Config) (*Api, *mux.Router, error) {
 	r.Use(middleware.LoggingMiddleware)
 
 	// cache/store setup
-	var cache core.Cache = core.NewNoOpCache()
 	captchaExp := 10 * time.Minute
-	var captchaStore captcha.Store = captcha.NewMemoryStore(50, captchaExp)
 
-	if cfg.RedisHost != "" && cfg.RedisPort != "" {
-		rdb := redis.NewClient(&redis.Options{
-			Addr:     fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort),
-			Password: "",
-			DB:       0,
-		})
-
-		cache = core.NewRedisCache(rdb)
-		captchaStore = core.NewRedisCaptchaStore(rdb, captchaExp)
+	if cfg.RedisHost == "" || cfg.RedisPort == "" {
+		return nil, nil, fmt.Errorf("redis not configured")
 	}
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort),
+		Password: "",
+		DB:       0,
+	})
+
+	cache := core.NewRedisCache(rdb)
+	captchaStore := core.NewRedisCaptchaStore(rdb, captchaExp)
 	captcha.SetCustomStore(captchaStore)
 
 	cm := colormapping.NewColorMapping()

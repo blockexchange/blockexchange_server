@@ -7,46 +7,13 @@ import (
 	redis "github.com/go-redis/redis/v8"
 )
 
-type Cache interface {
-	Set(key string, value []byte, expire time.Duration) error
-	Get(key string) ([]byte, error)
-	Remove(key string) error
-	RemovePrefix(prefix string) error
-}
-
-// No-op
-
-type NoOpCache struct{}
-
-func (cache *NoOpCache) Set(key string, value []byte, expire time.Duration) error {
-	return nil
-}
-
-func (cache *NoOpCache) Get(key string) ([]byte, error) {
-	return nil, nil
-}
-
-func (cache *NoOpCache) Remove(key string) error {
-	return nil
-}
-
-func (cache *NoOpCache) RemovePrefix(prefix string) error {
-	return nil
-}
-
-func NewNoOpCache() Cache {
-	return &NoOpCache{}
-}
-
-// Redis
-
 type RedisCache struct {
 	RDB *redis.Client
 }
 
 var ctx = context.Background()
 
-func NewRedisCache(rdb *redis.Client) Cache {
+func NewRedisCache(rdb *redis.Client) *RedisCache {
 	return &RedisCache{RDB: rdb}
 }
 
