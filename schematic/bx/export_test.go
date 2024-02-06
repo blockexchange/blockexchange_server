@@ -29,7 +29,7 @@ func TestExportBXSchema(t *testing.T) {
 		SizeZ: 32,
 	}
 
-	mods := []types.SchemaMod{
+	mods := []*types.SchemaMod{
 		{ModName: "blah"},
 	}
 

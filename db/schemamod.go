@@ -2,45 +2,31 @@ package db
 
 import (
 	"blockexchange/types"
+	"database/sql"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/minetest-go/dbutil"
 )
 
+func NewSchemaModRepository(DB *sql.DB) *SchemaModRepository {
+	return &SchemaModRepository{
+		DB:  DB,
+		dbu: dbutil.New(DB, dbutil.DialectPostgres, func() *types.SchemaMod { return &types.SchemaMod{} }),
+	}
+}
+
 type SchemaModRepository struct {
-	DB *sqlx.DB
+	DB  *sql.DB
+	dbu *dbutil.DBUtil[*types.SchemaMod]
 }
 
-func (repo SchemaModRepository) GetSchemaModsBySchemaID(schema_id int64) ([]types.SchemaMod, error) {
-	list := []types.SchemaMod{}
-	query := `select * from schemamod where schema_id = $1`
-	err := repo.DB.Select(&list, query, schema_id)
-	if err != nil {
-		return nil, err
-	} else {
-		return list, nil
-	}
+func (r *SchemaModRepository) GetSchemaModsBySchemaID(schema_id int64) ([]*types.SchemaMod, error) {
+	return r.dbu.SelectMulti("where schema_id = %s", schema_id)
 }
 
-func (repo SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {
-	query := `
-		insert into
-		schemamod(schema_id, mod_name)
-		values(:schema_id, :mod_name)
-		returning id
-	`
-	stmt, err := repo.DB.PrepareNamed(query)
-	if err != nil {
-		return err
-	}
-	return stmt.Get(&schema_mod.ID, schema_mod)
+func (r *SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {
+	return r.dbu.InsertReturning(schema_mod, "id", &schema_mod.ID)
 }
 
-func (repo SchemaModRepository) RemoveSchemaMods(schema_id int64) error {
-	query := `
-		delete
-		from schemamod
-		where schema_id = $1
-	`
-	_, err := repo.DB.Exec(query, schema_id)
-	return err
+func (r *SchemaModRepository) RemoveSchemaMods(schema_id int64) error {
+	return r.dbu.Delete("where schema_id = %s", schema_id)
 }
