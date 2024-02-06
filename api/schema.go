@@ -27,8 +27,7 @@ func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Query().Get("download") == "true" {
-		schema.Downloads++
-		err = api.SchemaRepo.UpdateSchema(schema)
+		err = api.incrementDownloadstats(int64(id), r)
 		if err != nil {
 			SendError(w, 500, err.Error())
 			return
