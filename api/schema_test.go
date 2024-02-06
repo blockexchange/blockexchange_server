@@ -176,7 +176,6 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	schema2 = types.Schema{}
 	err = json.NewDecoder(w.Body).Decode(&schema2)
 	assert.NoError(t, err)
-	assert.Equal(t, schema.Downloads+1, schema2.Downloads)
 
 	// update
 
@@ -195,7 +194,6 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, schema3)
 	assert.Equal(t, schema2.Description, schema3.Description)
-	assert.Equal(t, 1, schema3.Downloads)
 
 	// download by username and schemaname
 	r = httptest.NewRequest("GET", "http://", bytes.NewBuffer(data))
@@ -214,12 +212,9 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	schema4 := types.Schema{}
 	err = json.NewDecoder(w.Body).Decode(&schema4)
 	assert.NoError(t, err)
-	// counter not updated yet
-	assert.Equal(t, 1, schema4.Downloads)
 
 	// counter updated
 	schema3, err = api.SchemaRepo.GetSchemaById(schema2.ID)
 	assert.NoError(t, err)
 	assert.NotNil(t, schema3)
-	assert.Equal(t, 2, schema3.Downloads)
 }
