@@ -33,4 +33,11 @@ jobs:
         interval: 1000
 
     - name: Execute tests
+      run: docker-compose up --exit-code-from integration-test integration-test
+
+    - name: Execute mod tests
       run: docker-compose up --exit-code-from mod-integration-test mod-integration-test
+
+    - uses: shogo82148/actions-goveralls@v1.9.0
+      with:
+        path-to-profile: profile.cov
