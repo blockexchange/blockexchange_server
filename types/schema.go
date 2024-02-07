@@ -9,25 +9,24 @@ type SchemaUpdateError struct {
 
 // used for the database and GET requests
 type Schema struct {
-	ID               int64  `json:"id"`
-	Created          int64  `json:"created"`
-	Mtime            int64  `json:"mtime"`
-	UserID           int64  `json:"user_id"`
-	Name             string `json:"name"`
-	Description      string `json:"description"`
-	ShortDescription string `json:"short_description"`
-	CDBCollection    string `json:"cdb_collection"`
-	Complete         bool   `json:"complete"`
-	SizeX            int    `json:"size_x"`
-	SizeY            int    `json:"size_y"`
-	SizeZ            int    `json:"size_z"`
-	TotalSize        int    `json:"total_size"`
-	TotalParts       int    `json:"total_parts"`
-	Downloads        int    `json:"downloads"`
-	Views            int    `json:"views"`
-	License          string `json:"license"`
-	SearchTokens     string `json:"-"`
-	Stars            int    `json:"stars"`
+	ID               int64  `json:"id" ksql:"id"`
+	Created          int64  `json:"created" ksql:"created"`
+	Mtime            int64  `json:"mtime" ksql:"mtime"`
+	UserID           int64  `json:"user_id" ksql:"user_id"`
+	Name             string `json:"name" ksql:"name"`
+	Description      string `json:"description" ksql:"description"`
+	ShortDescription string `json:"short_description" ksql:"short_description"`
+	CDBCollection    string `json:"cdb_collection" ksql:"cdb_collection"`
+	Complete         bool   `json:"complete" ksql:"complete"`
+	SizeX            int    `json:"size_x" ksql:"size_x"`
+	SizeY            int    `json:"size_y" ksql:"size_y"`
+	SizeZ            int    `json:"size_z" ksql:"size_z"`
+	TotalSize        int    `json:"total_size" ksql:"total_size"`
+	TotalParts       int    `json:"total_parts" ksql:"total_parts"`
+	Downloads        int    `json:"downloads" ksql:"downloads"`
+	Views            int    `json:"views" ksql:"views"`
+	License          string `json:"license" ksql:"license"`
+	Stars            int    `json:"stars" ksql:"stars"`
 }
 
 func (s *Schema) UnmarshalJSON(data []byte) error {

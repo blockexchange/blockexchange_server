@@ -2,64 +2,36 @@ package db
 
 import (
 	"blockexchange/types"
-	"database/sql"
+	"context"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/vingarcia/ksql"
 )
 
+var schemaScreenshotTable = ksql.NewTable("schema_screenshot", "id")
+
 type SchemaScreenshotRepository struct {
-	DB *sqlx.DB
+	kdb ksql.Provider
 }
 
-func (r SchemaScreenshotRepository) GetByID(id int64) (*types.SchemaScreenshot, error) {
+func (r *SchemaScreenshotRepository) GetByID(id int64) (*types.SchemaScreenshot, error) {
 	result := &types.SchemaScreenshot{}
-	err := r.DB.Get(result, "select * from schema_screenshot where id = $1", id)
-	if err == sql.ErrNoRows {
+	err := r.kdb.QueryOne(context.Background(), result, "from schema_screenshot where id = $1", id)
+	if err == ksql.ErrRecordNotFound {
 		return nil, nil
-	} else if err != nil {
-		return nil, err
 	} else {
-		return result, nil
+		return result, err
 	}
 }
 
-func (r SchemaScreenshotRepository) GetBySchemaID(schema_id int64) ([]*types.SchemaScreenshot, error) {
+func (r *SchemaScreenshotRepository) GetBySchemaID(schema_id int64) ([]*types.SchemaScreenshot, error) {
 	list := []*types.SchemaScreenshot{}
-	err := r.DB.Select(&list, "select * from schema_screenshot where schema_id = $1", schema_id)
-	if err != nil {
-		return nil, err
-	} else {
-		return list, nil
-	}
+	return list, r.kdb.Query(context.Background(), &list, "from schema_screenshot where schema_id = $1", schema_id)
 }
 
-func (r SchemaScreenshotRepository) Create(screenshot *types.SchemaScreenshot) error {
-	query := `
-		insert into
-		schema_screenshot(
-			schema_id, type, title, data
-		)
-		values(
-			:schema_id, :type, :title, :data
-		)
-		returning id
-	`
-	stmt, err := r.DB.PrepareNamed(query)
-	if err != nil {
-		return err
-	}
-	return stmt.Get(&screenshot.ID, screenshot)
+func (r *SchemaScreenshotRepository) Create(screenshot *types.SchemaScreenshot) error {
+	return r.kdb.Insert(context.Background(), schemaScreenshotTable, screenshot)
 }
 
-func (r SchemaScreenshotRepository) Update(screenshot *types.SchemaScreenshot) error {
-	query := `
-		update schema_screenshot
-		set
-			type = :type,
-			title = :title,
-			data = :data
-		where id = :id
-	`
-	_, err := r.DB.NamedExec(query, screenshot)
-	return err
+func (r *SchemaScreenshotRepository) Update(screenshot *types.SchemaScreenshot) error {
+	return r.kdb.Patch(context.Background(), schemaScreenshotTable, screenshot)
 }

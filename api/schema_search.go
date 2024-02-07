@@ -12,12 +12,16 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 	vars := mux.Vars(r)
 	schema_name := vars["schema_name"]
 	user_name := vars["user_name"]
+	limit := 1
+	offset := 0
 
 	search := &types.SchemaSearchRequest{
 		UserName:   &user_name,
 		SchemaName: &schema_name,
+		Limit:      &limit,
+		Offset:     &offset,
 	}
-	list, err := api.SchemaSearchRepo.Search(search, 1, 0)
+	list, err := api.SchemaSearchRepo.Search(search)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -67,6 +71,6 @@ func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 		search.Offset = &o
 	}
 
-	list, err := api.SchemaSearchRepo.Search(search, *search.Limit, *search.Offset)
+	list, err := api.SchemaSearchRepo.Search(search)
 	Send(w, list, err)
 }
