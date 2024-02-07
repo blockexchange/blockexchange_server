@@ -89,7 +89,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 			continue
 		}
 
-		err = api.SchemaTagRepo.Create(schema.ID, id)
+		err = api.SchemaTagRepo.Create(&types.SchemaTag{TagID: id, SchemaID: schema.ID})
 		if err != nil {
 			SendError(w, 500, err.Error())
 			return

@@ -2,61 +2,48 @@ package db
 
 import (
 	"blockexchange/types"
-	"database/sql"
+	"context"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/vingarcia/ksql"
 )
 
+var schemaStarTable = ksql.NewTable("user_schema_star", "user_id", "schema_id")
+
 type SchemaStarRepository struct {
-	DB *sqlx.DB
+	kdb ksql.Provider
 }
 
-func (repo SchemaStarRepository) Create(schema_id, user_id int64) error {
-	_, err := repo.DB.Exec("insert into user_schema_star(schema_id, user_id) values($1, $2)", schema_id, user_id)
-	return err
+func (r *SchemaStarRepository) Create(ss *types.SchemaStar) error {
+	return r.kdb.Insert(context.Background(), schemaStarTable, ss)
 }
 
-func (repo SchemaStarRepository) Delete(schema_id, user_id int64) error {
-	_, err := repo.DB.Exec("delete from user_schema_star where schema_id = $1 and user_id = $2", schema_id, user_id)
-	return err
+func (r *SchemaStarRepository) Delete(ss *types.SchemaStar) error {
+	return r.kdb.Delete(context.Background(), schemaStarTable, ss)
 }
 
-func (repo SchemaStarRepository) GetBySchemaID(schema_id int64) ([]types.SchemaStar, error) {
-	list := []types.SchemaStar{}
-	query := `select * from user_schema_star where schema_id = $1`
-	err := repo.DB.Select(&list, query, schema_id)
-	if err != nil {
-		return nil, err
-	} else {
-		return list, nil
-	}
+func (r *SchemaStarRepository) GetBySchemaID(schema_id int64) ([]*types.SchemaStar, error) {
+	list := []*types.SchemaStar{}
+	return list, r.kdb.Query(context.Background(), &list, "from user_schema_star where schema_id = $1", schema_id)
 }
 
-func (repo SchemaStarRepository) GetBySchemaAndUserID(schema_id int64, user_id int64) (*types.SchemaStar, error) {
-	query := `select * from user_schema_star where schema_id = $1 and user_id = $2`
-	star := types.SchemaStar{}
-	err := repo.DB.Get(&star, query, schema_id, user_id)
-	if err == sql.ErrNoRows {
+func (r *SchemaStarRepository) GetBySchemaAndUserID(schema_id int64, user_id int64) (*types.SchemaStar, error) {
+	ss := &types.SchemaStar{}
+	err := r.kdb.QueryOne(context.Background(), ss, "from user_schema_star where schema_id = $1 and user_id = $2", schema_id, user_id)
+	if err == ksql.ErrRecordNotFound {
 		return nil, nil
-	} else if err != nil {
-		return nil, err
 	} else {
-		return &star, nil
+		return ss, err
 	}
 }
 
-func (repo SchemaStarRepository) CountBySchemaID(schema_id int64) (int, error) {
-	query := `select count(*) from user_schema_star where schema_id = $1`
-	row := repo.DB.QueryRow(query, schema_id)
-	count := 0
-	err := row.Scan(&count)
-	return count, err
+func (r *SchemaStarRepository) CountBySchemaID(schema_id int64) (int64, error) {
+	c := &types.Count{}
+	err := r.kdb.QueryOne(context.Background(), c, "select count(*) as count from user_schema_star where schema_id = $1", schema_id)
+	return c.Count, err
 }
 
-func (repo SchemaStarRepository) CountByUserID(user_id int64) (int, error) {
-	query := `select count(*) from user_schema_star uss join schema s on s.id = uss.schema_id where s.user_id = $1`
-	row := repo.DB.QueryRow(query, user_id)
-	count := 0
-	err := row.Scan(&count)
-	return count, err
+func (r *SchemaStarRepository) CountByUserID(user_id int64) (int64, error) {
+	c := &types.Count{}
+	err := r.kdb.QueryOne(context.Background(), c, "select count(*) from user_schema_star uss join schema s on s.id = uss.schema_id where s.user_id = $1", user_id)
+	return c.Count, err
 }

@@ -2,42 +2,42 @@ package db
 
 import (
 	"blockexchange/types"
+	"context"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/vingarcia/ksql"
 )
 
+var schemaTagTable = ksql.NewTable("schematag", "id")
+
 type SchemaTagRepository struct {
-	DB *sqlx.DB
+	kdb ksql.Provider
 }
 
-func (repo SchemaTagRepository) Create(schema_id, tag_id int64) error {
-	_, err := repo.DB.Exec("insert into schematag(schema_id, tag_id) values($1, $2)", schema_id, tag_id)
+func (r *SchemaTagRepository) Create(st *types.SchemaTag) error {
+	return r.kdb.Insert(context.Background(), schemaTagTable, st)
+}
+
+func (r *SchemaTagRepository) Delete(schema_id, tag_id int64) error {
+	_, err := r.kdb.Exec(context.Background(), "delete from schematag where schema_id = $1 and tag_id = $2", schema_id, tag_id)
 	return err
 }
 
-func (repo SchemaTagRepository) Delete(schema_id, tag_id int64) error {
-	_, err := repo.DB.Exec("delete from schematag where schema_id = $1 and tag_id = $2", schema_id, tag_id)
-	return err
-}
-
-func (repo SchemaTagRepository) GetBySchemaID(schema_id int64) ([]types.SchemaTag, error) {
-	list := []types.SchemaTag{}
-	query := `select * from schematag where schema_id = $1`
-	err := repo.DB.Select(&list, query, schema_id)
-	if err != nil {
-		return nil, err
+func (r *SchemaTagRepository) GetBySchemaID(schema_id int64) ([]*types.SchemaTag, error) {
+	list := []*types.SchemaTag{}
+	err := r.kdb.Query(context.Background(), &list, "from schematag where schema_id = $1", schema_id)
+	if err == ksql.ErrRecordNotFound {
+		return nil, nil
 	} else {
-		return list, nil
+		return list, err
 	}
 }
 
-func (repo SchemaTagRepository) GetByTagID(tag_id int64) ([]types.SchemaTag, error) {
-	list := []types.SchemaTag{}
-	query := `select * from schematag where tag_id = $1`
-	err := repo.DB.Select(&list, query, tag_id)
-	if err != nil {
-		return nil, err
+func (r *SchemaTagRepository) GetByTagID(tag_id int64) ([]*types.SchemaTag, error) {
+	list := []*types.SchemaTag{}
+	err := r.kdb.Query(context.Background(), &list, "from schematag where tag_id = $1", tag_id)
+	if err == ksql.ErrRecordNotFound {
+		return nil, nil
 	} else {
-		return list, nil
+		return list, err
 	}
 }

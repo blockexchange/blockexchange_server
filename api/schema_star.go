@@ -1,6 +1,7 @@
 package api
 
 import (
+	"blockexchange/types"
 	"net/http"
 	"strconv"
 
@@ -37,7 +38,7 @@ func (api *Api) StarSchema(w http.ResponseWriter, r *http.Request, ctx *SecureCo
 		return
 	}
 
-	err = api.SchemaStarRepo.Create(schema_id, ctx.Claims.UserID)
+	err = api.SchemaStarRepo.Create(&types.SchemaStar{SchemaID: schema_id, UserID: ctx.Claims.UserID})
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -55,7 +56,7 @@ func (api *Api) UnStarSchema(w http.ResponseWriter, r *http.Request, ctx *Secure
 		return
 	}
 
-	err = api.SchemaStarRepo.Delete(schema_id, ctx.Claims.UserID)
+	err = api.SchemaStarRepo.Delete(&types.SchemaStar{SchemaID: schema_id, UserID: ctx.Claims.UserID})
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
