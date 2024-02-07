@@ -8,13 +8,14 @@ import (
 type SchemaPartIterator func() (*SchemaPart, error)
 
 type SchemaPart struct {
-	SchemaID int64  `json:"schema_id"`
-	OffsetX  int    `json:"offset_x"`
-	OffsetY  int    `json:"offset_y"`
-	OffsetZ  int    `json:"offset_z"`
-	Mtime    int64  `json:"mtime"`
-	Data     []byte `json:"data"`
-	MetaData []byte `json:"metadata"`
+	ID       int64  `json:"id" ksql:"id"`
+	SchemaID int64  `json:"schema_id" ksql:"schema_id"`
+	OffsetX  int    `json:"offset_x" ksql:"offset_x"`
+	OffsetY  int    `json:"offset_y" ksql:"offset_y"`
+	OffsetZ  int    `json:"offset_z" ksql:"offset_z"`
+	Mtime    int64  `json:"mtime" ksql:"mtime"`
+	Data     []byte `json:"data" ksql:"data"`
+	MetaData []byte `json:"metadata" ksql:"metadata"`
 }
 
 func (s *SchemaPart) UnmarshalJSON(data []byte) error {

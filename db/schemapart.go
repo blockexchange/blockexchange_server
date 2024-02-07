@@ -2,30 +2,41 @@ package db
 
 import (
 	"blockexchange/types"
+	"context"
 	"database/sql"
 
-	"github.com/minetest-go/dbutil"
+	"github.com/vingarcia/ksql"
 )
 
-func NewSchemaPartRepository(DB *sql.DB) *SchemaPartRepository {
-	return &SchemaPartRepository{
-		DB:  DB,
-		dbu: dbutil.New(DB, dbutil.DialectPostgres, func() *types.SchemaPart { return &types.SchemaPart{} }),
-	}
-}
+var schemaPartTable = ksql.NewTable("schemapart", "id")
 
 type SchemaPartRepository struct {
-	DB  *sql.DB
-	dbu *dbutil.DBUtil[*types.SchemaPart]
+	kdb ksql.Provider
 }
 
 func (r *SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
-	conflict := `
-		on conflict on constraint schemapart_unique_coords
-		do update set data = EXCLUDED.data, metadata = EXCLUDED.metadata, mtime = EXCLUDED.mtime
-	`
-	return r.dbu.Insert(part, conflict)
+	return r.kdb.Transaction(context.Background(), func(p ksql.Provider) error {
+		sp := &types.SchemaPart{}
+		err := p.QueryOne(context.Background(), sp,
+			"from schemapart where schema_id = $1 and offset_x = $2 and offset_y = $3 and offset_z = $4",
+			part.SchemaID, part.OffsetX, part.OffsetY, part.OffsetZ,
+		)
+		if err == ksql.ErrRecordNotFound {
+			// insert
+			return p.Insert(context.Background(), schemaPartTable, part)
+		} else if err == nil {
+			// update
+			sp.Data = part.Data
+			sp.MetaData = part.MetaData
+			return p.Patch(context.Background(), schemaPartTable, sp)
+		} else {
+			// err
+			return err
+		}
+	})
 }
+
+//TODO
 
 func (r *SchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
 	where := `

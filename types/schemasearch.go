@@ -23,10 +23,4 @@ type SchemaSearchRequest struct {
 	OrderColumn    *string `json:"order_column"`
 	Limit          *int    `json:"limit"`
 	Offset         *int    `json:"offset"`
-	//TODO: tags, mods
-}
-
-type SchemaSearchResult struct {
-	Schema   `tablename:"s"`
-	UserName string `json:"username" tablename:"u"`
 }

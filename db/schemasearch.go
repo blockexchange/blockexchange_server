@@ -14,9 +14,7 @@ type SchemaSearchRepository struct {
 }
 
 func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search *types.SchemaSearchRequest, with_order bool) []any {
-	query.WriteString(`
-		from schema as s join public.user u on s.user_id = u.id
-		where true=true`)
+	query.WriteString("from schema where true=true")
 	params := []any{}
 	i := 1
 
@@ -95,9 +93,9 @@ func (r *SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int64
 	return c.Count, r.kdb.QueryOne(context.Background(), c, query.String(), params...)
 }
 
-func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*types.SchemaSearchResult, error) {
+func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*types.Schema, error) {
 	query := strings.Builder{}
 	params := r.buildWhereQuery(&query, search, true)
-	list := []*types.SchemaSearchResult{}
+	list := []*types.Schema{}
 	return list, r.kdb.Query(context.Background(), &list, query.String(), params...)
 }
