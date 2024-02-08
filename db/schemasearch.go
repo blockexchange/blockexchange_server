@@ -90,7 +90,7 @@ func (r *SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int64
 	query := strings.Builder{}
 	params := r.buildWhereQuery(&query, search, false)
 	c := &types.Count{}
-	return c.Count, r.kdb.QueryOne(context.Background(), c, query.String(), params...)
+	return c.Count, r.kdb.QueryOne(context.Background(), c, fmt.Sprintf("select count(*) as count %s", query.String()), params...)
 }
 
 func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*types.Schema, error) {
