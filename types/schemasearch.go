@@ -11,6 +11,13 @@ var OrderColumns = map[string]bool{
 	"stars":   true,
 }
 
+type SchemaSearchResponse struct {
+	*Schema
+	Username string   `json:"username"`
+	Tags     []string `json:"tags"`
+	Mods     []string `json:"mods"`
+}
+
 type SchemaSearchRequest struct {
 	UserID         *int64  `json:"user_id"`
 	SchemaID       *int64  `json:"schema_id"`

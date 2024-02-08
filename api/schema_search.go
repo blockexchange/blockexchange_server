@@ -8,6 +8,26 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func (api *Api) AddSchemaSearchFields(schemas []*types.Schema) ([]*types.SchemaSearchResponse, error) {
+	list := []*types.SchemaSearchResponse{}
+
+	user_ids := []int64{}
+	schema_ids := []int64{}
+
+	for _, s := range schemas {
+		user_ids = append(user_ids, s.UserID)
+		schema_ids = append(schema_ids, *s.ID)
+	}
+
+	users, err := api.Repositories.UserRepo.GetUsersByIDs(user_ids)
+	schema_tags, err := api.Repositories.SchemaTagRepo.GetBySchemaIDs(schema_ids)
+	schema_mods, err := api.Repositories.SchemaModRepo.GetSchemaModsBySchemaIDs(schema_ids)
+
+	// TODO
+
+	return list, nil
+}
+
 func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	schema_name := vars["schema_name"]

@@ -46,6 +46,11 @@ func (r *UserRepository) GetUserByExternalIdAndType(external_id string, ut types
 	return u, err
 }
 
+func (r *UserRepository) GetUsersByIDs(user_ids []int64) ([]*types.User, error) {
+	list := []*types.User{}
+	return list, r.kdb.Query(context.Background(), &list, "from public.user where id = any($1::bigint[])", user_ids)
+}
+
 func (r *UserRepository) GetUsers(limit, offset int) ([]*types.User, error) {
 	list := []*types.User{}
 	return list, r.kdb.Query(context.Background(), &list, "from public.user limit $1 offset $2", limit, offset)

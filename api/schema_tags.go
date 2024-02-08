@@ -60,9 +60,9 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 	tag_name_id_map := map[string]int64{}
 	restricted_id_map := map[int64]bool{}
 	for _, t := range tags {
-		restricted_id_map[t.ID] = t.Restricted
-		tag_id_name_map[t.ID] = t.Name
-		tag_name_id_map[t.Name] = t.ID
+		restricted_id_map[*t.ID] = t.Restricted
+		tag_id_name_map[*t.ID] = t.Name
+		tag_name_id_map[t.Name] = *t.ID
 	}
 
 	existing_tag_list, err := api.SchemaTagRepo.GetBySchemaID(*schema.ID)

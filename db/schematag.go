@@ -34,7 +34,7 @@ func (r *SchemaTagRepository) GetBySchemaID(schema_id int64) ([]*types.SchemaTag
 
 func (r *SchemaTagRepository) GetBySchemaIDs(schema_ids []int64) ([]*types.SchemaTag, error) {
 	list := []*types.SchemaTag{}
-	err := r.kdb.Query(context.Background(), &list, "from schematag where schema_id in ($1::int[])", schema_ids) //TODO: check this!
+	err := r.kdb.Query(context.Background(), &list, "from schematag where schema_id = any($1::bigint[])", schema_ids)
 	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	} else {
