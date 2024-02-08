@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/jmoiron/sqlx"
+	"github.com/vingarcia/ksql"
 )
 
 type Repositories struct {
@@ -18,19 +18,19 @@ type Repositories struct {
 	MetaRepository       *MetaRepository
 }
 
-func NewRepositories(db_ *sqlx.DB) *Repositories {
+func NewRepositories(kdb ksql.Provider) *Repositories {
 
 	return &Repositories{
-		AccessTokenRepo:      NewAccessTokenRepository(db_.DB),
-		UserRepo:             NewUserRepository(db_.DB),
-		SchemaRepo:           NewSchemaRepository(db_.DB),
-		SchemaPartRepo:       NewSchemaPartRepository(db_.DB),
-		SchemaModRepo:        NewSchemaModRepository(db_.DB),
-		SchemaSearchRepo:     NewSchemaSearchRepository(db_.DB),
-		SchemaScreenshotRepo: &SchemaScreenshotRepository{DB: db_},
-		TagRepo:              &TagRepository{DB: db_},
-		SchemaTagRepo:        &SchemaTagRepository{DB: db_},
-		SchemaStarRepo:       &SchemaStarRepository{DB: db_},
-		MetaRepository:       &MetaRepository{db: db_.DB},
+		AccessTokenRepo:      &AccessTokenRepository{kdb: kdb},
+		UserRepo:             &UserRepository{kdb: kdb},
+		SchemaRepo:           &SchemaRepository{kdb: kdb},
+		SchemaPartRepo:       &SchemaPartRepository{kdb: kdb},
+		SchemaModRepo:        &SchemaModRepository{kdb: kdb},
+		SchemaSearchRepo:     &SchemaSearchRepository{kdb: kdb},
+		SchemaScreenshotRepo: &SchemaScreenshotRepository{kdb: kdb},
+		TagRepo:              &TagRepository{kdb: kdb},
+		SchemaTagRepo:        &SchemaTagRepository{kdb: kdb},
+		SchemaStarRepo:       &SchemaStarRepository{kdb: kdb},
+		MetaRepository:       &MetaRepository{kdb: kdb},
 	}
 }

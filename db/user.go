@@ -2,59 +2,59 @@ package db
 
 import (
 	"blockexchange/types"
-	"database/sql"
+	"context"
 
-	"github.com/minetest-go/dbutil"
+	"github.com/vingarcia/ksql"
 )
 
-func NewUserRepository(DB *sql.DB) *UserRepository {
-	return &UserRepository{
-		DB:  DB,
-		dbu: dbutil.New(DB, dbutil.DialectPostgres, func() *types.User { return &types.User{} }),
-	}
-}
+var userTable = ksql.NewTable("public.user", "id")
 
 type UserRepository struct {
-	DB  *sql.DB
-	dbu *dbutil.DBUtil[*types.User]
+	kdb ksql.Provider
 }
 
 func (r *UserRepository) GetUserById(id int64) (*types.User, error) {
-	users, err := r.dbu.Select("where id = %s", id)
-	if err == sql.ErrNoRows {
+	u := &types.User{}
+	err := r.kdb.QueryOne(context.Background(), u, "from public.user where id = $1", id)
+	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	}
-	return users, err
+	return u, err
 }
 
-func (r *UserRepository) CountUsers() (int, error) {
-	return r.dbu.Count("")
+func (r *UserRepository) CountUsers() (int64, error) {
+	c := &types.Count{}
+	err := r.kdb.QueryOne(context.Background(), c, "select count(*) as count from public.user")
+	return c.Count, err
 }
 
 func (r *UserRepository) GetUserByName(name string) (*types.User, error) {
-	user, err := r.dbu.Select("where name = %s", name)
-	if err == sql.ErrNoRows {
+	u := &types.User{}
+	err := r.kdb.QueryOne(context.Background(), u, "from public.user where name = $1", name)
+	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	}
-	return user, err
+	return u, err
 }
 
 func (r *UserRepository) GetUserByExternalIdAndType(external_id string, ut types.UserType) (*types.User, error) {
-	user, err := r.dbu.Select("where external_id = %s and type = %s", external_id, ut)
-	if err == sql.ErrNoRows {
+	u := &types.User{}
+	err := r.kdb.QueryOne(context.Background(), u, "from public.user where external_id = $1 and type = $2", external_id, ut)
+	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	}
-	return user, err
+	return u, err
 }
 
 func (r *UserRepository) GetUsers(limit, offset int) ([]*types.User, error) {
-	return r.dbu.SelectMulti("limit %s offset %s", limit, offset)
+	list := []*types.User{}
+	return list, r.kdb.Query(context.Background(), &list, "from public.user limit $1 offset $2", limit, offset)
 }
 
 func (r *UserRepository) CreateUser(user *types.User) error {
-	return r.dbu.InsertReturning(user, "id", &user.ID)
+	return r.kdb.Insert(context.Background(), userTable, user)
 }
 
 func (r *UserRepository) UpdateUser(user *types.User) error {
-	return r.dbu.Update(user, "where id = %s", user.ID)
+	return r.kdb.Patch(context.Background(), userTable, user)
 }
