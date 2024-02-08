@@ -130,7 +130,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		SendError(w, 500, err.Error())
 		return
 	}
-	if existing_schema != nil && existing_schema.ID != schema.ID {
+	if existing_schema != nil && *existing_schema.ID != *schema.ID {
 		// another schema with the same name already exists
 		SendErrorResponse(w, http.StatusBadRequest, &types.SchemaUpdateError{
 			NameTaken: true,

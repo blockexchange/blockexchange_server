@@ -123,7 +123,7 @@ func TestGetNextSchemaPart(t *testing.T) {
 	w = httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": fmt.Sprintf("%d", schema.ID),
+		"schema_id": fmt.Sprintf("%d", *schema.ID),
 		"mtime":     fmt.Sprintf("%d", 100),
 	})
 
@@ -143,7 +143,7 @@ func TestGetNextSchemaPart(t *testing.T) {
 	w = httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": fmt.Sprintf("%d", schema.ID),
+		"schema_id": fmt.Sprintf("%d", *schema.ID),
 		"mtime":     fmt.Sprintf("%d", 100),
 	})
 

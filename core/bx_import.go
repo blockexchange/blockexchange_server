@@ -26,6 +26,7 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 		return nil, fmt.Errorf("user not found: '%s'", username)
 	}
 
+	res.Schema.ID = nil
 	res.Schema.Created = time.Now().UnixMilli()
 	res.Schema.Mtime = time.Now().UnixMilli()
 	res.Schema.UserID = *user.ID

@@ -89,7 +89,7 @@ func TestSchemaCreate(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, schema2)
 	assert.Equal(t, schema.Description, schema2.Description)
-	assert.Equal(t, schema.ID, schema2.ID)
+	assert.Equal(t, *schema.ID, *schema2.ID)
 	assert.Equal(t, schema.Created, schema2.Created)
 
 	// update
@@ -189,6 +189,7 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	Login(t, r, user)
 
 	api.Secure(api.UpdateSchema)(w, r)
+	assert.Equal(t, 200, w.Result().StatusCode)
 
 	schema3, err := api.SchemaRepo.GetSchemaById(*schema2.ID)
 	assert.NoError(t, err)
