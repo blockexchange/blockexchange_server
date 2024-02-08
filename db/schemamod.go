@@ -18,6 +18,11 @@ func (r *SchemaModRepository) GetSchemaModsBySchemaID(schema_id int64) ([]*types
 	return list, r.kdb.Query(context.Background(), &list, "from schemamod where schema_id = $1", schema_id)
 }
 
+func (r *SchemaModRepository) GetSchemaModsBySchemaIDs(schema_ids []int64) ([]*types.SchemaMod, error) {
+	list := []*types.SchemaMod{}
+	return list, r.kdb.Query(context.Background(), &list, "from schemamod where schema_id = any($1::bigint[])", schema_ids)
+}
+
 func (r *SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {
 	return r.kdb.Insert(context.Background(), schemamodTable, schema_mod)
 }

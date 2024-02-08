@@ -23,5 +23,18 @@ func TestGetSchemaModsByIDs(t *testing.T) {
 		Name:   "test",
 	}
 	assert.NoError(t, repos.SchemaRepo.CreateSchema(s))
-	// TODO
+
+	assert.NoError(t, repos.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
+		SchemaID: *s.ID,
+		ModName:  "mod1",
+	}))
+	assert.NoError(t, repos.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
+		SchemaID: *s.ID,
+		ModName:  "mod2",
+	}))
+
+	sm, err := repos.SchemaModRepo.GetSchemaModsBySchemaIDs([]int64{*s.ID})
+	assert.NoError(t, err)
+	assert.NotNil(t, sm)
+	assert.Equal(t, 2, len(sm))
 }
