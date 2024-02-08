@@ -36,7 +36,7 @@ func TestSearchSchema(t *testing.T) {
 	api.SearchSchemaByNameAndUser(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 
-	search_result := &types.SchemaSearchResult{}
+	search_result := &types.Schema{}
 	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), search_result))
 	assert.Equal(t, schema.ID, search_result.ID)
 	assert.Equal(t, 0, search_result.Stars)

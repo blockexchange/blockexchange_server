@@ -11,8 +11,8 @@ import (
 )
 
 func getTestCore(t *testing.T) (*core.Core, *db.Repositories) {
-	db_ := testutils.CreateTestDatabase(t)
-	repos := db.NewRepositories(db_)
+	kdb := testutils.CreateTestDatabase(t)
+	repos := db.NewRepositories(kdb)
 
 	c := core.New(types.CreateConfig(), repos)
 	assert.NotNil(t, c)

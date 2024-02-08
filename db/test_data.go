@@ -4,13 +4,13 @@ import (
 	"blockexchange/types"
 	"time"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/vingarcia/ksql"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func PopulateTestData(_db *sqlx.DB) error {
-	userrepo := NewUserRepository(_db.DB)
-	tokenrepo := AccessTokenRepository{DB: _db.DB}
+func PopulateTestData(kdb ksql.Provider) error {
+	userrepo := &UserRepository{kdb: kdb}
+	tokenrepo := &AccessTokenRepository{kdb: kdb}
 
 	user, err := userrepo.GetUserByName("Testuser")
 	if err != nil {

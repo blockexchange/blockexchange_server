@@ -5,23 +5,22 @@ import (
 	"os"
 	"testing"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
+	"github.com/vingarcia/ksql"
 )
 
 func IsDatabaseAvailable() bool {
 	return os.Getenv("PGHOST") != ""
 }
 
-func CreateTestDatabase(t *testing.T) *sqlx.DB {
+func CreateTestDatabase(t *testing.T) ksql.Provider {
 	if !IsDatabaseAvailable() {
 		t.SkipNow()
 	}
 
-	db_, err := db.Init()
+	kdb, err := db.Init()
 	assert.NoError(t, err)
-	assert.NotNil(t, db_)
-	assert.NoError(t, db.Migrate(db_.DB))
+	assert.NotNil(t, kdb)
 
-	return db_
+	return kdb
 }
