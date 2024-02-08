@@ -25,7 +25,7 @@ func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, err
 		return nil, err
 	}
 
-	screenshots, err := c.repos.SchemaScreenshotRepo.GetBySchemaID(schema.ID)
+	screenshots, err := c.repos.SchemaScreenshotRepo.GetBySchemaID(*schema.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, err
 	} else {
 		// create a new one
 		screenshot = &types.SchemaScreenshot{
-			SchemaID: schema.ID,
+			SchemaID: *schema.ID,
 			Type:     "image/png",
 			Title:    "Isometric preview",
 			Data:     png,

@@ -27,7 +27,7 @@ var partMetadata = "eJxljlEKwjAQBe+y30Vs1FL2MmExsS6kSUm2qC25u2mLUPXvMQ+GmaG3QoaE
 func CreateSchemaPart(repo *db.SchemaPartRepository, t *testing.T, schema *types.Schema, schemapart *types.SchemaPart) *types.SchemaPart {
 	if schemapart == nil {
 		schemapart = &types.SchemaPart{
-			SchemaID: schema.ID,
+			SchemaID: *schema.ID,
 			OffsetX:  0,
 			OffsetY:  0,
 			OffsetZ:  0,
@@ -46,7 +46,7 @@ func CreateSchemaScreenshot(repo db.SchemaScreenshotRepository, t *testing.T, sc
 		screenshot = &types.SchemaScreenshot{}
 	}
 
-	screenshot.SchemaID = schema.ID
+	screenshot.SchemaID = *schema.ID
 	assert.NoError(t, repo.Create(screenshot))
 	return screenshot
 }

@@ -20,43 +20,43 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 
 	// complete flagW
 	if search.Complete != nil {
-		query.WriteString(fmt.Sprintf(" and s.complete = $%d", i))
+		query.WriteString(fmt.Sprintf(" and complete = $%d", i))
 		params = append(params, *search.Complete)
 		i++
 	}
 
 	if search.Keywords != nil {
-		query.WriteString(fmt.Sprintf(" and to_tsvector('english', s.description || ' ' || s.name) @@ to_tsquery($%d)", i))
+		query.WriteString(fmt.Sprintf(" and to_tsvector('english', description || ' ' || name) @@ to_tsquery($%d)", i))
 		params = append(params, *search.Keywords)
 		i++
 	}
 
 	if search.SchemaName != nil {
-		query.WriteString(fmt.Sprintf(" and s.name = $%d", i))
+		query.WriteString(fmt.Sprintf(" and name = $%d", i))
 		params = append(params, *search.SchemaName)
 		i++
 	}
 
 	if search.UserName != nil {
-		query.WriteString(fmt.Sprintf(" and s.user_id = (select id from public.user where name = $%d)", i))
+		query.WriteString(fmt.Sprintf(" and user_id = (select id from public.user where name = $%d)", i))
 		params = append(params, *search.UserName)
 		i++
 	}
 
 	if search.SchemaID != nil {
-		query.WriteString(fmt.Sprintf(" and s.id = $%d", i))
+		query.WriteString(fmt.Sprintf(" and id = $%d", i))
 		params = append(params, *search.SchemaID)
 		i++
 	}
 
 	if search.UserID != nil {
-		query.WriteString(fmt.Sprintf(" and s.user_id = $%d", i))
+		query.WriteString(fmt.Sprintf(" and user_id = $%d", i))
 		params = append(params, *search.UserID)
 		i++
 	}
 
 	if search.TagID != nil {
-		query.WriteString(fmt.Sprintf(" and s.id in (select schema_id from schematag where tag_id = $%d)", i))
+		query.WriteString(fmt.Sprintf(" and id in (select schema_id from schematag where tag_id = $%d)", i))
 		params = append(params, *search.TagID)
 		i++
 	}
@@ -67,7 +67,7 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 			params = append(params, *search.OrderColumn, *search.OrderColumn)
 			i += 2
 		} else {
-			query.WriteString(" order by s.mtime desc")
+			query.WriteString(" order by mtime desc")
 		}
 	}
 

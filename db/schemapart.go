@@ -109,7 +109,7 @@ func (r *SchemaPartRepository) GetNextBySchemaIDAndMtime(schema_id int64, mtime 
 
 func (r *SchemaPartRepository) CountNextBySchemaIDAndMtime(schema_id int64, mtime int64) (int64, error) {
 	c := &types.Count{}
-	return c.Count, r.kdb.QueryOne(context.Background(), c, "select count(*) as count from schemapart where schea_id = $1 and mtime > $2", schema_id, mtime)
+	return c.Count, r.kdb.QueryOne(context.Background(), c, "select count(*) as count from schemapart where schema_id = $1 and mtime > $2", schema_id, mtime)
 }
 
 func (r *SchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error) {

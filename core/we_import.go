@@ -56,7 +56,7 @@ func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema
 		if err != nil {
 			return nil, err
 		}
-		sp.SchemaID = schema.ID
+		sp.SchemaID = *schema.ID
 
 		err = c.repos.SchemaPartRepo.CreateOrUpdateSchemaPart(sp)
 		if err != nil {
@@ -66,7 +66,7 @@ func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema
 
 	for _, modname := range modnames {
 		err = c.repos.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
-			SchemaID: schema.ID,
+			SchemaID: *schema.ID,
 			ModName:  modname,
 		})
 		if err != nil {
@@ -74,5 +74,5 @@ func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema
 		}
 	}
 
-	return c.repos.SchemaRepo.GetSchemaById(schema.ID)
+	return c.repos.SchemaRepo.GetSchemaById(*schema.ID)
 }

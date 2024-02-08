@@ -65,7 +65,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 		tag_name_id_map[t.Name] = t.ID
 	}
 
-	existing_tag_list, err := api.SchemaTagRepo.GetBySchemaID(schema.ID)
+	existing_tag_list, err := api.SchemaTagRepo.GetBySchemaID(*schema.ID)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -89,7 +89,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 			continue
 		}
 
-		err = api.SchemaTagRepo.Create(&types.SchemaTag{TagID: id, SchemaID: schema.ID})
+		err = api.SchemaTagRepo.Create(&types.SchemaTag{TagID: id, SchemaID: *schema.ID})
 		if err != nil {
 			SendError(w, 500, err.Error())
 			return
@@ -106,7 +106,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 				continue
 			}
 
-			err = api.SchemaTagRepo.Delete(schema.ID, id)
+			err = api.SchemaTagRepo.Delete(*schema.ID, id)
 			if err != nil {
 				SendError(w, 500, err.Error())
 				return

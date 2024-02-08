@@ -63,7 +63,7 @@ func (r *ISORenderer) RenderIsometricPreview(schema *types.Schema) ([]byte, erro
 				y := block_y * 16
 				z := block_z * 16
 
-				schemapart, err := r.SchemaPartProvider(schema.ID, x, y, z)
+				schemapart, err := r.SchemaPartProvider(*schema.ID, x, y, z)
 				if err != nil {
 					return nil, err
 				}

@@ -6,9 +6,9 @@ var OrderDirections = map[string]bool{
 }
 
 var OrderColumns = map[string]bool{
-	"s.created": true,
-	"s.mtime":   true,
-	"s.stars":   true,
+	"created": true,
+	"mtime":   true,
+	"stars":   true,
 }
 
 type SchemaSearchRequest struct {

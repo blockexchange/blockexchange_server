@@ -9,7 +9,7 @@ type SchemaUpdateError struct {
 
 // used for the database and GET requests
 type Schema struct {
-	ID               int64  `json:"id" ksql:"id"`
+	ID               *int64 `json:"id" ksql:"id"`
 	Created          int64  `json:"created" ksql:"created"`
 	Mtime            int64  `json:"mtime" ksql:"mtime"`
 	UserID           int64  `json:"user_id" ksql:"user_id"`
@@ -36,7 +36,8 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	s.ID = getInt64(m["id"])
+	id := getInt64(m["id"])
+	s.ID = &id
 	s.Created = getInt64(m["created"])
 	s.Mtime = getInt64(m["mtime"])
 	s.UserID = getInt64(m["user_id"])
@@ -54,87 +55,4 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	s.Downloads = getInt(m["downloads"])
 
 	return nil
-}
-
-func (a *Schema) Table() string {
-	return "schema"
-}
-
-func (a *Schema) Columns(action string) []string {
-	cols := []string{
-		"created",
-		"mtime",
-		"user_id",
-		"name",
-		"description",
-		"short_description",
-		"cdb_collection",
-		"complete",
-		"size_x",
-		"size_y",
-		"size_z",
-		"total_size",
-		"total_parts",
-		"downloads",
-		"views",
-		"license",
-		"stars",
-	}
-	switch action {
-	case "insert", "update":
-		return cols
-	default:
-		return append([]string{"id"}, cols...)
-	}
-}
-
-func (a *Schema) Values(action string) []any {
-	vals := []any{
-		a.Created,
-		a.Mtime,
-		a.UserID,
-		a.Name,
-		a.Description,
-		a.ShortDescription,
-		a.CDBCollection,
-		a.Complete,
-		a.SizeX,
-		a.SizeY,
-		a.SizeZ,
-		a.TotalSize,
-		a.TotalParts,
-		a.Downloads,
-		a.Views,
-		a.License,
-		a.Stars,
-	}
-	switch action {
-	case "insert", "update":
-		return vals
-	default:
-		return append([]any{a.ID}, vals...)
-	}
-}
-
-func (a *Schema) Scan(action string, r func(dest ...any) error) error {
-	return r(
-		&a.ID,
-		&a.Created,
-		&a.Mtime,
-		&a.UserID,
-		&a.Name,
-		&a.Description,
-		&a.ShortDescription,
-		&a.CDBCollection,
-		&a.Complete,
-		&a.SizeX,
-		&a.SizeY,
-		&a.SizeZ,
-		&a.TotalSize,
-		&a.TotalParts,
-		&a.Downloads,
-		&a.Views,
-		&a.License,
-		&a.Stars,
-	)
 }

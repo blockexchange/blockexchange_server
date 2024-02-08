@@ -13,7 +13,7 @@ func (c *Core) PostImport(schema *types.Schema) (*types.Schema, error) {
 		return nil, fmt.Errorf("update error: %v", err)
 	}
 
-	err = c.repos.SchemaRepo.CalculateStats(schema.ID)
+	err = c.repos.SchemaRepo.CalculateStats(*schema.ID)
 	if err != nil {
 		return nil, fmt.Errorf("stats calc error: %v", err)
 	}
@@ -23,7 +23,7 @@ func (c *Core) PostImport(schema *types.Schema) (*types.Schema, error) {
 		return nil, fmt.Errorf("preview update error: %v", err)
 	}
 
-	return c.repos.SchemaRepo.GetSchemaById(schema.ID)
+	return c.repos.SchemaRepo.GetSchemaById(*schema.ID)
 }
 
 func (c *Core) FindUnusedSchemaname(schemaname, username string) (string, error) {

@@ -8,8 +8,9 @@ import (
 )
 
 func TestSchemaMarshalling(t *testing.T) {
+	id := int64(1)
 	schema := Schema{
-		ID:   1,
+		ID:   &id,
 		Name: "blah",
 	}
 
