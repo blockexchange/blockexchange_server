@@ -27,14 +27,14 @@ func TestSchemaMods(t *testing.T) {
 	Login(t, r, user)
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": strconv.Itoa(int(schema.ID)),
+		"schema_id": strconv.Itoa(int(*schema.ID)),
 	})
 
 	api.Secure(api.CreateSchemaMods)(w, r)
 
 	assert.Equal(t, 204, w.Result().StatusCode)
 
-	schema_mods, err := api.SchemaModRepo.GetSchemaModsBySchemaID(schema.ID)
+	schema_mods, err := api.SchemaModRepo.GetSchemaModsBySchemaID(*schema.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(schema_mods))
 
@@ -44,7 +44,7 @@ func TestSchemaMods(t *testing.T) {
 	Login(t, r, user)
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": strconv.Itoa(int(schema.ID)),
+		"schema_id": strconv.Itoa(int(*schema.ID)),
 	})
 
 	api.GetSchemaMods(w, r)

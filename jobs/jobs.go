@@ -5,13 +5,13 @@ import (
 	"blockexchange/db"
 	"time"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
+	"github.com/vingarcia/ksql"
 )
 
-func Start(db_ *sqlx.DB, api *api.Api) {
-	schemarepo := db.SchemaRepository{DB: db_.DB}
-	go cleanupSchemas(schemarepo)
+func Start(kdb ksql.Provider, api *api.Api) {
+	repos := db.NewRepositories(kdb)
+	go cleanupSchemas(repos.SchemaRepo)
 	go updateStats(api)
 }
 
@@ -25,7 +25,7 @@ func updateStats(api *api.Api) {
 	}
 }
 
-func cleanupSchemas(schemarepo db.SchemaRepository) {
+func cleanupSchemas(schemarepo *db.SchemaRepository) {
 	for {
 		logrus.Trace("Removing old and incomplete schemas")
 		now := time.Now().Unix() * 1000

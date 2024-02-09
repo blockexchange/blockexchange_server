@@ -2,106 +2,100 @@ package db
 
 import (
 	"blockexchange/types"
-	"database/sql"
+	"context"
 	"fmt"
 	"strings"
 
-	"github.com/minetest-go/dbutil"
+	"github.com/vingarcia/ksql"
 )
 
 type SchemaSearchRepository struct {
-	DB *sql.DB
+	kdb ksql.Provider
 }
 
-func (repo SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search *types.SchemaSearchRequest) []any {
+func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search *types.SchemaSearchRequest, with_order bool) []any {
+	query.WriteString("from schema where true=true")
 	params := []any{}
-	bind_index := 1
+	i := 1
 
-	// complete flagW
+	// complete flag
 	if search.Complete != nil {
-		query.WriteString(fmt.Sprintf(" and s.complete = $%d", bind_index))
-		bind_index++
+		query.WriteString(fmt.Sprintf(" and complete = $%d", i))
 		params = append(params, *search.Complete)
+		i++
 	}
 
 	if search.Keywords != nil {
-		query.WriteString(fmt.Sprintf(" and s.search_tokens @@ to_tsquery($%d)", bind_index))
-		bind_index++
+		query.WriteString(fmt.Sprintf(" and to_tsvector('english', description || ' ' || name) @@ to_tsquery($%d)", i))
 		params = append(params, *search.Keywords)
+		i++
 	}
 
 	if search.SchemaName != nil {
-		query.WriteString(fmt.Sprintf(" and s.name = $%d", bind_index))
-		bind_index++
+		query.WriteString(fmt.Sprintf(" and name = $%d", i))
 		params = append(params, *search.SchemaName)
+		i++
 	}
 
 	if search.UserName != nil {
-		query.WriteString(fmt.Sprintf(" and s.user_id = (select id from public.user where name = $%d)", bind_index))
-		bind_index++
+		query.WriteString(fmt.Sprintf(" and user_id = (select id from public.user where name = $%d)", i))
 		params = append(params, *search.UserName)
+		i++
 	}
 
 	if search.SchemaID != nil {
-		query.WriteString(fmt.Sprintf(" and s.id = $%d", bind_index))
-		bind_index++
+		query.WriteString(fmt.Sprintf(" and id = $%d", i))
 		params = append(params, *search.SchemaID)
-	}
-
-	if search.SchemaIDList != nil && len(search.SchemaIDList) > 0 {
-		p2 := make([]string, len(search.SchemaIDList))
-		for i, id := range search.SchemaIDList {
-			p2[i] = fmt.Sprintf("%d", id)
-		}
-		params = append(params, fmt.Sprintf("{%s}", strings.Join(p2, ",")))
-		query.WriteString(fmt.Sprintf(" and s.id = any($%d::int[])", bind_index))
-		bind_index++
+		i++
 	}
 
 	if search.UserID != nil {
-		query.WriteString(fmt.Sprintf(" and s.user_id = $%d", bind_index))
-		bind_index++
+		query.WriteString(fmt.Sprintf(" and user_id = $%d", i))
 		params = append(params, *search.UserID)
+		i++
 	}
 
 	if search.TagID != nil {
-		query.WriteString(fmt.Sprintf(" and s.id in (select schema_id from schematag where tag_id = $%d)", bind_index))
-		bind_index++
+		query.WriteString(fmt.Sprintf(" and id in (select schema_id from schematag where tag_id = $%d)", i))
 		params = append(params, *search.TagID)
+		i++
+	}
+
+	if with_order {
+		if search.OrderColumn != nil && search.OrderDirection != nil && types.OrderColumns[*search.OrderColumn] && types.OrderDirections[*search.OrderDirection] {
+			query.WriteString(fmt.Sprintf(" order by $%d $%d", i, i+1))
+			params = append(params, *search.OrderColumn, *search.OrderColumn)
+			i += 2
+		} else {
+			query.WriteString(" order by mtime desc")
+		}
+	}
+
+	if search.Limit != nil {
+		query.WriteString(fmt.Sprintf(" limit $%d", i))
+		params = append(params, *search.Limit)
+		i++
+	}
+
+	if search.Offset != nil {
+		query.WriteString(fmt.Sprintf(" offset $%d", i))
+		params = append(params, *search.Offset)
+		i++
 	}
 
 	return params
 }
 
-func (repo SchemaSearchRepository) buildOrderQuery(query *strings.Builder, search *types.SchemaSearchRequest) {
-	if search.OrderColumn != nil && search.OrderDirection != nil && types.OrderColumns[*search.OrderColumn] && types.OrderDirections[*search.OrderDirection] {
-		query.WriteString(fmt.Sprintf(" order by %s %s", *search.OrderColumn, *search.OrderColumn))
-	} else {
-		query.WriteString(" order by s.mtime desc")
-	}
+func (r *SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int64, error) {
+	query := strings.Builder{}
+	params := r.buildWhereQuery(&query, search, false)
+	c := &types.Count{}
+	return c.Count, r.kdb.QueryOne(context.Background(), c, fmt.Sprintf("select count(*) as count %s", query.String()), params...)
 }
 
-func (repo SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int, error) {
+func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*types.Schema, error) {
 	query := strings.Builder{}
-	query.WriteString("where true=true")
-
-	// build query
-	params := repo.buildWhereQuery(&query, search)
-	return dbutil.Count(repo.DB, &types.SchemaSearchResult{}, query.String(), params...)
-}
-
-func (repo SchemaSearchRepository) Search(search *types.SchemaSearchRequest, limit, offset int) ([]*types.SchemaSearchResult, error) {
-
-	query := strings.Builder{}
-	query.WriteString("where true=true")
-
-	// build query
-	params := repo.buildWhereQuery(&query, search)
-	repo.buildOrderQuery(&query, search)
-
-	// add limit and offset
-	query.WriteString(fmt.Sprintf(" limit $%d offset $%d", len(params)+1, len(params)+2))
-	params = append(params, limit, offset)
-
-	return dbutil.SelectMulti(repo.DB, func() *types.SchemaSearchResult { return &types.SchemaSearchResult{} }, query.String(), params...)
+	params := r.buildWhereQuery(&query, search, true)
+	list := []*types.Schema{}
+	return list, r.kdb.Query(context.Background(), &list, query.String(), params...)
 }

@@ -8,13 +8,14 @@ import (
 type SchemaPartIterator func() (*SchemaPart, error)
 
 type SchemaPart struct {
-	SchemaID int64  `json:"schema_id"`
-	OffsetX  int    `json:"offset_x"`
-	OffsetY  int    `json:"offset_y"`
-	OffsetZ  int    `json:"offset_z"`
-	Mtime    int64  `json:"mtime"`
-	Data     []byte `json:"data"`
-	MetaData []byte `json:"metadata"`
+	ID       int64  `json:"id" ksql:"id"`
+	SchemaID int64  `json:"schema_id" ksql:"schema_id"`
+	OffsetX  int    `json:"offset_x" ksql:"offset_x"`
+	OffsetY  int    `json:"offset_y" ksql:"offset_y"`
+	OffsetZ  int    `json:"offset_z" ksql:"offset_z"`
+	Mtime    int64  `json:"mtime" ksql:"mtime"`
+	Data     []byte `json:"data" ksql:"data"`
+	MetaData []byte `json:"metadata" ksql:"metadata"`
 }
 
 func (s *SchemaPart) UnmarshalJSON(data []byte) error {
@@ -52,20 +53,4 @@ func (s SchemaPart) MarshalJSON() ([]byte, error) {
 	m["metadata"] = base64.RawStdEncoding.EncodeToString(s.MetaData)
 
 	return json.Marshal(m)
-}
-
-func (s *SchemaPart) Table() string {
-	return "schemapart"
-}
-
-func (s *SchemaPart) Columns(action string) []string {
-	return []string{"schema_id", "offset_x", "offset_y", "offset_z", "mtime", "data", "metadata"}
-}
-
-func (s *SchemaPart) Values(action string) []any {
-	return []any{s.SchemaID, s.OffsetX, s.OffsetY, s.OffsetZ, s.Mtime, s.Data, s.MetaData}
-}
-
-func (s *SchemaPart) Scan(action string, r func(dest ...any) error) error {
-	return r(&s.SchemaID, &s.OffsetX, &s.OffsetY, &s.OffsetZ, &s.Mtime, &s.Data, &s.MetaData)
 }

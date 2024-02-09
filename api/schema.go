@@ -98,7 +98,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 
 	// fetch saved schema
-	schema, err := api.SchemaRepo.GetSchemaById(updated_schema.ID)
+	schema, err := api.SchemaRepo.GetSchemaById(*updated_schema.ID)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -130,7 +130,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		SendError(w, 500, err.Error())
 		return
 	}
-	if existing_schema != nil && existing_schema.ID != schema.ID {
+	if existing_schema != nil && *existing_schema.ID != *schema.ID {
 		// another schema with the same name already exists
 		SendErrorResponse(w, http.StatusBadRequest, &types.SchemaUpdateError{
 			NameTaken: true,
@@ -200,14 +200,14 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 	}
 
 	// let the database calculate the size/count stats
-	err = api.SchemaRepo.CalculateStats(schema.ID)
+	err = api.SchemaRepo.CalculateStats(*schema.ID)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("CalculateStats: %s", err))
 		return
 	}
 
 	// retrieve updated schema data from the db (size, count)
-	schema, err = api.SchemaRepo.GetSchemaById(schema.ID)
+	schema, err = api.SchemaRepo.GetSchemaById(*schema.ID)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("GetBySchemaID: %s", err))
 		return
@@ -215,7 +215,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 
 	// process notifications
 	if notify_feed {
-		screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(schema.ID)
+		screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(*schema.ID)
 		if err != nil {
 			SendError(w, 500, fmt.Sprintf("GetBySchemaID: %s", err))
 			return
@@ -270,6 +270,6 @@ func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		return
 	}
 
-	err = api.SchemaRepo.DeleteSchema(schema.ID)
+	err = api.SchemaRepo.DeleteSchema(*schema.ID)
 	Send(w, true, err)
 }

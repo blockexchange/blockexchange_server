@@ -1,4 +1,4 @@
-package testutils
+package db_test
 
 import (
 	"blockexchange/db"

@@ -2,41 +2,55 @@ package db
 
 import (
 	"blockexchange/types"
-	"database/sql"
+	"context"
 
-	"github.com/minetest-go/dbutil"
+	"github.com/vingarcia/ksql"
 )
 
+var schemaPartTable = ksql.NewTable("schemapart", "id")
+
 type SchemaPartRepository struct {
-	DB *sql.DB
+	kdb ksql.Provider
 }
 
-func (repo SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
-	conflict := `
-		on conflict on constraint schemapart_unique_coords
-		do update set data = EXCLUDED.data, metadata = EXCLUDED.metadata, mtime = EXCLUDED.mtime
-	`
-	return dbutil.Insert(repo.DB, part, conflict)
+func (r *SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
+	return r.kdb.Transaction(context.Background(), func(p ksql.Provider) error {
+		sp := &types.SchemaPart{}
+		err := p.QueryOne(context.Background(), sp,
+			"from schemapart where schema_id = $1 and offset_x = $2 and offset_y = $3 and offset_z = $4",
+			part.SchemaID, part.OffsetX, part.OffsetY, part.OffsetZ,
+		)
+		if err == ksql.ErrRecordNotFound {
+			// insert
+			return p.Insert(context.Background(), schemaPartTable, part)
+		} else if err == nil {
+			// update
+			sp.Mtime = part.Mtime
+			sp.Data = part.Data
+			sp.MetaData = part.MetaData
+			return p.Patch(context.Background(), schemaPartTable, sp)
+		} else {
+			// err
+			return err
+		}
+	})
 }
 
-func (repo SchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
-	where := `
-		where schema_id = $1
-		and offset_x = $2
-		and offset_y = $3
-		and offset_z = $4
-	`
-
-	sp, err := dbutil.Select(repo.DB, &types.SchemaPart{}, where, schema_id, offset_x, offset_y, offset_z)
-	if err == sql.ErrNoRows {
+func (r *SchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
+	sp := &types.SchemaPart{}
+	err := r.kdb.QueryOne(context.Background(), sp,
+		"from schemapart where schema_id = $1 and offset_x = $2 and offset_y = $3 and offset_z = $4",
+		schema_id, offset_x, offset_y, offset_z,
+	)
+	if err == ksql.ErrRecordNotFound {
 		return nil, nil
-	} else {
-		return sp, err
 	}
+	return sp, err
 }
 
-func (repo SchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error) {
-	constraints := `
+func (r *SchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error) {
+	list := []*types.SchemaPart{}
+	q := `from schemapart
 		where schema_id = $1
 		and offset_x >= $2
 		and offset_y >= $3
@@ -45,25 +59,24 @@ func (repo SchemaPartRepository) GetBySchemaIDAndRange(schema_id int64, x1, y1, 
 		and offset_y <= $6
 		and offset_z <= $7
 	`
-
-	return dbutil.SelectMulti(repo.DB, func() *types.SchemaPart { return &types.SchemaPart{} }, constraints, schema_id, x1, y1, z1, x2, y2, z2)
+	return list, r.kdb.Query(context.Background(), &list, q, schema_id, x1, y1, z1, x2, y2, z2)
 }
 
-func (repo SchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {
-	query := `
-		delete
-		from schemapart
+func (r *SchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) error {
+	q := `
+		delete from schemapart
 		where schema_id = $1
 		and offset_x = $2
 		and offset_y = $3
 		and offset_z = $4
 	`
-	_, err := repo.DB.Exec(query, schema_id, offset_x, offset_y, offset_z)
+	_, err := r.kdb.Exec(context.Background(), q, schema_id, offset_x, offset_y, offset_z)
 	return err
 }
 
-func (repo SchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
-	constraints := `
+func (r *SchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
+	sp := &types.SchemaPart{}
+	q := `from schemapart
 		where id > (
 			select id from schemapart
 			where schema_id = $1
@@ -74,38 +87,35 @@ func (repo SchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, off
 		and schema_id = $1
 		order by id asc limit 1
 	`
-	sp, err := dbutil.Select(repo.DB, &types.SchemaPart{}, constraints, schema_id, offset_x, offset_y, offset_z)
-	if err == sql.ErrNoRows {
+	err := r.kdb.QueryOne(context.Background(), sp, q, schema_id, offset_x, offset_y, offset_z)
+	if err == ksql.ErrRecordNotFound {
 		return nil, nil
-	} else {
-		return sp, err
 	}
+	return sp, err
 }
 
-func (repo SchemaPartRepository) GetNextBySchemaIDAndMtime(schema_id int64, mtime int64) (*types.SchemaPart, error) {
-	constraints := `
-		where mtime > $2
-		and schema_id = $1
+func (r *SchemaPartRepository) GetNextBySchemaIDAndMtime(schema_id int64, mtime int64) (*types.SchemaPart, error) {
+	sp := &types.SchemaPart{}
+	q := `from schemapart
+		where schema_id = $1
+		and mtime > $2
 		order by mtime asc limit 1
 	`
-	sp, err := dbutil.Select(repo.DB, &types.SchemaPart{}, constraints, schema_id, mtime)
-	if err == sql.ErrNoRows {
+	err := r.kdb.QueryOne(context.Background(), sp, q, schema_id, mtime)
+	if err == ksql.ErrRecordNotFound {
 		return nil, nil
-	} else {
-		return sp, err
 	}
+	return sp, err
 }
 
-func (repo SchemaPartRepository) CountNextBySchemaIDAndMtime(schema_id int64, mtime int64) (int, error) {
-	constraints := `
-		where mtime > $2
-		and schema_id = $1
-	`
-	return dbutil.Count(repo.DB, &types.SchemaPart{}, constraints, schema_id, mtime)
+func (r *SchemaPartRepository) CountNextBySchemaIDAndMtime(schema_id int64, mtime int64) (int64, error) {
+	c := &types.Count{}
+	return c.Count, r.kdb.QueryOne(context.Background(), c, "select count(*) as count from schemapart where schema_id = $1 and mtime > $2", schema_id, mtime)
 }
 
-func (repo SchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error) {
-	constraints := `
+func (r *SchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error) {
+	sp := &types.SchemaPart{}
+	q := `from schemapart
 		where id = (
 			select min(id) from schemapart
 			where schema_id = $1
@@ -113,10 +123,9 @@ func (repo SchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.Sch
 		and schema_id = $1
 		limit 1
 	`
-	sp, err := dbutil.Select(repo.DB, &types.SchemaPart{}, constraints, schema_id)
-	if err == sql.ErrNoRows {
+	err := r.kdb.QueryOne(context.Background(), sp, q, schema_id)
+	if err == ksql.ErrRecordNotFound {
 		return nil, nil
-	} else {
-		return sp, err
 	}
+	return sp, err
 }

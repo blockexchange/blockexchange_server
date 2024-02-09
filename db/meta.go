@@ -1,13 +1,18 @@
 package db
 
-import "database/sql"
+import (
+	"blockexchange/types"
+	"context"
+
+	"github.com/vingarcia/ksql"
+)
 
 type MetaRepository struct {
-	db *sql.DB
+	kdb ksql.Provider
 }
 
 func (r *MetaRepository) CountEntries(table string) (int64, error) {
-	row := r.db.QueryRow("SELECT reltuples::bigint FROM pg_catalog.pg_class WHERE relname = $1", table)
-	var count int64
-	return count, row.Scan(&count)
+	c := &types.Count{}
+	err := r.kdb.QueryOne(context.Background(), c, "SELECT reltuples::bigint as count FROM pg_catalog.pg_class WHERE relname = $1", table)
+	return c.Count, err
 }

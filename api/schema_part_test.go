@@ -63,7 +63,9 @@ func TestGetNextSchemaPart(t *testing.T) {
 		OffsetY:  0,
 		OffsetZ:  0,
 		Mtime:    100,
-		SchemaID: schema.ID,
+		SchemaID: *schema.ID,
+		Data:     []byte{},
+		MetaData: []byte{},
 	})
 
 	testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, &types.SchemaPart{
@@ -71,7 +73,9 @@ func TestGetNextSchemaPart(t *testing.T) {
 		OffsetY:  0,
 		OffsetZ:  0,
 		Mtime:    200,
-		SchemaID: schema.ID,
+		SchemaID: *schema.ID,
+		Data:     []byte{},
+		MetaData: []byte{},
 	})
 
 	// load first
@@ -80,7 +84,7 @@ func TestGetNextSchemaPart(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": strconv.Itoa(int(schema.ID)),
+		"schema_id": strconv.Itoa(int(*schema.ID)),
 	})
 
 	api.GetFirstSchemaPart(w, r)
@@ -98,7 +102,7 @@ func TestGetNextSchemaPart(t *testing.T) {
 	w = httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": strconv.Itoa(int(schema.ID)),
+		"schema_id": strconv.Itoa(int(*schema.ID)),
 		"x":         "0",
 		"y":         "0",
 		"z":         "0",
@@ -119,7 +123,7 @@ func TestGetNextSchemaPart(t *testing.T) {
 	w = httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": fmt.Sprintf("%d", schema.ID),
+		"schema_id": fmt.Sprintf("%d", *schema.ID),
 		"mtime":     fmt.Sprintf("%d", 100),
 	})
 
@@ -139,7 +143,7 @@ func TestGetNextSchemaPart(t *testing.T) {
 	w = httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": fmt.Sprintf("%d", schema.ID),
+		"schema_id": fmt.Sprintf("%d", *schema.ID),
 		"mtime":     fmt.Sprintf("%d", 100),
 	})
 

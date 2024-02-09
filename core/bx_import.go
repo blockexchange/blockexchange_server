@@ -26,6 +26,7 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 		return nil, fmt.Errorf("user not found: '%s'", username)
 	}
 
+	res.Schema.ID = nil
 	res.Schema.Created = time.Now().UnixMilli()
 	res.Schema.Mtime = time.Now().UnixMilli()
 	res.Schema.UserID = *user.ID
@@ -38,7 +39,7 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 
 	for _, modname := range res.Mods {
 		err = c.repos.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
-			SchemaID: res.Schema.ID,
+			SchemaID: *res.Schema.ID,
 			ModName:  modname,
 		})
 		if err != nil {
@@ -47,7 +48,7 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 	}
 
 	for _, part := range res.Parts {
-		part.SchemaID = res.Schema.ID
+		part.SchemaID = *res.Schema.ID
 		part.Mtime = res.Schema.Mtime
 		err = c.repos.SchemaPartRepo.CreateOrUpdateSchemaPart(part)
 		if err != nil {

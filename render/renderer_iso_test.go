@@ -40,11 +40,12 @@ func TestISORenderer(t *testing.T) {
 	assert.NoError(t, cm.LoadDefaults())
 
 	renderer := NewISORenderer(repo.GetBySchemaIDAndOffset, cm)
+	id := int64(0)
 	schema := types.Schema{
 		SizeX: 32,
 		SizeY: 32,
 		SizeZ: 32,
-		ID:    0,
+		ID:    &id,
 	}
 	png, err := renderer.RenderIsometricPreview(&schema)
 	assert.NoError(t, err)

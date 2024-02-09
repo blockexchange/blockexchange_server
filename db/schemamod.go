@@ -2,45 +2,32 @@ package db
 
 import (
 	"blockexchange/types"
+	"context"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/vingarcia/ksql"
 )
 
+var schemamodTable = ksql.NewTable("schemamod", "id")
+
 type SchemaModRepository struct {
-	DB *sqlx.DB
+	kdb ksql.Provider
 }
 
-func (repo SchemaModRepository) GetSchemaModsBySchemaID(schema_id int64) ([]types.SchemaMod, error) {
-	list := []types.SchemaMod{}
-	query := `select * from schemamod where schema_id = $1`
-	err := repo.DB.Select(&list, query, schema_id)
-	if err != nil {
-		return nil, err
-	} else {
-		return list, nil
-	}
+func (r *SchemaModRepository) GetSchemaModsBySchemaID(schema_id int64) ([]*types.SchemaMod, error) {
+	list := []*types.SchemaMod{}
+	return list, r.kdb.Query(context.Background(), &list, "from schemamod where schema_id = $1", schema_id)
 }
 
-func (repo SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {
-	query := `
-		insert into
-		schemamod(schema_id, mod_name)
-		values(:schema_id, :mod_name)
-		returning id
-	`
-	stmt, err := repo.DB.PrepareNamed(query)
-	if err != nil {
-		return err
-	}
-	return stmt.Get(&schema_mod.ID, schema_mod)
+func (r *SchemaModRepository) GetSchemaModsBySchemaIDs(schema_ids []int64) ([]*types.SchemaMod, error) {
+	list := []*types.SchemaMod{}
+	return list, r.kdb.Query(context.Background(), &list, "from schemamod where schema_id = any($1::bigint[])", schema_ids)
 }
 
-func (repo SchemaModRepository) RemoveSchemaMods(schema_id int64) error {
-	query := `
-		delete
-		from schemamod
-		where schema_id = $1
-	`
-	_, err := repo.DB.Exec(query, schema_id)
+func (r *SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {
+	return r.kdb.Insert(context.Background(), schemamodTable, schema_mod)
+}
+
+func (r *SchemaModRepository) RemoveSchemaMods(schema_id int64) error {
+	_, err := r.kdb.Exec(context.Background(), "delete from schemamod where schema_id = $1", schema_id)
 	return err
 }

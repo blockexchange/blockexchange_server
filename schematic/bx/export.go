@@ -21,7 +21,7 @@ func NewExporter(w io.Writer) *Exporter {
 	return &Exporter{w: archive, intialized: false}
 }
 
-func (e *Exporter) ExportMetadata(schema *types.Schema, mods []types.SchemaMod) error {
+func (e *Exporter) ExportMetadata(schema *types.Schema, mods []*types.SchemaMod) error {
 	schema_data, err := json.Marshal(schema)
 	if err != nil {
 		return err

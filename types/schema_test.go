@@ -8,8 +8,9 @@ import (
 )
 
 func TestSchemaMarshalling(t *testing.T) {
+	id := int64(1)
 	schema := Schema{
-		ID:   1,
+		ID:   &id,
 		Name: "blah",
 	}
 
@@ -20,5 +21,5 @@ func TestSchemaMarshalling(t *testing.T) {
 	schema2 := Schema{}
 	err = json.Unmarshal(data, &schema2)
 	assert.NoError(t, err)
-	assert.Equal(t, schema.ID, schema2.ID)
+	assert.Equal(t, *schema.ID, *schema2.ID)
 }

@@ -2,67 +2,40 @@ package db
 
 import (
 	"blockexchange/types"
-	"database/sql"
+	"context"
 
-	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
+	"github.com/vingarcia/ksql"
 )
 
+var tagTable = ksql.NewTable("tag", "id")
+
 type TagRepository struct {
-	DB *sqlx.DB
+	kdb ksql.Provider
 }
 
-func (repo TagRepository) Create(tag *types.Tag) error {
-	logrus.Trace("db.CreateTag", tag)
-	query := `
-		insert into
-		tag(name, description, restricted)
-		values(:name, :description, :restricted)
-		returning id
-	`
-	stmt, err := repo.DB.PrepareNamed(query)
-	if err != nil {
-		return err
-	}
-	return stmt.Get(&tag.ID, tag)
+func (r *TagRepository) Create(tag *types.Tag) error {
+	return r.kdb.Insert(context.Background(), tagTable, tag)
 }
 
-func (repo TagRepository) Delete(id int64) error {
-	_, err := repo.DB.Exec("delete from tag where id = $1", id)
-	return err
+func (r *TagRepository) Delete(id int64) error {
+	return r.kdb.Delete(context.Background(), tagTable, id)
 }
 
-func (repo TagRepository) Update(tag *types.Tag) error {
-	query := `
-	update tag
-	set
-		name = :name,
-		description = :description,
-		restricted = :restricted
-	where id = :id
-`
-	_, err := repo.DB.NamedExec(query, tag)
-	return err
+func (r *TagRepository) Update(tag *types.Tag) error {
+	return r.kdb.Patch(context.Background(), tagTable, tag)
 }
 
-func (repo TagRepository) GetByID(id int64) (*types.Tag, error) {
-	tags := types.Tag{}
-	err := repo.DB.Get(&tags, "select * from tag where id = $1", id)
-	if err == sql.ErrNoRows {
+func (r *TagRepository) GetByID(id int64) (*types.Tag, error) {
+	tag := &types.Tag{}
+	err := r.kdb.QueryOne(context.Background(), tag, "from tag where id = $1", id)
+	if err == ksql.ErrRecordNotFound {
 		return nil, nil
-	} else if err != nil {
-		return nil, err
 	} else {
-		return &tags, nil
+		return tag, err
 	}
 }
 
-func (repo TagRepository) GetAll() ([]*types.Tag, error) {
+func (r *TagRepository) GetAll() ([]*types.Tag, error) {
 	list := []*types.Tag{}
-	err := repo.DB.Select(&list, "select * from tag")
-	if err != nil {
-		return nil, err
-	} else {
-		return list, nil
-	}
+	return list, r.kdb.Query(context.Background(), &list, "from tag")
 }

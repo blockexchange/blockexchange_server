@@ -18,20 +18,14 @@ import (
 func main() {
 	logrus.SetLevel(logrus.InfoLevel)
 	logrus.Info("Starting")
-	db_, err := db.Init()
-	if err != nil {
-		panic(err)
-	}
-
-	// migrate database
-	err = db.Migrate(db_.DB)
+	kdb, err := db.Init()
 	if err != nil {
 		panic(err)
 	}
 
 	// populate database with test data (users, tokens)
 	if os.Getenv("BLOCKEXCHANGE_TEST_DATA") == "true" {
-		err = db.PopulateTestData(db_)
+		err = db.PopulateTestData(kdb)
 		if err != nil {
 			panic(err)
 		}
@@ -39,7 +33,7 @@ func main() {
 
 	// set up server
 	cfg := types.CreateConfig()
-	api, router, err := api.NewApi(db_, cfg)
+	api, router, err := api.NewApi(kdb, cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +43,7 @@ func main() {
 	server := &http.Server{Addr: ":8080", Handler: nil}
 
 	// start background jobs
-	jobs.Start(db_, api)
+	jobs.Start(kdb, api)
 
 	go func() {
 		// listen to web requests

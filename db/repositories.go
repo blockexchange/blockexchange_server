@@ -1,37 +1,36 @@
 package db
 
-import "github.com/jmoiron/sqlx"
+import (
+	"github.com/vingarcia/ksql"
+)
 
 type Repositories struct {
-	AccessTokenRepo            *AccessTokenRepository
-	UserRepo                   *UserRepository
-	SchemaRepo                 *SchemaRepository
-	SchemaPartRepo             *SchemaPartRepository
-	SchemaModRepo              *SchemaModRepository
-	SchemaSearchRepo           *SchemaSearchRepository
-	SchemaScreenshotRepo       *SchemaScreenshotRepository
-	CollectionRepo             *CollectionRepository
-	CollectionSchemaRepository *CollectionSchemaRepository
-	TagRepo                    *TagRepository
-	SchemaTagRepo              *SchemaTagRepository
-	SchemaStarRepo             *SchemaStarRepository
-	MetaRepository             *MetaRepository
+	AccessTokenRepo      *AccessTokenRepository
+	UserRepo             *UserRepository
+	SchemaRepo           *SchemaRepository
+	SchemaPartRepo       *SchemaPartRepository
+	SchemaModRepo        *SchemaModRepository
+	SchemaSearchRepo     *SchemaSearchRepository
+	SchemaScreenshotRepo *SchemaScreenshotRepository
+	TagRepo              *TagRepository
+	SchemaTagRepo        *SchemaTagRepository
+	SchemaStarRepo       *SchemaStarRepository
+	MetaRepository       *MetaRepository
 }
 
-func NewRepositories(db_ *sqlx.DB) *Repositories {
+func NewRepositories(kdb ksql.Provider) *Repositories {
+
 	return &Repositories{
-		AccessTokenRepo:            &AccessTokenRepository{DB: db_.DB},
-		UserRepo:                   &UserRepository{db: db_.DB},
-		SchemaRepo:                 &SchemaRepository{DB: db_.DB},
-		SchemaPartRepo:             &SchemaPartRepository{DB: db_.DB},
-		SchemaModRepo:              &SchemaModRepository{DB: db_},
-		SchemaSearchRepo:           &SchemaSearchRepository{DB: db_.DB},
-		SchemaScreenshotRepo:       &SchemaScreenshotRepository{DB: db_},
-		CollectionRepo:             &CollectionRepository{DB: db_.DB},
-		CollectionSchemaRepository: &CollectionSchemaRepository{DB: db_.DB},
-		TagRepo:                    &TagRepository{DB: db_},
-		SchemaTagRepo:              &SchemaTagRepository{DB: db_},
-		SchemaStarRepo:             &SchemaStarRepository{DB: db_},
-		MetaRepository:             &MetaRepository{db: db_.DB},
+		AccessTokenRepo:      &AccessTokenRepository{kdb: kdb},
+		UserRepo:             &UserRepository{kdb: kdb},
+		SchemaRepo:           &SchemaRepository{kdb: kdb},
+		SchemaPartRepo:       &SchemaPartRepository{kdb: kdb},
+		SchemaModRepo:        &SchemaModRepository{kdb: kdb},
+		SchemaSearchRepo:     &SchemaSearchRepository{kdb: kdb},
+		SchemaScreenshotRepo: &SchemaScreenshotRepository{kdb: kdb},
+		TagRepo:              &TagRepository{kdb: kdb},
+		SchemaTagRepo:        &SchemaTagRepository{kdb: kdb},
+		SchemaStarRepo:       &SchemaStarRepository{kdb: kdb},
+		MetaRepository:       &MetaRepository{kdb: kdb},
 	}
 }

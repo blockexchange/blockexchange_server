@@ -22,7 +22,7 @@ func TestExtractModnames(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 
-	nodenames, err := c.ExtractModnames(s.ID)
+	nodenames, err := c.ExtractModnames(*s.ID)
 	assert.NoError(t, err)
 	assert.NotNil(t, nodenames)
 	assert.Equal(t, 1, len(nodenames))
