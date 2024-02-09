@@ -25,6 +25,7 @@ func (r *SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) 
 			return p.Insert(context.Background(), schemaPartTable, part)
 		} else if err == nil {
 			// update
+			sp.Mtime = part.Mtime
 			sp.Data = part.Data
 			sp.MetaData = part.MetaData
 			return p.Patch(context.Background(), schemaPartTable, sp)
