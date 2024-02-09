@@ -18,7 +18,7 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 	params := []any{}
 	i := 1
 
-	// complete flagW
+	// complete flag
 	if search.Complete != nil {
 		query.WriteString(fmt.Sprintf(" and complete = $%d", i))
 		params = append(params, *search.Complete)

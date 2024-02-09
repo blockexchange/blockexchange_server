@@ -120,7 +120,7 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 		api.SchemaRepo.IncrementDownloads(*schema.ID)
 	}
 
-	Send(w, schema, err)
+	Send(w, schema, nil)
 }
 
 func (api *Api) CountSchema(w http.ResponseWriter, r *http.Request) {

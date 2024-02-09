@@ -15,7 +15,7 @@ type AccessTokenRepository struct {
 
 func (r *AccessTokenRepository) GetAccessTokensByUserID(user_id int64) ([]*types.AccessToken, error) {
 	list := []*types.AccessToken{}
-	return list, r.kdb.Query(context.Background(), list, "from access_token where user_id = $1", user_id)
+	return list, r.kdb.Query(context.Background(), &list, "from access_token where user_id = $1", user_id)
 }
 
 func (r *AccessTokenRepository) GetAccessTokenByTokenAndUserID(token string, user_id int64) (*types.AccessToken, error) {
