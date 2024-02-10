@@ -76,7 +76,7 @@ func (api *Api) AddSchemaSearchFields(schemas []*types.Schema) ([]*types.SchemaS
 	for _, sm := range schema_mods {
 		sr := schema_map[sm.SchemaID]
 		if sr == nil {
-			return nil, fmt.Errorf("schema %d for schema-mod %d not found", sm.SchemaID, *sm.ID)
+			return nil, fmt.Errorf("schema %d for schema-mod %s not found", sm.SchemaID, sm.UID)
 		}
 		sr.Mods = append(sr.Mods, sm.ModName)
 	}

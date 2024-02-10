@@ -4,10 +4,11 @@ import (
 	"blockexchange/types"
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/vingarcia/ksql"
 )
 
-var schemamodTable = ksql.NewTable("schemamod", "id")
+var schemamodTable = ksql.NewTable("schemamod", "uid")
 
 type SchemaModRepository struct {
 	kdb ksql.Provider
@@ -24,6 +25,9 @@ func (r *SchemaModRepository) GetSchemaModsBySchemaIDs(schema_ids []int64) ([]*t
 }
 
 func (r *SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {
+	if schema_mod.UID == "" {
+		schema_mod.UID = uuid.NewString()
+	}
 	return r.kdb.Insert(context.Background(), schemamodTable, schema_mod)
 }
 
