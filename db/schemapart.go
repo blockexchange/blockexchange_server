@@ -4,6 +4,7 @@ import (
 	"blockexchange/types"
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/vingarcia/ksql"
 )
 
@@ -22,6 +23,7 @@ func (r *SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) 
 		)
 		if err == ksql.ErrRecordNotFound {
 			// insert
+			part.UID = uuid.NewString()
 			part.OrderID = int64(types.GetSchemaPartOrderID(part.OffsetX, part.OffsetY, part.OffsetZ))
 			return p.Insert(context.Background(), schemaPartTable, part)
 		} else if err == nil {
