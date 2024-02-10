@@ -5,10 +5,15 @@ import (
 	"encoding/json"
 )
 
+func GetSchemaPartOrderID(offset_x, offset_y, offset_z int) int {
+	return offset_x + (offset_z * 2000) + (offset_y * 2000 * 2000)
+}
+
 type SchemaPartIterator func() (*SchemaPart, error)
 
 type SchemaPart struct {
 	UID      string `json:"uid" ksql:"uid"`
+	OrderID  int64  `json:"order_id" ksql:"order_id"`
 	SchemaID int64  `json:"schema_id" ksql:"schema_id"`
 	OffsetX  int    `json:"offset_x" ksql:"offset_x"`
 	OffsetY  int    `json:"offset_y" ksql:"offset_y"`

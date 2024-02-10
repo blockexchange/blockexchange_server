@@ -22,6 +22,7 @@ func (r *SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) 
 		)
 		if err == ksql.ErrRecordNotFound {
 			// insert
+			part.OrderID = int64(types.GetSchemaPartOrderID(part.OffsetX, part.OffsetY, part.OffsetZ))
 			return p.Insert(context.Background(), schemaPartTable, part)
 		} else if err == nil {
 			// update
@@ -75,19 +76,15 @@ func (r *SchemaPartRepository) RemoveBySchemaIDAndOffset(schema_id int64, offset
 }
 
 func (r *SchemaPartRepository) GetNextBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
+	order_id := types.GetSchemaPartOrderID(offset_x, offset_y, offset_z)
 	sp := &types.SchemaPart{}
 	q := `from schemapart
-		where id > (
-			select id from schemapart
-			where schema_id = $1
-			and offset_x = $2
-			and offset_y = $3
-			and offset_z = $4
-		)
-		and schema_id = $1
-		order by id asc limit 1
+		where schema_id = $1
+		and order_id > $2
+		order by order_id asc
+		limit 1
 	`
-	err := r.kdb.QueryOne(context.Background(), sp, q, schema_id, offset_x, offset_y, offset_z)
+	err := r.kdb.QueryOne(context.Background(), sp, q, schema_id, order_id)
 	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	}
@@ -116,11 +113,8 @@ func (r *SchemaPartRepository) CountNextBySchemaIDAndMtime(schema_id int64, mtim
 func (r *SchemaPartRepository) GetFirstBySchemaID(schema_id int64) (*types.SchemaPart, error) {
 	sp := &types.SchemaPart{}
 	q := `from schemapart
-		where id = (
-			select min(id) from schemapart
-			where schema_id = $1
-		)
-		and schema_id = $1
+		where schema_id = $1
+		order by order_id asc
 		limit 1
 	`
 	err := r.kdb.QueryOne(context.Background(), sp, q, schema_id)
