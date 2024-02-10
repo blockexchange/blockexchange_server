@@ -57,7 +57,7 @@ func (api *Api) RequestToken(w http.ResponseWriter, r *http.Request) {
 			SendError(w, 500, err.Error())
 			return
 		}
-		api.AccessTokenRepo.IncrementAccessTokenUseCount(access_token.ID)
+		api.AccessTokenRepo.IncrementAccessTokenUseCount(access_token.UID)
 
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)

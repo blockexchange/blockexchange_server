@@ -37,7 +37,7 @@ export default {
             });
         },
         remove: function(at) {
-            delete_access_token(at.id)
+            delete_access_token(at.uid)
             .then(() => this.update());
         }
     },

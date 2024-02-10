@@ -4,10 +4,11 @@ import (
 	"blockexchange/types"
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/vingarcia/ksql"
 )
 
-var accessTokenTable = ksql.NewTable("access_token", "id")
+var accessTokenTable = ksql.NewTable("access_token", "uid")
 
 type AccessTokenRepository struct {
 	kdb ksql.Provider
@@ -28,15 +29,18 @@ func (r *AccessTokenRepository) GetAccessTokenByTokenAndUserID(token string, use
 }
 
 func (r *AccessTokenRepository) CreateAccessToken(access_token *types.AccessToken) error {
+	if access_token.UID == "" {
+		access_token.UID = uuid.NewString()
+	}
 	return r.kdb.Insert(context.Background(), accessTokenTable, access_token)
 }
 
-func (r *AccessTokenRepository) IncrementAccessTokenUseCount(id int64) error {
-	_, err := r.kdb.Exec(context.Background(), "update access_token set usecount = usecount + 1 where id = $1", id)
+func (r *AccessTokenRepository) IncrementAccessTokenUseCount(uid string) error {
+	_, err := r.kdb.Exec(context.Background(), "update access_token set usecount = usecount + 1 where uid = $1", uid)
 	return err
 }
 
-func (r *AccessTokenRepository) RemoveAccessToken(id, user_id int64) error {
-	_, err := r.kdb.Exec(context.Background(), "delete from access_token where id = $1 and user_id = $2", id, user_id)
+func (r *AccessTokenRepository) RemoveAccessToken(uid string, user_id int64) error {
+	_, err := r.kdb.Exec(context.Background(), "delete from access_token where uid = $1 and user_id = $2", uid, user_id)
 	return err
 }

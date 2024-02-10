@@ -25,3 +25,7 @@ update schematag set tag_uid = (select t.uid from tag t where t.id = tag_id);
 alter table schematag alter uid set not null;
 alter table schematag drop column tag_id;
 alter table tag drop column id;
+
+-- access_token: serial-id -> uid
+alter table access_token add column uid uuid not null unique default gen_random_uuid();
+alter table access_token drop column id;

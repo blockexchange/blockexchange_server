@@ -1,7 +1,7 @@
 package types
 
 type AccessToken struct {
-	ID       int64  `json:"id" ksql:"id"`
+	UID      string `json:"uid" ksql:"uid"`
 	Name     string `json:"name" ksql:"name"`
 	Token    string `json:"token" ksql:"token"`
 	UserID   int64  `json:"user_id" ksql:"user_id"`

@@ -5,7 +5,6 @@ import (
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -33,12 +32,6 @@ func (api *Api) CreateAccessToken(w http.ResponseWriter, r *http.Request, ctx *S
 
 func (api *Api) DeleteAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.ParseInt(vars["id"], 10, 64)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	err = api.AccessTokenRepo.RemoveAccessToken(id, ctx.Claims.UserID)
+	err := api.AccessTokenRepo.RemoveAccessToken(vars["id"], ctx.Claims.UserID)
 	Send(w, true, err)
 }
