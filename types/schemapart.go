@@ -8,7 +8,7 @@ import (
 type SchemaPartIterator func() (*SchemaPart, error)
 
 type SchemaPart struct {
-	ID       int64  `json:"id" ksql:"id"`
+	UID      string `json:"uid" ksql:"uid"`
 	SchemaID int64  `json:"schema_id" ksql:"schema_id"`
 	OffsetX  int    `json:"offset_x" ksql:"offset_x"`
 	OffsetY  int    `json:"offset_y" ksql:"offset_y"`
