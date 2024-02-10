@@ -4,16 +4,20 @@ import (
 	"blockexchange/types"
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/vingarcia/ksql"
 )
 
-var tagTable = ksql.NewTable("tag", "id")
+var tagTable = ksql.NewTable("tag", "uid")
 
 type TagRepository struct {
 	kdb ksql.Provider
 }
 
 func (r *TagRepository) Create(tag *types.Tag) error {
+	if tag.UID == "" {
+		tag.UID = uuid.NewString()
+	}
 	return r.kdb.Insert(context.Background(), tagTable, tag)
 }
 

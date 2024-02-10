@@ -21,7 +21,7 @@ type SchemaSearchResponse struct {
 type SchemaSearchRequest struct {
 	UserID         *int64  `json:"user_id"`
 	SchemaID       *int64  `json:"schema_id"`
-	TagID          *int64  `json:"tag_id"`
+	TagUID         *string `json:"tag_uid"`
 	SchemaName     *string `json:"schema_name"`
 	UserName       *string `json:"user_name"`
 	Keywords       *string `json:"keywords"`

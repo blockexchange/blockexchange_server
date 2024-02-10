@@ -48,9 +48,9 @@ func (api *Api) AddSchemaSearchFields(schemas []*types.Schema) ([]*types.SchemaS
 	if err != nil {
 		return nil, err
 	}
-	tag_map := map[int64]*types.Tag{}
+	tag_map := map[string]*types.Tag{}
 	for _, t := range tags {
-		tag_map[*t.ID] = t
+		tag_map[t.UID] = t
 	}
 
 	schema_tags, err := api.Repositories.SchemaTagRepo.GetBySchemaIDs(schema_ids)
@@ -60,11 +60,11 @@ func (api *Api) AddSchemaSearchFields(schemas []*types.Schema) ([]*types.SchemaS
 	for _, st := range schema_tags {
 		sr := schema_map[st.SchemaID]
 		if sr == nil {
-			return nil, fmt.Errorf("schema %d for schema-tag %d not found", st.SchemaID, *st.ID)
+			return nil, fmt.Errorf("schema %d for schema-tag %s not found", st.SchemaID, st.UID)
 		}
-		t := tag_map[st.TagID]
+		t := tag_map[st.TagUID]
 		if t == nil {
-			return nil, fmt.Errorf("tag %d for schema-tag %d not found", st.TagID, *st.ID)
+			return nil, fmt.Errorf("tag %s for schema-tag %s not found", st.TagUID, st.UID)
 		}
 		sr.Tags = append(sr.Tags, t.Name)
 	}

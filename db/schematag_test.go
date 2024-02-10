@@ -30,10 +30,10 @@ func TestGetSchemaTagsByIDs(t *testing.T) {
 	t2 := &types.Tag{Name: fmt.Sprintf("tag_%d", rand.Intn(10000))}
 	assert.NoError(t, repos.TagRepo.Create(t2))
 
-	st1 := &types.SchemaTag{TagID: *t1.ID, SchemaID: *s.ID}
+	st1 := &types.SchemaTag{TagUID: t1.UID, SchemaID: *s.ID}
 	assert.NoError(t, repos.SchemaTagRepo.Create(st1))
 
-	st2 := &types.SchemaTag{TagID: *t1.ID, SchemaID: *s.ID}
+	st2 := &types.SchemaTag{TagUID: t1.UID, SchemaID: *s.ID}
 	assert.NoError(t, repos.SchemaTagRepo.Create(st2))
 
 	sts, err := repos.SchemaTagRepo.GetBySchemaIDs([]int64{*s.ID})
