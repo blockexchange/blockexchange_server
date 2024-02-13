@@ -26,7 +26,7 @@ func (api *Api) GetSchemaStar(w http.ResponseWriter, r *http.Request, ctx *Secur
 		SendError(w, 500, err.Error())
 		return
 	}
-	star, err := api.SchemaStarRepo.GetBySchemaAndUserID(schema_id, ctx.Claims.UserID)
+	star, err := api.SchemaStarRepo.GetBySchemaAndUserID(schema_id, ctx.Claims.UserUID)
 	Send(w, star, err)
 }
 
@@ -38,7 +38,7 @@ func (api *Api) StarSchema(w http.ResponseWriter, r *http.Request, ctx *SecureCo
 		return
 	}
 
-	err = api.SchemaStarRepo.Create(&types.SchemaStar{SchemaID: schema_id, UserID: ctx.Claims.UserID})
+	err = api.SchemaStarRepo.Create(&types.SchemaStar{SchemaID: schema_id, UserUID: ctx.Claims.UserUID})
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -56,7 +56,7 @@ func (api *Api) UnStarSchema(w http.ResponseWriter, r *http.Request, ctx *Secure
 		return
 	}
 
-	err = api.SchemaStarRepo.Delete(&types.SchemaStar{SchemaID: schema_id, UserID: ctx.Claims.UserID})
+	err = api.SchemaStarRepo.Delete(&types.SchemaStar{SchemaID: schema_id, UserUID: ctx.Claims.UserUID})
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

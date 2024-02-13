@@ -117,7 +117,7 @@ func (api Api) UpdateSchemaPreview(w http.ResponseWriter, r *http.Request, ctx *
 		return
 	}
 
-	if schema.UserID != ctx.Claims.UserID && !ctx.Claims.HasPermission(types.JWTPermissionAdmin) {
+	if schema.UserUID != ctx.Claims.UserUID && !ctx.Claims.HasPermission(types.JWTPermissionAdmin) {
 		SendError(w, 403, "you are not the owner of the schema")
 		return
 	}

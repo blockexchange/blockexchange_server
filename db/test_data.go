@@ -38,7 +38,7 @@ func PopulateTestData(kdb ksql.Provider) error {
 	token := &types.AccessToken{
 		Name:     "Default",
 		Token:    "default",
-		UserID:   *user.ID,
+		UserUID:  user.UID,
 		Created:  time.Now().Unix() * 1000,
 		Expires:  (time.Now().Unix() * 1000) + (1000 * 3600 * 24 * 30 * 365),
 		UseCount: 0,

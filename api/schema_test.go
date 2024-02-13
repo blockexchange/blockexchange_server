@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,7 +17,7 @@ import (
 func TestSchemaCreateNoUser(t *testing.T) {
 	api := NewTestApi(t)
 	schema := &types.Schema{
-		UserID:      -1,
+		UserUID:     uuid.NewString(),
 		Name:        "my-schema",
 		Description: "something",
 		SizeX:       16,
@@ -38,7 +39,7 @@ func TestSchemaCreateInvalidUser(t *testing.T) {
 	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	schema := &types.Schema{
-		UserID:      -1,
+		UserUID:     uuid.NewString(),
 		Name:        "my-schema",
 		Description: "something",
 		SizeX:       16,
@@ -61,7 +62,7 @@ func TestSchemaCreate(t *testing.T) {
 	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	schema := &types.Schema{
-		UserID:      *user.ID,
+		UserUID:     uuid.NewString(),
 		Name:        "my-schema",
 		Description: "something",
 		SizeX:       16,
@@ -120,7 +121,7 @@ func TestSchemaCreateAndDownload(t *testing.T) {
 	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	schema := &types.Schema{
-		UserID:      *user.ID,
+		UserUID:     uuid.NewString(),
 		Name:        "my-schema",
 		Description: "something",
 		SizeX:       16,

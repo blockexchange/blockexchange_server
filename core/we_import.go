@@ -34,7 +34,7 @@ func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema
 
 	schema := &types.Schema{
 		Created:     time.Now().Unix() * 1000,
-		UserID:      *user.ID,
+		UserUID:     user.UID,
 		Name:        newSchemaName,
 		Mtime:       time.Now().Unix() * 1000,
 		Description: "WE Import",

@@ -19,7 +19,7 @@ type SchemaSearchResponse struct {
 }
 
 type SchemaSearchRequest struct {
-	UserID         *int64  `json:"user_id"`
+	UserUID        *string `json:"user_uid"`
 	SchemaID       *int64  `json:"schema_id"`
 	TagUID         *string `json:"tag_uid"`
 	SchemaName     *string `json:"schema_name"`

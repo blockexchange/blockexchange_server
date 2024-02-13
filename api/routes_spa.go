@@ -66,14 +66,14 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 		}
 
 		schematics, err := api.SchemaSearchRepo.Count(&types.SchemaSearchRequest{
-			UserID: user.ID,
+			UserUID: &user.UID,
 		})
 		if err != nil {
 			SendError(w, 500, fmt.Sprintf("SchemaSearchRepo.Count: %s", err))
 			return
 		}
 
-		stars, err := api.SchemaStarRepo.CountByUserID(*user.ID)
+		stars, err := api.SchemaStarRepo.CountByUserUID(user.UID)
 		if err != nil {
 			SendError(w, 500, fmt.Sprintf("SchemaStarRepo.CountByUserID: %s", err))
 			return

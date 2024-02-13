@@ -19,8 +19,8 @@ func TestGetSchemaTagsByIDs(t *testing.T) {
 	}
 	assert.NoError(t, repos.UserRepo.CreateUser(u))
 	s := &types.Schema{
-		UserID: *u.ID,
-		Name:   "test",
+		UserUID: u.UID,
+		Name:    "test",
 	}
 	assert.NoError(t, repos.SchemaRepo.CreateSchema(s))
 

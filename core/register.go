@@ -56,7 +56,7 @@ func (c *Core) RegisterOauth(user_info *oauth.OauthUserInfo) (*types.User, error
 		Created: time.Now().Unix() * 1000,
 		Expires: (time.Now().Unix() + (3600 * 24 * 7 * 4)) * 1000,
 		Token:   CreateToken(6),
-		UserID:  *user.ID,
+		UserUID: user.UID,
 	})
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (c *Core) RegisterLocal(rr *types.RegisterRequest) (*types.User, *types.Che
 		Created: time.Now().Unix() * 1000,
 		Expires: (time.Now().Unix() + (3600 * 24 * 7 * 4)) * 1000,
 		Token:   CreateToken(6),
-		UserID:  *user.ID,
+		UserUID: user.UID,
 	})
 	if err != nil {
 		return nil, nil, err

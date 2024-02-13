@@ -29,3 +29,26 @@ alter table tag drop column id;
 -- access_token: serial-id -> uid
 alter table access_token add column uid uuid not null unique default gen_random_uuid();
 alter table access_token drop column id;
+
+-- collection cleanup
+drop table collection_schema;
+drop table collection;
+
+-- user: serial-id -> uid
+alter table public.user add column uid uuid not null unique default gen_random_uuid();
+alter table schema add column user_uid uuid default gen_random_uuid();
+update schema set user_uid = (select u.uid from public.user u where u.id = user_id);
+alter table schema alter user_uid set not null;
+alter table schema drop column user_id;
+
+alter table user_schema_star add column user_uid uuid default gen_random_uuid();
+update user_schema_star set user_uid = (select u.uid from public.user u where u.id = user_id);
+alter table user_schema_star alter user_uid set not null;
+alter table user_schema_star drop column user_id;
+
+alter table access_token add column user_uid uuid default gen_random_uuid();
+update access_token set user_uid = (select u.uid from public.user u where u.id = user_id);
+alter table access_token alter user_uid set not null;
+alter table access_token drop column user_id;
+
+alter table public.user drop column id;

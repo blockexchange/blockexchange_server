@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -14,21 +13,15 @@ import (
 // get user
 func (api *Api) GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	user_id := vars["user_id"]
+	user_uid := vars["user_uid"]
 
-	id, err := strconv.ParseInt(user_id, 10, 64)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("user_id parse error: %s", err.Error()))
-		return
-	}
-
-	user, err := api.UserRepo.GetUserById(id)
+	user, err := api.UserRepo.GetUserByUID(user_uid)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("get user error: %s", err.Error()))
 		return
 	}
 	if user == nil {
-		SendError(w, 404, fmt.Sprintf("user not found: %d", id))
+		SendError(w, 404, fmt.Sprintf("user not found: %s", user_uid))
 		return
 	}
 
@@ -37,15 +30,9 @@ func (api *Api) GetUser(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) CountUserSchemaStars(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	user_id := vars["user_id"]
+	user_uid := vars["user_uid"]
 
-	id, err := strconv.ParseInt(user_id, 10, 64)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("user_id parse error: %s", err.Error()))
-		return
-	}
-
-	c, err := api.Repositories.SchemaStarRepo.CountByUserID(id)
+	c, err := api.Repositories.SchemaStarRepo.CountByUserUID(user_uid)
 	Send(w, c, err)
 }
 
@@ -98,7 +85,7 @@ func (api *Api) SearchUsers(w http.ResponseWriter, r *http.Request) {
 // save changed user (name, permissions)
 func (api *Api) SaveUser(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	user_id := vars["user_id"]
+	user_uid := vars["user_uid"]
 	claims := ctx.Claims
 
 	sent_user := &types.User{}
@@ -107,30 +94,24 @@ func (api *Api) SaveUser(w http.ResponseWriter, r *http.Request, ctx *SecureCont
 		SendError(w, 500, fmt.Sprintf("user decode error: %s", err.Error()))
 		return
 	}
-	if sent_user.ID == nil {
+	if sent_user.UID == "" {
 		SendError(w, 500, "no id")
 		return
 	}
 
 	// check if the requested user is the same
-	if !claims.HasPermission(types.JWTPermissionAdmin) && *sent_user.ID != claims.UserID {
-		SendError(w, 403, fmt.Sprintf("not authorized to get user '%s'", user_id))
+	if !claims.HasPermission(types.JWTPermissionAdmin) && sent_user.UID != claims.UserUID {
+		SendError(w, 403, fmt.Sprintf("not authorized to get user '%s'", user_uid))
 		return
 	}
 
-	id, err := strconv.ParseInt(user_id, 10, 64)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("user_id parse error: %s", err.Error()))
-		return
-	}
-
-	user, err := api.UserRepo.GetUserById(id)
+	user, err := api.UserRepo.GetUserByUID(user_uid)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("get user error: %s", err.Error()))
 		return
 	}
 	if user == nil {
-		SendError(w, 404, fmt.Sprintf("user not found: %d", id))
+		SendError(w, 404, fmt.Sprintf("user not found: %s", user_uid))
 		return
 	}
 

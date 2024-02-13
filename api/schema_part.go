@@ -42,7 +42,7 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	if schema.UserID != ctx.Claims.UserID {
+	if schema.UserUID != ctx.Claims.UserUID {
 		SendError(w, 403, "you are not the owner of the schema")
 		return
 	}
@@ -89,7 +89,7 @@ func (api *Api) DeleteSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	if schema.UserID != ctx.Claims.UserID {
+	if schema.UserUID != ctx.Claims.UserUID {
 		SendError(w, 403, "you are not the owner of the schema")
 		return
 	}

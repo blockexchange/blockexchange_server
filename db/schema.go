@@ -23,9 +23,9 @@ func (r *SchemaRepository) GetSchemaById(id int64) (*types.Schema, error) {
 	}
 }
 
-func (r *SchemaRepository) GetSchemaByUserIDAndName(user_id int64, name string) (*types.Schema, error) {
+func (r *SchemaRepository) GetSchemaByUserUIDAndName(user_uid string, name string) (*types.Schema, error) {
 	s := &types.Schema{}
-	err := r.kdb.QueryOne(context.Background(), s, "from schema where user_id = $1 and name = $2", user_id, name)
+	err := r.kdb.QueryOne(context.Background(), s, "from schema where user_uid = $1 and name = $2", user_uid, name)
 	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	} else {
@@ -35,7 +35,7 @@ func (r *SchemaRepository) GetSchemaByUserIDAndName(user_id int64, name string) 
 
 func (r *SchemaRepository) GetSchemaByUsernameAndName(username, schemaname string) (*types.Schema, error) {
 	s := &types.Schema{}
-	err := r.kdb.QueryOne(context.Background(), s, "from schema where user_id = (select id from public.user where name = $1) and name = $2", username, schemaname)
+	err := r.kdb.QueryOne(context.Background(), s, "from schema where user_uid = (select uid from public.user where name = $1) and name = $2", username, schemaname)
 	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	} else {
@@ -75,14 +75,14 @@ func (r *SchemaRepository) DeleteSchema(id int64) error {
 	return r.kdb.Delete(context.Background(), schemaTable, id)
 }
 
-func (r *SchemaRepository) DeleteIncompleteSchema(user_id int64, name string) error {
+func (r *SchemaRepository) DeleteIncompleteSchema(user_uid string, name string) error {
 	q := `
 		delete from schema where
-			user_id = $1 and
+			user_uid = $1 and
 			name = $2 and
 			complete = false
 	`
-	_, err := r.kdb.Exec(context.Background(), q, user_id, name)
+	_, err := r.kdb.Exec(context.Background(), q, user_uid, name)
 	return err
 }
 

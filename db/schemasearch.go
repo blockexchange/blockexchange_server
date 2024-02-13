@@ -38,7 +38,7 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 	}
 
 	if search.UserName != nil {
-		query.WriteString(fmt.Sprintf(" and user_id = (select id from public.user where name = $%d)", i))
+		query.WriteString(fmt.Sprintf(" and user_uid = (select uid from public.user where name = $%d)", i))
 		params = append(params, *search.UserName)
 		i++
 	}
@@ -49,9 +49,9 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 		i++
 	}
 
-	if search.UserID != nil {
-		query.WriteString(fmt.Sprintf(" and user_id = $%d", i))
-		params = append(params, *search.UserID)
+	if search.UserUID != nil {
+		query.WriteString(fmt.Sprintf(" and user_uid = $%d", i))
+		params = append(params, *search.UserUID)
 		i++
 	}
 

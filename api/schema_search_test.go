@@ -18,7 +18,7 @@ func TestSearchSchema(t *testing.T) {
 
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	schema := types.Schema{
-		UserID: *user.ID,
+		UserUID: user.UID,
 	}
 	err := api.SchemaRepo.CreateSchema(&schema)
 	assert.NoError(t, err)

@@ -33,7 +33,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 
 	// check permissions
 	is_admin := ctx.HasPermission(types.JWTPermissionAdmin)
-	if !is_admin && schema.UserID != ctx.Claims.UserID {
+	if !is_admin && schema.UserUID != ctx.Claims.UserUID {
 		// not an admin and not the owner
 		SendError(w, 403, "unauthorized")
 		return

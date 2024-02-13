@@ -11,7 +11,7 @@ import (
 )
 
 func (api *Api) GetAccessTokens(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
-	list, err := api.AccessTokenRepo.GetAccessTokensByUserID(ctx.Claims.UserID)
+	list, err := api.AccessTokenRepo.GetAccessTokensByUserUID(ctx.Claims.UserUID)
 	Send(w, list, err)
 }
 
@@ -25,13 +25,13 @@ func (api *Api) CreateAccessToken(w http.ResponseWriter, r *http.Request, ctx *S
 
 	at.Created = time.Now().UnixMilli()
 	at.Token = core.CreateToken(6)
-	at.UserID = ctx.Claims.UserID
+	at.UserUID = ctx.Claims.UserUID
 	err = api.AccessTokenRepo.CreateAccessToken(at)
 	Send(w, at, err)
 }
 
 func (api *Api) DeleteAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	err := api.AccessTokenRepo.RemoveAccessToken(vars["id"], ctx.Claims.UserID)
+	err := api.AccessTokenRepo.RemoveAccessToken(vars["id"], ctx.Claims.UserUID)
 	Send(w, true, err)
 }

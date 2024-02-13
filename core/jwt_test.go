@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -57,10 +58,10 @@ func TestGetPermissions(t *testing.T) {
 }
 
 func TestCreateJWT(t *testing.T) {
-	var id int64 = 123
+	uid := uuid.NewString()
 	user := types.User{
 		Name: "dummy",
-		ID:   &id,
+		UID:  uid,
 		Type: types.UserTypeLocal,
 	}
 	permissions := []types.JWTPermission{types.JWTPermissionUpload}

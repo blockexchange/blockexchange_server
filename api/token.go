@@ -35,7 +35,7 @@ func (api *Api) RequestToken(w http.ResponseWriter, r *http.Request) {
 
 	if login.Token != "" {
 		// login with token
-		access_token, err := api.AccessTokenRepo.GetAccessTokenByTokenAndUserID(login.Token, *user.ID)
+		access_token, err := api.AccessTokenRepo.GetAccessTokenByTokenAndUserUID(login.Token, user.UID)
 		if err != nil {
 			SendError(w, 500, err.Error())
 			return

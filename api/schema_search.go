@@ -10,29 +10,29 @@ import (
 )
 
 func (api *Api) AddSchemaSearchFields(schemas []*types.Schema) ([]*types.SchemaSearchResponse, error) {
-	user_ids := []int64{}
+	user_uids := []string{}
 	schema_ids := []int64{}
 
 	for _, s := range schemas {
-		user_ids = append(user_ids, s.UserID)
+		user_uids = append(user_uids, s.UserUID)
 		schema_ids = append(schema_ids, *s.ID)
 	}
 
-	users, err := api.Repositories.UserRepo.GetUsersByIDs(user_ids)
+	users, err := api.Repositories.UserRepo.GetUsersByUIDs(user_uids)
 	if err != nil {
 		return nil, err
 	}
-	user_map := map[int64]*types.User{}
+	user_map := map[string]*types.User{}
 	for _, u := range users {
-		user_map[*u.ID] = u
+		user_map[u.UID] = u
 	}
 
 	list := make([]*types.SchemaSearchResponse, len(schemas))
 	schema_map := map[int64]*types.SchemaSearchResponse{}
 	for i, s := range schemas {
-		user := user_map[s.UserID]
+		user := user_map[s.UserUID]
 		if user == nil {
-			return nil, fmt.Errorf("user-id %d not found", s.UserID)
+			return nil, fmt.Errorf("user-id %s not found", s.UserUID)
 		}
 		sr := &types.SchemaSearchResponse{
 			Schema:   s,

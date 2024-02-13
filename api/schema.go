@@ -63,13 +63,13 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 
 	// remove incomplete schema with same name if it exists
-	err = api.SchemaRepo.DeleteIncompleteSchema(ctx.Claims.UserID, schema.Name)
+	err = api.SchemaRepo.DeleteIncompleteSchema(ctx.Claims.UserUID, schema.Name)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	schema.UserID = ctx.Claims.UserID
+	schema.UserUID = ctx.Claims.UserUID
 	schema.Created = time.Now().Unix() * 1000
 
 	err = api.SchemaRepo.CreateSchema(&schema)
@@ -110,7 +110,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 	// check permissions
 	is_admin := ctx.HasPermission(types.JWTPermissionAdmin)
-	if !is_admin && schema.UserID != ctx.Claims.UserID {
+	if !is_admin && schema.UserUID != ctx.Claims.UserUID {
 		// not an admin and not the owner
 		SendError(w, 403, "unauthorized")
 		return
@@ -125,7 +125,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 
 	// check if the name already exists
-	existing_schema, err := api.SchemaRepo.GetSchemaByUserIDAndName(schema.UserID, updated_schema.Name)
+	existing_schema, err := api.SchemaRepo.GetSchemaByUserUIDAndName(schema.UserUID, updated_schema.Name)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -171,7 +171,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 
-	if !ctx.HasPermission(types.JWTPermissionAdmin) && schema.UserID != ctx.Claims.UserID {
+	if !ctx.HasPermission(types.JWTPermissionAdmin) && schema.UserUID != ctx.Claims.UserUID {
 		SendError(w, 403, "you are not the owner of the schema")
 		return
 	}
@@ -221,7 +221,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 			return
 		}
 
-		user, err := api.UserRepo.GetUserById(schema.UserID)
+		user, err := api.UserRepo.GetUserByUID(schema.UserUID)
 		if err != nil {
 			SendError(w, 500, fmt.Sprintf("GetUserById: %s", err))
 			return
@@ -264,7 +264,7 @@ func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 	// check permissions
 	is_admin := ctx.HasPermission(types.JWTPermissionAdmin)
-	if !is_admin && schema.UserID != ctx.Claims.UserID {
+	if !is_admin && schema.UserUID != ctx.Claims.UserUID {
 		// not an admin and not the owner
 		SendError(w, 403, "unauthorized")
 		return

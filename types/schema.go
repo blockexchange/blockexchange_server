@@ -12,7 +12,7 @@ type Schema struct {
 	ID               *int64 `json:"id" ksql:"id"`
 	Created          int64  `json:"created" ksql:"created"`
 	Mtime            int64  `json:"mtime" ksql:"mtime"`
-	UserID           int64  `json:"user_id" ksql:"user_id"`
+	UserUID          string `json:"user_uid" ksql:"user_uid"`
 	Name             string `json:"name" ksql:"name"`
 	Description      string `json:"description" ksql:"description"`
 	ShortDescription string `json:"short_description" ksql:"short_description"`
@@ -40,7 +40,7 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	s.ID = &id
 	s.Created = getInt64(m["created"])
 	s.Mtime = getInt64(m["mtime"])
-	s.UserID = getInt64(m["user_id"])
+	s.UserUID = getString(m["user_uid"])
 	s.Name = getString(m["name"])
 	s.Description = getString(m["description"])
 	s.ShortDescription = getString(m["short_description"])
