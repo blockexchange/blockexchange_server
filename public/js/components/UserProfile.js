@@ -18,7 +18,7 @@ export default {
                     .then(l => l[0])
                     .then(u => {
                         user = u;
-                        return count_user_schema_stars(u.id);
+                        return count_user_schema_stars(u.uid);
                     })
                     .then(stars => {
                         return Object.assign(user, {
@@ -53,7 +53,7 @@ export default {
                         <b>Created:</b> {{format_time(data.user.created)}}
                     </li>
                     <li>
-                        <b>ID:</b> <span class="badge bg-success">{{data.user.id}}</span>
+                        <b>ID:</b> <span class="badge bg-success">{{data.user.uid}}</span>
                     </li>
                     <li>
                         <b>Type:</b> <span class="badge bg-secondary">{{data.user.type}}</span>

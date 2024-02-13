@@ -20,7 +20,7 @@ export default {
                 if (this.username_taken) {
                     return;
                 }
-                return get_user(get_claims().user_id)
+                return get_user(get_claims().user_uid)
                 .then(user => {
                     user.name = this.name;
                     return save_user(user);

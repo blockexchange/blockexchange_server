@@ -2,7 +2,7 @@ import Breadcrumb, { START, USER_SCHEMAS, SCHEMA_DETAIL } from "../Breadcrumb.js
 import LoadingBlock from "../LoadingBlock.js";
 import SchemaDetail from "../schemadetail/SchemaDetail.js";
 
-import { has_permission, get_user_id } from "../../service/login.js";
+import { has_permission, get_user_uid } from "../../service/login.js";
 import { get_schema_by_name } from "../../api/schema.js";
 
 export default {
@@ -25,7 +25,7 @@ export default {
 			};
 		},
 		allow_edit: function(schema) {
-			return (get_user_id() == schema.user_id || has_permission("ADMIN"));
+			return (get_user_uid() == schema.user_uid || has_permission("ADMIN"));
 		}
 	},
 	template: /*html*/`
