@@ -61,7 +61,7 @@ export default {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="at in list" :key="at.id" v-bind:class="{'table-warning': is_expired(at)}">
+                <tr v-for="at in list" :key="at.uid" v-bind:class="{'table-warning': is_expired(at)}">
                     <td>{{at.name}}</td>
                     <td>
                         <clipboard-copy :text="'/bx_login ' + username + ' ' + at.token"></clipboard-copy>
