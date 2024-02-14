@@ -7,5 +7,5 @@ type AccessToken struct {
 	UserUID  string `json:"user_uid" ksql:"user_uid"`
 	Created  int64  `json:"created" ksql:"created"`
 	Expires  int64  `json:"expires" ksql:"expires"`
-	UseCount int    `json:"usecount" ksqp:"usecount"`
+	UseCount int    `json:"usecount" ksql:"usecount"`
 }
