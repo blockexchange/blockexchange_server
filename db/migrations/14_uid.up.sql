@@ -1,12 +1,7 @@
--- schemapart: serial-id -> uid
-alter table schemapart add column uid uuid not null unique default gen_random_uuid();
-alter table schemapart drop column id;
-
 -- schemapart: order_id per schema_id
 alter table schemapart add column order_id bigint;
 update schemapart set order_id = offset_x + (offset_z * 2000) + (offset_y * 2000 * 2000);
 alter table schemapart alter order_id set not null;
-create index schemapart_order_id on schemapart(schema_id, order_id);
 
 -- schemamod: serial-id -> uid
 alter table schemamod add column uid uuid not null unique default gen_random_uuid();
@@ -58,6 +53,34 @@ alter table schema_screenshot add column uid uuid not null unique default gen_ra
 alter table schema_screenshot drop column id;
 
 -- schema: serial-id -> uid
--- TODO
 alter table schema add column uid uuid not null unique default gen_random_uuid();
 
+alter table user_schema_star add column schema_uid uuid;
+update user_schema_star set schema_uid = (select s.uid from schema s where s.id = schema_id);
+alter table user_schema_star alter schema_uid set not null;
+alter table user_schema_star drop column schema_id;
+
+alter table schema_screenshot add column schema_uid uuid;
+update schema_screenshot set schema_uid = (select s.uid from schema s where s.id = schema_id);
+alter table schema_screenshot alter schema_uid set not null;
+alter table schema_screenshot drop column schema_id;
+
+alter table schemamod add column schema_uid uuid;
+update schemamod set schema_uid = (select s.uid from schema s where s.id = schema_id);
+alter table schemamod alter schema_uid set not null;
+alter table schemamod drop column schema_id;
+
+alter table schemapart add column schema_uid uuid;
+update schemapart set schema_uid = (select s.uid from schema s where s.id = schema_id);
+alter table schemapart alter schema_uid set not null;
+alter table schemapart drop column schema_id;
+create unique index schemapart_offset_schema_uid on schemapart(offset_x, offset_y, offset_z, schema_uid);
+create index schemapart_mtime_schema_uid on schemapart(mtime, schema_uid);
+create index schemapart_order_id_schema_uid on schemapart(order_id, schema_uid);
+
+alter table schematag add column schema_uid uuid;
+update schematag set schema_uid = (select s.uid from schema s where s.id = schema_id);
+alter table schematag alter schema_uid set not null;
+alter table schematag drop column schema_id;
+
+alter table schema drop column id;
