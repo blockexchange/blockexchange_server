@@ -12,6 +12,7 @@ func GetSchemaPartOrderID(offset_x, offset_y, offset_z int) int {
 type SchemaPartIterator func() (*SchemaPart, error)
 
 type SchemaPart struct {
+	UID       string `json:"uid" ksql:"uid"`
 	OrderID   int64  `json:"order_id" ksql:"order_id"`
 	SchemaUID string `json:"schema_uid" ksql:"schema_uid"`
 	OffsetX   int    `json:"offset_x" ksql:"offset_x"`

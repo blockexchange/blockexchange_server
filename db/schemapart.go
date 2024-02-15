@@ -7,7 +7,7 @@ import (
 	"github.com/vingarcia/ksql"
 )
 
-var schemaPartTable = ksql.NewTable("schemapart", "schema_uid", "offset_x", "offset_y", "offset_z")
+var schemaPartTable = ksql.NewTable("schemapart", "uid")
 
 type SchemaPartRepository struct {
 	kdb ksql.Provider
