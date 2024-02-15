@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,7 +23,7 @@ func TestRenderFeedTemplate(t *testing.T) {
 		Name: "Somebody",
 	}
 	screenshot := types.SchemaScreenshot{
-		ID: 123,
+		UID: uuid.NewString(),
 	}
 
 	buf, err := renderFeedTemplate("http://example.com", &schema, &user, &screenshot)

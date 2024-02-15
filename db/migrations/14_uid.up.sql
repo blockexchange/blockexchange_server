@@ -52,3 +52,12 @@ alter table access_token alter user_uid set not null;
 alter table access_token drop column user_id;
 
 alter table public.user drop column id;
+
+-- schema_screenshot: serial-id -> uid
+alter table schema_screenshot add column uid uuid not null unique default gen_random_uuid();
+alter table schema_screenshot drop column id;
+
+-- schema: serial-id -> uid
+-- TODO
+alter table schema add column uid uuid not null unique default gen_random_uuid();
+
