@@ -24,9 +24,9 @@ func (r *SchemaScreenshotRepository) GetByUID(uid string) (*types.SchemaScreensh
 	}
 }
 
-func (r *SchemaScreenshotRepository) GetBySchemaID(schema_id int64) ([]*types.SchemaScreenshot, error) {
+func (r *SchemaScreenshotRepository) GetBySchemaUID(schema_uid string) ([]*types.SchemaScreenshot, error) {
 	list := []*types.SchemaScreenshot{}
-	return list, r.kdb.Query(context.Background(), &list, "from schema_screenshot where schema_id = $1", schema_id)
+	return list, r.kdb.Query(context.Background(), &list, "from schema_screenshot where schema_uid = $1", schema_uid)
 }
 
 func (r *SchemaScreenshotRepository) Create(screenshot *types.SchemaScreenshot) error {

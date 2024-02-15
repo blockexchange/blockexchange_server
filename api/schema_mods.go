@@ -4,20 +4,15 @@ import (
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
 func (api *Api) GetSchemaMods(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema_uid := vars["schema_uid"]
 
-	list, err := api.SchemaModRepo.GetSchemaModsBySchemaID(id)
+	list, err := api.SchemaModRepo.GetSchemaModsBySchemaUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -33,20 +28,16 @@ func (api *Api) GetSchemaMods(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema_uid := vars["schema_uid"]
 
 	modlist := make([]string, 0)
-	err = json.NewDecoder(r.Body).Decode(&modlist)
+	err := json.NewDecoder(r.Body).Decode(&modlist)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	schema, err := api.SchemaRepo.GetSchemaById(id)
+	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -61,7 +52,7 @@ func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	current_mod_list, err := api.SchemaModRepo.GetSchemaModsBySchemaID(int64(id))
+	current_mod_list, err := api.SchemaModRepo.GetSchemaModsBySchemaUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -79,8 +70,8 @@ func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 			continue
 		}
 		err = api.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
-			ModName:  mod_name,
-			SchemaID: int64(id),
+			ModName:   mod_name,
+			SchemaUID: schema_uid,
 		})
 		if err != nil {
 			SendError(w, 500, err.Error())
@@ -93,14 +84,10 @@ func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 
 func (api *Api) UpdateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema_uid := vars["schema_uid"]
 
 	// security check
-	schema, err := api.SchemaRepo.GetSchemaById(id)
+	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -116,14 +103,14 @@ func (api *Api) UpdateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 	}
 
 	// extract modnames from schemaparts
-	modnames, err := api.core.ExtractModnames(id)
+	modnames, err := api.core.ExtractModnames(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
 	// remove old modnames
-	err = api.Repositories.SchemaModRepo.RemoveSchemaMods(id)
+	err = api.Repositories.SchemaModRepo.RemoveSchemaMods(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -132,8 +119,8 @@ func (api *Api) UpdateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 	// add new modnames
 	for _, modname := range modnames {
 		err = api.Repositories.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
-			SchemaID: id,
-			ModName:  modname,
+			SchemaUID: schema_uid,
+			ModName:   modname,
 		})
 		if err != nil {
 			SendError(w, 500, err.Error())

@@ -59,8 +59,8 @@ func UpdateSchemaFeed(schema *types.Schema, user *types.User, screenshot *types.
 	buf, err := renderFeedTemplate(baseUrl, schema, user, screenshot)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"schema_id": *schema.ID,
-			"err":       err.Error(),
+			"schema_uid": schema.UID,
+			"err":        err.Error(),
 		}).Error("UpdateSchemaFeed::Template")
 		return
 	}
@@ -72,8 +72,8 @@ func UpdateSchemaFeed(schema *types.Schema, user *types.User, screenshot *types.
 	json_data, err := json.Marshal(&discord_data)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"schema_id": *schema.ID,
-			"err":       err.Error(),
+			"schema_uid": schema.UID,
+			"err":        err.Error(),
 		}).Error("UpdateSchemaFeed::Marshal")
 		return
 	}
@@ -81,8 +81,8 @@ func UpdateSchemaFeed(schema *types.Schema, user *types.User, screenshot *types.
 	req, err := http.NewRequest("POST", feed_url, bytes.NewBuffer(json_data))
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"schema_id": *schema.ID,
-			"err":       err.Error(),
+			"schema_uid": schema.UID,
+			"err":        err.Error(),
 		}).Error("UpdateSchemaFeed::NewRequest")
 		return
 	}
@@ -93,16 +93,16 @@ func UpdateSchemaFeed(schema *types.Schema, user *types.User, screenshot *types.
 	resp, err := client.Do(req)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"schema_id": *schema.ID,
-			"err":       err.Error(),
+			"schema_uid": schema.UID,
+			"err":        err.Error(),
 		}).Error("UpdateSchemaFeed::ExecRequest")
 		return
 	}
 
 	if resp.StatusCode != 200 {
 		logrus.WithFields(logrus.Fields{
-			"schema_id": *schema.ID,
-			"status":    resp.StatusCode,
+			"schema_uid": schema.UID,
+			"status":     resp.StatusCode,
 		}).Error("UpdateSchemaFeed::Response")
 		return
 	}

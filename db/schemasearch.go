@@ -43,9 +43,9 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 		i++
 	}
 
-	if search.SchemaID != nil {
-		query.WriteString(fmt.Sprintf(" and id = $%d", i))
-		params = append(params, *search.SchemaID)
+	if search.SchemaUID != nil {
+		query.WriteString(fmt.Sprintf(" and uid = $%d", i))
+		params = append(params, *search.SchemaUID)
 		i++
 	}
 
@@ -56,7 +56,7 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 	}
 
 	if search.TagUID != nil {
-		query.WriteString(fmt.Sprintf(" and id in (select schema_id from schematag where tag_uid = $%d)", i))
+		query.WriteString(fmt.Sprintf(" and uid in (select schema_uid from schematag where tag_uid = $%d)", i))
 		params = append(params, *search.TagUID)
 		i++
 	}

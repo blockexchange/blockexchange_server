@@ -9,7 +9,7 @@ type SchemaUpdateError struct {
 
 // used for the database and GET requests
 type Schema struct {
-	ID               *int64 `json:"id" ksql:"id"`
+	UID              string `json:"uid" ksql:"uid"`
 	Created          int64  `json:"created" ksql:"created"`
 	Mtime            int64  `json:"mtime" ksql:"mtime"`
 	UserUID          string `json:"user_uid" ksql:"user_uid"`
@@ -36,8 +36,7 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	id := getInt64(m["id"])
-	s.ID = &id
+	s.UID = getString(m["schema_uid"])
 	s.Created = getInt64(m["created"])
 	s.Mtime = getInt64(m["mtime"])
 	s.UserUID = getString(m["user_uid"])

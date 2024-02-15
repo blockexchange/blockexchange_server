@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/minetest-go/colormapping"
 
 	"github.com/sirupsen/logrus"
@@ -16,7 +17,7 @@ import (
 type MockSchemaPartRepository struct {
 }
 
-func (r *MockSchemaPartRepository) GetBySchemaIDAndOffset(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
+func (r *MockSchemaPartRepository) GetBySchemaUIDAndOffset(schema_uid string, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
 	logrus.WithFields(logrus.Fields{
 		"offset_x": offset_x,
 		"offset_y": offset_y,
@@ -39,13 +40,12 @@ func TestISORenderer(t *testing.T) {
 	cm := colormapping.NewColorMapping()
 	assert.NoError(t, cm.LoadDefaults())
 
-	renderer := NewISORenderer(repo.GetBySchemaIDAndOffset, cm)
-	id := int64(0)
+	renderer := NewISORenderer(repo.GetBySchemaUIDAndOffset, cm)
 	schema := types.Schema{
 		SizeX: 32,
 		SizeY: 32,
 		SizeZ: 32,
-		ID:    &id,
+		UID:   uuid.NewString(),
 	}
 	png, err := renderer.RenderIsometricPreview(&schema)
 	assert.NoError(t, err)

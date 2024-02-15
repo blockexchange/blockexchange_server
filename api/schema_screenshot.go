@@ -13,23 +13,19 @@ import (
 	"github.com/nfnt/resize"
 )
 
-func getScreenshotPrefix(schema_id int) string {
-	return fmt.Sprintf("screenshot_%d_", schema_id)
+func getScreenshotPrefix(schema_uid string) string {
+	return fmt.Sprintf("screenshot_%s_", schema_uid)
 }
 
-func createScreenshotKey(schema_id int, height int, width int) string {
-	return fmt.Sprintf("%s%d_%d", getScreenshotPrefix(schema_id), height, width)
+func createScreenshotKey(schema_uid string, height int, width int) string {
+	return fmt.Sprintf("%s%d_%d", getScreenshotPrefix(schema_uid), height, width)
 }
 
 func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	schema_id, err := strconv.Atoi(vars["schema_id"])
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema_uid := vars["schema_uid"]
 
-	screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(int64(schema_id))
+	screenshots, err := api.SchemaScreenshotRepo.GetBySchemaUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -53,7 +49,7 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		cache_key := createScreenshotKey(schema_id, height, width)
+		cache_key := createScreenshotKey(schema_uid, height, width)
 		data, err := api.Cache.Get(cache_key)
 		if err != nil {
 			// cache error
@@ -105,13 +101,9 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 
 func (api Api) UpdateSchemaPreview(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	schema_id, err := strconv.Atoi(vars["schema_id"])
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema_uid := vars["schema_uid"]
 
-	schema, err := api.SchemaRepo.GetSchemaById(int64(schema_id))
+	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, "GetSchemaById::"+err.Error())
 		return
@@ -130,6 +122,6 @@ func (api Api) UpdateSchemaPreview(w http.ResponseWriter, r *http.Request, ctx *
 	}
 
 	// clear cache
-	err = api.Cache.RemovePrefix(getScreenshotPrefix(schema_id))
+	err = api.Cache.RemovePrefix(getScreenshotPrefix(schema_uid))
 	Send(w, true, err)
 }

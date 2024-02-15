@@ -5,6 +5,8 @@ import (
 	"blockexchange/types"
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema, error) {
@@ -33,6 +35,7 @@ func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema
 	}
 
 	schema := &types.Schema{
+		UID:         uuid.NewString(),
 		Created:     time.Now().Unix() * 1000,
 		UserUID:     user.UID,
 		Name:        newSchemaName,
@@ -56,7 +59,7 @@ func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema
 		if err != nil {
 			return nil, err
 		}
-		sp.SchemaID = *schema.ID
+		sp.SchemaUID = schema.UID
 
 		err = c.repos.SchemaPartRepo.CreateOrUpdateSchemaPart(sp)
 		if err != nil {
@@ -66,13 +69,13 @@ func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema
 
 	for _, modname := range modnames {
 		err = c.repos.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
-			SchemaID: *schema.ID,
-			ModName:  modname,
+			SchemaUID: schema.UID,
+			ModName:   modname,
 		})
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return c.repos.SchemaRepo.GetSchemaById(*schema.ID)
+	return c.repos.SchemaRepo.GetSchemaByUID(schema.UID)
 }

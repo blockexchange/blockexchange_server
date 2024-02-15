@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSchemaMarshalling(t *testing.T) {
-	id := int64(1)
 	schema := Schema{
-		ID:   &id,
+		UID:  uuid.NewString(),
 		Name: "blah",
 	}
 
@@ -21,5 +21,5 @@ func TestSchemaMarshalling(t *testing.T) {
 	schema2 := Schema{}
 	err = json.Unmarshal(data, &schema2)
 	assert.NoError(t, err)
-	assert.Equal(t, *schema.ID, *schema2.ID)
+	assert.Equal(t, schema.UID, schema2.UID)
 }

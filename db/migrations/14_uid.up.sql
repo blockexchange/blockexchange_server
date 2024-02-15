@@ -5,7 +5,6 @@ alter table schemapart alter order_id set not null;
 alter table schemapart drop column id;
 
 -- schemamod: serial-id -> uid
-alter table schemamod add column uid uuid not null unique default gen_random_uuid();
 alter table schemamod drop column id;
 
 -- schematag: serial-id -> uid
@@ -70,6 +69,7 @@ alter table schemamod add column schema_uid uuid;
 update schemamod set schema_uid = (select s.uid from schema s where s.id = schema_id);
 alter table schemamod alter schema_uid set not null;
 alter table schemamod drop column schema_id;
+create unique index schemamod_schema_uid_mod_name on schemamod(schema_uid, mod_name);
 
 alter table schemapart add column schema_uid uuid;
 update schemapart set schema_uid = (select s.uid from schema s where s.id = schema_id);

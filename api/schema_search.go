@@ -11,11 +11,11 @@ import (
 
 func (api *Api) AddSchemaSearchFields(schemas []*types.Schema) ([]*types.SchemaSearchResponse, error) {
 	user_uids := []string{}
-	schema_ids := []int64{}
+	schema_uids := []string{}
 
 	for _, s := range schemas {
 		user_uids = append(user_uids, s.UserUID)
-		schema_ids = append(schema_ids, *s.ID)
+		schema_uids = append(schema_uids, s.UID)
 	}
 
 	users, err := api.Repositories.UserRepo.GetUsersByUIDs(user_uids)
@@ -28,7 +28,7 @@ func (api *Api) AddSchemaSearchFields(schemas []*types.Schema) ([]*types.SchemaS
 	}
 
 	list := make([]*types.SchemaSearchResponse, len(schemas))
-	schema_map := map[int64]*types.SchemaSearchResponse{}
+	schema_map := map[string]*types.SchemaSearchResponse{}
 	for i, s := range schemas {
 		user := user_map[s.UserUID]
 		if user == nil {
@@ -40,7 +40,7 @@ func (api *Api) AddSchemaSearchFields(schemas []*types.Schema) ([]*types.SchemaS
 			Tags:     []string{},
 			Mods:     []string{},
 		}
-		schema_map[*s.ID] = sr
+		schema_map[s.UID] = sr
 		list[i] = sr
 	}
 
@@ -53,14 +53,14 @@ func (api *Api) AddSchemaSearchFields(schemas []*types.Schema) ([]*types.SchemaS
 		tag_map[t.UID] = t
 	}
 
-	schema_tags, err := api.Repositories.SchemaTagRepo.GetBySchemaIDs(schema_ids)
+	schema_tags, err := api.Repositories.SchemaTagRepo.GetBySchemaUIDs(schema_uids)
 	if err != nil {
 		return nil, err
 	}
 	for _, st := range schema_tags {
-		sr := schema_map[st.SchemaID]
+		sr := schema_map[st.SchemaUID]
 		if sr == nil {
-			return nil, fmt.Errorf("schema %d for schema-tag %s not found", st.SchemaID, st.UID)
+			return nil, fmt.Errorf("schema %s for schema-tag %s not found", st.SchemaUID, st.UID)
 		}
 		t := tag_map[st.TagUID]
 		if t == nil {
@@ -69,14 +69,14 @@ func (api *Api) AddSchemaSearchFields(schemas []*types.Schema) ([]*types.SchemaS
 		sr.Tags = append(sr.Tags, t.Name)
 	}
 
-	schema_mods, err := api.Repositories.SchemaModRepo.GetSchemaModsBySchemaIDs(schema_ids)
+	schema_mods, err := api.Repositories.SchemaModRepo.GetSchemaModsBySchemaUIDs(schema_uids)
 	if err != nil {
 		return nil, err
 	}
 	for _, sm := range schema_mods {
-		sr := schema_map[sm.SchemaID]
+		sr := schema_map[sm.SchemaUID]
 		if sr == nil {
-			return nil, fmt.Errorf("schema %d for schema-mod %s not found", sm.SchemaID, sm.UID)
+			return nil, fmt.Errorf("schema %s for schema-mod not found", sm.SchemaUID)
 		}
 		sr.Mods = append(sr.Mods, sm.ModName)
 	}
@@ -117,7 +117,7 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 	schema := list2[0]
 	if r.URL.Query().Get("download") == "true" {
 		// increment downloads and ignore error
-		api.SchemaRepo.IncrementDownloads(*schema.ID)
+		api.SchemaRepo.IncrementDownloads(schema.UID)
 	}
 
 	Send(w, schema, nil)

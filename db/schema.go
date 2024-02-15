@@ -7,15 +7,15 @@ import (
 	"github.com/vingarcia/ksql"
 )
 
-var schemaTable = ksql.NewTable("schema", "id")
+var schemaTable = ksql.NewTable("schema", "uid")
 
 type SchemaRepository struct {
 	kdb ksql.Provider
 }
 
-func (r *SchemaRepository) GetSchemaById(id int64) (*types.Schema, error) {
+func (r *SchemaRepository) GetSchemaByUID(uid string) (*types.Schema, error) {
 	s := &types.Schema{}
-	err := r.kdb.QueryOne(context.Background(), s, "from schema where id = $1", id)
+	err := r.kdb.QueryOne(context.Background(), s, "from schema where uid = $1", uid)
 	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	} else {
@@ -51,28 +51,28 @@ func (r *SchemaRepository) UpdateSchema(schema *types.Schema) error {
 	return r.kdb.Patch(context.Background(), schemaTable, schema)
 }
 
-func (r *SchemaRepository) IncrementViews(id int64) error {
+func (r *SchemaRepository) IncrementViews(uid string) error {
 	query := `
 		update schema
 		set views = views + 1
-		where id = $1
+		where uid = $1
 	`
-	_, err := r.kdb.Exec(context.Background(), query, id)
+	_, err := r.kdb.Exec(context.Background(), query, uid)
 	return err
 }
 
-func (r *SchemaRepository) IncrementDownloads(id int64) error {
+func (r *SchemaRepository) IncrementDownloads(uid string) error {
 	query := `
 		update schema
 		set downloads = downloads + 1
-		where id = $1
+		where uid = $1
 	`
-	_, err := r.kdb.Exec(context.Background(), query, id)
+	_, err := r.kdb.Exec(context.Background(), query, uid)
 	return err
 }
 
-func (r *SchemaRepository) DeleteSchema(id int64) error {
-	return r.kdb.Delete(context.Background(), schemaTable, id)
+func (r *SchemaRepository) DeleteSchema(uid string) error {
+	return r.kdb.Delete(context.Background(), schemaTable, uid)
 }
 
 func (r *SchemaRepository) DeleteIncompleteSchema(user_uid string, name string) error {
@@ -96,19 +96,19 @@ func (r *SchemaRepository) DeleteOldIncompleteSchema(time_before int64) error {
 	return err
 }
 
-func (r *SchemaRepository) CalculateStats(id int64) error {
+func (r *SchemaRepository) CalculateStats(uid string) error {
 	q := `
 		update schema s
 		set total_size = (
 			select
 			coalesce(sum(length(data)) + sum(length(metadata)), 0)
-			from schemapart sp where sp.schema_id = s.id
+			from schemapart sp where sp.schema_uid = s.uid
 		),
-		total_parts = (select count(*) from schemapart sp where sp.schema_id = s.id),
-		stars = (select count(*) from user_schema_star where schema_id = $1)
-		where id = $1
+		total_parts = (select count(*) from schemapart sp where sp.schema_uid = s.uid),
+		stars = (select count(*) from user_schema_star where schema_uid = $1)
+		where uid = $1
 	`
-	_, err := r.kdb.Exec(context.Background(), q, id)
+	_, err := r.kdb.Exec(context.Background(), q, uid)
 	return err
 }
 

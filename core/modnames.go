@@ -6,11 +6,11 @@ import (
 	"strings"
 )
 
-func (c *Core) ExtractModnames(schema_id int64) ([]string, error) {
+func (c *Core) ExtractModnames(schema_uid string) ([]string, error) {
 
 	modname_map := map[string]bool{}
 
-	err := c.SchemapartCallback(schema_id, func(sp *types.SchemaPart) error {
+	err := c.SchemapartCallback(schema_uid, func(sp *types.SchemaPart) error {
 		psp, err := parser.ParseSchemaPart(sp)
 		if err != nil {
 			return err

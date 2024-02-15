@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -15,19 +14,16 @@ import (
 
 func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["schema_id"])
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
+	schema_uid := vars["schema_uid"]
+
+	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
 	if r.URL.Query().Get("download") == "true" {
-		err = api.incrementDownloadstats(int64(id), r)
+		err = api.incrementDownloadstats(schema_uid, r)
 		if err != nil {
 			SendError(w, 500, err.Error())
 			return
@@ -98,7 +94,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 
 	// fetch saved schema
-	schema, err := api.SchemaRepo.GetSchemaById(*updated_schema.ID)
+	schema, err := api.SchemaRepo.GetSchemaByUID(updated_schema.UID)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -130,7 +126,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		SendError(w, 500, err.Error())
 		return
 	}
-	if existing_schema != nil && *existing_schema.ID != *schema.ID {
+	if existing_schema != nil && existing_schema.UID != schema.UID {
 		// another schema with the same name already exists
 		SendErrorResponse(w, http.StatusBadRequest, &types.SchemaUpdateError{
 			NameTaken: true,
@@ -155,13 +151,9 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["schema_id"])
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema_uid := vars["schema_uid"]
 
-	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
+	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("GetSchemaById: %s", err))
 		return
@@ -200,14 +192,14 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 	}
 
 	// let the database calculate the size/count stats
-	err = api.SchemaRepo.CalculateStats(*schema.ID)
+	err = api.SchemaRepo.CalculateStats(schema.UID)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("CalculateStats: %s", err))
 		return
 	}
 
 	// retrieve updated schema data from the db (size, count)
-	schema, err = api.SchemaRepo.GetSchemaById(*schema.ID)
+	schema, err = api.SchemaRepo.GetSchemaByUID(schema.UID)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("GetBySchemaID: %s", err))
 		return
@@ -215,7 +207,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 
 	// process notifications
 	if notify_feed {
-		screenshots, err := api.SchemaScreenshotRepo.GetBySchemaID(*schema.ID)
+		screenshots, err := api.SchemaScreenshotRepo.GetBySchemaUID(schema.UID)
 		if err != nil {
 			SendError(w, 500, fmt.Sprintf("GetBySchemaID: %s", err))
 			return
@@ -246,13 +238,9 @@ func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 	// fetch schema
 	vars := mux.Vars(r)
-	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema_uid := vars["schema_uid"]
 
-	schema, err := api.SchemaRepo.GetSchemaById(id)
+	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -270,6 +258,6 @@ func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		return
 	}
 
-	err = api.SchemaRepo.DeleteSchema(*schema.ID)
+	err = api.SchemaRepo.DeleteSchema(schema.UID)
 	Send(w, true, err)
 }

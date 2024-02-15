@@ -5,6 +5,8 @@ import (
 	"blockexchange/types"
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
@@ -26,7 +28,7 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 		return nil, fmt.Errorf("user not found: '%s'", username)
 	}
 
-	res.Schema.ID = nil
+	res.Schema.UID = uuid.NewString()
 	res.Schema.Created = time.Now().UnixMilli()
 	res.Schema.Mtime = time.Now().UnixMilli()
 	res.Schema.UserUID = user.UID
@@ -39,8 +41,8 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 
 	for _, modname := range res.Mods {
 		err = c.repos.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
-			SchemaID: *res.Schema.ID,
-			ModName:  modname,
+			SchemaUID: res.Schema.UID,
+			ModName:   modname,
 		})
 		if err != nil {
 			return nil, err
@@ -48,7 +50,7 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 	}
 
 	for _, part := range res.Parts {
-		part.SchemaID = *res.Schema.ID
+		part.SchemaUID = res.Schema.UID
 		part.Mtime = res.Schema.Mtime
 		err = c.repos.SchemaPartRepo.CreateOrUpdateSchemaPart(part)
 		if err != nil {

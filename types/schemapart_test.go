@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,13 +19,13 @@ func TestSanityBase64(t *testing.T) {
 
 func TestSchemaPartSerialization(t *testing.T) {
 	part := SchemaPart{
-		SchemaID: 2,
-		OffsetX:  3,
-		OffsetY:  4,
-		OffsetZ:  5,
-		Mtime:    6,
-		Data:     []byte{0x07, 0x08},
-		MetaData: []byte{0x09, 0x0A, 0x0B},
+		SchemaUID: uuid.NewString(),
+		OffsetX:   3,
+		OffsetY:   4,
+		OffsetZ:   5,
+		Mtime:     6,
+		Data:      []byte{0x07, 0x08},
+		MetaData:  []byte{0x09, 0x0A, 0x0B},
 	}
 
 	data, err := json.Marshal(part)
@@ -38,7 +39,7 @@ func TestSchemaPartSerialization(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, part.SchemaID, part2.SchemaID)
+	assert.Equal(t, part.SchemaUID, part2.SchemaUID)
 	assert.Equal(t, part.OffsetX, part2.OffsetX)
 	assert.Equal(t, part.OffsetY, part2.OffsetY)
 	assert.Equal(t, part.OffsetZ, part2.OffsetZ)

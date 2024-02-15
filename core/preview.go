@@ -19,13 +19,13 @@ func init() {
 // TODO: (c *Core)
 func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, error) {
 
-	renderer := render.NewISORenderer(c.repos.SchemaPartRepo.GetBySchemaIDAndOffset, cm)
+	renderer := render.NewISORenderer(c.repos.SchemaPartRepo.GetBySchemaUIDAndOffset, cm)
 	png, err := renderer.RenderIsometricPreview(schema)
 	if err != nil {
 		return nil, err
 	}
 
-	screenshots, err := c.repos.SchemaScreenshotRepo.GetBySchemaID(*schema.ID)
+	screenshots, err := c.repos.SchemaScreenshotRepo.GetBySchemaUID(schema.UID)
 	if err != nil {
 		return nil, err
 	}
@@ -44,10 +44,10 @@ func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, err
 	} else {
 		// create a new one
 		screenshot = &types.SchemaScreenshot{
-			SchemaID: *schema.ID,
-			Type:     "image/png",
-			Title:    "Isometric preview",
-			Data:     png,
+			SchemaUID: schema.UID,
+			Type:      "image/png",
+			Title:     "Isometric preview",
+			Data:      png,
 		}
 
 		err = c.repos.SchemaScreenshotRepo.Create(screenshot)
