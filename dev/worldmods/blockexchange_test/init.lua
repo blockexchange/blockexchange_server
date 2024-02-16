@@ -3,9 +3,8 @@ if not minetest.settings:get_bool("blockexchange.enable_integration_test", false
     return
 end
 
--- TODO: make this work :P
--- local MP = minetest.get_modpath("blockexchange_test")
-local compare_area = function() return true end -- dofile(MP.."/compare_area.lua")
+local MP = minetest.get_modpath("blockexchange_test")
+local compare_area = dofile(MP.."/compare_area.lua")
 
 print("[blockexchange_test] executing integration test")
 
