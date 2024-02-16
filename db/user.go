@@ -4,6 +4,7 @@ import (
 	"blockexchange/types"
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/vingarcia/ksql"
 )
 
@@ -57,6 +58,9 @@ func (r *UserRepository) GetUsers(limit, offset int) ([]*types.User, error) {
 }
 
 func (r *UserRepository) CreateUser(user *types.User) error {
+	if user.UID == "" {
+		user.UID = uuid.NewString()
+	}
 	return r.kdb.Insert(context.Background(), userTable, user)
 }
 

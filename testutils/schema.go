@@ -6,12 +6,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func CreateSchema(repo *db.SchemaRepository, t *testing.T, user *types.User, schema *types.Schema) *types.Schema {
 	if schema == nil {
 		schema = &types.Schema{
+			UID:  uuid.NewString(),
 			Name: CreateName(10),
 		}
 	}

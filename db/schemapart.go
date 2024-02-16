@@ -7,34 +7,23 @@ import (
 	"github.com/vingarcia/ksql"
 )
 
-var schemaPartTable = ksql.NewTable("schemapart", "schema_uid", "offset_x", "offset_y", "offset_z")
-
 type SchemaPartRepository struct {
 	kdb ksql.Provider
 }
 
 func (r *SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
-	return r.kdb.Transaction(context.Background(), func(p ksql.Provider) error {
-		sp := &types.SchemaPart{}
-		err := p.QueryOne(context.Background(), sp,
-			"from schemapart where schema_uid = $1 and offset_x = $2 and offset_y = $3 and offset_z = $4",
-			part.SchemaUID, part.OffsetX, part.OffsetY, part.OffsetZ,
-		)
-		if err == ksql.ErrRecordNotFound {
-			// insert
-			part.OrderID = int64(types.GetSchemaPartOrderID(part.OffsetX, part.OffsetY, part.OffsetZ))
-			return p.Insert(context.Background(), schemaPartTable, part)
-		} else if err == nil {
-			// update
-			sp.Mtime = part.Mtime
-			sp.Data = part.Data
-			sp.MetaData = part.MetaData
-			return p.Patch(context.Background(), schemaPartTable, sp)
-		} else {
-			// err
-			return err
-		}
-	})
+	_, err := r.kdb.Exec(context.Background(), `
+		insert into
+		schemapart(schema_uid, offset_x, offset_y, offset_z, order_id, mtime, data, metadata)
+		values($1, $2, $3, $4, $5, $6, $7, $8)
+		on conflict (schema_uid, offset_x, offset_y, offset_z)
+		do update
+		set mtime = $6, data = $7, metadata = $8
+		`,
+		part.SchemaUID, part.OffsetX, part.OffsetY, part.OffsetZ,
+		part.OrderID, part.Mtime, part.Data, part.MetaData,
+	)
+	return err
 }
 
 func (r *SchemaPartRepository) GetBySchemaUIDAndOffset(schema_uid string, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {

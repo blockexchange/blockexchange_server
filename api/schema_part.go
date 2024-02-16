@@ -24,8 +24,8 @@ var partsDownloaded = promauto.NewCounter(prometheus.CounterOpts{
 })
 
 func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
-	schemapart := types.SchemaPart{}
-	err := json.NewDecoder(r.Body).Decode(&schemapart)
+	schemapart := &types.SchemaPart{}
+	err := json.NewDecoder(r.Body).Decode(schemapart)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -33,7 +33,7 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 
 	schema, err := api.SchemaRepo.GetSchemaByUID(schemapart.SchemaUID)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, fmt.Sprintf("getby schemaUID error: %s", err))
 		return
 	}
 
@@ -51,9 +51,9 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 
 	// update schema part
 	schemapart.Mtime = mtime
-	err = api.SchemaPartRepo.CreateOrUpdateSchemaPart(&schemapart)
+	err = api.SchemaPartRepo.CreateOrUpdateSchemaPart(schemapart)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, fmt.Sprintf("CreateOrUpdateSchemaPart error: %s", err))
 		return
 	}
 
@@ -61,7 +61,7 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 	schema.Mtime = mtime
 	err = api.SchemaRepo.UpdateSchema(schema)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, fmt.Sprintf("UpdateSchema error: %s", err))
 		return
 	}
 

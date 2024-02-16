@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateSchemaPart(t *testing.T) {
+func TestCreateSchemaPartValid(t *testing.T) {
 	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, nil)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)

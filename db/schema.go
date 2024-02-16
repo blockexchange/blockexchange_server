@@ -4,6 +4,7 @@ import (
 	"blockexchange/types"
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/vingarcia/ksql"
 )
 
@@ -44,6 +45,9 @@ func (r *SchemaRepository) GetSchemaByUsernameAndName(username, schemaname strin
 }
 
 func (r *SchemaRepository) CreateSchema(schema *types.Schema) error {
+	if schema.UID == "" {
+		schema.UID = uuid.NewString()
+	}
 	return r.kdb.Insert(context.Background(), schemaTable, schema)
 }
 
