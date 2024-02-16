@@ -8,7 +8,7 @@ export default {
     methods: {
         format_size,
         preview_src: function(schema) {
-            return BaseURL + '/api/schema/' + schema.id + '/screenshot?height=240&width=360';
+            return BaseURL + '/api/schema/' + schema.uid + '/screenshot?height=240&width=360';
         },
         schema_link: function(schema) {
             return '/schema/' + schema.username + '/' + schema.name;
@@ -22,7 +22,7 @@ export default {
                 No schematics found
             </div>
         </div>
-        <div style="padding-bottom: 10px; width: 320px; min-height: 450px;" :key="schema.id" v-for="schema in list">
+        <div style="padding-bottom: 10px; width: 320px; min-height: 450px;" :key="schema.uid" v-for="schema in list">
             <div class="card" style="min-height: 400px;">
                 <router-link :to="schema_link(schema)">
                     <img
