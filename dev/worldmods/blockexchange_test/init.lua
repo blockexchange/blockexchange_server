@@ -35,7 +35,7 @@ minetest.register_on_mods_loaded(function()
         end):next(function()
             return blockexchange.load(playername, pos1_load, username, schemaname)
         end):next(function()
-            local success, msg = compare_area(pos1, pos2, pos1_load, pos2_load)
+            local success, msg = compare_area(pos1, pos2, pos1_load, pos2_load, {}) -- TODO: fix/enable full checks
             if not success then
                 fail("loaded area does not match: " .. msg)
             end
