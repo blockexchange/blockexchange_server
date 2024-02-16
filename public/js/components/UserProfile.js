@@ -32,7 +32,7 @@ export default {
 	template: /*html*/`
     <loading-block :fetch_data="fetch_data" v-slot="{ data }">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <h5>
                     User profile for
                     <small class="text-body-secondary">{{data.user.name}}</small>
@@ -63,7 +63,7 @@ export default {
                     </li>
                 </ul>
             </div>
-            <div class="col-md-6 text-end">
+            <div class="col-md-4 text-end">
                 <img v-if="data.user.avatar_url" :src="data.user.avatar_url" height="64" width="64"/>
             </div>
         </div>

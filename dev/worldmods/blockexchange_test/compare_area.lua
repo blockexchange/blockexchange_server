@@ -29,7 +29,8 @@ return function(pos1, pos2, pos1_load, pos2_load, opts)
                 local i2 = area2:indexp(vector.add(pos, offset))
 
                 if nodeids1[i1] ~= nodeids2[i2] then
-                    return false, "node-ids, pos: " .. minetest.pos_to_string(pos)
+                    return false, "node-ids, pos: " .. minetest.pos_to_string(pos) ..
+                        " expected: " .. nodeids1[i1] .. " got: " .. nodeids2[i2]
                 end
                 if opts.check_param1 and param1_data1[i1] ~= param1_data2[i2] then
                     return false, "light, pos: " .. minetest.pos_to_string(pos)
