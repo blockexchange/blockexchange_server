@@ -36,7 +36,7 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	s.UID = getString(m["schema_uid"])
+	s.UID = getString(m["uid"])
 	s.Created = getInt64(m["created"])
 	s.Mtime = getInt64(m["mtime"])
 	s.UserUID = getString(m["user_uid"])

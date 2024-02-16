@@ -38,6 +38,9 @@ func CreateSchemaPart(repo *db.SchemaPartRepository, t *testing.T, schema *types
 			Mtime:     time.Now().Unix() * 1000,
 		}
 	}
+	if schemapart.OrderID == 0 {
+		schemapart.OrderID = int64(types.GetSchemaPartOrderID(schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ))
+	}
 
 	assert.NoError(t, repo.CreateOrUpdateSchemaPart(schemapart))
 	return schemapart
