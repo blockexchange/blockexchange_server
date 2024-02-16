@@ -2,8 +2,10 @@
 alter table schemapart add column order_id bigint;
 update schemapart set order_id = offset_x + (offset_z * 2000) + (offset_y * 2000 * 2000);
 alter table schemapart alter order_id set not null;
-alter table schemapart add column uid uuid not null unique default gen_random_uuid();
 alter table schemapart drop column id;
+alter table schemapart alter column offset_x set default 0;
+alter table schemapart alter column offset_y set default 0;
+alter table schemapart alter column offset_z set default 0;
 
 -- schemamod: serial-id -> uid
 alter table schemamod drop column id;

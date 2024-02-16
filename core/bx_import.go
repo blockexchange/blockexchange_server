@@ -12,17 +12,17 @@ import (
 func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 	res, err := bx.ParseBXContent(data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse error: %v", err)
 	}
 
 	newSchemaName, err := c.FindUnusedSchemaname(res.Schema.Name, username)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("find unused schemaname error: %v", err)
 	}
 
 	user, err := c.repos.UserRepo.GetUserByName(username)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get user by name error: %v", err)
 	}
 	if user == nil {
 		return nil, fmt.Errorf("user not found: '%s'", username)
@@ -36,7 +36,7 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 
 	err = c.repos.SchemaRepo.CreateSchema(res.Schema)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("create schema error: %v", err)
 	}
 
 	for _, modname := range res.Mods {
@@ -45,7 +45,7 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 			ModName:   modname,
 		})
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("create schemamod error: %v", err)
 		}
 	}
 
@@ -54,7 +54,7 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 		part.Mtime = res.Schema.Mtime
 		err = c.repos.SchemaPartRepo.CreateOrUpdateSchemaPart(part)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("create or update schemapart error: %v", err)
 		}
 	}
 
