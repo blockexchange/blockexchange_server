@@ -14,6 +14,15 @@ type CollectionRepository struct {
 	kdb ksql.Provider
 }
 
+func (r *CollectionRepository) GetCollectionByUID(uid string) (*types.Collection, error) {
+	c := &types.Collection{}
+	err := r.kdb.QueryOne(context.Background(), c, "from collection where uid = $1", uid)
+	if err == ksql.ErrRecordNotFound {
+		return nil, nil
+	}
+	return c, err
+}
+
 func (r *CollectionRepository) GetCollectionsByUserUID(user_uid string) ([]*types.Collection, error) {
 	list := []*types.Collection{}
 	return list, r.kdb.Query(context.Background(), &list, "from collection where user_uid = $1", user_uid)
