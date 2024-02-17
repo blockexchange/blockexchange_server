@@ -117,7 +117,7 @@ func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request
 	schema := list2[0]
 	if r.URL.Query().Get("download") == "true" {
 		// increment downloads and ignore error
-		api.SchemaRepo.IncrementDownloads(schema.UID)
+		api.incrementDownloadstats(schema.UID, r)
 	}
 
 	Send(w, schema, nil)
