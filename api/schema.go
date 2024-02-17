@@ -23,12 +23,15 @@ func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Query().Get("download") == "true" {
-		err = api.incrementDownloadstats(schema_uid, r)
+		err = api.incrementDownloadStats(schema_uid, r)
 		if err != nil {
 			SendError(w, 500, err.Error())
 			return
 		}
 	}
+
+	// increment view stats
+	api.incrementViewStats(schema.UID, r)
 
 	SendJson(w, schema)
 }
