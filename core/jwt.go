@@ -30,7 +30,7 @@ func GetPermissions(user *types.User, management bool) []types.JWTPermission {
 
 func CreateClaims(user *types.User, permissions []types.JWTPermission) *types.Claims {
 	return &types.Claims{
-		UserID:      *user.ID,
+		UserUID:     user.UID,
 		Username:    user.Name,
 		Type:        user.Type,
 		Permissions: permissions,

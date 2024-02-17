@@ -6,17 +6,19 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func CreateSchema(repo *db.SchemaRepository, t *testing.T, user *types.User, schema *types.Schema) *types.Schema {
 	if schema == nil {
 		schema = &types.Schema{
+			UID:  uuid.NewString(),
 			Name: CreateName(10),
 		}
 	}
 
-	schema.UserID = *user.ID
+	schema.UserUID = user.UID
 	assert.NoError(t, repo.CreateSchema(schema))
 	return schema
 }
@@ -27,14 +29,17 @@ var partMetadata = "eJxljlEKwjAQBe+y30Vs1FL2MmExsS6kSUm2qC25u2mLUPXvMQ+GmaG3QoaE
 func CreateSchemaPart(repo *db.SchemaPartRepository, t *testing.T, schema *types.Schema, schemapart *types.SchemaPart) *types.SchemaPart {
 	if schemapart == nil {
 		schemapart = &types.SchemaPart{
-			SchemaID: *schema.ID,
-			OffsetX:  0,
-			OffsetY:  0,
-			OffsetZ:  0,
-			Data:     []byte(partData),
-			MetaData: []byte(partMetadata),
-			Mtime:    time.Now().Unix() * 1000,
+			SchemaUID: schema.UID,
+			OffsetX:   0,
+			OffsetY:   0,
+			OffsetZ:   0,
+			Data:      []byte(partData),
+			MetaData:  []byte(partMetadata),
+			Mtime:     time.Now().Unix() * 1000,
 		}
+	}
+	if schemapart.OrderID == 0 {
+		schemapart.OrderID = int64(types.GetSchemaPartOrderID(schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ))
 	}
 
 	assert.NoError(t, repo.CreateOrUpdateSchemaPart(schemapart))
@@ -46,7 +51,7 @@ func CreateSchemaScreenshot(repo db.SchemaScreenshotRepository, t *testing.T, sc
 		screenshot = &types.SchemaScreenshot{}
 	}
 
-	screenshot.SchemaID = *schema.ID
+	screenshot.SchemaUID = schema.UID
 	assert.NoError(t, repo.Create(screenshot))
 	return screenshot
 }

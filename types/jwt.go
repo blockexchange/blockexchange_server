@@ -16,7 +16,7 @@ const (
 type Claims struct {
 	*jwt.RegisteredClaims
 	Username    string          `json:"username"`
-	UserID      int64           `json:"user_id"`
+	UserUID     string          `json:"user_uid"`
 	Type        UserType        `json:"type"`
 	Permissions []JWTPermission `json:"permissions"`
 }

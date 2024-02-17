@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 
 	"github.com/gorilla/mux"
@@ -27,14 +26,14 @@ func TestSchemaMods(t *testing.T) {
 	Login(t, r, user)
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": strconv.Itoa(int(*schema.ID)),
+		"schema_uid": schema.UID,
 	})
 
 	api.Secure(api.CreateSchemaMods)(w, r)
 
 	assert.Equal(t, 204, w.Result().StatusCode)
 
-	schema_mods, err := api.SchemaModRepo.GetSchemaModsBySchemaID(*schema.ID)
+	schema_mods, err := api.SchemaModRepo.GetSchemaModsBySchemaUID(schema.UID)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(schema_mods))
 
@@ -44,7 +43,7 @@ func TestSchemaMods(t *testing.T) {
 	Login(t, r, user)
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": strconv.Itoa(int(*schema.ID)),
+		"schema_uid": schema.UID,
 	})
 
 	api.GetSchemaMods(w, r)

@@ -18,7 +18,7 @@ type ISORenderer struct {
 	Colormapping       *colormapping.ColorMapping
 }
 
-type SchemaPartProvider func(schema_id int64, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
+type SchemaPartProvider func(schema_uid string, offset_x, offset_y, offset_z int) (*types.SchemaPart, error)
 
 func NewISORenderer(spp SchemaPartProvider, cm *colormapping.ColorMapping) *ISORenderer {
 	return &ISORenderer{
@@ -63,7 +63,7 @@ func (r *ISORenderer) RenderIsometricPreview(schema *types.Schema) ([]byte, erro
 				y := block_y * 16
 				z := block_z * 16
 
-				schemapart, err := r.SchemaPartProvider(*schema.ID, x, y, z)
+				schemapart, err := r.SchemaPartProvider(schema.UID, x, y, z)
 				if err != nil {
 					return nil, err
 				}

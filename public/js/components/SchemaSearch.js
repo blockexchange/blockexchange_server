@@ -10,7 +10,7 @@ const store = Vue.reactive({
     count: 0,
     busy: false,
     keywords: "",
-    tag_id: -1,
+    tag_uid: "",
     tags: []
 });
 
@@ -27,8 +27,8 @@ export default {
         if (!this.keywords && this.$route.query.q) {
             this.keywords = this.$route.query.q;
         }
-        if (this.tag_id < 0 && this.$route.query.tag_id) {
-            this.tag_id = +this.$route.query.tag_id;
+        if (!this.tag_uid && this.$route.query.tag_uid) {
+            this.tag_uid = this.$route.query.tag_uid;
         }
 
         // count and search on route load
@@ -37,13 +37,13 @@ export default {
     },
     watch: {
         "keywords": "get_count",
-        "tag_id": "get_count"
+        "tag_uid": "get_count"
     },
     methods: {
         search_body: function(limit, offset) {
             return {
                 keywords: this.keywords ? this.keywords : null,
-                tag_id: this.tag_id >= 0 ? this.tag_id : null,
+                tag_uid: this.tag_uid ? this.tag_uid : null,
                 complete: true,
                 limit: limit,
                 offset: offset
@@ -67,7 +67,7 @@ export default {
                 path: this.$route.path,
                 query: {
                     q: this.keywords ? this.keywords : undefined,
-                    tag_id: this.tag_id >= 0 ? this.tag_id : undefined
+                    tag_uid: this.tag_uid ? this.tag_uid : undefined
                 }
             });
         }
@@ -78,9 +78,9 @@ export default {
             <input type="text" class="form-control" v-model="keywords" v-on:keyup.enter="search" placeholder="Keywords"/>
         </div>
         <div class="col-md-2 col-xs-4">
-            <select class="form-control" v-model="tag_id">
-                <option value="-1">All tags</option>
-                <option v-for="tag in tags" :value="tag.id">{{tag.name}}</option>
+            <select class="form-control" v-model="tag_uid">
+                <option value="">All tags</option>
+                <option v-for="tag in tags" :value="tag.uid">{{tag.name}}</option>
             </select>
         </div>
         <div class="col-md-2 col-xs-4">

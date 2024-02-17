@@ -6,7 +6,7 @@ export const search_users = search => fetch(`${BaseURL}/api/user-search`, {
 })
 .then(r => r.json());
 
-export const save_user = user => fetch(`${BaseURL}/api/user/${user.id}`, {
+export const save_user = user => fetch(`${BaseURL}/api/user/${user.uid}`, {
     method: "POST",
     body: JSON.stringify(user)
 })
@@ -14,4 +14,4 @@ export const save_user = user => fetch(`${BaseURL}/api/user/${user.id}`, {
 
 export const get_user = id => fetch(`${BaseURL}/api/user/${id}`).then(r => r.json());
 
-export const count_user_schema_stars = id => fetch(`${BaseURL}/api/user/${id}/schemastars`).then(r => r.json());
+export const count_user_schema_stars = uid => fetch(`${BaseURL}/api/user/${uid}/schemastars`).then(r => r.json());

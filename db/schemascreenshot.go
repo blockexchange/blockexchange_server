@@ -4,18 +4,19 @@ import (
 	"blockexchange/types"
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/vingarcia/ksql"
 )
 
-var schemaScreenshotTable = ksql.NewTable("schema_screenshot", "id")
+var schemaScreenshotTable = ksql.NewTable("schema_screenshot", "uid")
 
 type SchemaScreenshotRepository struct {
 	kdb ksql.Provider
 }
 
-func (r *SchemaScreenshotRepository) GetByID(id int64) (*types.SchemaScreenshot, error) {
+func (r *SchemaScreenshotRepository) GetByUID(uid string) (*types.SchemaScreenshot, error) {
 	result := &types.SchemaScreenshot{}
-	err := r.kdb.QueryOne(context.Background(), result, "from schema_screenshot where id = $1", id)
+	err := r.kdb.QueryOne(context.Background(), result, "from schema_screenshot where uid = $1", uid)
 	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	} else {
@@ -23,12 +24,15 @@ func (r *SchemaScreenshotRepository) GetByID(id int64) (*types.SchemaScreenshot,
 	}
 }
 
-func (r *SchemaScreenshotRepository) GetBySchemaID(schema_id int64) ([]*types.SchemaScreenshot, error) {
+func (r *SchemaScreenshotRepository) GetBySchemaUID(schema_uid string) ([]*types.SchemaScreenshot, error) {
 	list := []*types.SchemaScreenshot{}
-	return list, r.kdb.Query(context.Background(), &list, "from schema_screenshot where schema_id = $1", schema_id)
+	return list, r.kdb.Query(context.Background(), &list, "from schema_screenshot where schema_uid = $1", schema_uid)
 }
 
 func (r *SchemaScreenshotRepository) Create(screenshot *types.SchemaScreenshot) error {
+	if screenshot.UID == "" {
+		screenshot.UID = uuid.NewString()
+	}
 	return r.kdb.Insert(context.Background(), schemaScreenshotTable, screenshot)
 }
 

@@ -4,18 +4,19 @@ import (
 	"blockexchange/types"
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/vingarcia/ksql"
 )
 
-var userTable = ksql.NewTable("public.user", "id")
+var userTable = ksql.NewTable("public.user", "uid")
 
 type UserRepository struct {
 	kdb ksql.Provider
 }
 
-func (r *UserRepository) GetUserById(id int64) (*types.User, error) {
+func (r *UserRepository) GetUserByUID(uid string) (*types.User, error) {
 	u := &types.User{}
-	err := r.kdb.QueryOne(context.Background(), u, "from public.user where id = $1", id)
+	err := r.kdb.QueryOne(context.Background(), u, "from public.user where uid = $1", uid)
 	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	}
@@ -46,9 +47,9 @@ func (r *UserRepository) GetUserByExternalIdAndType(external_id string, ut types
 	return u, err
 }
 
-func (r *UserRepository) GetUsersByIDs(user_ids []int64) ([]*types.User, error) {
+func (r *UserRepository) GetUsersByUIDs(user_uids []string) ([]*types.User, error) {
 	list := []*types.User{}
-	return list, r.kdb.Query(context.Background(), &list, "from public.user where id = any($1::bigint[])", user_ids)
+	return list, r.kdb.Query(context.Background(), &list, "from public.user where uid = any($1::uuid[])", user_uids)
 }
 
 func (r *UserRepository) GetUsers(limit, offset int) ([]*types.User, error) {
@@ -57,6 +58,9 @@ func (r *UserRepository) GetUsers(limit, offset int) ([]*types.User, error) {
 }
 
 func (r *UserRepository) CreateUser(user *types.User) error {
+	if user.UID == "" {
+		user.UID = uuid.NewString()
+	}
 	return r.kdb.Insert(context.Background(), userTable, user)
 }
 

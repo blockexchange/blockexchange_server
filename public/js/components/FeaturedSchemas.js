@@ -20,7 +20,7 @@ export default {
         }
 
         schema_search({
-            tag_id: featured.id,
+            tag_uid: featured.uid,
             limit: 6,
             complete: true
         })

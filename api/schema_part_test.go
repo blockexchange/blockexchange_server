@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateSchemaPart(t *testing.T) {
+func TestCreateSchemaPartValid(t *testing.T) {
 	api := NewTestApi(t)
 	user := testutils.CreateUser(api.UserRepo, t, nil)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
@@ -39,10 +39,10 @@ func TestCreateSchemaPart(t *testing.T) {
 	w = httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": strconv.Itoa(int(schemapart.SchemaID)),
-		"x":         strconv.Itoa(int(schemapart.OffsetX)),
-		"y":         strconv.Itoa(int(schemapart.OffsetY)),
-		"z":         strconv.Itoa(int(schemapart.OffsetZ)),
+		"schema_uid": schemapart.SchemaUID,
+		"x":          strconv.Itoa(int(schemapart.OffsetX)),
+		"y":          strconv.Itoa(int(schemapart.OffsetY)),
+		"z":          strconv.Itoa(int(schemapart.OffsetZ)),
 	})
 
 	api.GetSchemaPart(w, r)
@@ -59,23 +59,23 @@ func TestGetNextSchemaPart(t *testing.T) {
 	user := testutils.CreateUser(api.UserRepo, t, nil)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
 	testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, &types.SchemaPart{
-		OffsetX:  0,
-		OffsetY:  0,
-		OffsetZ:  0,
-		Mtime:    100,
-		SchemaID: *schema.ID,
-		Data:     []byte{},
-		MetaData: []byte{},
+		OffsetX:   0,
+		OffsetY:   0,
+		OffsetZ:   0,
+		Mtime:     100,
+		SchemaUID: schema.UID,
+		Data:      []byte{},
+		MetaData:  []byte{},
 	})
 
 	testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, &types.SchemaPart{
-		OffsetX:  16,
-		OffsetY:  0,
-		OffsetZ:  0,
-		Mtime:    200,
-		SchemaID: *schema.ID,
-		Data:     []byte{},
-		MetaData: []byte{},
+		OffsetX:   16,
+		OffsetY:   0,
+		OffsetZ:   0,
+		Mtime:     200,
+		SchemaUID: schema.UID,
+		Data:      []byte{},
+		MetaData:  []byte{},
 	})
 
 	// load first
@@ -84,7 +84,7 @@ func TestGetNextSchemaPart(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": strconv.Itoa(int(*schema.ID)),
+		"schema_uid": schema.UID,
 	})
 
 	api.GetFirstSchemaPart(w, r)
@@ -102,10 +102,10 @@ func TestGetNextSchemaPart(t *testing.T) {
 	w = httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": strconv.Itoa(int(*schema.ID)),
-		"x":         "0",
-		"y":         "0",
-		"z":         "0",
+		"schema_uid": schema.UID,
+		"x":          "0",
+		"y":          "0",
+		"z":          "0",
 	})
 
 	api.GetNextSchemaPart(w, r)
@@ -123,8 +123,8 @@ func TestGetNextSchemaPart(t *testing.T) {
 	w = httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": fmt.Sprintf("%d", *schema.ID),
-		"mtime":     fmt.Sprintf("%d", 100),
+		"schema_uid": schema.UID,
+		"mtime":      fmt.Sprintf("%d", 100),
 	})
 
 	api.GetNextSchemaPartByMtime(w, r)
@@ -143,8 +143,8 @@ func TestGetNextSchemaPart(t *testing.T) {
 	w = httptest.NewRecorder()
 
 	r = mux.SetURLVars(r, map[string]string{
-		"schema_id": fmt.Sprintf("%d", *schema.ID),
-		"mtime":     fmt.Sprintf("%d", 100),
+		"schema_uid": schema.UID,
+		"mtime":      fmt.Sprintf("%d", 100),
 	})
 
 	api.CountNextSchemaPartByMtime(w, r)
@@ -158,7 +158,7 @@ func TestCreateSchemaPartInvalidSchemaID(t *testing.T) {
 	user := testutils.CreateUser(api.UserRepo, t, nil)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
 	schemapart := testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, nil)
-	schemapart.SchemaID = -1
+	schemapart.SchemaUID = ""
 
 	data, err := json.Marshal(schemapart)
 	assert.NoError(t, err)

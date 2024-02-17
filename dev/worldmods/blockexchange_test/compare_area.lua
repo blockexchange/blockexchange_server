@@ -1,5 +1,7 @@
 
-return function(pos1, pos2, pos1_load, pos2_load)
+return function(pos1, pos2, pos1_load, pos2_load, opts)
+    opts = opts or {}
+
     local manip1 = minetest.get_voxel_manip()
 	local e1, e2 = manip1:read_from_map(pos1, pos2)
 	local area1 = VoxelArea:new({MinEdge=e1, MaxEdge=e2})
@@ -26,13 +28,14 @@ return function(pos1, pos2, pos1_load, pos2_load)
 				local i1 = area1:indexp(pos)
                 local i2 = area2:indexp(vector.add(pos, offset))
 
-                if nodeids1[i1] ~= nodeids2[i2] then
-                    return false, "node-ids, pos: " .. minetest.pos_to_string(pos)
+                if opts.check_nodeids and nodeids1[i1] ~= nodeids2[i2] then
+                    return false, "node-ids, pos: " .. minetest.pos_to_string(pos) ..
+                        " expected: " .. nodeids1[i1] .. " got: " .. nodeids2[i2]
                 end
-                if param1_data1[i1] ~= param1_data2[i2] then
+                if opts.check_param1 and param1_data1[i1] ~= param1_data2[i2] then
                     return false, "light, pos: " .. minetest.pos_to_string(pos)
                 end
-                if param2_data1[i1] ~= param2_data2[i2] then
+                if opts.check_param2 and param2_data1[i1] ~= param2_data2[i2] then
                     return false, "param2, pos: " .. minetest.pos_to_string(pos)
                 end
 

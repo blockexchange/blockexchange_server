@@ -7,7 +7,7 @@ import (
 	"github.com/vingarcia/ksql"
 )
 
-var schemaStarTable = ksql.NewTable("user_schema_star", "user_id", "schema_id")
+var schemaStarTable = ksql.NewTable("user_schema_star", "user_uid", "schema_uid")
 
 type SchemaStarRepository struct {
 	kdb ksql.Provider
@@ -21,14 +21,14 @@ func (r *SchemaStarRepository) Delete(ss *types.SchemaStar) error {
 	return r.kdb.Delete(context.Background(), schemaStarTable, ss)
 }
 
-func (r *SchemaStarRepository) GetBySchemaID(schema_id int64) ([]*types.SchemaStar, error) {
+func (r *SchemaStarRepository) GetBySchemaUID(schema_uid string) ([]*types.SchemaStar, error) {
 	list := []*types.SchemaStar{}
-	return list, r.kdb.Query(context.Background(), &list, "from user_schema_star where schema_id = $1", schema_id)
+	return list, r.kdb.Query(context.Background(), &list, "from user_schema_star where schema_uid = $1", schema_uid)
 }
 
-func (r *SchemaStarRepository) GetBySchemaAndUserID(schema_id int64, user_id int64) (*types.SchemaStar, error) {
+func (r *SchemaStarRepository) GetBySchemaAndUserID(schema_uid string, user_uid string) (*types.SchemaStar, error) {
 	ss := &types.SchemaStar{}
-	err := r.kdb.QueryOne(context.Background(), ss, "from user_schema_star where schema_id = $1 and user_id = $2", schema_id, user_id)
+	err := r.kdb.QueryOne(context.Background(), ss, "from user_schema_star where schema_uid = $1 and user_uid = $2", schema_uid, user_uid)
 	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	} else {
@@ -36,14 +36,14 @@ func (r *SchemaStarRepository) GetBySchemaAndUserID(schema_id int64, user_id int
 	}
 }
 
-func (r *SchemaStarRepository) CountBySchemaID(schema_id int64) (int64, error) {
+func (r *SchemaStarRepository) CountBySchemaUID(schema_uid string) (int64, error) {
 	c := &types.Count{}
-	err := r.kdb.QueryOne(context.Background(), c, "select count(*) as count from user_schema_star where schema_id = $1", schema_id)
+	err := r.kdb.QueryOne(context.Background(), c, "select count(*) as count from user_schema_star where schema_uid = $1", schema_uid)
 	return c.Count, err
 }
 
-func (r *SchemaStarRepository) CountByUserID(user_id int64) (int64, error) {
+func (r *SchemaStarRepository) CountByUserUID(user_uid string) (int64, error) {
 	c := &types.Count{}
-	err := r.kdb.QueryOne(context.Background(), c, "select count(*) from user_schema_star uss join schema s on s.id = uss.schema_id where s.user_id = $1", user_id)
+	err := r.kdb.QueryOne(context.Background(), c, "select count(*) from user_schema_star uss join schema s on s.uid = uss.schema_uid where s.user_uid = $1", user_uid)
 	return c.Count, err
 }

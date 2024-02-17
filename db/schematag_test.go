@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,8 +20,9 @@ func TestGetSchemaTagsByIDs(t *testing.T) {
 	}
 	assert.NoError(t, repos.UserRepo.CreateUser(u))
 	s := &types.Schema{
-		UserID: *u.ID,
-		Name:   "test",
+		UID:     uuid.NewString(),
+		UserUID: u.UID,
+		Name:    "test",
 	}
 	assert.NoError(t, repos.SchemaRepo.CreateSchema(s))
 
@@ -30,13 +32,13 @@ func TestGetSchemaTagsByIDs(t *testing.T) {
 	t2 := &types.Tag{Name: fmt.Sprintf("tag_%d", rand.Intn(10000))}
 	assert.NoError(t, repos.TagRepo.Create(t2))
 
-	st1 := &types.SchemaTag{TagID: *t1.ID, SchemaID: *s.ID}
+	st1 := &types.SchemaTag{TagUID: t1.UID, SchemaUID: s.UID}
 	assert.NoError(t, repos.SchemaTagRepo.Create(st1))
 
-	st2 := &types.SchemaTag{TagID: *t1.ID, SchemaID: *s.ID}
+	st2 := &types.SchemaTag{TagUID: t1.UID, SchemaUID: s.UID}
 	assert.NoError(t, repos.SchemaTagRepo.Create(st2))
 
-	sts, err := repos.SchemaTagRepo.GetBySchemaIDs([]int64{*s.ID})
+	sts, err := repos.SchemaTagRepo.GetBySchemaUIDs([]string{s.UID})
 	assert.NoError(t, err)
 	assert.NotNil(t, sts)
 	assert.Equal(t, 2, len(sts))

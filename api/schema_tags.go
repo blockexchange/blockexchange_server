@@ -4,24 +4,19 @@ import (
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
 func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
-	id, err := strconv.ParseInt(vars["schema_id"], 10, 64)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema_uid := vars["schema_uid"]
 
 	if !ctx.CheckPermission(w, types.JWTPermissionManagement) {
 		return
 	}
 
-	schema, err := api.SchemaRepo.GetSchemaById(id)
+	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -33,7 +28,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 
 	// check permissions
 	is_admin := ctx.HasPermission(types.JWTPermissionAdmin)
-	if !is_admin && schema.UserID != ctx.Claims.UserID {
+	if !is_admin && schema.UserUID != ctx.Claims.UserUID {
 		// not an admin and not the owner
 		SendError(w, 403, "unauthorized")
 		return
@@ -56,23 +51,23 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 		SendError(w, 500, err.Error())
 		return
 	}
-	tag_id_name_map := map[int64]string{}
-	tag_name_id_map := map[string]int64{}
-	restricted_id_map := map[int64]bool{}
+	tag_id_name_map := map[string]string{}
+	tag_name_id_map := map[string]string{}
+	restricted_id_map := map[string]bool{}
 	for _, t := range tags {
-		restricted_id_map[*t.ID] = t.Restricted
-		tag_id_name_map[*t.ID] = t.Name
-		tag_name_id_map[t.Name] = *t.ID
+		restricted_id_map[t.UID] = t.Restricted
+		tag_id_name_map[t.UID] = t.Name
+		tag_name_id_map[t.Name] = t.UID
 	}
 
-	existing_tag_list, err := api.SchemaTagRepo.GetBySchemaID(*schema.ID)
+	existing_tag_list, err := api.SchemaTagRepo.GetBySchemaUID(schema.UID)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 	existing_tags := map[string]bool{}
 	for _, existing_tag := range existing_tag_list {
-		name := tag_id_name_map[existing_tag.TagID]
+		name := tag_id_name_map[existing_tag.TagUID]
 		existing_tags[name] = true
 	}
 
@@ -89,7 +84,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 			continue
 		}
 
-		err = api.SchemaTagRepo.Create(&types.SchemaTag{TagID: id, SchemaID: *schema.ID})
+		err = api.SchemaTagRepo.Create(&types.SchemaTag{TagUID: id, SchemaUID: schema.UID})
 		if err != nil {
 			SendError(w, 500, err.Error())
 			return
@@ -106,7 +101,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 				continue
 			}
 
-			err = api.SchemaTagRepo.Delete(*schema.ID, id)
+			err = api.SchemaTagRepo.Delete(schema.UID, id)
 			if err != nil {
 				SendError(w, 500, err.Error())
 				return

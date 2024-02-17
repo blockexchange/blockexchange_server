@@ -58,7 +58,7 @@ func (api *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Query().Get("renew") == "true" || c.ExpiresAt.Before(time.Now().Add(1*time.Hour)) {
 		// renew claims
-		user, err := api.UserRepo.GetUserById(c.UserID)
+		user, err := api.UserRepo.GetUserByUID(c.UserUID)
 		if err != nil {
 			SendError(w, 500, err.Error())
 			return

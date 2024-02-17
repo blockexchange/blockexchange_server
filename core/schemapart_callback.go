@@ -5,9 +5,9 @@ import (
 	"fmt"
 )
 
-func (c *Core) SchemapartCallback(schema_id int64, cb func(sp *types.SchemaPart) error) error {
+func (c *Core) SchemapartCallback(schema_uid string, cb func(sp *types.SchemaPart) error) error {
 
-	schemapart, err := c.repos.SchemaPartRepo.GetFirstBySchemaID(schema_id)
+	schemapart, err := c.repos.SchemaPartRepo.GetFirstBySchemaUID(schema_uid)
 	if err != nil {
 		return fmt.Errorf("get first schema error: %v", err)
 	}
@@ -17,7 +17,7 @@ func (c *Core) SchemapartCallback(schema_id int64, cb func(sp *types.SchemaPart)
 	}
 
 	for {
-		schemapart, err = c.repos.SchemaPartRepo.GetNextBySchemaIDAndOffset(schema_id, schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
+		schemapart, err = c.repos.SchemaPartRepo.GetNextBySchemaUIDAndOffset(schema_uid, schemapart.OffsetX, schemapart.OffsetY, schemapart.OffsetZ)
 		if err != nil {
 			return fmt.Errorf("get next schema error: %v", err)
 		}

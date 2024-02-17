@@ -5,19 +5,18 @@ import (
 	"blockexchange/schematic/worldedit"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
 )
 
-func (api *Api) incrementDownloadstats(schema_id int64, r *http.Request) error {
+func (api *Api) incrementDownloadstats(schema_uid string, r *http.Request) error {
 	origin := r.Header.Get("X-Forwarded-For")
 	origin_parts := strings.Split(origin, ",")
 	if len(origin_parts) >= 1 {
 		ip := strings.TrimSpace(origin_parts[0])
-		cache_key := fmt.Sprintf("download_marker/%d/%s", schema_id, ip)
+		cache_key := fmt.Sprintf("download_marker/%s/%s", schema_uid, ip)
 
 		m, err := api.Cache.Get(cache_key)
 		if err != nil {
@@ -34,7 +33,7 @@ func (api *Api) incrementDownloadstats(schema_id int64, r *http.Request) error {
 		}
 	}
 
-	err := api.SchemaRepo.IncrementDownloads(schema_id)
+	err := api.SchemaRepo.IncrementDownloads(schema_uid)
 	if err != nil {
 		return err
 	}
@@ -43,16 +42,12 @@ func (api *Api) incrementDownloadstats(schema_id int64, r *http.Request) error {
 
 func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["schema_id"])
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema_uid := vars["schema_uid"]
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", vars["filename"]))
 	e := worldedit.NewExporter(w)
 
-	err = api.core.SchemapartCallback(int64(id), e.Export)
+	err := api.core.SchemapartCallback(schema_uid, e.Export)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -64,7 +59,7 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = api.incrementDownloadstats(int64(id), r)
+	err = api.incrementDownloadstats(schema_uid, r)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -73,13 +68,9 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["schema_id"])
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema_uid := vars["schema_uid"]
 
-	schema, err := api.SchemaRepo.GetSchemaById(int64(id))
+	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -89,7 +80,7 @@ func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemamods, err := api.SchemaModRepo.GetSchemaModsBySchemaID(int64(id))
+	schemamods, err := api.SchemaModRepo.GetSchemaModsBySchemaUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -102,7 +93,7 @@ func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = api.core.SchemapartCallback(int64(id), e.Export)
+	err = api.core.SchemapartCallback(schema_uid, e.Export)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -114,7 +105,7 @@ func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = api.incrementDownloadstats(int64(id), r)
+	err = api.incrementDownloadstats(schema_uid, r)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

@@ -38,26 +38,26 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 	}
 
 	if search.UserName != nil {
-		query.WriteString(fmt.Sprintf(" and user_id = (select id from public.user where name = $%d)", i))
+		query.WriteString(fmt.Sprintf(" and user_uid = (select uid from public.user where name = $%d)", i))
 		params = append(params, *search.UserName)
 		i++
 	}
 
-	if search.SchemaID != nil {
-		query.WriteString(fmt.Sprintf(" and id = $%d", i))
-		params = append(params, *search.SchemaID)
+	if search.SchemaUID != nil {
+		query.WriteString(fmt.Sprintf(" and uid = $%d", i))
+		params = append(params, *search.SchemaUID)
 		i++
 	}
 
-	if search.UserID != nil {
-		query.WriteString(fmt.Sprintf(" and user_id = $%d", i))
-		params = append(params, *search.UserID)
+	if search.UserUID != nil {
+		query.WriteString(fmt.Sprintf(" and user_uid = $%d", i))
+		params = append(params, *search.UserUID)
 		i++
 	}
 
-	if search.TagID != nil {
-		query.WriteString(fmt.Sprintf(" and id in (select schema_id from schematag where tag_id = $%d)", i))
-		params = append(params, *search.TagID)
+	if search.TagUID != nil {
+		query.WriteString(fmt.Sprintf(" and uid in (select schema_uid from schematag where tag_uid = $%d)", i))
+		params = append(params, *search.TagUID)
 		i++
 	}
 

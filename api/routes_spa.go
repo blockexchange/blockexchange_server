@@ -50,7 +50,7 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 			"og:title":       fmt.Sprintf("'%s' by %s", schema.Name, username),
 			"og:type":        "Schematic",
 			"og:url":         fmt.Sprintf("%s/schema/%s/%s", api.cfg.BaseURL, username, schema.Name),
-			"og:image":       fmt.Sprintf("%s/api/schema/%d/screenshot", api.cfg.BaseURL, *schema.ID),
+			"og:image":       fmt.Sprintf("%s/api/schema/%s/screenshot", api.cfg.BaseURL, schema.UID),
 		}
 
 		public.RenderIndex(w, r, meta)
@@ -66,14 +66,14 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 		}
 
 		schematics, err := api.SchemaSearchRepo.Count(&types.SchemaSearchRequest{
-			UserID: user.ID,
+			UserUID: &user.UID,
 		})
 		if err != nil {
 			SendError(w, 500, fmt.Sprintf("SchemaSearchRepo.Count: %s", err))
 			return
 		}
 
-		stars, err := api.SchemaStarRepo.CountByUserID(*user.ID)
+		stars, err := api.SchemaStarRepo.CountByUserUID(user.UID)
 		if err != nil {
 			SendError(w, 500, fmt.Sprintf("SchemaStarRepo.CountByUserID: %s", err))
 			return

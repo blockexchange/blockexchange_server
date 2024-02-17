@@ -1,7 +1,7 @@
 package types
 
 type SchemaTag struct {
-	ID       *int64 `json:"id" ksql:"id"`
-	TagID    int64  `json:"tag_id" ksql:"tag_id"`
-	SchemaID int64  `json:"schema_id" ksql:"schema_id"`
+	UID       string `json:"uid" ksql:"uid"`
+	TagUID    string `json:"tag_uid" ksql:"tag_uid"`
+	SchemaUID string `json:"schema_uid" ksql:"schema_uid"`
 }

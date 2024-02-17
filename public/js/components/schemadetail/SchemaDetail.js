@@ -50,24 +50,24 @@ export default {
         },
         update_star: function() {
             if (is_logged_in()) {
-                get_schema_star(this.schema.id)
+                get_schema_star(this.schema.uid)
                 .then(s => this.schema_star = s)
-                .then(() => count_schema_stars(this.schema.id))
+                .then(() => count_schema_stars(this.schema.uid))
                 .then(count => this.schema.stars = count);
             }
         },
         star: function() {
-            star_schema(this.schema.id).then(() => this.update_star());
+            star_schema(this.schema.uid).then(() => this.update_star());
         },
         unstar: function() {
-            unstar_schema(this.schema.id).then(() => this.update_star());
+            unstar_schema(this.schema.uid).then(() => this.update_star());
         },
         save: function() {
             this.error_response = null;
             schema_update(this.schema)
             .then(() => {
                 // set tags
-                schema_set_tags(this.schema.id, this.schema.tags);
+                schema_set_tags(this.schema.uid, this.schema.tags);
 
                 this.edit_mode = false;
                 this.$router.push(`/schema/${this.username}/${this.schema.name}`);
@@ -78,14 +78,14 @@ export default {
         },
         update_mods: function() {
             this.mods_busy = true;
-            schema_update_mods(this.schema.id)
+            schema_update_mods(this.schema.uid)
             .then(m => {
                 this.schema.mods = m;
                 this.mods_busy = false;
             });
         },
         update_info: function() {
-            schema_update_info(this.schema.id)
+            schema_update_info(this.schema.uid)
             .then(s => {
                 this.schema.total_size = s.total_size;
                 this.schema.total_parts = s.total_parts;
@@ -93,14 +93,14 @@ export default {
         },
         update_screenshot: function() {
             this.screenshot_busy = true;
-            schema_update_screenshot(this.schema.id)
+            schema_update_screenshot(this.schema.uid)
             .then(() => {
                 this.screenshot_busy = false;
                 this.cache_counter = Date.now();
             });
         },
         delete_schema: function() {
-            schema_delete(this.schema.id)
+            schema_delete(this.schema.uid)
             .then(() => this.$router.push(`/schema/${this.username}`));
         },
         markdown: function(txt) {
@@ -274,7 +274,7 @@ export default {
                     </div>
                     <div class="card-body">
                         <div class="text-center" style="min-height: 600px;">
-                            <img :src="BaseURL + '/api/schema/' + schema.id + '/screenshot?cachebust=' + cache_counter" class="img-fluid">
+                            <img :src="BaseURL + '/api/schema/' + schema.uid + '/screenshot?cachebust=' + cache_counter" class="img-fluid">
                         </div>
                     </div>
                 </div>
@@ -306,13 +306,13 @@ export default {
                                 <h5>Offline</h5>
                                 <div class="btn-group">
                                     <a class="btn btn-outline-success"
-                                        :href="BaseURL + '/api/export_bx/' + schema.id + '/' + schema.name + '.zip'">
+                                        :href="BaseURL + '/api/export_bx/' + schema.uid + '/' + schema.name + '.zip'">
                                         <i class="fa fa-download"></i>
                                         Download as BX schematic
                                     </a>
                                     <a class="btn btn-outline-success"
                                         v-bind:class="{disabled: schema.total_parts >= 200}"
-                                        :href="BaseURL + '/api/export_we/' + schema.id + '/' + schema.name + '.we'">
+                                        :href="BaseURL + '/api/export_we/' + schema.uid + '/' + schema.name + '.we'">
                                         <i class="fa fa-download"></i>
                                         Download as WE schematic
                                         <i class="fa fa-triangle-exclamation"

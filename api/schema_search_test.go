@@ -18,7 +18,7 @@ func TestSearchSchema(t *testing.T) {
 
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	schema := types.Schema{
-		UserID: *user.ID,
+		UserUID: user.UID,
 	}
 	err := api.SchemaRepo.CreateSchema(&schema)
 	assert.NoError(t, err)
@@ -38,7 +38,7 @@ func TestSearchSchema(t *testing.T) {
 
 	search_result := &types.Schema{}
 	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), search_result))
-	assert.Equal(t, *schema.ID, *search_result.ID)
+	assert.Equal(t, schema.UID, search_result.UID)
 	assert.Equal(t, 0, search_result.Stars)
 
 }

@@ -23,7 +23,7 @@ func TestAccessTokenLogin(t *testing.T) {
 	testutils.CreateUser(api.UserRepo, t, user)
 
 	token := &types.AccessToken{
-		UserID:  *user.ID,
+		UserUID: user.UID,
 		Expires: (time.Now().Unix() + 300) * 1000,
 		Created: time.Now().Unix() * 1000,
 		Token:   "abcdef",
@@ -59,7 +59,7 @@ func TestInvalidAccessTokenLogin(t *testing.T) {
 	testutils.CreateUser(api.UserRepo, t, user)
 
 	token := &types.AccessToken{
-		UserID:  *user.ID,
+		UserUID: user.UID,
 		Expires: (time.Now().Unix() + 300) * 1000,
 		Created: time.Now().Unix() * 1000,
 		Token:   "abcdef",

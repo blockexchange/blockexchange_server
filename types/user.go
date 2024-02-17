@@ -13,7 +13,7 @@ const (
 )
 
 type User struct {
-	ID         *int64   `json:"id" ksql:"id"`
+	UID        string   `json:"uid" ksql:"uid"`
 	Created    int64    `json:"created" ksql:"created"`
 	Name       string   `json:"name" ksql:"name"`
 	Hash       string   `json:"-" ksql:"hash"` // not exported
