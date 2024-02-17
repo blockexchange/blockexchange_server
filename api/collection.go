@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func (api *Api) CreateOrUpdateCollection(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
@@ -31,10 +33,9 @@ func (api *Api) CreateOrUpdateCollection(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	c.UserUID = ctx.Claims.UserUID
-
 	if c.UID == "" {
 		// create
+		c.UserUID = ctx.Claims.UserUID
 		err = api.Repositories.CollectionRepo.CreateCollection(c)
 		Send(w, c, err)
 	} else {
@@ -59,7 +60,46 @@ func (api *Api) CreateOrUpdateCollection(w http.ResponseWriter, r *http.Request,
 		existing_collection.Name = c.Name
 		existing_collection.Description = c.Description
 
-		err = api.Repositories.CollectionRepo.UpdateCollection(c)
+		err = api.Repositories.CollectionRepo.UpdateCollection(existing_collection)
 		Send(w, c, err)
 	}
+}
+
+func (api *Api) DeleteCollection(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	vars := mux.Vars(r)
+	collection_uid := vars["collection_uid"]
+
+	c, err := api.CollectionRepo.GetCollectionByUID(collection_uid)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("get existing collection error: %s", err))
+		return
+	}
+	if c == nil {
+		SendError(w, 404, fmt.Sprintf("collection not found '%s'", collection_uid))
+		return
+	}
+	if c.UserUID != ctx.Claims.UserUID {
+		SendError(w, 403, fmt.Sprintf("not allowed to modify collection '%s', owned by '%s'", c.UID, c.UserUID))
+		return
+	}
+
+	err = api.Repositories.CollectionRepo.DeleteCollection(collection_uid)
+	Send(w, true, err)
+}
+
+func (api *Api) GetCollection(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	collection_uid := vars["collection_uid"]
+
+	c, err := api.CollectionRepo.GetCollectionByUID(collection_uid)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("get existing collection error: %s", err))
+		return
+	}
+	if c == nil {
+		SendError(w, 404, fmt.Sprintf("collection not found '%s'", collection_uid))
+		return
+	}
+
+	Send(w, c, err)
 }

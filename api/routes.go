@@ -52,6 +52,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	r.HandleFunc("/api/collection", api.Secure(api.CreateOrUpdateCollection)).Methods(http.MethodPost)
 	r.HandleFunc("/api/collection/{collection_uid}", api.Secure(api.CreateOrUpdateCollection)).Methods(http.MethodPut)
+	r.HandleFunc("/api/collection/{collection_uid}", api.Secure(api.DeleteCollection)).Methods(http.MethodDelete)
+	r.HandleFunc("/api/collection/{collection_uid}", api.GetCollection).Methods(http.MethodGet)
 
 	r.HandleFunc("/api/schema/{schema_uid}/mods", api.GetSchemaMods).Methods(http.MethodGet)
 	r.HandleFunc("/api/schema/{schema_uid}/mods", api.Secure(api.CreateSchemaMods)).Methods(http.MethodPost)
