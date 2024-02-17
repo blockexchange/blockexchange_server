@@ -16,6 +16,8 @@ import { get_schema_star, star_schema, unstar_schema, count_schema_stars } from 
 import { get_tags } from "../../service/tags.js";
 import { is_logged_in, has_permission } from "../../service/login.js";
 
+const max_placement_tool_size = 100;
+
 export default {
     components: {
         "modal-prompt": ModalPrompt,
@@ -108,7 +110,12 @@ export default {
         }
     },
     computed: {
-        logged_in: is_logged_in
+        logged_in: is_logged_in,
+        can_use_placement_tool: function() {
+            return (this.schema.size_x <= max_placement_tool_size &&
+                    this.schema.size_y <= max_placement_tool_size &&
+                    this.schema.size_z <= max_placement_tool_size);
+        }
     },
     template: /*html*/`
     <div>
@@ -286,7 +293,10 @@ export default {
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h5>Online</h5>
+                                <u>
+                                    <h4>Online</h4>
+                                </u>
+                                <h5>Single placement</h5>
                                 <ul>
                                     <li>
                                         Download and install the <router-link to="/mod">blockexchange</router-link>-mod
@@ -301,9 +311,23 @@ export default {
                                         Place the schematic with <clipboard-copy :text="'/bx_load ' + username + ' ' + schema.name"></clipboard-copy>
                                     </li>
                                 </ul>
+                                <h5 v-if="can_use_placement_tool">Multiple placements with the placement tool</h5>
+                                <ul v-if="can_use_placement_tool">
+                                    <li>
+                                        Download and install the <router-link to="/mod">blockexchange</router-link>-mod
+                                    </li>
+                                    <li>
+                                        Create a placement tool with <clipboard-copy :text="'/bx_placer ' + username + ' ' + schema.name"></clipboard-copy>
+                                    </li>
+                                    <li>
+                                        Point and click to place the schematic
+                                    </li>
+                                </ul>
                             </div>
                             <div class="col-md-6">
-                                <h5>Offline</h5>
+                                <u>
+                                    <h4>Offline</h4>
+                                </u>
                                 <div class="btn-group">
                                     <a class="btn btn-outline-success"
                                         :href="BaseURL + '/api/export_bx/' + schema.uid + '/' + schema.name + '.zip'">
