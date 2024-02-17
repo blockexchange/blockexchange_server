@@ -12,6 +12,7 @@ type SchemaPartRepository struct {
 }
 
 func (r *SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
+	part.OrderID = int64(types.GetSchemaPartOrderID(part.OffsetX, part.OffsetY, part.OffsetZ))
 	_, err := r.kdb.Exec(context.Background(), `
 		insert into
 		schemapart(schema_uid, offset_x, offset_y, offset_z, order_id, mtime, data, metadata)

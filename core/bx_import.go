@@ -29,6 +29,8 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 	}
 
 	res.Schema.UID = uuid.NewString()
+	res.Schema.Downloads = 0
+	res.Schema.Views = 0
 	res.Schema.Created = time.Now().UnixMilli()
 	res.Schema.Mtime = time.Now().UnixMilli()
 	res.Schema.UserUID = user.UID
