@@ -1,6 +1,10 @@
+import LoadingSpinner from "./LoadingSpinner.js";
 
 export default {
     props: ["fetch_data"],
+    components: {
+        "loading-spinner": LoadingSpinner
+    },
     data: function() {
         return {
             busy: false,
@@ -23,9 +27,7 @@ export default {
         });
     },
     template: /*html*/`
-    <div class="alert alert-primary" v-if="busy">
-        <i class="fa fa-spinner fa-spin"></i> Loading
-    </div>
+    <loading-spinner v-if="busy"/>
     <slot :data="data" v-if="data"></slot>
     `
 };

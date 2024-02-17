@@ -52,6 +52,11 @@ export default {
 						</router-link>
 					</li>
 					<li class="nav-item" v-if="is_logged_in">
+						<router-link :to="'/collections/' + claims.username" class="nav-link">
+							<i class="fa fa-object-group"></i> My collections
+						</router-link>
+					</li>
+					<li class="nav-item" v-if="is_logged_in">
 						<router-link to="/import" class="nav-link">
 							<i class="fa fa-upload"></i> Schematic import
 						</router-link>

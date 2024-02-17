@@ -103,3 +103,26 @@ func (api *Api) GetCollection(w http.ResponseWriter, r *http.Request) {
 
 	Send(w, c, err)
 }
+
+func (api *Api) GetCollectionsByUsername(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	username := vars["username"]
+
+	user, err := api.Repositories.UserRepo.GetUserByName(username)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("get user error: %s", err))
+		return
+	}
+	if user == nil {
+		SendError(w, 404, fmt.Sprintf("user not found '%s'", username))
+		return
+	}
+
+	list, err := api.CollectionRepo.GetCollectionsByUserUID(user.UID)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("get collections error: %s", err))
+		return
+	}
+
+	Send(w, list, err)
+}

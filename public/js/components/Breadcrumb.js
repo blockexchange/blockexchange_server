@@ -48,6 +48,10 @@ export const USER_SCHEMAS = username => {
     return { name: `Schematics for ${username}`, icon: "user", link: `/schema/${username}` };
 };
 
+export const USER_COLLECTIONS = username => {
+    return { name: `Collections for ${username}`, icon: "object-group", link: `/collections/${username}` };
+};
+
 export const SCHEMA_DETAIL = (username, name) => {
     return { name: `Schematic ${name}`, icon: "bookmark", link: `/schema/${username}/${name}` };
 };
