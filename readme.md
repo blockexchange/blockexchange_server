@@ -134,12 +134,6 @@ docker-compose up -d minetest
 
 The blockexchange UI is at http://127.0.0.1:8080 and the minetest server is reachable via 127.0.0.1:30000
 
-# Database
-
-Database model:
-
-<img src="./doc/database.png"/>
-
 ## Serialized mapblock format
 
 The on-disk format
@@ -188,7 +182,8 @@ Serialized example as json, byte-array is encoded as base64 over the wire:
 	"offset_x":0.0,
 	"offset_y":0.0,
 	"offset_z":0.0,
-	"schema_id":9.0
+	"order_id":0.0,
+	"schema_id":"3a11f5d5-972c-43b9-a11f-1680af3148d1"
 }
 ```
 
