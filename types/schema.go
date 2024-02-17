@@ -9,25 +9,25 @@ type SchemaUpdateError struct {
 
 // used for the database and GET requests
 type Schema struct {
-	UID              string `json:"uid" ksql:"uid"`
-	Created          int64  `json:"created" ksql:"created"`
-	Mtime            int64  `json:"mtime" ksql:"mtime"`
-	UserUID          string `json:"user_uid" ksql:"user_uid"`
-	CollectionUID    string `json:"collection_uid" ksql:"collection_uid"`
-	Name             string `json:"name" ksql:"name"`
-	Description      string `json:"description" ksql:"description"`
-	ShortDescription string `json:"short_description" ksql:"short_description"`
-	CDBCollection    string `json:"cdb_collection" ksql:"cdb_collection"`
-	Complete         bool   `json:"complete" ksql:"complete"`
-	SizeX            int    `json:"size_x" ksql:"size_x"`
-	SizeY            int    `json:"size_y" ksql:"size_y"`
-	SizeZ            int    `json:"size_z" ksql:"size_z"`
-	TotalSize        int    `json:"total_size" ksql:"total_size"`
-	TotalParts       int    `json:"total_parts" ksql:"total_parts"`
-	Downloads        int    `json:"downloads" ksql:"downloads"`
-	Views            int    `json:"views" ksql:"views"`
-	License          string `json:"license" ksql:"license"`
-	Stars            int    `json:"stars" ksql:"stars"`
+	UID              string  `json:"uid" ksql:"uid"`
+	Created          int64   `json:"created" ksql:"created"`
+	Mtime            int64   `json:"mtime" ksql:"mtime"`
+	UserUID          string  `json:"user_uid" ksql:"user_uid"`
+	CollectionUID    *string `json:"collection_uid" ksql:"collection_uid"`
+	Name             string  `json:"name" ksql:"name"`
+	Description      string  `json:"description" ksql:"description"`
+	ShortDescription string  `json:"short_description" ksql:"short_description"`
+	CDBCollection    string  `json:"cdb_collection" ksql:"cdb_collection"`
+	Complete         bool    `json:"complete" ksql:"complete"`
+	SizeX            int     `json:"size_x" ksql:"size_x"`
+	SizeY            int     `json:"size_y" ksql:"size_y"`
+	SizeZ            int     `json:"size_z" ksql:"size_z"`
+	TotalSize        int     `json:"total_size" ksql:"total_size"`
+	TotalParts       int     `json:"total_parts" ksql:"total_parts"`
+	Downloads        int     `json:"downloads" ksql:"downloads"`
+	Views            int     `json:"views" ksql:"views"`
+	License          string  `json:"license" ksql:"license"`
+	Stars            int     `json:"stars" ksql:"stars"`
 }
 
 func (s *Schema) UnmarshalJSON(data []byte) error {
@@ -41,7 +41,6 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	s.Created = getInt64(m["created"])
 	s.Mtime = getInt64(m["mtime"])
 	s.UserUID = getString(m["user_uid"])
-	s.CollectionUID = getString(m["collection_uid"])
 	s.Name = getString(m["name"])
 	s.Description = getString(m["description"])
 	s.ShortDescription = getString(m["short_description"])

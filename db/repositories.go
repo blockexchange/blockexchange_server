@@ -13,6 +13,7 @@ type Repositories struct {
 	SchemaSearchRepo     *SchemaSearchRepository
 	SchemaScreenshotRepo *SchemaScreenshotRepository
 	TagRepo              *TagRepository
+	CollectionRepo       *CollectionRepository
 	SchemaTagRepo        *SchemaTagRepository
 	SchemaStarRepo       *SchemaStarRepository
 	MetaRepository       *MetaRepository
@@ -29,6 +30,7 @@ func NewRepositories(kdb ksql.Provider) *Repositories {
 		SchemaSearchRepo:     &SchemaSearchRepository{kdb: kdb},
 		SchemaScreenshotRepo: &SchemaScreenshotRepository{kdb: kdb},
 		TagRepo:              &TagRepository{kdb: kdb},
+		CollectionRepo:       &CollectionRepository{kdb: kdb},
 		SchemaTagRepo:        &SchemaTagRepository{kdb: kdb},
 		SchemaStarRepo:       &SchemaStarRepository{kdb: kdb},
 		MetaRepository:       &MetaRepository{kdb: kdb},
