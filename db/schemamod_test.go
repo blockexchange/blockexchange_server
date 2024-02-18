@@ -31,7 +31,7 @@ func TestGetSchemaModsByIDs(t *testing.T) {
 		ModName:   "mod2",
 	}))
 
-	sm, err := repos.SchemaModRepo.GetSchemaModsBySchemaUIDs([]string{s.UID})
+	sm, err := repos.SchemaModRepo.GetSchemaModsBySchemaUID(s.UID)
 	assert.NoError(t, err)
 	assert.NotNil(t, sm)
 	assert.Equal(t, 2, len(sm))
