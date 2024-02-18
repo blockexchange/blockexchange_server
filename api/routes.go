@@ -68,7 +68,6 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/schema/{schema_uid}/screenshot/update", api.Secure(api.UpdateSchemaPreview)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{schema_uid}/screenshot", api.GetFirstSchemaScreenshot)
 
-	r.HandleFunc("/api/search/schema/byname/{user_name}/{schema_name}", api.SearchSchemaByNameAndUser)
 	r.HandleFunc("/api/search/schema", api.SearchSchema).Methods(http.MethodPost)
 	r.HandleFunc("/api/count/schema", api.CountSchema).Methods(http.MethodPost)
 

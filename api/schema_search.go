@@ -4,48 +4,7 @@ import (
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
-	"os"
-
-	"github.com/gorilla/mux"
 )
-
-func (api *Api) SearchSchemaByNameAndUser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	schema_name := vars["schema_name"]
-	user_name := vars["user_name"]
-	limit := 1
-	offset := 0
-
-	search := &types.SchemaSearchRequest{
-		UserName:   &user_name,
-		SchemaName: &schema_name,
-		Limit:      &limit,
-		Offset:     &offset,
-	}
-	list, err := api.SchemaSearchRepo.Search(search)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	json.NewEncoder(os.Stdout).Encode(list) //XXX
-
-	if len(list) == 0 {
-		SendError(w, 404, "not found")
-		return
-	}
-
-	schema := list[0]
-	if r.URL.Query().Get("download") == "true" {
-		// increment downloads and ignore error
-		api.incrementDownloadStats(schema.Schema.UID, r)
-	}
-
-	// increment view stats
-	api.incrementViewStats(schema.Schema.UID, r)
-
-	Send(w, schema, nil)
-}
 
 func (api *Api) CountSchema(w http.ResponseWriter, r *http.Request) {
 	search := &types.SchemaSearchRequest{}

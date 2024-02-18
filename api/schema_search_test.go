@@ -3,12 +3,12 @@ package api_test
 import (
 	"blockexchange/testutils"
 	"blockexchange/types"
+	"bytes"
 	"encoding/json"
 	"net/http/httptest"
 	"testing"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,22 +33,24 @@ func TestSearchSchema(t *testing.T) {
 
 	// search directly
 
-	r := httptest.NewRequest("GET", "http://", nil)
+	data, err := json.Marshal(&types.SchemaSearchRequest{
+		UserName:   &user.Name,
+		SchemaName: &schema.Name,
+	})
+	assert.NoError(t, err)
+
+	r := httptest.NewRequest("POST", "http://", bytes.NewBuffer(data))
 	w := httptest.NewRecorder()
 
-	r = mux.SetURLVars(r, map[string]string{
-		"schema_name": schema.Name,
-		"user_name":   user.Name,
-	})
-
-	api.SearchSchemaByNameAndUser(w, r)
+	api.SearchSchema(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 
-	search_result := &types.SchemaSearchResponse{}
-	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), search_result))
-	assert.Equal(t, schema.UID, search_result.Schema.UID)
-	assert.Equal(t, 0, search_result.Schema.Stars)
-	assert.Equal(t, 1, len(search_result.Mods))
-	assert.Equal(t, "default", search_result.Mods[0])
+	search_result := []*types.SchemaSearchResponse{}
+	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), &search_result))
+	assert.Equal(t, 1, len(search_result))
+	assert.Equal(t, schema.UID, search_result[0].Schema.UID)
+	assert.Equal(t, 0, search_result[0].Schema.Stars)
+	assert.Equal(t, 1, len(search_result[0].Mods))
+	assert.Equal(t, "default", search_result[0].Mods[0])
 
 }
