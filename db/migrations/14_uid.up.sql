@@ -88,3 +88,12 @@ alter table schematag alter schema_uid set not null;
 alter table schematag drop column schema_id;
 
 alter table schema drop column id;
+
+-- constraints
+alter table schema add constraint schema_user_uid_fkey FOREIGN KEY (user_uid) REFERENCES public.user(uid) on delete cascade;
+alter table schemamod add constraint schemamod_schema_uid_fkey FOREIGN KEY (schema_uid) REFERENCES schema(uid) on delete cascade;
+alter table access_token add constraint access_token_user_uid_fkey FOREIGN KEY (user_uid) REFERENCES public.user(uid) on delete cascade;
+alter table schema_screenshot add constraint schema_screenshot_schema_uid_fkey FOREIGN KEY (schema_uid) REFERENCES schema(uid) on delete cascade;
+alter table schemapart add constraint schemapart_schema_uid_fkey FOREIGN KEY (schema_uid) REFERENCES schema(uid) on delete cascade;
+alter table schematag add constraint schematag_schema_uid_fkey FOREIGN KEY (schema_uid) REFERENCES schema(uid) on delete cascade;
+alter table schematag add constraint schematag_tag_uid_fkey FOREIGN KEY (tag_uid) REFERENCES tag(uid) on delete cascade;
