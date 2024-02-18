@@ -6,21 +6,20 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vingarcia/ksql"
 )
 
 func IsDatabaseAvailable() bool {
 	return os.Getenv("PGHOST") != ""
 }
 
-func CreateTestDatabase(t *testing.T) ksql.Provider {
+func CreateTestDatabase(t *testing.T) *db.Repositories {
 	if !IsDatabaseAvailable() {
 		t.SkipNow()
 	}
 
-	kdb, err := db.Init()
+	repos, err := db.Init()
 	assert.NoError(t, err)
-	assert.NotNil(t, kdb)
+	assert.NotNil(t, repos)
 
-	return kdb
+	return repos
 }

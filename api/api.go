@@ -20,7 +20,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/vearutop/statigz"
 	"github.com/vearutop/statigz/brotli"
-	"github.com/vingarcia/ksql"
 )
 
 type Api struct {
@@ -36,7 +35,7 @@ func (a *Api) Stop() {
 	a.Running.Store(false)
 }
 
-func NewApi(kdb ksql.Provider, cfg *types.Config) (*Api, *mux.Router, error) {
+func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error) {
 	r := mux.NewRouter()
 	r.Use(middleware.PrometheusMiddleware)
 	r.Use(middleware.LoggingMiddleware)
@@ -66,8 +65,6 @@ func NewApi(kdb ksql.Provider, cfg *types.Config) (*Api, *mux.Router, error) {
 
 	running := &atomic.Bool{}
 	running.Store(true)
-
-	repos := db.NewRepositories(kdb)
 
 	a := &Api{
 		Repositories: repos,

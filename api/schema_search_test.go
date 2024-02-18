@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -19,6 +20,8 @@ func TestSearchSchema(t *testing.T) {
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	schema := types.Schema{
 		UserUID: user.UID,
+		Mtime:   time.Now().Unix(),
+		Created: time.Now().Unix(),
 	}
 	err := api.SchemaRepo.CreateSchema(&schema)
 	assert.NoError(t, err)
@@ -36,9 +39,9 @@ func TestSearchSchema(t *testing.T) {
 	api.SearchSchemaByNameAndUser(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
 
-	search_result := &types.Schema{}
+	search_result := &types.SchemaSearchResponse{}
 	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), search_result))
-	assert.Equal(t, schema.UID, search_result.UID)
-	assert.Equal(t, 0, search_result.Stars)
+	assert.Equal(t, schema.UID, search_result.Schema.UID)
+	assert.Equal(t, 0, search_result.Schema.Stars)
 
 }

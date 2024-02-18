@@ -3,18 +3,21 @@ package db
 import (
 	"blockexchange/types"
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
+	"github.com/lib/pq"
 	"github.com/vingarcia/ksql"
 )
 
 type SchemaSearchRepository struct {
 	kdb ksql.Provider
+	DB  *sql.DB
 }
 
 func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search *types.SchemaSearchRequest, with_order bool) []any {
-	query.WriteString("from schema where true=true")
+	query.WriteString(" from schema s where true=true")
 	params := []any{}
 	i := 1
 
@@ -88,14 +91,78 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 
 func (r *SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int64, error) {
 	query := strings.Builder{}
+	query.WriteString("select count(*) as count")
 	params := r.buildWhereQuery(&query, search, false)
 	c := &types.Count{}
-	return c.Count, r.kdb.QueryOne(context.Background(), c, fmt.Sprintf("select count(*) as count %s", query.String()), params...)
+	return c.Count, r.kdb.QueryOne(context.Background(), c, query.String(), params...)
 }
 
-func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*types.Schema, error) {
+func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*types.SchemaSearchResponse, error) {
 	query := strings.Builder{}
+	fields := []string{
+		"uid",
+		"created",
+		"mtime",
+		"user_uid",
+		"collection_uid",
+		"name",
+		"description",
+		"short_description",
+		"cdb_collection",
+		"complete",
+		"size_x", "size_y", "size_z",
+		"total_size",
+		"total_parts",
+		"downloads",
+		"views",
+		"license",
+		"stars",
+		"(select u.name from public.user u where u.uid = user_uid) as username",
+		"array(select sm.mod_name from schemamod sm where sm.schema_uid = uid)::text[]",
+	}
+	query.WriteString(fmt.Sprintf("select %s", strings.Join(fields, ",")))
 	params := r.buildWhereQuery(&query, search, true)
-	list := []*types.Schema{}
-	return list, r.kdb.Query(context.Background(), &list, query.String(), params...)
+	list := []*types.SchemaSearchResponse{}
+
+	rows, err := r.DB.Query(query.String(), params...)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		e := &types.SchemaSearchResponse{
+			Schema: &types.Schema{},
+			Tags:   []string{},
+			Mods:   []string{},
+		}
+		err = rows.Scan(
+			&e.Schema.UID,
+			&e.Schema.Created,
+			&e.Schema.Mtime,
+			&e.Schema.UserUID,
+			&e.Schema.CollectionUID,
+			&e.Schema.Name,
+			&e.Schema.Description,
+			&e.Schema.ShortDescription,
+			&e.Schema.CDBCollection,
+			&e.Schema.Complete,
+			&e.Schema.SizeX, &e.Schema.SizeY, &e.Schema.SizeZ,
+			&e.Schema.TotalSize,
+			&e.Schema.TotalParts,
+			&e.Schema.Downloads,
+			&e.Schema.Views,
+			&e.Schema.License,
+			&e.Schema.Stars,
+			&e.Username,
+			pq.Array(&e.Mods),
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, e)
+	}
+
+	return list, nil
 }

@@ -6,11 +6,9 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/vingarcia/ksql"
 )
 
-func Start(kdb ksql.Provider, api *api.Api) {
-	repos := db.NewRepositories(kdb)
+func Start(repos *db.Repositories, api *api.Api) {
 	go cleanupSchemas(repos.SchemaRepo)
 	go updateStats(api)
 }

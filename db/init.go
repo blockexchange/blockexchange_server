@@ -19,7 +19,7 @@ import (
 //go:embed migrations/*.sql
 var migrations embed.FS
 
-func Init() (ksql.Provider, error) {
+func Init() (*Repositories, error) {
 	url := fmt.Sprintf(
 		"user=%s password=%s port=%s host=%s dbname=%s sslmode=disable",
 		os.Getenv("PGUSER"),
@@ -34,7 +34,6 @@ func Init() (ksql.Provider, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
 
 	driver, err := pgx.WithInstance(db, &pgx.Config{})
 	if err != nil {
@@ -67,5 +66,5 @@ func Init() (ksql.Provider, error) {
 		return nil, err
 	}
 
-	return kdb, nil
+	return NewRepositories(kdb, db), nil
 }

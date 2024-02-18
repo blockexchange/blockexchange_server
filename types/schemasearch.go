@@ -12,7 +12,7 @@ var OrderColumns = map[string]bool{
 }
 
 type SchemaSearchResponse struct {
-	*Schema
+	Schema   *Schema  `json:"schema"`
 	Username string   `json:"username"`
 	Tags     []string `json:"tags"`
 	Mods     []string `json:"mods"`

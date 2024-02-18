@@ -4,15 +4,12 @@ import (
 	"blockexchange/types"
 	"time"
 
-	"github.com/vingarcia/ksql"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func PopulateTestData(kdb ksql.Provider) error {
-	userrepo := &UserRepository{kdb: kdb}
-	tokenrepo := &AccessTokenRepository{kdb: kdb}
+func PopulateTestData(repos *Repositories) error {
 
-	user, err := userrepo.GetUserByName("Testuser")
+	user, err := repos.UserRepo.GetUserByName("Testuser")
 	if err != nil {
 		return err
 	}
@@ -30,7 +27,7 @@ func PopulateTestData(kdb ksql.Provider) error {
 		Type: types.UserTypeLocal,
 		Hash: string(hash),
 	}
-	err = userrepo.CreateUser(user)
+	err = repos.UserRepo.CreateUser(user)
 	if err != nil {
 		return err
 	}
@@ -44,6 +41,6 @@ func PopulateTestData(kdb ksql.Provider) error {
 		UseCount: 0,
 	}
 
-	err = tokenrepo.CreateAccessToken(token)
+	err = repos.AccessTokenRepo.CreateAccessToken(token)
 	return err
 }
