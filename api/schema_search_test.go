@@ -24,6 +24,11 @@ func TestSearchSchema(t *testing.T) {
 		Created: time.Now().Unix(),
 	}
 	err := api.SchemaRepo.CreateSchema(&schema)
+	api.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
+		SchemaUID: schema.UID,
+		ModName:   "default",
+	})
+
 	assert.NoError(t, err)
 
 	// search directly
@@ -43,5 +48,7 @@ func TestSearchSchema(t *testing.T) {
 	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), search_result))
 	assert.Equal(t, schema.UID, search_result.Schema.UID)
 	assert.Equal(t, 0, search_result.Schema.Stars)
+	assert.Equal(t, 1, len(search_result.Mods))
+	assert.Equal(t, "default", search_result.Mods[0])
 
 }

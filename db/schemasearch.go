@@ -119,6 +119,7 @@ func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*t
 		"stars",
 		"(select u.name from public.user u where u.uid = user_uid) as username",
 		"array(select sm.mod_name from schemamod sm where sm.schema_uid = uid)::text[]",
+		"array(select t.name from schematag st join tag t on t.uid = st.tag_uid  where st.schema_uid = s.uid)",
 	}
 	query.WriteString(fmt.Sprintf("select %s", strings.Join(fields, ",")))
 	params := r.buildWhereQuery(&query, search, true)
@@ -155,6 +156,7 @@ func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*t
 			&e.Schema.Stars,
 			&e.Username,
 			pq.Array(&e.Mods),
+			pq.Array(&e.Tags),
 		)
 
 		if err != nil {

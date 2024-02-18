@@ -21,7 +21,7 @@ export default {
 	methods: {
 		fetch_data: function() {
 			return {
-				schema: get_schema_by_name(this.username, this.name)
+				search_result: get_schema_by_name(this.username, this.name)
 			};
 		},
 		allow_edit: function(schema) {
@@ -31,7 +31,9 @@ export default {
 	template: /*html*/`
 		<bread-crumb :items="breadcrumb"/>
 		<loading-block :fetch_data="fetch_data" v-slot="{ data }">
-			<schema-detail :schema="data.schema" :username="username" :allow_edit="allow_edit(data.schema)"/>
+			<schema-detail
+				:search_result="data.search_result"
+				:allow_edit="allow_edit(data.search_result.schema)"/>
 		</loading-block>
 	`
 };

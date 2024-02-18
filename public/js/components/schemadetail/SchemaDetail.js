@@ -24,8 +24,7 @@ export default {
         "clipboard-copy": ClipboardCopy
     },
     props: {
-        schema: { type: Object, required: true },
-        username: { type: String, required: true },
+        search_result: { type: Object, required: true },
         allow_edit: { type: Boolean, default: false }
     },
     mounted: function() {
@@ -40,7 +39,11 @@ export default {
             screenshot_busy: false,
             mods_busy: false,
             delete_prompt: false,
-            schema_star: null
+            schema_star: null,
+            username: this.search_result.username,
+            schema: this.search_result.schema,
+            mods: this.search_result.mods,
+            tags: this.search_result.tags
         };
     },
     methods: {
@@ -69,7 +72,7 @@ export default {
             schema_update(this.schema)
             .then(() => {
                 // set tags
-                schema_set_tags(this.schema.uid, this.schema.tags);
+                schema_set_tags(this.schema.uid, this.tags);
 
                 this.edit_mode = false;
                 this.$router.push(`/schema/${this.username}/${this.schema.name}`);
@@ -82,7 +85,7 @@ export default {
             this.mods_busy = true;
             schema_update_mods(this.schema.uid)
             .then(m => {
-                this.schema.mods = m;
+                this.mods = m;
                 this.mods_busy = false;
             });
         },
@@ -244,7 +247,7 @@ export default {
                         </a>
                         <hr v-if="schema.cdb_collection">
                         <input v-if="edit_mode" type="text" class="form-control" v-model="schema.cdb_collection" placeholder="CDB Collection in the 'username/collectionname' form"/>
-                        <span v-for="mod in schema.mods" class="badge bg-primary" style="margin-right: 5px;">
+                        <span v-for="mod in mods" class="badge bg-primary" style="margin-right: 5px;">
                             <i class="fa fa-box-archive"></i>
                             {{mod}}
                         </span>
@@ -256,14 +259,14 @@ export default {
                         Tags
                     </div>
                     <div class="card-body">
-                        <span v-if="!edit_mode" class="badge bg-success" v-for="tag in schema.tags" style="margin-right: 5px;">
+                        <span v-if="!edit_mode" class="badge bg-success" v-for="tag in tags" style="margin-right: 5px;">
                             <i class="fas fa-tag"></i>
                             {{tag}}
                         </span>
                         <div v-else>
                             <ul>
                                 <li v-for="tag in get_tags()">
-                                    <input type="checkbox" class="form-check-input" :value="tag.name" v-model="schema.tags"/>
+                                    <input type="checkbox" class="form-check-input" :value="tag.name" v-model="tags"/>
                                     <span class="badge bg-success">
                                         <i class="fas fa-tag"></i>
                                         {{tag.name}}
