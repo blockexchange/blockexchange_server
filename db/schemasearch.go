@@ -64,6 +64,22 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 		i++
 	}
 
+	if search.CollectionUID != nil {
+		query.WriteString(fmt.Sprintf(" and collection_uid = $%d", i))
+		params = append(params, *search.CollectionUID)
+		i++
+	}
+
+	if search.WithCollection != nil {
+		if *search.WithCollection {
+			// only schematics with collection
+			query.WriteString(" and collection_uid is not null")
+		} else {
+			// without collection
+			query.WriteString(" and collection_uid is null")
+		}
+	}
+
 	if with_order {
 		if search.OrderColumn != nil && search.OrderDirection != nil && types.OrderColumns[*search.OrderColumn] && types.OrderDirections[*search.OrderDirection] {
 			query.WriteString(fmt.Sprintf(" order by $%d $%d", i, i+1))
@@ -117,7 +133,8 @@ func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*t
 		"views",
 		"license",
 		"stars",
-		"(select u.name from public.user u where u.uid = user_uid) as username",
+		"(select u.name from public.user u where u.uid = user_uid)",
+		"(select c.name from collection c where c.uid = collection_uid)",
 		"array(select sm.mod_name from schemamod sm where sm.schema_uid = uid)::text[]",
 		"array(select t.name from schematag st join tag t on t.uid = st.tag_uid  where st.schema_uid = s.uid)",
 	}
@@ -155,6 +172,7 @@ func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*t
 			&e.Schema.License,
 			&e.Schema.Stars,
 			&e.Username,
+			&e.CollectionName,
 			pq.Array(&e.Mods),
 			pq.Array(&e.Tags),
 		)
