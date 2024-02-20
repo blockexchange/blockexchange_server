@@ -3,6 +3,7 @@ import format_time from "../../util/format_time.js";
 
 import ModalPrompt from "../ModalPrompt.js";
 import ClipboardCopy from "../ClipboardCopy.js";
+import SchemaStar from "./SchemaStar.js";
 
 import {
     schema_update,
@@ -12,7 +13,6 @@ import {
     schema_update_mods,
     schema_update_info
 } from "../../api/schema.js";
-import { get_schema_star, star_schema, unstar_schema, count_schema_stars } from "../../api/schema_star.js";
 import { get_tags } from "../../service/tags.js";
 import { is_logged_in, has_permission } from "../../service/login.js";
 
@@ -21,14 +21,12 @@ const max_placement_tool_size = 100;
 export default {
     components: {
         "modal-prompt": ModalPrompt,
-        "clipboard-copy": ClipboardCopy
+        "clipboard-copy": ClipboardCopy,
+        "schema-star": SchemaStar
     },
     props: {
         search_result: { type: Object, required: true },
         allow_edit: { type: Boolean, default: false }
-    },
-    mounted: function() {
-        this.update_star();
     },
     data: function() {
         return {
@@ -39,7 +37,6 @@ export default {
             screenshot_busy: false,
             mods_busy: false,
             delete_prompt: false,
-            schema_star: null,
             username: this.search_result.username,
             schema: this.search_result.schema,
             mods: this.search_result.mods,
@@ -53,20 +50,7 @@ export default {
         get_tags: function() {
             return get_tags().filter(t => !t.restricted || has_permission("ADMIN"));
         },
-        update_star: function() {
-            if (is_logged_in()) {
-                get_schema_star(this.schema.uid)
-                .then(s => this.schema_star = s)
-                .then(() => count_schema_stars(this.schema.uid))
-                .then(count => this.schema.stars = count);
-            }
-        },
-        star: function() {
-            star_schema(this.schema.uid).then(() => this.update_star());
-        },
-        unstar: function() {
-            unstar_schema(this.schema.uid).then(() => this.update_star());
-        },
+
         save: function() {
             this.error_response = null;
             schema_update(this.schema)
@@ -141,11 +125,7 @@ export default {
                     {{schema.name}}
                     <small class="text-muted">by {{username}}</small>
                     &nbsp;
-                    <button class="btn btn-outline-primary" :disabled="!logged_in" v-on:click="schema_star ? unstar() : star()">
-                        <i class="fa fa-star" v-bind:style="{color: schema_star ? 'yellow' : ''}"></i>
-                        <span class="badge bg-secondary rouded-pill">{{schema.stars}}</span>
-                        {{ schema_star ? 'Unstar' : 'Star' }}
-                    </button>
+                    <schema-star :schema="schema"/>
                 </h3>
                 <div v-else class="input-group has-validation">
                     <input type="text" class="form-control" v-model="schema.name" v-bind:class="{'is-invalid': error_response}">

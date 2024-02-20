@@ -37,8 +37,8 @@ export default {
                             <i class="fa fa-landmark"></i>
                             {{entry.schema.name}}
                         </router-link>
-                        <i class="fa fa-star" v-bind:style="{ color: entry.stars ? 'yellow' : '' }"></i>
-                        <span class="badge bg-secondary rounded-pill">{{entry.stars}}</span>
+                        <i class="fa fa-star" v-if="entry.schema.stars" v-bind:style="{ color: entry.schema.stars ? 'yellow' : '' }"></i>
+                        <span class="badge bg-secondary rounded-pill" v-if="entry.schema.stars">{{entry.schema.stars}}</span>
                     </p>
                     <p>
                         <router-link :to="'/user/' + entry.username" class="text-muted">
