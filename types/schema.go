@@ -45,6 +45,8 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	s.Description = getString(m["description"])
 	s.ShortDescription = getString(m["short_description"])
 	s.CDBCollection = getString(m["cdb_collection"])
+	cuid := getString(m["collection_uid"])
+	s.CollectionUID = &cuid
 	s.License = getString(m["license"])
 	s.Complete = getBool(m["complete"])
 	s.SizeX = getInt(m["size_x"])

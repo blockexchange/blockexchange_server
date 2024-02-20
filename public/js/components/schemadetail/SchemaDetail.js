@@ -4,6 +4,7 @@ import format_time from "../../util/format_time.js";
 import ModalPrompt from "../ModalPrompt.js";
 import SchemaStar from "./SchemaStar.js";
 import SchemaDownload from "./SchemaDownload.js";
+import SchemaCollection from "./SchemaCollection.js";
 
 import {
     schema_update,
@@ -16,12 +17,12 @@ import {
 import { get_tags } from "../../service/tags.js";
 import { is_logged_in, has_permission } from "../../service/login.js";
 
-
 export default {
     components: {
         "modal-prompt": ModalPrompt,
         "schema-star": SchemaStar,
-        "schema-download": SchemaDownload
+        "schema-download": SchemaDownload,
+        "schema-collection": SchemaCollection
     },
     props: {
         search_result: { type: Object, required: true },
@@ -93,6 +94,7 @@ export default {
         markdown: function(txt) {
             return DOMPurify.sanitize(marked.parse(txt));
         }
+        
     },
     computed: {
         logged_in: is_logged_in
@@ -260,15 +262,7 @@ export default {
                         Collection
                     </div>
                     <div class="card-body">
-                        <div v-if="!edit_mode">
-                            <span class="badge bg-success" v-if="search_result.collection_name" style="margin-right: 5px;">
-                                <i class="fa fa-object-group"></i>
-                                {{search_result.collection_name}}
-                            </span>
-                        </div>
-                        <div v-else>
-                            TODO: edit
-                        </div>
+                        <schema-collection :schema="schema" :username="username" :edit_mode="edit_mode"/>
                     </div>
                 </div>
             </div>
