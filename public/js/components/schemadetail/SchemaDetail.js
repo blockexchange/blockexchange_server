@@ -165,6 +165,7 @@ export default {
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-magnifying-glass"></i>
                         Details
                     </div>
                     <div class="card-body">
@@ -195,6 +196,7 @@ export default {
                 <br>
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-file-lines"></i>
                         Description
                     </div>
                     <div class="card-body">
@@ -208,6 +210,7 @@ export default {
                 <br>
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-box-archive"></i>
                         Used mods
                     </div>
                     <div class="card-body">
@@ -229,11 +232,12 @@ export default {
                 <br>
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-tags"></i>
                         Tags
                     </div>
                     <div class="card-body">
                         <span v-if="!edit_mode" class="badge bg-success" v-for="tag in tags" style="margin-right: 5px;">
-                            <i class="fas fa-tag"></i>
+                            <i class="fa fa-tag"></i>
                             {{tag}}
                         </span>
                         <div v-else>
@@ -241,7 +245,7 @@ export default {
                                 <li v-for="tag in get_tags()">
                                     <input type="checkbox" class="form-check-input" :value="tag.name" v-model="tags"/>
                                     <span class="badge bg-success">
-                                        <i class="fas fa-tag"></i>
+                                        <i class="fa fa-tag"></i>
                                         {{tag.name}}
                                     </span>
                                 </li>
@@ -249,10 +253,29 @@ export default {
                         </div>
                     </div>
                 </div>
+                <br>
+                <div class="card" v-if="edit_mode || search_result.collection_name">
+                    <div class="card-header">
+                        <i class="fa fa-object-group"></i>
+                        Collection
+                    </div>
+                    <div class="card-body">
+                        <div v-if="!edit_mode">
+                            <span class="badge bg-success" v-if="search_result.collection_name" style="margin-right: 5px;">
+                                <i class="fa fa-object-group"></i>
+                                {{search_result.collection_name}}
+                            </span>
+                        </div>
+                        <div v-else>
+                            TODO: edit
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-image"></i>
                         Preview
                     </div>
                     <div class="card-body">
@@ -264,6 +287,7 @@ export default {
                 <br>
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-download"></i>
                         Download
                     </div>
                     <div class="card-body">

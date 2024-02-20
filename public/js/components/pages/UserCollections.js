@@ -1,6 +1,7 @@
-import Breadcrumb, { START, USER_COLLECTIONS } from "../Breadcrumb.js";
 import { create_collection, get_collections_by_username } from "../../api/collection.js";
 import { get_user_uid } from "../../service/login.js";
+
+import Breadcrumb, { START, USER_COLLECTIONS } from "../Breadcrumb.js";
 import LoadingSpinner from "../LoadingSpinner.js";
 
 export default {
