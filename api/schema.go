@@ -144,6 +144,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	schema.ShortDescription = updated_schema.ShortDescription
 	schema.CDBCollection = updated_schema.CDBCollection
 	schema.CollectionUID = updated_schema.CollectionUID
+
 	err = api.SchemaRepo.UpdateSchema(schema)
 	if err != nil {
 		SendError(w, 500, err.Error())

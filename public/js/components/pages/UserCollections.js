@@ -54,47 +54,58 @@ export default {
 		<bread-crumb :items="breadcrumb"/>
         <loading-spinner v-if="busy"/>
         <div v-else>
-            <div class="row" v-if="!readonly">
-                <div class="col-md-4"></div>
-                <div class="col-md-4">
-                    <div class="input-group has-validation">
-                        <input type="text"
-                            class="form-control"
-                            v-bind:class="{'is-invalid': !valid_name || duplicate_name}"
-                            placeholder="New collection name"
-                            v-model="new_collection_name"/>
-                        <button class="btn btn-secondary"
-                            :disabled="!valid_name || duplicate_name || !new_collection_name"
-                            v-on:click="create_collection">
-                            <i class="fa fa-plus"></i> Create collection
-                        </button>
-                        <div class="invalid-feedback" v-if="new_collection_name && !valid_name">
-                            Name is invalid, allowed chars: a to z, A to Z, 0 to 9 and -._
-                        </div>   
-                        <div class="invalid-feedback" v-if="new_collection_name && duplicate_name">
-                            Name is already taken
-                        </div>              
-                    </div>
-                </div>
-                <div class="col-md-4"></div>
-            </div>
-            <hr>
-            <div class="row">
-                <div style="padding-bottom: 10px; width: 320px; min-height: 450px;" :key="collection.uid" v-for="collection in collections">
-                    <div class="card" style="min-height: 400px;">
-                        <div class="card-header">
-                            {{collection.name}}
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">Title</h5>
-                            <p>
-                                Stuff
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {{JSON.stringify(collections)}}
+            <table class="table table-dark table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr :key="collection.uid" v-for="collection in collections">
+                        <td>
+                            <router-link :to="'/collections/' + username + '/' + collection.name">
+                                <i class="fa fa-object-group"></i>
+                                {{collection.name}}
+                            </router-link>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-danger">
+                                    <i class="fa fa-trash"></i>
+                                    Remove
+                                </button>
+                                <button class="btn btn-primary">
+                                    <i class="fa fa-edit"></i>
+                                    Edit
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr v-if="!readonly">
+                        <td>
+                            <input type="text"
+                                class="form-control"
+                                v-bind:class="{'is-invalid': !valid_name || duplicate_name}"
+                                placeholder="New collection name"
+                                v-model="new_collection_name"/>
+                            <div class="invalid-feedback" v-if="new_collection_name && !valid_name">
+                                Name is invalid, allowed chars: a to z, A to Z, 0 to 9 and -._
+                            </div>   
+                            <div class="invalid-feedback" v-if="new_collection_name && duplicate_name">
+                                Name is already taken
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary"
+                                :disabled="!valid_name || duplicate_name || !new_collection_name"
+                                v-on:click="create_collection">
+                                <i class="fa fa-plus"></i> Create collection
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 	`
 };

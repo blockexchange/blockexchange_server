@@ -13,7 +13,7 @@ type Schema struct {
 	Created          int64   `json:"created" ksql:"created"`
 	Mtime            int64   `json:"mtime" ksql:"mtime"`
 	UserUID          string  `json:"user_uid" ksql:"user_uid"`
-	CollectionUID    *string `json:"collection_uid" ksql:"collection_uid"`
+	CollectionUID    *string `json:"collection_uid" ksql:"collection_uid,nullable"`
 	Name             string  `json:"name" ksql:"name"`
 	Description      string  `json:"description" ksql:"description"`
 	ShortDescription string  `json:"short_description" ksql:"short_description"`
@@ -46,7 +46,9 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	s.ShortDescription = getString(m["short_description"])
 	s.CDBCollection = getString(m["cdb_collection"])
 	cuid := getString(m["collection_uid"])
-	s.CollectionUID = &cuid
+	if cuid != "" {
+		s.CollectionUID = &cuid
+	}
 	s.License = getString(m["license"])
 	s.Complete = getBool(m["complete"])
 	s.SizeX = getInt(m["size_x"])

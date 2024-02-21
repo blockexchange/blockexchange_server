@@ -59,6 +59,7 @@ export default {
 
                 this.edit_mode = false;
                 this.$router.push(`/schema/${this.username}/${this.schema.name}`);
+                this.$emit("save");
             })
             .catch(e => {
                 this.error_response = e;
@@ -217,11 +218,12 @@ export default {
                     </div>
                     <div class="card-body">
                         <a v-if="!edit_mode && schema.cdb_collection"
-                            class="btn btn-xs btn-outline-success"
+                            class="btn btn-xs btn-outline-success w-100"
                             target="new"
                             :href="'https://content.minetest.net/collections/' + schema.cdb_collection + '/'">
                             <i class="fa fa-box-archive"></i>
                             Open CDB Mod collection
+                            <i class="fa fa-up-right-from-square"></i>
                         </a>
                         <hr v-if="schema.cdb_collection">
                         <input v-if="edit_mode" type="text" class="form-control" v-model="schema.cdb_collection" placeholder="CDB Collection in the 'username/collectionname' form"/>
@@ -262,7 +264,11 @@ export default {
                         Collection
                     </div>
                     <div class="card-body">
-                        <schema-collection :schema="schema" :username="username" :edit_mode="edit_mode"/>
+                        <schema-collection
+                            :schema="schema"
+                            :username="username"
+                            :edit_mode="edit_mode"
+                            :collection_name="search_result.collection_name"/>
                     </div>
                 </div>
             </div>

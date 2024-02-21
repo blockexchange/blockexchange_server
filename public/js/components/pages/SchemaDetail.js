@@ -33,10 +33,12 @@ export default {
 	},
 	template: /*html*/`
 		<bread-crumb :items="breadcrumb"/>
-		<loading-block :fetch_data="fetch_data" v-slot="{ data }">
+		<loading-block :fetch_data="fetch_data" v-slot="{ data, update_data }">
 			<schema-detail
 				:search_result="data.search_result"
-				:allow_edit="allow_edit(data.search_result.schema)"/>
+				:allow_edit="allow_edit(data.search_result.schema)"
+				v-on:save="update_data"
+				/>
 		</loading-block>
 	`
 };

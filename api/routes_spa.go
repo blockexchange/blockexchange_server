@@ -19,6 +19,7 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 		"/mod",
 		"/schema/{username}",
 		"/collections/{username}",
+		"/collections/{username}/{collection_name}",
 		"/users",
 		"/search",
 		"/register",

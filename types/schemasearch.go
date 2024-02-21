@@ -28,6 +28,7 @@ type SchemaSearchRequest struct {
 	Keywords       *string `json:"keywords"`
 	Complete       *bool   `json:"complete"`
 	CollectionUID  *string `json:"collection_uid"`
+	CollectionName *string `json:"collection_name"`
 	WithCollection *bool   `json:"with_collection"`
 	OrderDirection *string `json:"order_direction"`
 	OrderColumn    *string `json:"order_column"`

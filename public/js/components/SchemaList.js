@@ -54,6 +54,12 @@ export default {
                         </span>                    
                     </p>
                     <p>
+                        <router-link :to="'/collections/' + entry.username + '/' + entry.collection_name" v-if="entry.collection_name">
+                            <i class="fa fa-object-group"></i>
+                            {{entry.collection_name}}
+                        </router-link>
+                    </p>
+                    <p>
                         {{format_size(entry.schema.total_size)}};
                         {{entry.schema.size_x}} / {{entry.schema.size_y}} / {{entry.schema.size_z}} nodes
                     </p>

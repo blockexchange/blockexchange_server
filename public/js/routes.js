@@ -11,6 +11,7 @@ import UserDetail from './components/pages/UserDetail.js';
 import SchemaDetail from './components/pages/SchemaDetail.js';
 import UserSchemas from './components/pages/UserSchemas.js';
 import UserCollections from './components/pages/UserCollections.js';
+import UserCollection from './components/pages/UserCollection.js';
 
 export default [{
 	path: "/", component: Start
@@ -34,6 +35,8 @@ export default [{
 	path: "/schema/:username", component: UserSchemas, props: true
 },{
 	path: "/collections/:username", component: UserCollections, props: true
+},{
+	path: "/collections/:username/:collection_name", component: UserCollection, props: true
 },{
 	path: "/import", component: Import
 },{

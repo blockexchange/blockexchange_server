@@ -70,6 +70,12 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 		i++
 	}
 
+	if search.CollectionName != nil {
+		query.WriteString(fmt.Sprintf(" and collection_uid in (select c.uid from collection c where c.name = $%d)", i))
+		params = append(params, *search.CollectionName)
+		i++
+	}
+
 	if search.WithCollection != nil {
 		if *search.WithCollection {
 			// only schematics with collection

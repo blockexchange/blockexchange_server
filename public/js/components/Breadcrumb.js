@@ -52,6 +52,10 @@ export const USER_COLLECTIONS = username => {
     return { name: `Collections for ${username}`, icon: "object-group", link: `/collections/${username}` };
 };
 
+export const USER_COLLECTION = (username, collection_name) => {
+    return { name: `Collection ${collection_name}`, icon: "object-group", link: `/collections/${username}/${collection_name}` };
+};
+
 export const SCHEMA_DETAIL = (username, name) => {
     return { name: `Schematic ${name}`, icon: "bookmark", link: `/schema/${username}/${name}` };
 };
