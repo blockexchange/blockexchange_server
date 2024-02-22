@@ -2,7 +2,9 @@ import format_size from "../../util/format_size.js";
 import format_time from "../../util/format_time.js";
 
 import ModalPrompt from "../ModalPrompt.js";
-import ClipboardCopy from "../ClipboardCopy.js";
+import SchemaStar from "./SchemaStar.js";
+import SchemaDownload from "./SchemaDownload.js";
+import SchemaCollection from "./SchemaCollection.js";
 
 import {
     schema_update,
@@ -12,24 +14,19 @@ import {
     schema_update_mods,
     schema_update_info
 } from "../../api/schema.js";
-import { get_schema_star, star_schema, unstar_schema, count_schema_stars } from "../../api/schema_star.js";
 import { get_tags } from "../../service/tags.js";
 import { is_logged_in, has_permission } from "../../service/login.js";
-
-const max_placement_tool_size = 100;
 
 export default {
     components: {
         "modal-prompt": ModalPrompt,
-        "clipboard-copy": ClipboardCopy
+        "schema-star": SchemaStar,
+        "schema-download": SchemaDownload,
+        "schema-collection": SchemaCollection
     },
     props: {
-        schema: { type: Object, required: true },
-        username: { type: String, required: true },
+        search_result: { type: Object, required: true },
         allow_edit: { type: Boolean, default: false }
-    },
-    mounted: function() {
-        this.update_star();
     },
     data: function() {
         return {
@@ -40,7 +37,10 @@ export default {
             screenshot_busy: false,
             mods_busy: false,
             delete_prompt: false,
-            schema_star: null
+            username: this.search_result.username,
+            schema: this.search_result.schema,
+            mods: this.search_result.mods,
+            tags: this.search_result.tags
         };
     },
     methods: {
@@ -50,29 +50,16 @@ export default {
         get_tags: function() {
             return get_tags().filter(t => !t.restricted || has_permission("ADMIN"));
         },
-        update_star: function() {
-            if (is_logged_in()) {
-                get_schema_star(this.schema.uid)
-                .then(s => this.schema_star = s)
-                .then(() => count_schema_stars(this.schema.uid))
-                .then(count => this.schema.stars = count);
-            }
-        },
-        star: function() {
-            star_schema(this.schema.uid).then(() => this.update_star());
-        },
-        unstar: function() {
-            unstar_schema(this.schema.uid).then(() => this.update_star());
-        },
         save: function() {
             this.error_response = null;
             schema_update(this.schema)
             .then(() => {
                 // set tags
-                schema_set_tags(this.schema.uid, this.schema.tags);
+                schema_set_tags(this.schema.uid, this.tags);
 
                 this.edit_mode = false;
                 this.$router.push(`/schema/${this.username}/${this.schema.name}`);
+                this.$emit("save");
             })
             .catch(e => {
                 this.error_response = e;
@@ -82,7 +69,7 @@ export default {
             this.mods_busy = true;
             schema_update_mods(this.schema.uid)
             .then(m => {
-                this.schema.mods = m;
+                this.mods = m;
                 this.mods_busy = false;
             });
         },
@@ -108,14 +95,10 @@ export default {
         markdown: function(txt) {
             return DOMPurify.sanitize(marked.parse(txt));
         }
+        
     },
     computed: {
-        logged_in: is_logged_in,
-        can_use_placement_tool: function() {
-            return (this.schema.size_x <= max_placement_tool_size &&
-                    this.schema.size_y <= max_placement_tool_size &&
-                    this.schema.size_z <= max_placement_tool_size);
-        }
+        logged_in: is_logged_in
     },
     template: /*html*/`
     <div>
@@ -138,11 +121,7 @@ export default {
                     {{schema.name}}
                     <small class="text-muted">by {{username}}</small>
                     &nbsp;
-                    <button class="btn btn-outline-primary" :disabled="!logged_in" v-on:click="schema_star ? unstar() : star()">
-                        <i class="fa fa-star" v-bind:style="{color: schema_star ? 'yellow' : ''}"></i>
-                        <span class="badge bg-secondary rouded-pill">{{schema.stars}}</span>
-                        {{ schema_star ? 'Unstar' : 'Star' }}
-                    </button>
+                    <schema-star :schema="schema"/>
                 </h3>
                 <div v-else class="input-group has-validation">
                     <input type="text" class="form-control" v-model="schema.name" v-bind:class="{'is-invalid': error_response}">
@@ -189,6 +168,7 @@ export default {
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-magnifying-glass"></i>
                         Details
                     </div>
                     <div class="card-body">
@@ -219,6 +199,7 @@ export default {
                 <br>
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-file-lines"></i>
                         Description
                     </div>
                     <div class="card-body">
@@ -232,19 +213,21 @@ export default {
                 <br>
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-box-archive"></i>
                         Used mods
                     </div>
                     <div class="card-body">
                         <a v-if="!edit_mode && schema.cdb_collection"
-                            class="btn btn-xs btn-outline-success"
+                            class="btn btn-xs btn-outline-success w-100"
                             target="new"
                             :href="'https://content.minetest.net/collections/' + schema.cdb_collection + '/'">
                             <i class="fa fa-box-archive"></i>
                             Open CDB Mod collection
+                            <i class="fa fa-up-right-from-square"></i>
                         </a>
                         <hr v-if="schema.cdb_collection">
                         <input v-if="edit_mode" type="text" class="form-control" v-model="schema.cdb_collection" placeholder="CDB Collection in the 'username/collectionname' form"/>
-                        <span v-for="mod in schema.mods" class="badge bg-primary" style="margin-right: 5px;">
+                        <span v-for="mod in mods" class="badge bg-primary" style="margin-right: 5px;">
                             <i class="fa fa-box-archive"></i>
                             {{mod}}
                         </span>
@@ -253,19 +236,20 @@ export default {
                 <br>
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-tags"></i>
                         Tags
                     </div>
                     <div class="card-body">
-                        <span v-if="!edit_mode" class="badge bg-success" v-for="tag in schema.tags" style="margin-right: 5px;">
-                            <i class="fas fa-tag"></i>
+                        <span v-if="!edit_mode" class="badge bg-success" v-for="tag in tags" style="margin-right: 5px;">
+                            <i class="fa fa-tag"></i>
                             {{tag}}
                         </span>
                         <div v-else>
                             <ul>
                                 <li v-for="tag in get_tags()">
-                                    <input type="checkbox" class="form-check-input" :value="tag.name" v-model="schema.tags"/>
+                                    <input type="checkbox" class="form-check-input" :value="tag.name" v-model="tags"/>
                                     <span class="badge bg-success">
-                                        <i class="fas fa-tag"></i>
+                                        <i class="fa fa-tag"></i>
                                         {{tag.name}}
                                     </span>
                                 </li>
@@ -273,10 +257,25 @@ export default {
                         </div>
                     </div>
                 </div>
+                <br>
+                <div class="card" v-if="edit_mode || search_result.collection_name">
+                    <div class="card-header">
+                        <i class="fa fa-object-group"></i>
+                        Collection
+                    </div>
+                    <div class="card-body">
+                        <schema-collection
+                            :schema="schema"
+                            :username="username"
+                            :edit_mode="edit_mode"
+                            :collection_name="search_result.collection_name"/>
+                    </div>
+                </div>
             </div>
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-image"></i>
                         Preview
                     </div>
                     <div class="card-body">
@@ -288,87 +287,11 @@ export default {
                 <br>
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa fa-download"></i>
                         Download
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <u>
-                                    <h4>Online</h4>
-                                </u>
-                                <h5>Single placement</h5>
-                                <ul>
-                                    <li>
-                                        Download and install the <router-link to="/mod">blockexchange</router-link>-mod
-                                    </li>
-                                    <li>
-                                        Select the origin position with <clipboard-copy :text="'/bx_pos1'"></clipboard-copy>
-                                    </li>
-                                    <li>
-                                        Check if the placement fits with <clipboard-copy :text="'/bx_allocate ' + username + ' ' + schema.name"></clipboard-copy>
-                                    </li>
-                                    <li>
-                                        Place the schematic with <clipboard-copy :text="'/bx_load ' + username + ' ' + schema.name"></clipboard-copy>
-                                    </li>
-                                </ul>
-                                <h5 v-if="can_use_placement_tool">Multiple placements with the placement tool</h5>
-                                <ul v-if="can_use_placement_tool">
-                                    <li>
-                                        Download and install the <router-link to="/mod">blockexchange</router-link>-mod
-                                    </li>
-                                    <li>
-                                        Create a placement tool with <clipboard-copy :text="'/bx_placer ' + username + ' ' + schema.name"></clipboard-copy>
-                                    </li>
-                                    <li>
-                                        Point and click to place the schematic
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <u>
-                                    <h4>Offline</h4>
-                                </u>
-                                <div class="btn-group">
-                                    <a class="btn btn-outline-success"
-                                        :href="BaseURL + '/api/export_bx/' + schema.uid + '/' + schema.name + '.zip'">
-                                        <i class="fa fa-download"></i>
-                                        Download as BX schematic
-                                    </a>
-                                    <a class="btn btn-outline-success"
-                                        v-bind:class="{disabled: schema.total_parts >= 200}"
-                                        :href="BaseURL + '/api/export_we/' + schema.uid + '/' + schema.name + '.we'">
-                                        <i class="fa fa-download"></i>
-                                        Download as WE schematic
-                                        <i class="fa fa-triangle-exclamation"
-                                            v-if="schema.total_parts >= 200"
-                                            style="color: red;"
-                                            title="WE-Import disable due to schematic size"></i>
-                                        <i class="fa fa-triangle-exclamation"
-                                            v-else-if="schema.total_parts > 50"
-                                            style="color: yellow;"
-                                            title="WE-Import might be slow due to schematic size"></i>
-                                    </a>
-                                </div>
-                                <ul>
-                                    <li>
-                                        Download and install the <router-link to="/mod">blockexchange</router-link>-mod
-                                    </li>
-                                    <li>
-                                        Download the Blockexchange schematic with the above button and place it in the
-                                        <b class="text-muted">{world-folder}/bxschems/</b> folder
-                                    </li>
-                                    <li>
-                                        Select the origin position with <clipboard-copy :text="'/bx_pos1'"></clipboard-copy>
-                                    </li>
-                                    <li>
-                                        Check if the placement fits with <clipboard-copy :text="'/bx_allocate_local ' + username + ' ' + schema.name"></clipboard-copy>
-                                    </li>
-                                    <li>
-                                        Place the schematic with <clipboard-copy :text="'/bx_load_local ' + username + ' ' + schema.name"></clipboard-copy>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        <schema-download :schema="schema" :username="username"/>
                     </div>
                 </div>
             </div>

@@ -12,10 +12,11 @@ var OrderColumns = map[string]bool{
 }
 
 type SchemaSearchResponse struct {
-	*Schema
-	Username string   `json:"username"`
-	Tags     []string `json:"tags"`
-	Mods     []string `json:"mods"`
+	Schema         *Schema  `json:"schema"`
+	CollectionName *string  `json:"collection_name"`
+	Username       string   `json:"username"`
+	Tags           []string `json:"tags"`
+	Mods           []string `json:"mods"`
 }
 
 type SchemaSearchRequest struct {
@@ -26,6 +27,9 @@ type SchemaSearchRequest struct {
 	UserName       *string `json:"user_name"`
 	Keywords       *string `json:"keywords"`
 	Complete       *bool   `json:"complete"`
+	CollectionUID  *string `json:"collection_uid"`
+	CollectionName *string `json:"collection_name"`
+	WithCollection *bool   `json:"with_collection"`
 	OrderDirection *string `json:"order_direction"`
 	OrderColumn    *string `json:"order_column"`
 	Limit          *int    `json:"limit"`

@@ -90,7 +90,7 @@ services:
    - REDIS_PORT=6379
    - LOGLEVEL=debug
   working_dir: /data
-#  command: ["go", "test", "-run", "TestCreateSchemaPartValid", "./..."]
+#  command: ["go", "test", "-run", "TestSearchSchema", "./..."]
   command: ["go", "test", "./...", "-coverprofile=profile.cov"]
 
 volumes:

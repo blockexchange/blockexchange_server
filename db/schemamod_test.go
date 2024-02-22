@@ -1,7 +1,6 @@
 package db_test
 
 import (
-	"blockexchange/db"
 	"blockexchange/types"
 	"fmt"
 	"math/rand"
@@ -11,8 +10,7 @@ import (
 )
 
 func TestGetSchemaModsByIDs(t *testing.T) {
-	kdb := CreateTestDatabase(t)
-	repos := db.NewRepositories(kdb)
+	repos := CreateTestDatabase(t)
 
 	u := &types.User{
 		Name: fmt.Sprintf("test_%d", rand.Intn(1000)),
@@ -33,7 +31,7 @@ func TestGetSchemaModsByIDs(t *testing.T) {
 		ModName:   "mod2",
 	}))
 
-	sm, err := repos.SchemaModRepo.GetSchemaModsBySchemaUIDs([]string{s.UID})
+	sm, err := repos.SchemaModRepo.GetSchemaModsBySchemaUID(s.UID)
 	assert.NoError(t, err)
 	assert.NotNil(t, sm)
 	assert.Equal(t, 2, len(sm))

@@ -10,8 +10,8 @@ export default {
         preview_src: function(schema) {
             return BaseURL + '/api/schema/' + schema.uid + '/screenshot?height=240&width=360';
         },
-        schema_link: function(schema) {
-            return '/schema/' + schema.username + '/' + schema.name;
+        schema_link: function(entry) {
+            return '/schema/' + entry.username + '/' + entry.schema.name;
         }
     },
     template: /*html*/`
@@ -22,40 +22,49 @@ export default {
                 No schematics found
             </div>
         </div>
-        <div style="padding-bottom: 10px; width: 320px; min-height: 450px;" :key="schema.uid" v-for="schema in list">
+        <div style="padding-bottom: 10px; width: 320px; min-height: 450px;" :key="entry.schema.uid" v-for="entry in list">
             <div class="card" style="min-height: 400px;">
-                <router-link :to="schema_link(schema)">
+                <router-link :to="schema_link(entry)">
                     <img
-                        :src="preview_src(schema)"
+                        :src="preview_src(entry.schema)"
                         class="card-img-top"
                         style="background-color: #3c3737; min-height: 200px;"/>
                 </router-link>
                 <div class="card-body">
                     <h5 class="card-title">
                         <p>
-                        <router-link :to="schema_link(schema)">
+                        <router-link :to="schema_link(entry)" class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
                             <i class="fa fa-landmark"></i>
-                            {{schema.name}}
+                            {{entry.schema.name}}
                         </router-link>
-                        <i class="fa fa-star" v-bind:style="{ color: schema.stars ? 'yellow' : '' }"></i>
-                        <span class="badge bg-secondary rounded-pill">{{schema.stars}}</span>
+                        <i class="fa fa-star" v-if="entry.schema.stars" v-bind:style="{ color: entry.schema.stars ? 'yellow' : '' }"></i>
+                        <span class="badge bg-secondary rounded-pill" v-if="entry.schema.stars">{{entry.schema.stars}}</span>
                     </p>
                     <p>
-                        <router-link :to="'/user/' + schema.username" class="text-muted">
+                        <router-link :to="'/user/' + entry.username" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
                             <i class="fa fa-user"></i>
-                            {{schema.username}}
+                            {{entry.username}}
                         </router-link>
                     </p>
                     </h5>
                     <p>
-                        <span class="badge bg-success" v-for="tag in schema.tags" style="margin-right: 5px;">
+                        <span class="badge bg-success" v-for="tag in entry.tags" style="margin-right: 5px;">
                             <i class="fas fa-tag"></i>
                             {{tag}}
                         </span>                    
                     </p>
                     <p>
-                        {{format_size(schema.total_size)}};
-                        {{schema.size_x}} / {{schema.size_y}} / {{schema.size_z}} nodes
+                        <router-link
+                            :to="'/collections/' + entry.username + '/' + entry.collection_name"
+                            class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                            v-if="entry.collection_name">
+                            <i class="fa fa-object-group"></i>
+                            {{entry.collection_name}}
+                        </router-link>
+                    </p>
+                    <p>
+                        {{format_size(entry.schema.total_size)}};
+                        {{entry.schema.size_x}} / {{entry.schema.size_y}} / {{entry.schema.size_z}} nodes
                     </p>
                 </div>
             </div>
