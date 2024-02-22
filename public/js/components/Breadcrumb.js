@@ -57,5 +57,5 @@ export const USER_COLLECTION = (username, collection_name) => {
 };
 
 export const SCHEMA_DETAIL = (username, name) => {
-    return { name: `Schematic ${name}`, icon: "bookmark", link: `/schema/${username}/${name}` };
+    return { name: `Schematic ${name}`, icon: "landmark", link: `/schema/${username}/${name}` };
 };

@@ -33,7 +33,7 @@ export default {
                 <div class="card-body">
                     <h5 class="card-title">
                         <p>
-                        <router-link :to="schema_link(entry)">
+                        <router-link :to="schema_link(entry)" class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
                             <i class="fa fa-landmark"></i>
                             {{entry.schema.name}}
                         </router-link>
@@ -41,7 +41,7 @@ export default {
                         <span class="badge bg-secondary rounded-pill" v-if="entry.schema.stars">{{entry.schema.stars}}</span>
                     </p>
                     <p>
-                        <router-link :to="'/user/' + entry.username" class="text-muted">
+                        <router-link :to="'/user/' + entry.username" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
                             <i class="fa fa-user"></i>
                             {{entry.username}}
                         </router-link>
@@ -54,7 +54,10 @@ export default {
                         </span>                    
                     </p>
                     <p>
-                        <router-link :to="'/collections/' + entry.username + '/' + entry.collection_name" v-if="entry.collection_name">
+                        <router-link
+                            :to="'/collections/' + entry.username + '/' + entry.collection_name"
+                            class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                            v-if="entry.collection_name">
                             <i class="fa fa-object-group"></i>
                             {{entry.collection_name}}
                         </router-link>

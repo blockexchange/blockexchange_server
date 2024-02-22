@@ -64,7 +64,9 @@ export default {
                 <tbody>
                     <tr :key="collection.uid" v-for="collection in collections">
                         <td>
-                            <router-link :to="'/collections/' + username + '/' + collection.name">
+                            <router-link
+                                class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                :to="'/collections/' + username + '/' + collection.name">
                                 <i class="fa fa-object-group"></i>
                                 {{collection.name}}
                             </router-link>
