@@ -51,7 +51,7 @@ export default {
 							<i class="fa fa-home"></i> My schematics
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="is_logged_in">
+					<li class="nav-item" v-if="is_logged_in && has_permission('ADMIN')">
 						<router-link :to="'/collections/' + claims.username" class="nav-link">
 							<i class="fa fa-object-group"></i> My collections
 						</router-link>
