@@ -2,7 +2,6 @@ package main
 
 import (
 	"blockexchange/api"
-	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/jobs"
 	"blockexchange/types"
@@ -57,9 +56,7 @@ func main() {
 	server := &http.Server{Addr: ":8080", Handler: nil}
 
 	// start background jobs
-	if cfg.ExecuteJobs {
-		jobs.Start(repos, api, core.New(cfg, repos))
-	}
+	jobs.Start(repos, api)
 
 	go func() {
 		// listen to web requests

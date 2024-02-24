@@ -10,10 +10,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func Start(repos *db.Repositories, api *api.Api, c *core.Core) {
-	go cleanupSchemas(repos.SchemaRepo)
+func Start(repos *db.Repositories, api *api.Api) {
+	cfg := types.CreateConfig()
+	c := core.New(cfg, repos)
+
+	if cfg.ExecuteJobs {
+		// start jobs
+		go cleanupSchemas(repos.SchemaRepo)
+		go updateScreenshots(c, api.SchemaSearchRepo)
+	}
+	// per-node stats job
 	go updateStats(api)
-	go updateScreenshots(c, api.SchemaSearchRepo)
+
 }
 
 func updateStats(api *api.Api) {
