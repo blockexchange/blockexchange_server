@@ -57,7 +57,9 @@ func main() {
 	server := &http.Server{Addr: ":8080", Handler: nil}
 
 	// start background jobs
-	jobs.Start(repos, api, core.New(cfg, repos))
+	if cfg.ExecuteJobs {
+		jobs.Start(repos, api, core.New(cfg, repos))
+	}
 
 	go func() {
 		// listen to web requests

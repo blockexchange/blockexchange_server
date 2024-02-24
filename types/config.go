@@ -16,6 +16,7 @@ type OauthLogin struct {
 
 type Config struct {
 	WebDev             bool
+	ExecuteJobs        bool
 	BaseURL            string
 	Name               string
 	Owner              string
@@ -38,6 +39,7 @@ func CreateConfig() *Config {
 		Owner:        os.Getenv("BLOCKEXCHANGE_OWNER"),
 		Key:          os.Getenv("BLOCKEXCHANGE_KEY"),
 		WebDev:       os.Getenv("WEBDEV") == "true",
+		ExecuteJobs:  os.Getenv("EXECUTE_JOBS") == "true",
 		BaseURL:      os.Getenv("BASE_URL"),
 		CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
 		CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",

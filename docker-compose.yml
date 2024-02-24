@@ -43,6 +43,7 @@ services:
    - BLOCKEXCHANGE_COOKIE_SECURE=false
    - BLOCKEXCHANGE_TEST_DATA=true
    - BASE_URL=http://localhost:8080
+   - EXECUTE_JOBS=true
    - WEBDEV=true
    - ENABLE_SIGNUP=true
   ports:
