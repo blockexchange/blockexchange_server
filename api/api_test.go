@@ -5,16 +5,25 @@ import (
 	"blockexchange/core"
 	"blockexchange/testutils"
 	"blockexchange/types"
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )
 
 func NewTestApi(t *testing.T) *api.Api {
 	db_ := testutils.CreateTestDatabase(t)
-	api, _, err := api.NewApi(db_, types.CreateConfig())
+	cfg := types.CreateConfig()
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort),
+		Password: "",
+		DB:       0,
+	})
+
+	api, _, err := api.NewApi(db_, cfg, rdb)
 	assert.NoError(t, err)
 	return api
 }

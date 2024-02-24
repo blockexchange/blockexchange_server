@@ -13,10 +13,10 @@ import (
 	"time"
 
 	"github.com/dchest/captcha"
-	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/minetest-go/colormapping"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/vearutop/statigz"
 	"github.com/vearutop/statigz/brotli"
@@ -35,7 +35,7 @@ func (a *Api) Stop() {
 	a.Running.Store(false)
 }
 
-func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error) {
+func NewApi(repos *db.Repositories, cfg *types.Config, rdb *redis.Client) (*Api, *mux.Router, error) {
 	r := mux.NewRouter()
 	r.Use(middleware.PrometheusMiddleware)
 	r.Use(middleware.LoggingMiddleware)
@@ -46,12 +46,6 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 	if cfg.RedisHost == "" || cfg.RedisPort == "" {
 		return nil, nil, fmt.Errorf("redis not configured")
 	}
-
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort),
-		Password: "",
-		DB:       0,
-	})
 
 	cache := core.NewRedisCache(rdb)
 	captchaStore := core.NewRedisCaptchaStore(rdb, captchaExp)

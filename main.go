@@ -7,12 +7,14 @@ import (
 	"blockexchange/jobs"
 	"blockexchange/types"
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 )
 
@@ -38,7 +40,14 @@ func main() {
 
 	// set up server
 	cfg := types.CreateConfig()
-	api, router, err := api.NewApi(repos, cfg)
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort),
+		Password: "",
+		DB:       0,
+	})
+
+	api, router, err := api.NewApi(repos, cfg, rdb)
 	if err != nil {
 		panic(err)
 	}
