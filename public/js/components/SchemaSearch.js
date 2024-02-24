@@ -67,7 +67,8 @@ export default {
                 path: this.$route.path,
                 query: {
                     q: this.keywords ? this.keywords : undefined,
-                    tag_uid: this.tag_uid ? this.tag_uid : undefined
+                    tag_uid: this.tag_uid ? this.tag_uid : undefined,
+                    page: this.$route.query.page
                 }
             });
         }
