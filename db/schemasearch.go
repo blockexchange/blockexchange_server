@@ -76,6 +76,18 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 		i++
 	}
 
+	if search.FromMtime != nil {
+		query.WriteString(fmt.Sprintf(" and mtime >= $%d", i))
+		params = append(params, *search.FromMtime)
+		i++
+	}
+
+	if search.UntilMtime != nil {
+		query.WriteString(fmt.Sprintf(" and mtime <= $%d", i))
+		params = append(params, *search.UntilMtime)
+		i++
+	}
+
 	if search.WithCollection != nil {
 		if *search.WithCollection {
 			// only schematics with collection

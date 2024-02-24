@@ -32,6 +32,8 @@ type SchemaSearchRequest struct {
 	WithCollection *bool   `json:"with_collection"`
 	OrderDirection *string `json:"order_direction"`
 	OrderColumn    *string `json:"order_column"`
+	FromMtime      *int64  `json:"from_mtime"`
+	UntilMtime     *int64  `json:"until_mtime"`
 	Limit          *int    `json:"limit"`
 	Offset         *int    `json:"offset"`
 }
