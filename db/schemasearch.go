@@ -77,13 +77,13 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 	}
 
 	if search.FromMtime != nil {
-		query.WriteString(fmt.Sprintf(" and mtime >= $%d", i))
+		query.WriteString(fmt.Sprintf(" and mtime > $%d", i))
 		params = append(params, *search.FromMtime)
 		i++
 	}
 
 	if search.UntilMtime != nil {
-		query.WriteString(fmt.Sprintf(" and mtime <= $%d", i))
+		query.WriteString(fmt.Sprintf(" and mtime < $%d", i))
 		params = append(params, *search.UntilMtime)
 		i++
 	}

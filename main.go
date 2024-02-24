@@ -2,6 +2,7 @@ package main
 
 import (
 	"blockexchange/api"
+	"blockexchange/core"
 	"blockexchange/db"
 	"blockexchange/jobs"
 	"blockexchange/types"
@@ -17,6 +18,10 @@ import (
 
 func main() {
 	logrus.SetLevel(logrus.InfoLevel)
+	if os.Getenv("LOGLEVEL") == "debug" {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
+
 	logrus.Info("Starting")
 	repos, err := db.Init()
 	if err != nil {
@@ -43,7 +48,7 @@ func main() {
 	server := &http.Server{Addr: ":8080", Handler: nil}
 
 	// start background jobs
-	jobs.Start(repos, api)
+	jobs.Start(repos, api, core.New(cfg, repos))
 
 	go func() {
 		// listen to web requests
