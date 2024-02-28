@@ -14,7 +14,7 @@ require (
 	github.com/minetest-go/colormapping v1.0.3
 	github.com/minetest-go/oauth v1.0.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
-	github.com/prometheus/client_golang v1.18.0
+	github.com/prometheus/client_golang v1.19.0
 	github.com/redis/go-redis/v9 v9.5.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
@@ -36,7 +36,6 @@ require (
 	github.com/jackc/pgx/v4 v4.18.1 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )
 
@@ -51,12 +50,12 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
-	github.com/prometheus/common v0.45.0 // indirect
+	github.com/prometheus/common v0.48.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/vearutop/statigz v1.4.0
 	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/image v0.10.0 // indirect
 	golang.org/x/sys v0.17.0 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
