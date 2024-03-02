@@ -21,7 +21,7 @@ export default {
 
         schema_search({
             tag_uid: featured.uid,
-            limit: 6,
+            limit: 12,
             complete: true
         })
         .then(l => this.list = l);
