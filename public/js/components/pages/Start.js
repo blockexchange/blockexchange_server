@@ -15,7 +15,7 @@ export default {
 	},
 	template: /*html*/`
 		<bread-crumb :items="breadcrumb"/>
-		<div class="text-center">
+		<div class="text-center container">
 			<h3>
 				Blockexchange
 				<small class="text-muted">
