@@ -105,4 +105,10 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 		cfg.OauthLogin.Mesehub = oauth_handler.LoginURL()
 		r.Handle("/api/oauth_callback/mesehub", oauth_handler)
 	}
+
+	if cfg.CodebergOAuthConfig != nil {
+		oauth_handler := oauth.NewHandler(api.OauthCallback, cfg.CodebergOAuthConfig)
+		cfg.OauthLogin.Codeberg = oauth_handler.LoginURL()
+		r.Handle("/api/oauth_callback/codeberg", oauth_handler)
+	}
 }

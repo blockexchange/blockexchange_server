@@ -8,29 +8,31 @@ import (
 )
 
 type OauthLogin struct {
-	Github  string `json:"github"`
-	Discord string `json:"discord"`
-	Mesehub string `json:"mesehub"`
-	CDB     string `json:"cdb"`
+	Github   string `json:"github"`
+	Discord  string `json:"discord"`
+	Mesehub  string `json:"mesehub"`
+	CDB      string `json:"cdb"`
+	Codeberg string `json:"codeberg"`
 }
 
 type Config struct {
-	WebDev             bool
-	ExecuteJobs        bool
-	BaseURL            string
-	Name               string
-	Owner              string
-	Key                string
-	GithubOAuthConfig  *oauth.OAuthConfig
-	OauthLogin         *OauthLogin
-	CDBOAuthConfig     *oauth.OAuthConfig
-	DiscordOAuthConfig *oauth.OAuthConfig
-	MesehubOAuthConfig *oauth.OAuthConfig
-	CookiePath         string
-	CookieSecure       bool
-	CookieName         string
-	RedisHost          string
-	RedisPort          string
+	WebDev              bool
+	ExecuteJobs         bool
+	BaseURL             string
+	Name                string
+	Owner               string
+	Key                 string
+	GithubOAuthConfig   *oauth.OAuthConfig
+	OauthLogin          *OauthLogin
+	CDBOAuthConfig      *oauth.OAuthConfig
+	DiscordOAuthConfig  *oauth.OAuthConfig
+	MesehubOAuthConfig  *oauth.OAuthConfig
+	CodebergOAuthConfig *oauth.OAuthConfig
+	CookiePath          string
+	CookieSecure        bool
+	CookieName          string
+	RedisHost           string
+	RedisPort           string
 }
 
 func CreateConfig() *Config {
@@ -82,6 +84,15 @@ func CreateConfig() *Config {
 			ClientID:    os.Getenv("MESEHUB_APP_ID"),
 			Secret:      os.Getenv("MESEHUB_APP_SECRET"),
 			CallbackURL: fmt.Sprintf("%s/api/oauth_callback/mesehub", cfg.BaseURL),
+		}
+	}
+
+	if os.Getenv("CODEBERG_APP_ID") != "" {
+		cfg.CodebergOAuthConfig = &oauth.OAuthConfig{
+			Provider:    oauth.ProviderTypeCodeberg,
+			ClientID:    os.Getenv("CODEBERG_APP_ID"),
+			Secret:      os.Getenv("CODEBERG_APP_SECRET"),
+			CallbackURL: fmt.Sprintf("%s/api/oauth_callback/codeberg", cfg.BaseURL),
 		}
 	}
 

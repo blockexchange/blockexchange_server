@@ -1,5 +1,5 @@
 import { login, logout, is_logged_in } from "../../service/login.js";
-import { get_cdb_login, get_discord_login, get_github_login, get_mesehub_login, get_base_url } from "../../service/info.js";
+import { get_cdb_login, get_discord_login, get_github_login, get_mesehub_login, get_codeberg_login, get_base_url } from "../../service/info.js";
 import Breadcrumb, { LOGIN, START } from "../Breadcrumb.js";
 
 export default {
@@ -21,6 +21,7 @@ export default {
         get_discord_login,
         get_github_login,
         get_mesehub_login,
+        get_codeberg_login,
         get_base_url,
         validInput: function(){
             return this.username != "" && this.password != "";
@@ -101,6 +102,11 @@ export default {
                         <a :href="get_mesehub_login" class="btn btn-secondary w-100" v-bind:class="{disabled:is_logged_in}" v-if="get_mesehub_login">
                             <img :src="get_base_url + '/pics/default_mese_crystal.png'">
                             Login with Mesehub
+                        </a>
+                        &nbsp;
+                        <a :href="get_codeberg_login" class="btn btn-secondary w-100" v-bind:class="{disabled:is_logged_in}" v-if="get_codeberg_login">
+                            <img :src="get_base_url + '/pics/codeberg.png'" height="24" width="24">
+                            Login with Codeberg
                         </a>
                     </div>
                 </div>
