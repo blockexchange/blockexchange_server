@@ -9,7 +9,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/gorilla/mux v1.8.1
-	github.com/jackc/pgx/v5 v5.5.3
+	github.com/jackc/pgx/v5 v5.5.4
 	github.com/lib/pq v1.10.9
 	github.com/minetest-go/colormapping v1.0.3
 	github.com/minetest-go/oauth v1.0.1
