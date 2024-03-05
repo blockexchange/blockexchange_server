@@ -100,9 +100,9 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 
 	if with_order {
 		if search.OrderColumn != nil && search.OrderDirection != nil && types.OrderColumns[*search.OrderColumn] && types.OrderDirections[*search.OrderDirection] {
-			query.WriteString(fmt.Sprintf(" order by $%d $%d", i, i+1))
-			params = append(params, *search.OrderColumn, *search.OrderColumn)
-			i += 2
+			query.WriteString(fmt.Sprintf(" order by $%d %s", i, *search.OrderColumn))
+			params = append(params, *search.OrderColumn)
+			i++
 		} else {
 			query.WriteString(" order by mtime desc")
 		}
