@@ -42,36 +42,6 @@ Optional:
 * **MESEHUB_APP_ID** Mesehub app ID
 * **REDIS_HOST** redis host
 * **REDIS_PORT** redis port
-* **ENABLE_SIGNUP** if "true": enables lokal signup and login
-
-## Docker usage
-
-Image: https://hub.docker.com/r/blockexchange/blockexchange
-
-This example shows a simple throw-away setup.
-
-Start a postgres server:
-```bash
-docker run --rm -it \
- -e POSTGRES_PASSWORD=enter \
- --network host \
- postgres
-```
-
-Start the server part:
-```bash
-docker run -it --rm \
- -e PGUSER=postgres \
- -e PGPASSWORD=enter \
- -e PGHOST=127.0.0.1 \
- -e PGDATABASE=postgres \
- -e PGPORT=5432 \
- -e BLOCKEXCHANGE_KEY=blah \
- --network host \
- blockexchange/blockexchange
-```
-
-Go to http://127.0.0.1:8080
 
 ## docker-compose usage
 
@@ -86,6 +56,7 @@ services:
   restart: always
   depends_on:
    - postgres
+   - redis
   environment:
    - PGUSER=postgres
    - PGPASSWORD=enter
@@ -96,6 +67,10 @@ services:
    - BLOCKEXCHANGE_OWNER=yourname
   ports:
    - "8080:8080"
+
+ redis:
+  image: redis:6.2.0-alpine
+  restart: always
 
  postgres:
   image: postgres:12
@@ -122,8 +97,8 @@ Prerequisites:
 # install the frontend deps
 cd public && npm ci && cd ..
 
-# start the postgres database
-docker-compose up -d postgres
+# start the postgres and redis server in the background
+docker-compose up -d postgres redis
 
 # start the blockexchange server
 docker-compose up -d blockexchange

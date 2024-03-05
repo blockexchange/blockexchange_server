@@ -45,7 +45,6 @@ services:
    - BASE_URL=http://localhost:8080
    - EXECUTE_JOBS=true
    - WEBDEV=true
-   - ENABLE_SIGNUP=true
   ports:
    - "8080:8080"
   working_dir: /data
