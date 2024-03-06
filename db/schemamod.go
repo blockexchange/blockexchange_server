@@ -20,7 +20,7 @@ func (r *SchemaModRepository) GetSchemaModsBySchemaUID(schema_uid string) ([]*ty
 
 func (r *SchemaModRepository) GetSchemaModCount() ([]*types.SchemaModCount, error) {
 	list := []*types.SchemaModCount{}
-	return list, r.kdb.Query(context.Background(), &list, "select mod_name, count(*) as count from schemamod group by mod_name")
+	return list, r.kdb.Query(context.Background(), &list, "select mod_name, count(*) as count from schemamod group by mod_name order by count desc")
 }
 
 func (r *SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {

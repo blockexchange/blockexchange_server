@@ -31,7 +31,7 @@ export default [{
 },{
 	path: "/users", component: Users
 },{
-	path: "/search", component: Search
+	path: "/search", component: Search,
 },{
 	path: "/schema/:username/:name", component: SchemaDetail, props: true
 },{

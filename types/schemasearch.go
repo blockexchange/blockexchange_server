@@ -24,6 +24,7 @@ type SchemaSearchRequest struct {
 	SchemaUID      *string `json:"schema_uid"`
 	TagUID         *string `json:"tag_uid"`
 	SchemaName     *string `json:"schema_name"`
+	ModName        *string `json:"mod_name"`
 	UserName       *string `json:"user_name"`
 	Keywords       *string `json:"keywords"`
 	Complete       *bool   `json:"complete"`

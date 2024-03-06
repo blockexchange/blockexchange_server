@@ -52,6 +52,12 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 		i++
 	}
 
+	if search.ModName != nil {
+		query.WriteString(fmt.Sprintf(" and uid in (select schema_uid from schemamod where mod_name = $%d)", i))
+		params = append(params, *search.ModName)
+		i++
+	}
+
 	if search.UserUID != nil {
 		query.WriteString(fmt.Sprintf(" and user_uid = $%d", i))
 		params = append(params, *search.UserUID)

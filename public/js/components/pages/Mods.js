@@ -22,13 +22,15 @@ export default {
     },
 	template: /*html*/`
 		<bread-crumb :items="breadcrumb"/>
-        <loading-block :fetch_data="fetch_data" v-slot="{ data }">
-            <div class="container">
-                <button class="btn btn-secondary m-1" :disabled="true" v-for="mod in data.mods">
+        <div class="container">
+            <h5>Used mods</h5>
+            <loading-block :fetch_data="fetch_data" v-slot="{ data }">
+                <router-link :to="{path: '/search', query: {mod_name: mod.mod_name}}" class="btn btn-secondary m-1" v-for="mod in data.mods">
+                    <i class="fa fa-box-archive"></i>
                     {{mod.mod_name}}
                     <span class="badge bg-primary rounded-pill">{{mod.count}}</span>
-                </button>
-            </div>
-        </loading-block>
+                </router-link>
+            </loading-block>
+        </div>
 		`
 };
