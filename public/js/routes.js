@@ -12,6 +12,7 @@ import SchemaDetail from './components/pages/SchemaDetail.js';
 import UserSchemas from './components/pages/UserSchemas.js';
 import UserCollections from './components/pages/UserCollections.js';
 import UserCollection from './components/pages/UserCollection.js';
+import Mods from './components/pages/Mods.js';
 
 export default [{
 	path: "/", component: Start
@@ -25,6 +26,8 @@ export default [{
 	path: "/register", component: Register
 },{
 	path: "/mod", component: Mod
+},{
+	path: "/mods", component: Mods
 },{
 	path: "/users", component: Users
 },{

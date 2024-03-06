@@ -43,6 +43,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	r.HandleFunc("/api/tags", api.GetTags).Methods(http.MethodGet)
 
+	r.HandleFunc("/api/schemamod/count", api.GetSchemaModCount).Methods(http.MethodGet)
+
 	r.HandleFunc("/api/schema/{schema_uid}", api.GetSchema).Methods(http.MethodGet)
 	r.HandleFunc("/api/schema/{schema_uid}", api.Secure(api.DeleteSchema)).Methods(http.MethodDelete)
 	r.HandleFunc("/api/schema", api.Secure(api.CreateSchema)).Methods(http.MethodPost)

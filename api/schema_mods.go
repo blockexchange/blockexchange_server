@@ -26,6 +26,11 @@ func (api *Api) GetSchemaMods(w http.ResponseWriter, r *http.Request) {
 	SendJson(w, modlist)
 }
 
+func (api *Api) GetSchemaModCount(w http.ResponseWriter, r *http.Request) {
+	list, err := api.SchemaModRepo.GetSchemaModCount()
+	Send(w, list, err)
+}
+
 func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	vars := mux.Vars(r)
 	schema_uid := vars["schema_uid"]

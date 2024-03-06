@@ -33,6 +33,7 @@ export const START = { name: "Start", icon: "home", link: "/" };
 export const LOGIN = { name: "Login", icon: "sign-in", link: "/login" };
 export const PROFILE = { name: "Profile", icon: "user", link: "/profile" };
 export const REGISTER = { name: "Register", icon: "user-plus", link: "/register" };
+export const MODS = { name: "Mods", icon: "box-archive", link: "/mods" };
 export const MOD = { name: "Mod/Installation", icon: "download", link: "/mod" };
 export const USERS = { name: "Users", icon: "users", link: "/users" };
 export const SEARCH = { name: "Search", icon: "search", link: "/search" };

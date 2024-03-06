@@ -46,6 +46,11 @@ export default {
 							<i class="fa fa-search"></i> Search
 						</router-link>
 					</li>
+					<li class="nav-item">
+						<router-link to="/mods" class="nav-link">
+							<i class="fa fa-box-archive"></i> Mods
+						</router-link>
+					</li>
 					<li class="nav-item" v-if="is_logged_in">
 						<router-link :to="'/schema/' + claims.username" class="nav-link">
 							<i class="fa fa-home"></i> My schematics
