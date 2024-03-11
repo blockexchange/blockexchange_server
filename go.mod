@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/jackc/pgx/v5 v5.5.3
 	github.com/lib/pq v1.10.9
-	github.com/minetest-go/colormapping v1.0.3
+	github.com/minetest-go/colormapping v1.0.4
 	github.com/minetest-go/oauth v1.0.1
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/prometheus/client_golang v1.19.0
