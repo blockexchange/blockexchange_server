@@ -91,7 +91,7 @@ services:
    - LOGLEVEL=debug
   working_dir: /data
 #  command: ["go", "test", "-run", "TestSearchSchema", "./..."]
-  command: ["go", "test", "./...", "-coverprofile=profile.cov"]
+  command: ["go", "test", "./...", "-p", "1", "-coverprofile=profile.cov"]
 
 volumes:
   postgres: {}

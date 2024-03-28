@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 )
@@ -52,7 +53,7 @@ func main() {
 	}
 
 	// main entry
-	http.Handle("/", router)
+	http.Handle("/", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(router))
 	server := &http.Server{Addr: ":8080", Handler: nil}
 
 	// start background jobs

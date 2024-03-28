@@ -10,6 +10,7 @@ const (
 	JWTPermissionUpload     JWTPermission = "UPLOAD"
 	JWTPermissionOverwrite  JWTPermission = "OVERWRITE"
 	JWTPermissionManagement JWTPermission = "MANAGEMENT"
+	JWTPermissionMedia      JWTPermission = "MEDIA"
 	JWTPermissionAdmin      JWTPermission = "ADMIN"
 )
 

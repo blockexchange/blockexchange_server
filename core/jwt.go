@@ -21,8 +21,15 @@ func GetPermissions(user *types.User, management bool) []types.JWTPermission {
 		permissions = append(permissions, types.JWTPermissionManagement)
 	}
 
-	if user.Role == types.UserRoleAdmin && management {
-		permissions = append(permissions, types.JWTPermissionAdmin)
+	if user.Role == types.UserRoleAdmin {
+
+		// add media upload claims for admins
+		permissions = append(permissions, types.JWTPermissionMedia)
+
+		if management {
+			// management token for the ui
+			permissions = append(permissions, types.JWTPermissionAdmin)
+		}
 	}
 
 	return permissions
