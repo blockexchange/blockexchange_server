@@ -34,6 +34,22 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/accesstoken", api.Secure(api.CreateAccessToken)).Methods(http.MethodPost)
 	r.HandleFunc("/api/accesstoken/{id}", api.Secure(api.DeleteAccessToken)).Methods(http.MethodDelete)
 
+	// mod uploads / ui downloads and manages
+
+	r.HandleFunc("/api/media/mod/{modname}", api.Secure(api.CreateOrUpdateMod)).Methods(http.MethodPut)
+	r.HandleFunc("/api/media/mod/{modname}", api.GetMod).Methods(http.MethodGet)
+	r.HandleFunc("/api/media/mod", api.GetMods).Methods(http.MethodGet)
+	r.HandleFunc("/api/media/mod/{modname}", api.Secure(api.DeleteMod)).Methods(http.MethodDelete)
+
+	r.HandleFunc("/api/media/nodedef/{nodename}", api.Secure(api.CreateOrUpdateNodedef)).Methods(http.MethodPut)
+	r.HandleFunc("/api/media/nodedef/{nodename}", api.GetNodedefinition).Methods(http.MethodGet)
+	r.HandleFunc("/api/media/nodedef", api.GetNodedefinitions).Methods(http.MethodGet)
+	r.HandleFunc("/api/media/nodedef/{nodename}", api.Secure(api.DeleteNodedefinition)).Methods(http.MethodDelete)
+
+	r.HandleFunc("/api/media/mediafile/{name}", api.Secure(api.CreateOrUpdateMediafile)).Methods(http.MethodPut)
+	r.HandleFunc("/api/media/mediafile/{name}", api.GetMediafile).Methods(http.MethodGet)
+	r.HandleFunc("/api/media/mediafile/{name}", api.Secure(api.DeleteMediafile)).Methods(http.MethodDelete)
+
 	// mod api
 	r.HandleFunc("/api/token", api.RequestToken).Methods(http.MethodPost)
 
