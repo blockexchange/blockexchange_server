@@ -2,8 +2,7 @@
 create table mod(
     name varchar(256) primary key not null, -- name of the mod
     source varchar(256) not null, -- source repository/url
-    code_license varchar(64) not null, -- license of code ("name" field from https://content.minetest.net/api/licenses/)
-    media_license varchar(64) not null -- license of media assets
+    media_license varchar(64) not null -- license of media assets ("name" field from https://content.minetest.net/api/licenses/)
 );
 
 create table nodedefinition(

@@ -14,7 +14,6 @@ func TestModEntity(t *testing.T) {
 	mod := &types.Mod{
 		Name:         "mymod",
 		Source:       "https://...",
-		CodeLicense:  "MIT",
 		MediaLicense: "CC-BY-3.0",
 	}
 
@@ -56,7 +55,6 @@ func TestModMedia(t *testing.T) {
 	mod := &types.Mod{
 		Name:         "mymod",
 		Source:       "https://...",
-		CodeLicense:  "MIT",
 		MediaLicense: "CC-BY-3.0",
 	}
 
