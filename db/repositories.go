@@ -19,6 +19,7 @@ type Repositories struct {
 	SchemaTagRepo        *SchemaTagRepository
 	SchemaStarRepo       *SchemaStarRepository
 	MetaRepository       *MetaRepository
+	MediaRepo            *MediaRepository
 }
 
 func NewRepositories(kdb ksql.Provider, DB *sql.DB) *Repositories {
@@ -36,5 +37,6 @@ func NewRepositories(kdb ksql.Provider, DB *sql.DB) *Repositories {
 		SchemaTagRepo:        &SchemaTagRepository{kdb: kdb},
 		SchemaStarRepo:       &SchemaStarRepository{kdb: kdb},
 		MetaRepository:       &MetaRepository{kdb: kdb},
+		MediaRepo:            &MediaRepository{kdb: kdb},
 	}
 }
