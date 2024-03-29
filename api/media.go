@@ -74,44 +74,39 @@ func (api Api) DeleteMod(w http.ResponseWriter, r *http.Request, ctx *SecureCont
 
 // nodedef
 
-func (api Api) CreateOrUpdateNodedef(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+func (api Api) CreateOrUpdateNodedefs(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	if !ctx.CheckPermission(w, types.JWTPermissionMedia) {
 		return
 	}
 
-	vars := mux.Vars(r)
-	nodename := vars["nodename"]
-	is_new := false
-
-	nd, err := api.MediaRepo.GetNodedefinitionByName(nodename)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("db error: %s", err.Error()))
-		return
-	}
-	if nd == nil {
-		is_new = true
-		nd = &types.Nodedefinition{}
-	}
-
-	err = json.NewDecoder(r.Body).Decode(nd)
+	nodedefs := []*types.Nodedefinition{}
+	err := json.NewDecoder(r.Body).Decode(&nodedefs)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("json error: %s", err.Error()))
 		return
 	}
 
-	nd.Name = nodename
+	for _, nd := range nodedefs {
+		existing_nd, err := api.MediaRepo.GetNodedefinitionByName(nd.Name)
+		if err != nil {
+			SendError(w, 500, fmt.Sprintf("db error: %s", err.Error()))
+			return
+		}
 
-	if is_new {
-		err = api.MediaRepo.CreateNodedefinition(nd)
-	} else {
-		err = api.MediaRepo.UpdateNodedefinition(nd)
-	}
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("update/insert error: %s", err.Error()))
-		return
+		if existing_nd == nil {
+			// insert
+			err = api.MediaRepo.CreateNodedefinition(nd)
+		} else {
+			// update
+			err = api.MediaRepo.UpdateNodedefinition(existing_nd)
+		}
+		if err != nil {
+			SendError(w, 500, fmt.Sprintf("update/insert error: %s", err.Error()))
+			return
+		}
 	}
 
-	Send(w, nd, nil)
+	Send(w, true, nil)
 }
 
 func (api Api) GetNodedefinition(w http.ResponseWriter, r *http.Request) {
@@ -137,44 +132,39 @@ func (api Api) DeleteNodedefinition(w http.ResponseWriter, r *http.Request, ctx 
 
 // mediafile
 
-func (api Api) CreateOrUpdateMediafile(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+func (api Api) CreateOrUpdateMediafiles(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	if !ctx.CheckPermission(w, types.JWTPermissionMedia) {
 		return
 	}
 
-	vars := mux.Vars(r)
-	name := vars["name"]
-	is_new := false
-
-	mf, err := api.MediaRepo.GetMediafileByName(name)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("db error: %s", err.Error()))
-		return
-	}
-	if mf == nil {
-		is_new = true
-		mf = &types.Mediafile{}
-	}
-
-	err = json.NewDecoder(r.Body).Decode(mf)
+	mediafiles := []*types.Mediafile{}
+	err := json.NewDecoder(r.Body).Decode(&mediafiles)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("json error: %s", err.Error()))
 		return
 	}
 
-	mf.Name = name
+	for _, mediafile := range mediafiles {
+		exsiting_mf, err := api.MediaRepo.GetMediafileByName(mediafile.Name)
+		if err != nil {
+			SendError(w, 500, fmt.Sprintf("db error: %s", err.Error()))
+			return
+		}
 
-	if is_new {
-		err = api.MediaRepo.CreateMediafile(mf)
-	} else {
-		err = api.MediaRepo.UpdateMediafile(mf)
-	}
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("update/insert error: %s", err.Error()))
-		return
+		if exsiting_mf == nil {
+			// insert
+			err = api.MediaRepo.CreateMediafile(mediafile)
+		} else {
+			// update
+			err = api.MediaRepo.UpdateMediafile(exsiting_mf)
+		}
+		if err != nil {
+			SendError(w, 500, fmt.Sprintf("update/insert error: %s", err.Error()))
+			return
+		}
 	}
 
-	Send(w, mf, nil)
+	Send(w, true, nil)
 }
 
 func (api Api) GetMediafile(w http.ResponseWriter, r *http.Request) {
