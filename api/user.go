@@ -149,6 +149,9 @@ func (api *Api) SaveUser(w http.ResponseWriter, r *http.Request, ctx *SecureCont
 }
 
 func (api *Api) ChangePassword(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	vars := mux.Vars(r)
+	user_uid := vars["user_uid"]
+
 	chpwd := &types.ChangePassword{}
 	err := json.NewDecoder(r.Body).Decode(chpwd)
 	if err != nil {
@@ -161,7 +164,12 @@ func (api *Api) ChangePassword(w http.ResponseWriter, r *http.Request, ctx *Secu
 		return
 	}
 
-	user, err := api.UserRepo.GetUserByUID(ctx.Claims.UserUID)
+	if !ctx.HasPermission(types.JWTPermissionAdmin) && ctx.Claims.UserUID != user_uid {
+		SendError(w, 403, "unauthorized to change the password of another user")
+		return
+	}
+
+	user, err := api.UserRepo.GetUserByUID(user_uid)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("get user error: %s", err.Error()))
 		return
@@ -189,6 +197,51 @@ func (api *Api) ChangePassword(w http.ResponseWriter, r *http.Request, ctx *Secu
 
 	// save new password
 	user.Hash = string(hash)
+	err = api.UserRepo.UpdateUser(user)
+	Send(w, true, err)
+}
+
+func (api *Api) UnlinkOauth(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	vars := mux.Vars(r)
+	user_uid := vars["user_uid"]
+
+	chpwd := &types.ChangePassword{}
+	err := json.NewDecoder(r.Body).Decode(chpwd)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("json parse error: %s", err.Error()))
+		return
+	}
+
+	if len(chpwd.NewPassword) == 0 {
+		SendError(w, 500, "new password empty")
+		return
+	}
+
+	if !ctx.HasPermission(types.JWTPermissionAdmin) && ctx.Claims.UserUID != user_uid {
+		SendError(w, 403, "unauthorized to unlink another user")
+		return
+	}
+
+	user, err := api.UserRepo.GetUserByUID(user_uid)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("get user error: %s", err.Error()))
+		return
+	}
+
+	if user.Type == types.UserTypeLocal {
+		SendError(w, 500, fmt.Sprintf("user type mismatch: %s", user.Type))
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(chpwd.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("hash error: %s", err.Error()))
+		return
+	}
+
+	// save user with new password
+	user.Hash = string(hash)
+	user.Type = types.UserTypeLocal
 	err = api.UserRepo.UpdateUser(user)
 	Send(w, true, err)
 }
