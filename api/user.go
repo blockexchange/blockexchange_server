@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // get user
@@ -145,4 +146,49 @@ func (api *Api) SaveUser(w http.ResponseWriter, r *http.Request, ctx *SecureCont
 
 	err = api.UserRepo.UpdateUser(user)
 	Send(w, user, err)
+}
+
+func (api *Api) ChangePassword(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	chpwd := &types.ChangePassword{}
+	err := json.NewDecoder(r.Body).Decode(chpwd)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("json parse error: %s", err.Error()))
+		return
+	}
+
+	if len(chpwd.NewPassword) == 0 {
+		SendError(w, 500, "new password empty")
+		return
+	}
+
+	user, err := api.UserRepo.GetUserByUID(ctx.Claims.UserUID)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("get user error: %s", err.Error()))
+		return
+	}
+
+	if user.Type != types.UserTypeLocal {
+		SendError(w, 500, fmt.Sprintf("user type mismatch: %s", user.Type))
+		return
+	}
+
+	if !ctx.HasPermission(types.JWTPermissionAdmin) {
+		// check old password
+		err = bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(chpwd.OldPassword))
+		if err != nil {
+			SendError(w, 401, err.Error())
+			return
+		}
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(chpwd.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("hash error: %s", err.Error()))
+		return
+	}
+
+	// save new password
+	user.Hash = string(hash)
+	err = api.UserRepo.UpdateUser(user)
+	Send(w, true, err)
 }

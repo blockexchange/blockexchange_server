@@ -28,3 +28,8 @@ type UserSearch struct {
 	Limit  *int    `json:"limit"`
 	Offset *int    `json:"offset"`
 }
+
+type ChangePassword struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}

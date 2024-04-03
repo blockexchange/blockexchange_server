@@ -26,6 +26,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	r.HandleFunc("/api/user-search", api.SearchUsers).Methods(http.MethodPost)
 	r.HandleFunc("/api/user-count", api.CountUsers).Methods(http.MethodGet)
+	r.HandleFunc("/api/user/changepassword", api.Secure(api.ChangePassword)).Methods(http.MethodPost)
 	r.HandleFunc("/api/user/{user_uid}", api.GetUser).Methods(http.MethodGet)
 	r.HandleFunc("/api/user/{user_uid}/schemastars", api.CountUserSchemaStars).Methods(http.MethodGet)
 	r.HandleFunc("/api/user/{user_uid}", api.Secure(api.SaveUser)).Methods(http.MethodPost)
