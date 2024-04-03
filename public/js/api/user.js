@@ -20,10 +20,10 @@ export const change_password = (userid, chpwd) => fetch(`${BaseURL}/api/user/${u
     method: "POST",
     body: JSON.stringify(chpwd)
 })
-.then(r => r.json());
+.then(r => r.status == 200);
 
 export const unlink_oauth = (userid, chpwd) => fetch(`${BaseURL}/api/user/${userid}/unlink-oauth`, {
     method: "POST",
     body: JSON.stringify(chpwd)
 })
-.then(r => r.json());
+.then(r => r.status == 200);

@@ -1,16 +1,18 @@
-import { get_claims } from "../../service/login.js";
+import { get_username, get_user_type, get_user_uid } from "../../service/login.js";
 
 import Breadcrumb, { START, PROFILE } from "../Breadcrumb.js";
 import UserProfile from "../UserProfile.js";
 import UserRename from "../UserRename.js";
 import AccessTokens from "../AccessTokens.js";
+import ChangePassword from "../ChangePassword.js";
 
 export default {
 	components: {
         "bread-crumb": Breadcrumb,
 		"user-profile": UserProfile,
 		"user-rename": UserRename,
-		"access-tokens": AccessTokens
+		"access-tokens": AccessTokens,
+		"change-password": ChangePassword
 	},
 	data: function() {
 		return {
@@ -18,17 +20,20 @@ export default {
 		};
 	},
 	computed: {
-		claims: get_claims
+		useruid: get_user_uid,
+		username: get_username,
+		usertype: get_user_type
 	},
 	template: /*html*/`
 		<bread-crumb :items="breadcrumb"/>
 		<div class="row">
 			<div class="col-md-2"></div>
 			<div class="col-md-8 card" style="padding: 20px;">
-				<user-profile :username="claims.username"/>
+				<user-profile :username="username"/>
 				<hr>
-				<access-tokens :username="claims.username"/>
+				<access-tokens :username="username"/>
 				<hr>
+				<change-password v-if="usertype == 'LOCAL'" :useruid="useruid"/>
 				<user-rename/>
 			</div>
 			<div class="col-md-2"></div>
