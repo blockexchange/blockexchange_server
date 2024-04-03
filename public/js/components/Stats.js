@@ -11,7 +11,7 @@ export default {
         stats: get_stats
     },
     template: /*html*/`
-    <span>
+    <span v-if="stats">
         <b>Database Statistics:</b>
         Schematics: <span class="badge bg-secondary">{{format_count(stats.schema_count)}}</span>
         Schematic parts: <span class="badge bg-secondary">{{format_count(stats.schemapart_count)}}</span>
