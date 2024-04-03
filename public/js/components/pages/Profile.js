@@ -5,6 +5,7 @@ import UserProfile from "../UserProfile.js";
 import UserRename from "../UserRename.js";
 import AccessTokens from "../AccessTokens.js";
 import ChangePassword from "../ChangePassword.js";
+import UnlinkOauth from "../UnlinkOauth.js";
 
 export default {
 	components: {
@@ -12,7 +13,8 @@ export default {
 		"user-profile": UserProfile,
 		"user-rename": UserRename,
 		"access-tokens": AccessTokens,
-		"change-password": ChangePassword
+		"change-password": ChangePassword,
+		"unlink-oauth": UnlinkOauth
 	},
 	data: function() {
 		return {
@@ -34,6 +36,7 @@ export default {
 				<access-tokens :username="username"/>
 				<hr>
 				<change-password v-if="usertype == 'LOCAL'" :useruid="useruid"/>
+				<unlink-oauth v-if="usertype != 'LOCAL'" :useruid="useruid"/>
 				<user-rename/>
 			</div>
 			<div class="col-md-2"></div>
