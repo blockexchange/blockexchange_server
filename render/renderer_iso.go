@@ -27,8 +27,7 @@ func NewISORenderer(spp SchemaPartProvider, cm *colormapping.ColorMapping) *ISOR
 	}
 }
 
-const DefaultImageSizeX = 800
-const DefaultImageSizeY = 600
+const DefaultImageSizeX, DefaultImageSizeY = 800, 600
 
 var renderHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 	Name:    "bx_renderschema_hist",
@@ -40,9 +39,7 @@ func (r *ISORenderer) RenderIsometricPreview(schema *types.Schema) ([]byte, erro
 	timer := prometheus.NewTimer(renderHistogram)
 	defer timer.ObserveDuration()
 
-	size_x := schema.SizeX
-	size_y := schema.SizeY
-	size_z := schema.SizeZ
+	size_x, size_y, size_z := schema.SizeX, schema.SizeY, schema.SizeZ
 
 	img_center_x := DefaultImageSizeX / (size_x + size_z) * size_z
 	img_center_y := DefaultImageSizeY
