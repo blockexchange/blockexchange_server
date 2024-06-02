@@ -45,7 +45,7 @@ func CreateConfig() *Config {
 		BaseURL:      os.Getenv("BASE_URL"),
 		CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
 		CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
-		CookieName:   "blockexchange",
+		CookieName:   "blockexchange-v2",
 		RedisHost:    os.Getenv("REDIS_HOST"),
 		RedisPort:    os.Getenv("REDIS_PORT"),
 		OauthLogin:   &OauthLogin{},
