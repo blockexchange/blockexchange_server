@@ -1,6 +1,6 @@
 module blockexchange
 
-go 1.21.5
+go 1.22.4
 
 require (
 	github.com/Shopify/go-lua v0.0.0-20221004153744-91867de107cf
@@ -12,7 +12,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/jackc/pgx/v5 v5.6.0
 	github.com/lib/pq v1.10.9
-	github.com/minetest-go/colormapping v1.0.4
+	github.com/minetest-go/colormapping v1.0.5
 	github.com/minetest-go/oauth v1.0.1
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/prometheus/client_golang v1.19.1
@@ -27,6 +27,7 @@ require (
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
+	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.3 // indirect
 	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa // indirect
@@ -38,6 +39,8 @@ require (
 	github.com/jackc/pgx/v4 v4.18.2 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/minetest-go/maprenderer v1.0.23 // indirect
+	github.com/minetest-go/types v1.0.4 // indirect
 	golang.org/x/text v0.16.0 // indirect
 )
 

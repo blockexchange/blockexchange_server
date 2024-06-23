@@ -37,13 +37,14 @@ type SchemaPartMetadata struct {
 }
 
 type ParsedSchemaPart struct {
-	NodeIDS []int16
-	Param1  []byte
-	Param2  []byte
-	PosX    int
-	PosY    int
-	PosZ    int
-	Meta    *SchemaPartMetadata
+	NodeIDS        []int16
+	Param1         []byte
+	Param2         []byte
+	PosX           int
+	PosY           int
+	PosZ           int
+	Meta           *SchemaPartMetadata
+	NodeNameLookup map[int16]string
 }
 
 func (psp *ParsedSchemaPart) GetIndex(x, y, z int) int {

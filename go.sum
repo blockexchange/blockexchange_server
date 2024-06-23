@@ -134,6 +134,8 @@ github.com/hashicorp/errwrap v1.1.0 h1:OxrOeh75EUXMY8TBjag2fzXGZ40LB6IKw45YeGUDY
 github.com/hashicorp/errwrap v1.1.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
 github.com/hashicorp/go-multierror v1.1.1 h1:H5DkEtf6CXdFp0N0Em5UCwQpXMWke8IA0+lD48awMYo=
 github.com/hashicorp/go-multierror v1.1.1/go.mod h1:iw975J/qwKPdAO1clOe2L8331t/9/fmwbPZ6JB6eMoM=
+github.com/hashicorp/golang-lru/v2 v2.0.7 h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs4luLUK2k=
+github.com/hashicorp/golang-lru/v2 v2.0.7/go.mod h1:QeFd9opnmA6QUJc5vARoKUSoFhyfM2/ZepoAG6RGpeM=
 github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T20WEQ=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/jackc/chunkreader v1.0.0/go.mod h1:RT6O25fNZIuasFJRyZ4R/Y2BbhasbmZXF9QQ7T3kePo=
@@ -226,8 +228,16 @@ github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Ky
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/minetest-go/colormapping v1.0.4 h1:EoIAvdjAyO7kUFcBipbPZmGFSOoSiHwDHpUeH4LSJ4k=
 github.com/minetest-go/colormapping v1.0.4/go.mod h1:oltuvIhwZBc5YMTCABzziVUHdOCkSOIHr46zDS23Ev0=
+github.com/minetest-go/colormapping v1.0.5 h1:axZm0xbOz0RQEIFvZmbxr3kuvebYiG0AAADPr8/ZQfg=
+github.com/minetest-go/colormapping v1.0.5/go.mod h1:6UVusIQTqfWbcru5HTktWwB2BCNHUE3W0VkkRBaMfcw=
+github.com/minetest-go/maprenderer v1.0.20 h1:lulfTsRHmeTupcD4gatddA87DefA/t8rOT++spUCMAU=
+github.com/minetest-go/maprenderer v1.0.20/go.mod h1:dPTxXBaOlhrSQwvgw8ez8LQX2q4QuXEL+O0yDh2szcM=
+github.com/minetest-go/maprenderer v1.0.23 h1:oOP396tWJasV7eU4g0hBx4WsB350qmmey4uLGw2qllI=
+github.com/minetest-go/maprenderer v1.0.23/go.mod h1:1sXL5WYdf37QKpc9kLAl4Acl671jfV9YLKgcIBKXfy8=
 github.com/minetest-go/oauth v1.0.1 h1:JJqZ7mkWxkQodTeqDdwqJAwxMkV8cq1TRcNwPtchWzQ=
 github.com/minetest-go/oauth v1.0.1/go.mod h1:P4PS5ubffPFwqKnmu3+k9KkIqn0XffO2VGkTn1XzgEY=
+github.com/minetest-go/types v1.0.4 h1:SuM1UPXM2ocngJqZwlxZjnQVJEFxeMyk4bqlEw1BAj4=
+github.com/minetest-go/types v1.0.4/go.mod h1:QS2q8tKAiuBe2Rin880ARFt9VokYIJNZV4Z4kHAChU0=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/moby/sys/mountinfo v0.5.0/go.mod h1:3bMD3Rg+zkqx8MRYPi7Pyb0Ie97QEBmdxbhnCLlSvSU=
