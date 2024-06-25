@@ -27,8 +27,7 @@ export default {
                 <router-link :to="schema_link(entry)">
                     <img
                         :src="preview_src(entry.schema)"
-                        class="card-img-top"
-                        style="background-color: #3c3737; min-height: 200px;"/>
+                        style="background-color: #3c3737; min-height: 200px; display: block; margin-left: auto; margin-right: auto;"/>
                 </router-link>
                 <div class="card-body">
                     <h5 class="card-title">

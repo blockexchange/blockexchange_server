@@ -71,17 +71,12 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		ratio := float64(img.Bounds().Max.X) / float64(img.Bounds().Max.Y)
-		newRatio := float64(width) / float64(height)
-
-		// TODO: fix this mess properly
-		if ratio < newRatio {
-			// source image is taller
-			width = int(float64(width) * ratio)
-		} else {
-			// source image is wider
-			height = int(float64(height) / ratio)
-		}
+		oldWidth := img.Bounds().Max.X
+		oldHeight := img.Bounds().Max.Y
+		ratio := min(float64(width)/float64(oldWidth), float64(height)/float64(oldHeight))
+		height = int(float64(oldHeight) * ratio)
+		width = int(float64(oldWidth) * ratio)
+		fmt.Printf("oldWidth: %d, oldHeight: %d, ratio: %.2f\n", oldWidth, oldHeight, ratio)
 
 		newImage := resize.Resize(uint(width), uint(height), img, resize.Bilinear)
 
