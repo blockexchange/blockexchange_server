@@ -80,10 +80,17 @@ func (c *Core) getNodeAccessor(schema *types.Schema) mtypes.NodeAccessor {
 }
 
 func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, error) {
-	max := mtypes.NewPos(schema.SizeX-1, schema.SizeY-1, schema.SizeZ-1)
+	max_pos := mtypes.NewPos(schema.SizeX-1, schema.SizeY-1, schema.SizeZ-1)
+	max_axis := max(max_pos.X(), max_pos.Y(), max_pos.Z())
 
 	opts := maprenderer.NewDefaultIsoRenderOpts()
-	img, err := maprenderer.RenderIsometric(c.getNodeAccessor(schema), cm.GetColor, zeroPos, max, opts)
+	if max_axis < 10 {
+		opts.CubeLen = 48
+	} else if max_axis < 50 {
+		opts.CubeLen = 16
+	}
+
+	img, err := maprenderer.RenderIsometric(c.getNodeAccessor(schema), cm.GetColor, zeroPos, max_pos, opts)
 	if err != nil {
 		return nil, fmt.Errorf("render error: %v", err)
 	}
