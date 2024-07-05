@@ -95,7 +95,7 @@ func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, err
 
 	img, err := maprenderer.RenderIsometric(c.getNodeAccessor(schema), cm.GetColor, zeroPos, max_pos, opts)
 	if err != nil {
-		return nil, fmt.Errorf("render error: %v", err)
+		return nil, fmt.Errorf("render error: %v, schema-uid: %s", err, schema.UID)
 	}
 
 	buf := bytes.NewBuffer([]byte{})
