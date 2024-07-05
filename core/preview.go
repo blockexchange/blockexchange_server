@@ -68,6 +68,9 @@ func (c *Core) getNodeAccessor(schema *types.Schema) mtypes.NodeAccessor {
 
 		rel_pos := p.Subtract(po)
 		index := mapblock.GetIndex(rel_pos.X(), rel_pos.Y(), rel_pos.Z())
+		if index >= len(mapblock.NodeIDS) {
+			return nil, fmt.Errorf("index mismatch: got %d, length: %d, rel_pos: %s, abs_pos: %s", index, len(mapblock.NodeIDS), rel_pos, p)
+		}
 		nodeid := mapblock.NodeIDS[index]
 
 		return &mtypes.Node{
