@@ -30,6 +30,7 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 		r.HandleFunc(u, func(w http.ResponseWriter, r *http.Request) {
 			public.RenderIndex(w, r, map[string]string{
 				"og:site_name": "Blockexchange",
+				"og:image":     fmt.Sprintf("%s/pics/bx_big.png", api.cfg.BaseURL),
 			})
 		})
 	}
