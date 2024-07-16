@@ -24,9 +24,19 @@ func (r *SchemaScreenshotRepository) GetByUID(uid string) (*types.SchemaScreensh
 	}
 }
 
-func (r *SchemaScreenshotRepository) GetBySchemaUID(schema_uid string) ([]*types.SchemaScreenshot, error) {
+func (r *SchemaScreenshotRepository) GetAllBySchemaUID(schema_uid string) ([]*types.SchemaScreenshot, error) {
 	list := []*types.SchemaScreenshot{}
 	return list, r.kdb.Query(context.Background(), &list, "from schema_screenshot where schema_uid = $1", schema_uid)
+}
+
+func (r *SchemaScreenshotRepository) GetLatestBySchemaUID(schema_uid string) (*types.SchemaScreenshot, error) {
+	result := &types.SchemaScreenshot{}
+	err := r.kdb.QueryOne(context.Background(), result, "from schema_screenshot where schema_uid = $1 limit 1", schema_uid)
+	if err == ksql.ErrRecordNotFound {
+		return nil, nil
+	} else {
+		return result, err
+	}
 }
 
 func (r *SchemaScreenshotRepository) Create(screenshot *types.SchemaScreenshot) error {

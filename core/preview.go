@@ -104,16 +104,13 @@ func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, err
 		return nil, fmt.Errorf("encode error: %v", err)
 	}
 
-	screenshots, err := c.repos.SchemaScreenshotRepo.GetBySchemaUID(schema.UID)
+	screenshot, err := c.repos.SchemaScreenshotRepo.GetLatestBySchemaUID(schema.UID)
 	if err != nil {
 		return nil, err
 	}
 
-	var screenshot *types.SchemaScreenshot
-
-	if len(screenshots) >= 1 {
+	if screenshot != nil {
 		// update existing
-		screenshot = screenshots[0]
 		screenshot.Data = buf.Bytes()
 
 		err = c.repos.SchemaScreenshotRepo.Update(screenshot)

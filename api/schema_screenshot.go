@@ -25,17 +25,16 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 	vars := mux.Vars(r)
 	schema_uid := vars["schema_uid"]
 
-	screenshots, err := api.SchemaScreenshotRepo.GetBySchemaUID(schema_uid)
+	screenshot, err := api.SchemaScreenshotRepo.GetLatestBySchemaUID(schema_uid)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
-	if len(screenshots) == 0 {
-		SendError(w, 404, "no screenshots found")
+	if screenshot == nil {
+		SendError(w, 404, "no screenshot found")
 		return
 	}
 
-	screenshot := screenshots[0]
 	if r.URL.Query().Get("height") != "" {
 		height, err := strconv.Atoi(r.URL.Query().Get("height"))
 		if err != nil || height < 0 || height > 2048 {
