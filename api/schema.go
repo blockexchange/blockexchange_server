@@ -69,7 +69,7 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 
 	schema.UserUID = ctx.Claims.UserUID
-	schema.Created = time.Now().Unix() * 1000
+	schema.Created = time.Now().UnixMilli()
 
 	err = api.SchemaRepo.CreateSchema(&schema)
 	if err != nil {

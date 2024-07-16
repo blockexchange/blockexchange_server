@@ -109,8 +109,8 @@ func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, err
 		return nil, err
 	}
 
-	if screenshot != nil {
-		// update existing
+	if screenshot != nil && time.Since(time.UnixMilli(screenshot.Created)) < time.Hour*24 {
+		// update existing (not older than 24 hours)
 		screenshot.Data = buf.Bytes()
 
 		err = c.repos.SchemaScreenshotRepo.Update(screenshot)
@@ -121,6 +121,7 @@ func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, err
 		// create a new one
 		screenshot = &types.SchemaScreenshot{
 			SchemaUID: schema.UID,
+			Created:   time.Now().UnixMilli(),
 			Type:      "image/png",
 			Title:     "Isometric preview",
 			Data:      buf.Bytes(),

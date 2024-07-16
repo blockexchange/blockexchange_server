@@ -31,7 +31,7 @@ func (r *SchemaScreenshotRepository) GetAllBySchemaUID(schema_uid string) ([]*ty
 
 func (r *SchemaScreenshotRepository) GetLatestBySchemaUID(schema_uid string) (*types.SchemaScreenshot, error) {
 	result := &types.SchemaScreenshot{}
-	err := r.kdb.QueryOne(context.Background(), result, "from schema_screenshot where schema_uid = $1 limit 1", schema_uid)
+	err := r.kdb.QueryOne(context.Background(), result, "from schema_screenshot where schema_uid = $1 order by created desc limit 1", schema_uid)
 	if err == ksql.ErrRecordNotFound {
 		return nil, nil
 	} else {
