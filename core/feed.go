@@ -29,7 +29,7 @@ type DiscordData struct {
 	Content string `json:"content"`
 }
 
-func renderFeedTemplate(baseUrl string, schema *types.Schema, user *types.User, screenshot *types.SchemaScreenshot) (*bytes.Buffer, error) {
+func renderFeedTemplate(baseUrl string, schema *types.Schema, user *types.User) (*bytes.Buffer, error) {
 	data := TemplateData{
 		Schema:     schema,
 		User:       user,
@@ -48,7 +48,7 @@ func renderFeedTemplate(baseUrl string, schema *types.Schema, user *types.User, 
 
 // posts the new schema to a discord channel
 // NOTE: errors here are only logged not escalated
-func UpdateSchemaFeed(schema *types.Schema, user *types.User, screenshot *types.SchemaScreenshot) {
+func UpdateSchemaFeed(schema *types.Schema, user *types.User) {
 	feed_url := os.Getenv("DISCORD_SCHEMA_FEED_URL")
 	if feed_url == "" {
 		// not configured
@@ -56,7 +56,7 @@ func UpdateSchemaFeed(schema *types.Schema, user *types.User, screenshot *types.
 	}
 
 	baseUrl := os.Getenv("BASE_URL")
-	buf, err := renderFeedTemplate(baseUrl, schema, user, screenshot)
+	buf, err := renderFeedTemplate(baseUrl, schema, user)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"schema_uid": schema.UID,

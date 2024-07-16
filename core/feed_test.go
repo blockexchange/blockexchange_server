@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,11 +21,8 @@ func TestRenderFeedTemplate(t *testing.T) {
 	user := types.User{
 		Name: "Somebody",
 	}
-	screenshot := types.SchemaScreenshot{
-		UID: uuid.NewString(),
-	}
 
-	buf, err := renderFeedTemplate("http://example.com", &schema, &user, &screenshot)
+	buf, err := renderFeedTemplate("http://example.com", &schema, &user)
 	assert.NoError(t, err)
 	assert.NotNil(t, buf)
 

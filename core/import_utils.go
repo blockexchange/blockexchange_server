@@ -43,21 +43,19 @@ func (c *Core) FindUnusedSchemaname(schemaname, username string) (string, error)
 	}
 
 	// schema with that name already exists, add number to name
-	if existing_schema != nil {
-		i := 2
-		for {
-			newSchemaName = fmt.Sprintf("%s_%d", schemaname, i)
-			existing_schema, err = c.repos.SchemaRepo.GetSchemaByUsernameAndName(username, newSchemaName)
-			if err != nil {
-				return "", fmt.Errorf("GetSchemaByUsernameAndName error: %v", err)
-			}
-			if existing_schema == nil {
-				return newSchemaName, nil
-			}
-			i++
-			if i > 50 {
-				break
-			}
+	i := 2
+	for {
+		newSchemaName = fmt.Sprintf("%s_%d", schemaname, i)
+		existing_schema, err = c.repos.SchemaRepo.GetSchemaByUsernameAndName(username, newSchemaName)
+		if err != nil {
+			return "", fmt.Errorf("GetSchemaByUsernameAndName error: %v", err)
+		}
+		if existing_schema == nil {
+			return newSchemaName, nil
+		}
+		i++
+		if i > 50 {
+			break
 		}
 	}
 

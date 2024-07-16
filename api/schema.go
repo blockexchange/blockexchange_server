@@ -212,21 +212,13 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 
 	// process notifications
 	if notify_feed {
-		screenshots, err := api.SchemaScreenshotRepo.GetBySchemaUID(schema.UID)
-		if err != nil {
-			SendError(w, 500, fmt.Sprintf("GetBySchemaID: %s", err))
-			return
-		}
-
 		user, err := api.UserRepo.GetUserByUID(schema.UserUID)
 		if err != nil {
 			SendError(w, 500, fmt.Sprintf("GetUserById: %s", err))
 			return
 		}
 
-		if len(screenshots) > 0 {
-			go core.UpdateSchemaFeed(schema, user, screenshots[0])
-		}
+		go core.UpdateSchemaFeed(schema, user)
 	}
 
 	Send(w, schema, nil)
