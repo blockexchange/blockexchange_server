@@ -109,7 +109,6 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 		ratio := min(float64(width)/float64(oldWidth), float64(height)/float64(oldHeight))
 		height = int(float64(oldHeight) * ratio)
 		width = int(float64(oldWidth) * ratio)
-		fmt.Printf("oldWidth: %d, oldHeight: %d, ratio: %.2f\n", oldWidth, oldHeight, ratio)
 
 		newImage := resize.Resize(uint(width), uint(height), img, resize.Bilinear)
 
