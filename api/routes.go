@@ -85,6 +85,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/schema/{schema_uid}/star", api.Secure(api.StarSchema)).Methods(http.MethodPut)
 	r.HandleFunc("/api/schema/{schema_uid}/star", api.Secure(api.UnStarSchema)).Methods(http.MethodDelete)
 
+	r.HandleFunc("/api/schema/{schema_uid}/screenshots", api.GetSchemaScreenshots)
+	r.HandleFunc("/api/schema/{schema_uid}/screenshots/{screenshot_uid}", api.GetScreenshotByID)
 	r.HandleFunc("/api/schema/{schema_uid}/screenshot/update", api.Secure(api.UpdateSchemaPreview)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{schema_uid}/screenshot", api.GetFirstSchemaScreenshot)
 

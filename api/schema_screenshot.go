@@ -21,6 +21,40 @@ func createScreenshotKey(schema_uid string, height int, width int) string {
 	return fmt.Sprintf("%s%d_%d", getScreenshotPrefix(schema_uid), height, width)
 }
 
+func (api Api) GetSchemaScreenshots(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	schema_uid := vars["schema_uid"]
+
+	screenshots, err := api.SchemaScreenshotRepo.GetAllBySchemaUID(schema_uid)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	for _, s := range screenshots {
+		s.Data = nil
+	}
+
+	Send(w, screenshots, nil)
+}
+
+func (api Api) GetScreenshotByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	screenshot_uid := vars["screenshot_uid"]
+	screenshot, err := api.SchemaScreenshotRepo.GetByUID(screenshot_uid)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	if screenshot == nil {
+		SendError(w, 404, "no screenshot found")
+		return
+	}
+	w.Header().Set("Content-Type", screenshot.Type)
+	w.Header().Set("Cache-Control", "max-age=345600")
+	w.WriteHeader(200)
+	w.Write(screenshot.Data)
+}
+
 func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	schema_uid := vars["schema_uid"]
