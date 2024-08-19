@@ -20,9 +20,9 @@ jobs:
 
     - name: Start  services
       run: |
-        docker-compose up -d postgres redis
+        docker compose up -d postgres redis
         sleep 10
-        docker-compose up -d blockexchange
+        docker compose up -d blockexchange
 
     - name: Wait for services to come up
       uses: cygnetdigital/wait_for_response@v2.0.0
@@ -33,10 +33,10 @@ jobs:
         interval: 1000
 
     - name: Execute tests
-      run: docker-compose up --exit-code-from integration-test integration-test
+      run: docker compose up --exit-code-from integration-test integration-test
 
     - name: Execute mod tests
-      run: docker-compose up --exit-code-from mod-integration-test mod-integration-test
+      run: docker compose up --exit-code-from mod-integration-test mod-integration-test
 
     - uses: shogo82148/actions-goveralls@v1.9.0
       with:
