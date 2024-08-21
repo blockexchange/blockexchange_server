@@ -5,6 +5,8 @@ import ModalPrompt from "../ModalPrompt.js";
 import SchemaStar from "./SchemaStar.js";
 import SchemaDownload from "./SchemaDownload.js";
 import SchemaCollection from "./SchemaCollection.js";
+import ModBadge from "../ModBadge.js";
+import TagBadge from "../TagBadge.js";
 
 import {
     schema_update,
@@ -22,7 +24,9 @@ export default {
         "modal-prompt": ModalPrompt,
         "schema-star": SchemaStar,
         "schema-download": SchemaDownload,
-        "schema-collection": SchemaCollection
+        "schema-collection": SchemaCollection,
+        "mod-badge": ModBadge,
+        "tag-badge": TagBadge
     },
     props: {
         search_result: { type: Object, required: true },
@@ -227,10 +231,7 @@ export default {
                         </a>
                         <hr v-if="schema.cdb_collection">
                         <input v-if="edit_mode" type="text" class="form-control" v-model="schema.cdb_collection" placeholder="CDB Collection in the 'username/collectionname' form"/>
-                        <span v-for="mod in mods" class="badge bg-primary" style="margin-right: 5px;">
-                            <i class="fa fa-box-archive"></i>
-                            {{mod}}
-                        </span>
+                        <mod-badge v-for="mod in mods" :name="mod"/>
                     </div>
                 </div>
                 <br>
@@ -240,10 +241,7 @@ export default {
                         Tags
                     </div>
                     <div class="card-body">
-                        <span v-if="!edit_mode" class="badge bg-success" v-for="tag in tags" style="margin-right: 5px;">
-                            <i class="fa fa-tag"></i>
-                            {{tag}}
-                        </span>
+                        <tag-badge v-if="!edit_mode" v-for="tag in tags" :name="tag"/>
                         <div v-else>
                             <ul>
                                 <li v-for="tag in get_tags()">

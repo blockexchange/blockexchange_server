@@ -23,6 +23,7 @@ type SchemaSearchRequest struct {
 	UserUID        *string `json:"user_uid"`
 	SchemaUID      *string `json:"schema_uid"`
 	TagUID         *string `json:"tag_uid"`
+	TagName        *string `json:"tag_name"`
 	SchemaName     *string `json:"schema_name"`
 	ModName        *string `json:"mod_name"`
 	UserName       *string `json:"user_name"`

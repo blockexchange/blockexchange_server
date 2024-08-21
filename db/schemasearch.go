@@ -70,6 +70,12 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 		i++
 	}
 
+	if search.TagName != nil {
+		query.WriteString(fmt.Sprintf(" and uid in (select schema_uid from schematag where tag_uid = (select uid from tag where name = $%d))", i))
+		params = append(params, *search.TagName)
+		i++
+	}
+
 	if search.CollectionUID != nil {
 		query.WriteString(fmt.Sprintf(" and collection_uid = $%d", i))
 		params = append(params, *search.CollectionUID)
