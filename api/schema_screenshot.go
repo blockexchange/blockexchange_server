@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/hashicorp/golang-lru/v2/expirable"
 	"github.com/nfnt/resize"
 )
 
@@ -55,6 +56,8 @@ func (api Api) GetScreenshotByID(w http.ResponseWriter, r *http.Request) {
 	w.Write(screenshot.Data)
 }
 
+var screenshot_cache = expirable.NewLRU[string, []byte](1000, nil, time.Hour*1)
+
 func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	schema_uid := vars["schema_uid"]
@@ -83,14 +86,10 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 		}
 
 		cache_key := createScreenshotKey(schema_uid, height, width)
-		data, err := api.Cache.Get(cache_key)
-		if err != nil {
-			// cache error
-			SendJson(w, err.Error())
-			return
-		}
 
-		if data != nil && r.URL.Query().Get("cache") != "false" {
+		data, ok := screenshot_cache.Get(cache_key)
+
+		if ok && data != nil && r.URL.Query().Get("cache") != "false" {
 			// cached data
 			w.Header().Set("Cache-Control", "max-age=1800") // 30 minutes clientside cache
 			w.Header().Set("Content-Type", "image/png")
@@ -120,11 +119,7 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 		}
 
 		// cache result
-		err = api.Cache.Set(cache_key, buf.Bytes(), 10*time.Minute)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
+		screenshot_cache.Add(cache_key, buf.Bytes())
 
 		w.Header().Set("Content-Type", "image/png")
 		//w.Header().Set("Cache-Control", "max-age=345600")
@@ -154,13 +149,5 @@ func (api Api) UpdateSchemaPreview(w http.ResponseWriter, r *http.Request, ctx *
 	}
 
 	// update screenshot
-	_, err = api.core.UpdatePreview(schema)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	// clear cache
-	err = api.Cache.RemovePrefix(getScreenshotPrefix(schema_uid))
 	Send(w, true, err)
 }

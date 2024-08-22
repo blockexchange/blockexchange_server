@@ -31,8 +31,6 @@ type Config struct {
 	CookiePath          string
 	CookieSecure        bool
 	CookieName          string
-	RedisHost           string
-	RedisPort           string
 }
 
 func CreateConfig() *Config {
@@ -46,8 +44,6 @@ func CreateConfig() *Config {
 		CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
 		CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
 		CookieName:   "blockexchange-v2",
-		RedisHost:    os.Getenv("REDIS_HOST"),
-		RedisPort:    os.Getenv("REDIS_PORT"),
 		OauthLogin:   &OauthLogin{},
 	}
 

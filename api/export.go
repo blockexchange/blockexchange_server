@@ -9,7 +9,10 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/hashicorp/golang-lru/v2/expirable"
 )
+
+var ip_downloads_cache = expirable.NewLRU[string, bool](1000, nil, time.Hour*10)
 
 func (api *Api) incrementDownloadStats(schema_uid string, r *http.Request) error {
 	origin := r.Header.Get("X-Forwarded-For")
@@ -18,19 +21,14 @@ func (api *Api) incrementDownloadStats(schema_uid string, r *http.Request) error
 		ip := strings.TrimSpace(origin_parts[0])
 		cache_key := fmt.Sprintf("download_marker/%s/%s", schema_uid, ip)
 
-		m, err := api.Cache.Get(cache_key)
-		if err != nil {
-			return err
-		}
-		if m != nil {
+		m, ok := ip_downloads_cache.Get(cache_key)
+		if ok && m {
 			//already incremented stat for this ip, skip
 			return nil
 		}
+
 		// mark as incremented
-		err = api.Cache.Set(cache_key, []byte{0x00}, time.Hour*24)
-		if err != nil {
-			return err
-		}
+		ip_downloads_cache.Add(cache_key, true)
 	}
 
 	err := api.SchemaRepo.IncrementDownloads(schema_uid)
@@ -40,6 +38,8 @@ func (api *Api) incrementDownloadStats(schema_uid string, r *http.Request) error
 	return nil
 }
 
+var ip_views_cache = expirable.NewLRU[string, bool](1000, nil, time.Hour*10)
+
 func (api *Api) incrementViewStats(schema_uid string, r *http.Request) error {
 	origin := r.Header.Get("X-Forwarded-For")
 	origin_parts := strings.Split(origin, ",")
@@ -47,19 +47,14 @@ func (api *Api) incrementViewStats(schema_uid string, r *http.Request) error {
 		ip := strings.TrimSpace(origin_parts[0])
 		cache_key := fmt.Sprintf("view_marker/%s/%s", schema_uid, ip)
 
-		m, err := api.Cache.Get(cache_key)
-		if err != nil {
-			return err
-		}
-		if m != nil {
+		m, ok := ip_views_cache.Get(cache_key)
+		if ok && m {
 			//already incremented stat for this ip, skip
 			return nil
 		}
+
 		// mark as incremented
-		err = api.Cache.Set(cache_key, []byte{0x00}, time.Hour*24)
-		if err != nil {
-			return err
-		}
+		ip_views_cache.Add(cache_key, true)
 	}
 
 	err := api.SchemaRepo.IncrementViews(schema_uid)

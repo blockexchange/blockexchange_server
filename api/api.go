@@ -6,17 +6,13 @@ import (
 	"blockexchange/db"
 	"blockexchange/public"
 	"blockexchange/types"
-	"fmt"
 	"net/http"
 	"os"
 	"sync/atomic"
-	"time"
 
-	"github.com/dchest/captcha"
 	"github.com/gorilla/mux"
 	"github.com/minetest-go/colormapping"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/vearutop/statigz"
 	"github.com/vearutop/statigz/brotli"
@@ -26,7 +22,6 @@ type Api struct {
 	*db.Repositories
 	cfg          *types.Config
 	core         *core.Core
-	Cache        *core.RedisCache
 	ColorMapping *colormapping.ColorMapping
 	Running      *atomic.Bool
 }
@@ -35,21 +30,10 @@ func (a *Api) Stop() {
 	a.Running.Store(false)
 }
 
-func NewApi(repos *db.Repositories, cfg *types.Config, rdb *redis.Client) (*Api, *mux.Router, error) {
+func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error) {
 	r := mux.NewRouter()
 	r.Use(middleware.PrometheusMiddleware)
 	r.Use(middleware.LoggingMiddleware)
-
-	// cache/store setup
-	captchaExp := 10 * time.Minute
-
-	if cfg.RedisHost == "" || cfg.RedisPort == "" {
-		return nil, nil, fmt.Errorf("redis not configured")
-	}
-
-	cache := core.NewRedisCache(rdb)
-	captchaStore := core.NewRedisCaptchaStore(rdb, captchaExp)
-	captcha.SetCustomStore(captchaStore)
 
 	cm := colormapping.NewColorMapping()
 	err := cm.LoadDefaults()
@@ -64,7 +48,6 @@ func NewApi(repos *db.Repositories, cfg *types.Config, rdb *redis.Client) (*Api,
 		Repositories: repos,
 		cfg:          cfg,
 		core:         core.New(cfg, repos),
-		Cache:        cache,
 		ColorMapping: cm,
 		Running:      running,
 	}

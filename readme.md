@@ -40,8 +40,6 @@ Optional:
 * **DISCORD_APP_ID** Discord app ID
 * **MESEHUB_APP_SECRET** Mesehub app secret key
 * **MESEHUB_APP_ID** Mesehub app ID
-* **REDIS_HOST** redis host
-* **REDIS_PORT** redis port
 
 ## docker-compose usage
 
@@ -56,7 +54,6 @@ services:
   restart: always
   depends_on:
    - postgres
-   - redis
   environment:
    - PGUSER=postgres
    - PGPASSWORD=enter
@@ -67,10 +64,6 @@ services:
    - BLOCKEXCHANGE_OWNER=yourname
   ports:
    - "8080:8080"
-
- redis:
-  image: redis:6.2.0-alpine
-  restart: always
 
  postgres:
   image: postgres:12
@@ -97,8 +90,8 @@ Prerequisites:
 # install the frontend deps
 cd public && npm ci && cd ..
 
-# start the postgres and redis server in the background
-docker-compose up -d postgres redis
+# start the postgres server in the background
+docker-compose up -d postgres
 
 # start the blockexchange server
 docker-compose up -d blockexchange

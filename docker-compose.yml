@@ -13,15 +13,10 @@ services:
    - "-c"
    - "log_statement=all"
 
- redis:
-  image: redis:6.2.0-alpine
-  restart: always
-
  blockexchange:
   image: golang:1.22.4
   depends_on:
    - postgres
-   - redis
   volumes:
    - ".:/data"
    - "go_dir:/go"
@@ -32,8 +27,6 @@ services:
    - PGHOST=postgres
    - PGDATABASE=postgres
    - PGPORT=5432
-   - REDIS_HOST=redis
-   - REDIS_PORT=6379
    - LOGLEVEL=debug
    - BLOCKEXCHANGE_NAME=My-Blockexchange
    - BLOCKEXCHANGE_OWNER=yourname
@@ -86,8 +79,6 @@ services:
    - PGHOST=postgres
    - PGDATABASE=postgres
    - PGPORT=5432
-   - REDIS_HOST=redis
-   - REDIS_PORT=6379
    - LOGLEVEL=debug
   working_dir: /data
 #  command: ["go", "test", "-run", "TestSearchSchema", "./..."]
