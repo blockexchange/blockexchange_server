@@ -2,6 +2,7 @@ package db_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -23,4 +24,9 @@ func TestDBLock(t *testing.T) {
 	result, err = lock.UnLock(id)
 	assert.NoError(t, err)
 	assert.False(t, result)
+
+	err = lock.RunLocked(id, 1*time.Second, func() error {
+		return nil
+	})
+	assert.NoError(t, err)
 }
