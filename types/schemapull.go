@@ -7,6 +7,8 @@ type SchematicPull struct {
 	PosY      string `json:"pos_y"`
 	PosZ      string `json:"pos_z"`
 	Interval  int64  `json:"interval"` // interval in seconds
+	Hostname  string `json:"hostname"`
+	Port      int    `json:"port"`
 }
 
 // schematic-pull <- 1:n -> schematic-pull-client
@@ -16,8 +18,6 @@ type SchematicPullClient struct {
 	Enabled          bool   `json:"enabled"`
 	Username         string `json:"username"`
 	Password         string `json:"password"`
-	Hostname         string `json:"hostname"`
-	Port             int    `json:"port"`
 	LastRun          int64  `json:"last_run"`
 	LastError        bool   `json:"last_error"` // true = last run failed
 	LastMessage      string `json:"last_message"`
