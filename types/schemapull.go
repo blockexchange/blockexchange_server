@@ -13,6 +13,7 @@ type SchematicPull struct {
 type SchematicPullClient struct {
 	UID              string `json:"uid" ksql:"uid"`
 	SchematicPullUID string `json:"schema_pull_uid" ksql:"schema_pull_uid"`
+	Enabled          bool   `json:"enabled"`
 	Username         string `json:"username"`
 	Password         string `json:"password"`
 	Hostname         string `json:"hostname"`
