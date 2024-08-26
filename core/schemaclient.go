@@ -48,7 +48,7 @@ func blockDataHandler(ch chan commands.Command) {
 func SchemaClient(p *types.SchematicPull, pc *types.SchematicPullClient) error {
 
 	client := commandclient.NewCommandClient(p.Hostname, p.Port)
-	go commandclient.DebugHandler(client)
+	//go commandclient.DebugHandler(client)
 
 	ch := make(chan commands.Command, 100)
 	client.AddListener(ch)
