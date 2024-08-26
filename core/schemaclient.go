@@ -8,6 +8,7 @@ import (
 	"github.com/minetest-go/mapparser"
 	"github.com/minetest-go/minetest_client/commandclient"
 	"github.com/minetest-go/minetest_client/commands"
+	mt "github.com/minetest-go/types"
 )
 
 type SchemaClientOpts struct {
@@ -19,10 +20,20 @@ type SchemaClientOpts struct {
 
 type SchemaClient struct {
 	opts *SchemaClientOpts
+	pos1 *mt.Pos
+	pos2 *mt.Pos
 }
 
 func NewSchemaClient(opts *SchemaClientOpts) *SchemaClient {
-	return &SchemaClient{opts: opts}
+	pos1 := mt.NewPos(opts.Pull.PosX, opts.Pull.PosY, opts.Pull.PosZ)
+	size := mt.NewPos(opts.Schema.SizeX, opts.Schema.SizeY, opts.Schema.SizeZ)
+	pos2 := pos1.Add(size.Add(mt.NewPos(-1, -1, -1)))
+
+	return &SchemaClient{
+		opts: opts,
+		pos1: pos1,
+		pos2: pos2,
+	}
 }
 
 func (sc *SchemaClient) blockDataHandler(ch chan commands.Command) {
@@ -40,8 +51,9 @@ func (sc *SchemaClient) blockDataHandler(ch chan commands.Command) {
 			}
 			fmt.Printf("Mapped %d nodedefs\n", len(cmd.Definitions))
 		case *commands.ServerBlockData:
-			node_offset := cmd.Pos.Multiply(16)
-			fmt.Printf("Blockdata: %d bytes, node_offset: %v\n", len(cmd.BlockData), node_offset)
+			mb_pos1 := cmd.Pos.Multiply(16)
+			mb_pos2 := mb_pos1.Add(mt.NewPos(15, 15, 15))
+			fmt.Printf("Blockdata: %d bytes, pos1: %s, pos2: %s\n", len(cmd.BlockData), mb_pos1, mb_pos2)
 
 			mb, err := mapparser.ParseNetwork(ser_ver, cmd.BlockData)
 			if err != nil {
