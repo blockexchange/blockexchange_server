@@ -3,7 +3,6 @@ package core
 import (
 	"blockexchange/types"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/minetest-go/mapparser"
@@ -11,9 +10,23 @@ import (
 	"github.com/minetest-go/minetest_client/commands"
 )
 
-func blockDataHandler(ch chan commands.Command) {
-	var ser_ver = uint8(28)
+type SchemaClientOpts struct {
+	Pull       *types.SchematicPull
+	PullClient *types.SchematicPullClient
+	Schema     *types.Schema
+	Parts      chan *types.SchemaPart
+}
 
+type SchemaClient struct {
+	opts *SchemaClientOpts
+}
+
+func NewSchemaClient(opts *SchemaClientOpts) *SchemaClient {
+	return &SchemaClient{opts: opts}
+}
+
+func (sc *SchemaClient) blockDataHandler(ch chan commands.Command) {
+	var ser_ver = uint8(28)
 	id_node_mapping := map[int]string{}
 
 	for o := range ch {
@@ -27,21 +40,10 @@ func blockDataHandler(ch chan commands.Command) {
 			}
 			fmt.Printf("Mapped %d nodedefs\n", len(cmd.Definitions))
 		case *commands.ServerBlockData:
-			fmt.Printf("Blockdata: %d bytes, pos: %v\n", len(cmd.BlockData), cmd.Pos)
+			node_offset := cmd.Pos.Multiply(16)
+			fmt.Printf("Blockdata: %d bytes, node_offset: %v\n", len(cmd.BlockData), node_offset)
 
-			offsetData := make([]byte, len(cmd.BlockData)+1)
-			offsetData[0] = ser_ver
-			copy(offsetData[1:], cmd.BlockData)
-
-			f, err := os.CreateTemp(os.TempDir(), "mapblock")
-			if err != nil {
-				fmt.Printf("create temp error: %v\n", err)
-				return
-			}
-			f.Write(offsetData)
-			f.Close()
-
-			mb, err := mapparser.Parse(offsetData)
+			mb, err := mapparser.ParseNetwork(ser_ver, cmd.BlockData)
 			if err != nil {
 				fmt.Printf("map parse error @ %v: %v\n", cmd.Pos, err)
 			}
@@ -52,27 +54,27 @@ func blockDataHandler(ch chan commands.Command) {
 	}
 }
 
-func SchemaClient(p *types.SchematicPull, pc *types.SchematicPullClient) error {
+func (sc *SchemaClient) Run() error {
 
-	client := commandclient.NewCommandClient(p.Hostname, p.Port)
+	client := commandclient.NewCommandClient(sc.opts.Pull.Hostname, sc.opts.Pull.Port)
 	//go commandclient.DebugHandler(client)
 
 	ch := make(chan commands.Command, 100)
 	client.AddListener(ch)
 	defer client.RemoveListener(ch)
-	go blockDataHandler(ch)
+	go sc.blockDataHandler(ch)
 
 	err := client.Connect()
 	if err != nil {
 		return fmt.Errorf("connect error: %v", err)
 	}
 
-	err = commandclient.Init(client, pc.Username)
+	err = commandclient.Init(client, sc.opts.PullClient.Username)
 	if err != nil {
 		return fmt.Errorf("init error: %v", err)
 	}
 
-	err = commandclient.Login(client, pc.Username, pc.Password)
+	err = commandclient.Login(client, sc.opts.PullClient.Username, sc.opts.PullClient.Password, false)
 	if err != nil {
 		return fmt.Errorf("login error: %v", err)
 	}

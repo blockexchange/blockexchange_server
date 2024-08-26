@@ -3,9 +3,9 @@ package types
 // schematic <- 1:1 -> schematic-pull
 type SchematicPull struct {
 	SchemaUID string `json:"schema_uid" ksql:"schema_uid"`
-	PosX      string `json:"pos_x"`
-	PosY      string `json:"pos_y"`
-	PosZ      string `json:"pos_z"`
+	PosX      int    `json:"pos_x"`
+	PosY      int    `json:"pos_y"`
+	PosZ      int    `json:"pos_z"`
 	Interval  int64  `json:"interval"` // interval in seconds
 	Hostname  string `json:"hostname"`
 	Port      int    `json:"port"`
