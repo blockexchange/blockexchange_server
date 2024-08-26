@@ -14,11 +14,18 @@ import (
 func blockDataHandler(ch chan commands.Command) {
 	var ser_ver = uint8(28)
 
+	id_node_mapping := map[int]string{}
+
 	for o := range ch {
 		switch cmd := o.(type) {
 		case *commands.ServerHello:
 			fmt.Printf("Version: %d\n", cmd.SerializationVersion)
 			ser_ver = cmd.SerializationVersion
+		case *commands.ServerNodeDefinitions:
+			for _, ndef := range cmd.Definitions {
+				id_node_mapping[int(ndef.ID)] = ndef.Name
+			}
+			fmt.Printf("Mapped %d nodedefs\n", len(cmd.Definitions))
 		case *commands.ServerBlockData:
 			fmt.Printf("Blockdata: %d bytes, pos: %v\n", len(cmd.BlockData), cmd.Pos)
 
