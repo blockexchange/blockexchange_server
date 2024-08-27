@@ -11,15 +11,15 @@ import (
 	mt "github.com/minetest-go/types"
 )
 
-type SchemaPartMap struct {
+type SchemaMap struct {
 	repo         *db.SchemaPartRepository
 	schema       *types.Schema
 	cache        *expirable.LRU[int64, *parser.ParsedSchemaPart]
 	changedparts map[int64]*parser.ParsedSchemaPart
 }
 
-func NewSchemaPartMap(repo *db.SchemaPartRepository, schema *types.Schema) *SchemaPartMap {
-	return &SchemaPartMap{
+func NewSchemaMap(repo *db.SchemaPartRepository, schema *types.Schema) *SchemaMap {
+	return &SchemaMap{
 		repo:         repo,
 		schema:       schema,
 		cache:        expirable.NewLRU[int64, *parser.ParsedSchemaPart](1000, nil, time.Second*10),
@@ -27,13 +27,13 @@ func NewSchemaPartMap(repo *db.SchemaPartRepository, schema *types.Schema) *Sche
 	}
 }
 
-func (m *SchemaPartMap) getKey(mbpos *mt.Pos) int64 {
+func (m *SchemaMap) getKey(mbpos *mt.Pos) int64 {
 	return int64(mbpos[0]) +
 		int64(mbpos[1])<<16 +
 		int64(mbpos[2])<<32
 }
 
-func (m *SchemaPartMap) getPart(mbpos *mt.Pos) (*parser.ParsedSchemaPart, error) {
+func (m *SchemaMap) getPart(mbpos *mt.Pos) (*parser.ParsedSchemaPart, error) {
 	key := m.getKey(mbpos)
 
 	if m.changedparts[key] != nil {
@@ -75,7 +75,36 @@ func (m *SchemaPartMap) getPart(mbpos *mt.Pos) (*parser.ParsedSchemaPart, error)
 	return mapblock, nil
 }
 
-func (m *SchemaPartMap) SetNode(pos *mt.Pos, node *mt.Node) error {
+func (m *SchemaMap) createBlock(mbpos *mt.Pos) *parser.ParsedSchemaPart {
+	// TODO: size constraints
+	psp := &parser.ParsedSchemaPart{
+		PosX:    mbpos.X(),
+		PosY:    mbpos.Y(),
+		PosZ:    mbpos.Z(),
+		NodeIDS: make([]int16, 0),
+		Param1:  make([]byte, 0),
+		Param2:  make([]byte, 0),
+		Meta: &parser.SchemaPartMetadata{
+			NodeMapping: map[string]int16{},
+			Size: parser.SchemaPartSize{
+				X: 0,
+				Y: 0,
+				Z: 0,
+			},
+			Metadata: &parser.Metadata{
+				Meta:   map[string]*parser.MetadataEntry{},
+				Timers: map[string]*parser.MetadataTimer{},
+			},
+		},
+	}
+
+	key := m.getKey(mbpos)
+	m.changedparts[key] = psp
+
+	return psp
+}
+
+func (m *SchemaMap) SetNode(pos *mt.Pos, node *mt.Node) error {
 	mbpos := pos.Divide(16).Multiply(16)
 
 	mapblock, err := m.getPart(mbpos)
@@ -83,8 +112,8 @@ func (m *SchemaPartMap) SetNode(pos *mt.Pos, node *mt.Node) error {
 		return fmt.Errorf("getpart error: %v", err)
 	}
 	if mapblock == nil {
-		// TODO: create new mapblock
-		return nil
+		// create new mapblock
+		mapblock = m.createBlock(mbpos)
 	}
 
 	rel_pos := pos.Subtract(mbpos)
@@ -112,11 +141,15 @@ func (m *SchemaPartMap) SetNode(pos *mt.Pos, node *mt.Node) error {
 	key := m.getKey(mbpos)
 	m.changedparts[key] = mapblock
 
-	// TODO: meta and stuff
 	return nil
 }
 
-func (m *SchemaPartMap) GetNode(pos *mt.Pos) (*mt.Node, error) {
+func (m *SchemaMap) SetMeta(pos *mt.Pos, md *parser.MetadataEntry) error {
+	// TODO
+	return nil
+}
+
+func (m *SchemaMap) GetNode(pos *mt.Pos) (*mt.Node, error) {
 	mbpos := pos.Divide(16).Multiply(16)
 
 	mapblock, err := m.getPart(mbpos)
@@ -142,7 +175,12 @@ func (m *SchemaPartMap) GetNode(pos *mt.Pos) (*mt.Node, error) {
 	}, nil
 }
 
-func (m *SchemaPartMap) Close() error {
+func (m *SchemaMap) GetMeta(pos *mt.Pos) (*parser.MetadataEntry, error) {
+	// TODO
+	return nil, nil
+}
+
+func (m *SchemaMap) Close() error {
 	// TODO: save all changed parts
 	return nil
 }
