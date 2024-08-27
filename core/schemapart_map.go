@@ -9,7 +9,6 @@ import (
 
 	"github.com/hashicorp/golang-lru/v2/expirable"
 	mt "github.com/minetest-go/types"
-	mtypes "github.com/minetest-go/types"
 )
 
 type SchemaPartMap struct {
@@ -135,7 +134,7 @@ func (m *SchemaPartMap) GetNode(pos *mt.Pos) (*mt.Node, error) {
 	}
 	nodeid := mapblock.NodeIDS[index]
 
-	return &mtypes.Node{
+	return &mt.Node{
 		Name:   mapblock.NodeNameLookup[nodeid],
 		Param1: int(mapblock.Param1[index]),
 		Param2: int(mapblock.Param2[index]),
