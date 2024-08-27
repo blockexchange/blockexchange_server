@@ -75,6 +75,9 @@ func ParseSchemaPart(part *types.SchemaPart) (*ParsedSchemaPart, error) {
 	result := ParsedSchemaPart{
 		Meta:           &md,
 		NodeNameLookup: map[int16]string{},
+		PosX:           part.OffsetX,
+		PosY:           part.OffsetY,
+		PosZ:           part.OffsetZ,
 	}
 
 	for name, id := range md.NodeMapping {
