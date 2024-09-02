@@ -79,7 +79,7 @@ func (m *SchemaMap) getPart(mbpos *mt.Pos) (*parser.ParsedSchemaPart, error) {
 
 func (m *SchemaMap) createBlock(mbpos *mt.Pos) *parser.ParsedSchemaPart {
 	pos1 := mbpos.Multiply(16)
-	pos2 := pos1.Add(&mt.MapBlockSize)
+	pos2 := pos1.Add(mt.NewPos(15, 15, 15))
 	// clip to schematic size
 	area := mt.NewArea(pos1, pos2).Union(m.area)
 	if area == nil {

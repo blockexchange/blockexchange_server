@@ -1,6 +1,7 @@
 package core
 
 import (
+	"blockexchange/parser"
 	"blockexchange/types"
 	"fmt"
 	"time"
@@ -15,30 +16,52 @@ type SchemaClientOpts struct {
 	Pull       *types.SchematicPull
 	PullClient *types.SchematicPullClient
 	Schema     *types.Schema
-	Parts      chan *types.SchemaPart
+	SetNode    func(pos *mt.Pos, node *mt.Node) error
+	SetMeta    func(pos *mt.Pos, md *parser.MetadataEntry) error
 }
 
 type SchemaClient struct {
-	opts *SchemaClientOpts
-	pos1 *mt.Pos
-	pos2 *mt.Pos
+	opts            *SchemaClientOpts
+	origin          *mt.Pos
+	area            *mt.Area
+	id_node_mapping map[int]string
 }
 
 func NewSchemaClient(opts *SchemaClientOpts) *SchemaClient {
-	pos1 := mt.NewPos(opts.Pull.PosX, opts.Pull.PosY, opts.Pull.PosZ)
+	origin := mt.NewPos(opts.Pull.PosX, opts.Pull.PosY, opts.Pull.PosZ)
 	size := mt.NewPos(opts.Schema.SizeX, opts.Schema.SizeY, opts.Schema.SizeZ)
-	pos2 := pos1.Add(size.Add(mt.NewPos(-1, -1, -1)))
+	pos2 := origin.Add(size.Add(mt.NewPos(-1, -1, -1)))
 
 	return &SchemaClient{
-		opts: opts,
-		pos1: pos1,
-		pos2: pos2,
+		opts:            opts,
+		origin:          origin,
+		area:            mt.NewArea(origin, pos2),
+		id_node_mapping: map[int]string{},
 	}
 }
 
-func (sc *SchemaClient) blockDataHandler(ch chan commands.Command) {
+func (sc *SchemaClient) applyBlockChanges(rel_pos1 *mt.Pos, mb *mt.MapBlock) error {
+
+	for i := 0; i < 4096; i++ {
+		pos := mt.NewPosFromIndex(i)
+
+		node, err := mb.GetNode(pos)
+		if err != nil {
+			return fmt.Errorf("getnode error: %v", err)
+		}
+
+		if node != nil {
+			s_pos := rel_pos1.Add(pos)
+			sc.opts.SetNode(s_pos, node)
+			// TODO: metadata
+		}
+	}
+
+	return nil
+}
+
+func (sc *SchemaClient) blockDataHandler(ch chan commands.Command, errchan chan error) {
 	var ser_ver = uint8(28)
-	id_node_mapping := map[int]string{}
 
 	for o := range ch {
 		switch cmd := o.(type) {
@@ -47,13 +70,19 @@ func (sc *SchemaClient) blockDataHandler(ch chan commands.Command) {
 			ser_ver = cmd.SerializationVersion
 		case *commands.ServerNodeDefinitions:
 			for _, ndef := range cmd.Definitions {
-				id_node_mapping[int(ndef.ID)] = ndef.Name
+				sc.id_node_mapping[int(ndef.ID)] = ndef.Name
 			}
 			fmt.Printf("Mapped %d nodedefs\n", len(cmd.Definitions))
 		case *commands.ServerBlockData:
-			mb_pos1 := cmd.Pos.Multiply(16)
-			mb_pos2 := mb_pos1.Add(mt.NewPos(15, 15, 15))
-			fmt.Printf("Blockdata: %d bytes, pos1: %s, pos2: %s\n", len(cmd.BlockData), mb_pos1, mb_pos2)
+			pos1 := cmd.Pos.Multiply(16)
+			pos2 := pos1.Add(mt.NewPos(15, 15, 15))
+			area := mt.NewArea(pos1, pos2)
+			fmt.Printf("Blockdata: %d bytes, pos1: %s, pos2: %s\n", len(cmd.BlockData), pos1, pos2)
+
+			if !area.Intersects(sc.area) {
+				// no valid data
+				continue
+			}
 
 			mb, err := mapparser.ParseNetwork(ser_ver, cmd.BlockData)
 			if err != nil {
@@ -61,6 +90,13 @@ func (sc *SchemaClient) blockDataHandler(ch chan commands.Command) {
 			}
 			if mb != nil {
 				fmt.Printf("BlockMapping @ %v: %v\n", cmd.Pos, mb.BlockMapping)
+			}
+
+			rel_pos1 := pos1.Subtract(sc.origin)
+			err = sc.applyBlockChanges(rel_pos1, mb)
+			if err != nil {
+				errchan <- fmt.Errorf("apply block changes error: %v", err)
+				return
 			}
 		}
 	}
@@ -70,11 +106,12 @@ func (sc *SchemaClient) Run() error {
 
 	client := commandclient.NewCommandClient(sc.opts.Pull.Hostname, sc.opts.Pull.Port)
 	//go commandclient.DebugHandler(client)
+	errchan := make(chan error)
 
 	ch := make(chan commands.Command, 100)
 	client.AddListener(ch)
 	defer client.RemoveListener(ch)
-	go sc.blockDataHandler(ch)
+	go sc.blockDataHandler(ch, errchan)
 
 	err := client.Connect()
 	if err != nil {
@@ -93,7 +130,12 @@ func (sc *SchemaClient) Run() error {
 
 	go commandclient.ClientReady(client)
 
-	time.Sleep(5 * time.Second)
+	select {
+	case <-time.After(5 * time.Second):
+		break
+	case err = <-errchan:
+		return fmt.Errorf("blockhandler error: %v", err)
+	}
 
 	err = client.Disconnect()
 	if err != nil {

@@ -3,15 +3,16 @@ package core_test
 import (
 	"blockexchange/core"
 	"blockexchange/types"
+	"fmt"
 	"testing"
+
+	mt "github.com/minetest-go/types"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSchemaClient(t *testing.T) {
-
-	parts := make(chan *types.SchemaPart, 100)
 
 	opts := &core.SchemaClientOpts{
 		Pull: &types.SchematicPull{
@@ -31,7 +32,10 @@ func TestSchemaClient(t *testing.T) {
 			SizeY: 20,
 			SizeZ: 20,
 		},
-		Parts: parts,
+		SetNode: func(pos *mt.Pos, node *mt.Node) error {
+			fmt.Printf("would set node: %v @ %s\n", node, pos)
+			return nil
+		},
 	}
 
 	sc := core.NewSchemaClient(opts)
