@@ -14,6 +14,7 @@ import (
 type SchemaMap struct {
 	repo         *db.SchemaPartRepository
 	schema       *types.Schema
+	area         *mt.Area
 	cache        *expirable.LRU[int64, *parser.ParsedSchemaPart]
 	changedparts map[int64]*parser.ParsedSchemaPart
 }
@@ -22,6 +23,7 @@ func NewSchemaMap(repo *db.SchemaPartRepository, schema *types.Schema) *SchemaMa
 	return &SchemaMap{
 		repo:         repo,
 		schema:       schema,
+		area:         mt.NewArea(&mt.PosZero, mt.NewPos(schema.SizeX, schema.SizeY, schema.SizeZ).Subtract(mt.NewPos(1, 1, 1))),
 		cache:        expirable.NewLRU[int64, *parser.ParsedSchemaPart](1000, nil, time.Second*10),
 		changedparts: make(map[int64]*parser.ParsedSchemaPart),
 	}
@@ -76,20 +78,29 @@ func (m *SchemaMap) getPart(mbpos *mt.Pos) (*parser.ParsedSchemaPart, error) {
 }
 
 func (m *SchemaMap) createBlock(mbpos *mt.Pos) *parser.ParsedSchemaPart {
-	// TODO: size constraints
+	pos1 := mbpos.Multiply(16)
+	pos2 := pos1.Add(&mt.MapBlockSize)
+	// clip to schematic size
+	area := mt.NewArea(pos1, pos2).Union(m.area)
+	if area == nil {
+		// outside ot schematic size
+		return nil
+	}
+	size := area.Size()
+
 	psp := &parser.ParsedSchemaPart{
 		PosX:    mbpos.X(),
 		PosY:    mbpos.Y(),
 		PosZ:    mbpos.Z(),
-		NodeIDS: make([]int16, 0),
-		Param1:  make([]byte, 0),
-		Param2:  make([]byte, 0),
+		NodeIDS: make([]int16, area.Volume()),
+		Param1:  make([]byte, area.Volume()),
+		Param2:  make([]byte, area.Volume()),
 		Meta: &parser.SchemaPartMetadata{
 			NodeMapping: map[string]int16{},
 			Size: parser.SchemaPartSize{
-				X: 0,
-				Y: 0,
-				Z: 0,
+				X: size.X(),
+				Y: size.Y(),
+				Z: size.Z(),
 			},
 			Metadata: &parser.Metadata{
 				Meta:   map[string]*parser.MetadataEntry{},
