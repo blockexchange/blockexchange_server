@@ -13,9 +13,11 @@ require (
 	github.com/jackc/pgx/v5 v5.6.0
 	github.com/lib/pq v1.10.9
 	github.com/minetest-go/colormapping v1.0.5
+	github.com/minetest-go/mapparser v1.0.4
 	github.com/minetest-go/maprenderer v1.0.23
+	github.com/minetest-go/minetest_client v1.0.2
 	github.com/minetest-go/oauth v1.0.1
-	github.com/minetest-go/types v1.0.4
+	github.com/minetest-go/types v1.0.7
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/prometheus/client_golang v1.19.1
 	github.com/sirupsen/logrus v1.9.3
@@ -38,6 +40,7 @@ require (
 	github.com/jackc/pgtype v1.14.0 // indirect
 	github.com/jackc/pgx/v4 v4.18.2 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
+	github.com/klauspost/compress v1.16.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 )
