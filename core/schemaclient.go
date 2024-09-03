@@ -56,7 +56,7 @@ func (sc *SchemaClient) applyBlockChanges(mb_startpos *mt.Pos, mb *mt.MapBlock) 
 			continue
 		}
 
-		nodeid := mb.Mapdata.ContentId[i]
+		nodeid := mb.ContentId[i]
 
 		if nodeid == CONTENT_IGNORE || nodeid == CONTENT_UNKNOWN {
 			// don't map those
@@ -68,8 +68,8 @@ func (sc *SchemaClient) applyBlockChanges(mb_startpos *mt.Pos, mb *mt.MapBlock) 
 		node := &mt.Node{
 			Pos:    s_pos,
 			Name:   sc.id_node_mapping[nodeid],
-			Param1: mb.Mapdata.Param1[i],
-			Param2: mb.Mapdata.Param2[i],
+			Param1: mb.Param1[i],
+			Param2: mb.Param2[i],
 		}
 		sc.opts.SetNode(s_pos, node)
 		// TODO: metadata
