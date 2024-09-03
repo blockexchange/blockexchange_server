@@ -11,6 +11,12 @@ import (
 	mt "github.com/minetest-go/types"
 )
 
+const (
+	CONTENT_UNKNOWN = 125
+	CONTENT_AIR     = 126
+	CONTENT_IGNORE  = 127
+)
+
 type SchemaMap struct {
 	repo         *db.SchemaPartRepository
 	schema       *types.Schema

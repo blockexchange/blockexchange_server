@@ -32,29 +32,48 @@ func NewSchemaClient(opts *SchemaClientOpts) *SchemaClient {
 	size := mt.NewPos(opts.Schema.SizeX, opts.Schema.SizeY, opts.Schema.SizeZ)
 	pos2 := origin.Add(size.Add(mt.NewPos(-1, -1, -1)))
 
+	fmt.Printf("Origin: %v, pos2: %v, size: %v\n", origin, pos2, size)
+
 	return &SchemaClient{
-		opts:            opts,
-		origin:          origin,
-		area:            mt.NewArea(origin, pos2),
-		id_node_mapping: map[int]string{},
+		opts:   opts,
+		origin: origin,
+		area:   mt.NewArea(origin, pos2),
+		id_node_mapping: map[int]string{
+			CONTENT_AIR:     "air",
+			CONTENT_IGNORE:  "ignore",
+			CONTENT_UNKNOWN: "unknown",
+		},
 	}
 }
 
-func (sc *SchemaClient) applyBlockChanges(rel_pos1 *mt.Pos, mb *mt.MapBlock) error {
+func (sc *SchemaClient) applyBlockChanges(mb_startpos *mt.Pos, mb *mt.MapBlock) error {
 
 	for i := 0; i < 4096; i++ {
 		pos := mt.NewPosFromIndex(i)
-
-		node, err := mb.GetNode(pos)
-		if err != nil {
-			return fmt.Errorf("getnode error: %v", err)
+		pos1 := mb_startpos.Add(pos)
+		if !pos1.IsWithin(sc.area.Pos1, sc.area.Pos2) {
+			// outside schematic
+			continue
 		}
 
-		if node != nil {
-			s_pos := rel_pos1.Add(pos)
-			sc.opts.SetNode(s_pos, node)
-			// TODO: metadata
+		nodeid := mb.Mapdata.ContentId[i]
+
+		if nodeid == CONTENT_IGNORE || nodeid == CONTENT_UNKNOWN {
+			// don't map those
+			continue
 		}
+
+		// relative position inside the schematic
+		s_pos := pos1.Subtract(sc.origin)
+		node := &mt.Node{
+			Pos:    s_pos,
+			Name:   sc.id_node_mapping[nodeid],
+			Param1: mb.Mapdata.Param1[i],
+			Param2: mb.Mapdata.Param2[i],
+		}
+		sc.opts.SetNode(s_pos, node)
+		// TODO: metadata
+
 	}
 
 	return nil
@@ -88,12 +107,8 @@ func (sc *SchemaClient) blockDataHandler(ch chan commands.Command, errchan chan 
 			if err != nil {
 				fmt.Printf("map parse error @ %v: %v\n", cmd.Pos, err)
 			}
-			if mb != nil {
-				fmt.Printf("BlockMapping @ %v: %v\n", cmd.Pos, mb.BlockMapping)
-			}
 
-			rel_pos1 := pos1.Subtract(sc.origin)
-			err = sc.applyBlockChanges(rel_pos1, mb)
+			err = sc.applyBlockChanges(pos1, mb)
 			if err != nil {
 				errchan <- fmt.Errorf("apply block changes error: %v", err)
 				return

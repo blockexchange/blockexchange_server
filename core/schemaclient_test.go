@@ -18,9 +18,9 @@ func TestSchemaClient(t *testing.T) {
 		Pull: &types.SchematicPull{
 			Hostname: "127.0.0.1",
 			Port:     30000,
-			PosX:     0,
+			PosX:     -270,
 			PosY:     0,
-			PosZ:     0,
+			PosZ:     190,
 		},
 		PullClient: &types.SchematicPullClient{
 			Username: "test",
@@ -28,9 +28,9 @@ func TestSchemaClient(t *testing.T) {
 		},
 		Schema: &types.Schema{
 			UID:   uuid.NewString(),
-			SizeX: 20,
-			SizeY: 20,
-			SizeZ: 20,
+			SizeX: 100,
+			SizeY: 100,
+			SizeZ: 100,
 		},
 		SetNode: func(pos *mt.Pos, node *mt.Node) error {
 			fmt.Printf("would set node: %v @ %s\n", node, pos)
