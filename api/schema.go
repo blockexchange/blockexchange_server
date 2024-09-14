@@ -21,6 +21,9 @@ func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 		SendError(w, 500, err.Error())
 		return
 	}
+	if schema == nil {
+		SendError(w, http.StatusNotFound, "schema not found")
+	}
 
 	if r.URL.Query().Get("download") == "true" {
 		err = api.incrementDownloadStats(schema_uid, r)
@@ -103,7 +106,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		return
 	}
 	if schema == nil {
-		SendError(w, 404, "not found")
+		SendError(w, http.StatusNotFound, "schema not found")
 		return
 	}
 
@@ -164,7 +167,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 	if schema == nil {
-		SendError(w, 404, "not found")
+		SendError(w, http.StatusNotFound, "schema not found")
 		return
 	}
 
@@ -243,7 +246,7 @@ func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		return
 	}
 	if schema == nil {
-		SendError(w, 404, "not found")
+		SendError(w, http.StatusNotFound, "schema not found")
 		return
 	}
 
