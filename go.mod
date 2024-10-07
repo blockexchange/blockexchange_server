@@ -22,7 +22,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/vingarcia/ksql v1.12.0
 	github.com/vingarcia/ksql/adapters/kpgx v1.12.0
-	golang.org/x/crypto v0.27.0
+	golang.org/x/crypto v0.28.0
 )
 
 require (
@@ -39,7 +39,7 @@ require (
 	github.com/jackc/pgx/v4 v4.18.2 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	golang.org/x/text v0.18.0 // indirect
+	golang.org/x/text v0.19.0 // indirect
 )
 
 require (
@@ -55,7 +55,7 @@ require (
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/vearutop/statigz v1.4.3
 	go.uber.org/atomic v1.7.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
