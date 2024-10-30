@@ -27,7 +27,7 @@ type Repositories struct {
 func NewRepositories(kdb ksql.Provider, g *gorm.DB, DB *sql.DB) *Repositories {
 
 	return &Repositories{
-		AccessTokenRepo:      &AccessTokenRepository{kdb: kdb},
+		AccessTokenRepo:      &AccessTokenRepository{g: g},
 		UserRepo:             &UserRepository{kdb: kdb},
 		SchemaRepo:           &SchemaRepository{kdb: kdb},
 		SchemaPartRepo:       &SchemaPartRepository{kdb: kdb},
