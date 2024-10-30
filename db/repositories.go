@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/vingarcia/ksql"
+	"gorm.io/gorm"
 )
 
 type Repositories struct {
@@ -23,7 +24,7 @@ type Repositories struct {
 	Lock                 *DBLock
 }
 
-func NewRepositories(kdb ksql.Provider, DB *sql.DB) *Repositories {
+func NewRepositories(kdb ksql.Provider, g *gorm.DB, DB *sql.DB) *Repositories {
 
 	return &Repositories{
 		AccessTokenRepo:      &AccessTokenRepository{kdb: kdb},
@@ -34,7 +35,7 @@ func NewRepositories(kdb ksql.Provider, DB *sql.DB) *Repositories {
 		SchemaSearchRepo:     &SchemaSearchRepository{kdb: kdb, DB: DB},
 		SchemaScreenshotRepo: &SchemaScreenshotRepository{kdb: kdb},
 		TagRepo:              &TagRepository{kdb: kdb},
-		CollectionRepo:       &CollectionRepository{kdb: kdb},
+		CollectionRepo:       &CollectionRepository{g: g},
 		SchemaTagRepo:        &SchemaTagRepository{kdb: kdb},
 		SchemaStarRepo:       &SchemaStarRepository{kdb: kdb},
 		MetaRepository:       &MetaRepository{kdb: kdb},
