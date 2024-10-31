@@ -20,8 +20,8 @@ require (
 	github.com/prometheus/client_golang v1.19.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0
-	github.com/vingarcia/ksql v1.12.0
-	github.com/vingarcia/ksql/adapters/kpgx v1.12.0
+	github.com/vingarcia/ksql v1.12.1
+	github.com/vingarcia/ksql/adapters/kpgx v1.12.1
 	golang.org/x/crypto v0.27.0
 )
 
@@ -38,7 +38,6 @@ require (
 	github.com/jackc/pgtype v1.14.0 // indirect
 	github.com/jackc/pgx/v4 v4.18.2 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 )
 
