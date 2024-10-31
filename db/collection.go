@@ -12,29 +12,15 @@ type CollectionRepository struct {
 }
 
 func (r *CollectionRepository) GetCollectionByUID(uid string) (*types.Collection, error) {
-	list := []*types.Collection{}
-	err := r.g.Where(types.Collection{UID: uid}).Limit(1).Find(&list).Error
-	if err != nil || len(list) == 0 {
-		return nil, err
-	} else {
-		return list[0], nil
-	}
+	return FindSingle[types.Collection](r.g.Where(types.Collection{UID: uid}))
 }
 
 func (r *CollectionRepository) GetCollectionsByUserUID(user_uid string) ([]*types.Collection, error) {
-	list := []*types.Collection{}
-	err := r.g.Where(types.Collection{UserUID: user_uid}).Find(&list).Error
-	return list, err
+	return FindMulti[types.Collection](r.g.Where(types.Collection{UserUID: user_uid}))
 }
 
 func (r *CollectionRepository) GetCollectionByUserUIDAndName(user_uid, name string) (*types.Collection, error) {
-	list := []*types.Collection{}
-	err := r.g.Where(types.Collection{UserUID: user_uid, Name: name}).Limit(1).Find(&list).Error
-	if err != nil || len(list) == 0 {
-		return nil, err
-	} else {
-		return list[0], nil
-	}
+	return FindSingle[types.Collection](r.g.Where(types.Collection{UserUID: user_uid, Name: name}))
 }
 
 func (r *CollectionRepository) CreateCollection(c *types.Collection) error {

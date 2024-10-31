@@ -11,3 +11,9 @@ func FindSingle[T any](g *gorm.DB) (*T, error) {
 		return list[0], err
 	}
 }
+
+func FindMulti[T any](g *gorm.DB) ([]*T, error) {
+	list := make([]*T, 0)
+	err := g.Limit(1).Find(&list).Error
+	return list, err
+}
