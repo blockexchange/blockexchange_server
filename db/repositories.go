@@ -28,7 +28,7 @@ func NewRepositories(kdb ksql.Provider, g *gorm.DB, DB *sql.DB) *Repositories {
 
 	return &Repositories{
 		AccessTokenRepo:      &AccessTokenRepository{g: g},
-		UserRepo:             &UserRepository{kdb: kdb},
+		UserRepo:             &UserRepository{g: g},
 		SchemaRepo:           &SchemaRepository{kdb: kdb},
 		SchemaPartRepo:       &SchemaPartRepository{kdb: kdb},
 		SchemaModRepo:        &SchemaModRepository{kdb: kdb},

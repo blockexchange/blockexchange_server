@@ -13,14 +13,18 @@ const (
 )
 
 type User struct {
-	UID        string   `json:"uid" ksql:"uid"`
-	Created    int64    `json:"created" ksql:"created"`
-	Name       string   `json:"name" ksql:"name"`
-	Hash       string   `json:"-" ksql:"hash"` // not exported
-	Type       UserType `json:"type" ksql:"type"`
-	Role       UserRole `json:"role" ksql:"role"`
-	ExternalID *string  `json:"external_id" ksql:"external_id"`
-	AvatarURL  string   `json:"avatar_url" ksql:"avatar_url"`
+	UID        string   `json:"uid" gorm:"primarykey;column:uid"`
+	Created    int64    `json:"created" gorm:"column:created"`
+	Name       string   `json:"name" gorm:"column:name"`
+	Hash       string   `json:"-" gorm:"column:hash"` // not exported
+	Type       UserType `json:"type" gorm:"column:type"`
+	Role       UserRole `json:"role" gorm:"column:role"`
+	ExternalID *string  `json:"external_id" gorm:"column:external_id"`
+	AvatarURL  string   `json:"avatar_url" gorm:"column:avatar_url"`
+}
+
+func (u *User) TableName() string {
+	return "user"
 }
 
 type UserSearch struct {
