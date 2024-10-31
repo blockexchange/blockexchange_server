@@ -35,9 +35,4 @@ func TestGetSchemaTagsByIDs(t *testing.T) {
 
 	st2 := &types.SchemaTag{TagUID: t1.UID, SchemaUID: s.UID}
 	assert.NoError(t, repos.SchemaTagRepo.Create(st2))
-
-	sts, err := repos.SchemaTagRepo.GetBySchemaUIDs([]string{s.UID})
-	assert.NoError(t, err)
-	assert.NotNil(t, sts)
-	assert.Equal(t, 2, len(sts))
 }

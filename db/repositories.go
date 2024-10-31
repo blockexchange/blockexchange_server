@@ -36,7 +36,7 @@ func NewRepositories(kdb ksql.Provider, g *gorm.DB, DB *sql.DB) *Repositories {
 		SchemaScreenshotRepo: &SchemaScreenshotRepository{kdb: kdb},
 		TagRepo:              &TagRepository{g: g},
 		CollectionRepo:       &CollectionRepository{g: g},
-		SchemaTagRepo:        &SchemaTagRepository{kdb: kdb},
+		SchemaTagRepo:        &SchemaTagRepository{g: g},
 		SchemaStarRepo:       &SchemaStarRepository{kdb: kdb},
 		MetaRepository:       &MetaRepository{kdb: kdb},
 		MediaRepo:            &MediaRepository{kdb: kdb},
