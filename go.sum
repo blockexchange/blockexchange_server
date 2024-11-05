@@ -199,6 +199,7 @@ github.com/konsorten/go-windows-terminal-sequences v1.0.2/go.mod h1:T0+1ngSBFLxv
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pretty v0.2.1/go.mod h1:ipq/a2n7PKx3OHsz4KJII5eveXtPO4qwEXGdVfWzfnI=
+github.com/kr/pretty v0.3.0/go.mod h1:640gp4NfQd8pI5XOwp5fnNeVWj67G7CFk/SaSQn7NBk=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/pretty v0.3.1/go.mod h1:hoEshYVHaxMs3cyo3Yncou5ZscifuDolrwPKZanG3xk=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
@@ -277,6 +278,7 @@ github.com/prometheus/procfs v0.12.0/go.mod h1:pcuDEFsWDnvcgNzo4EEweacyhjeA9Zk3c
 github.com/prometheus/tsdb v0.7.1/go.mod h1:qhTCs0VvXwvX/y3TZrWD7rabWM+ijKTux40TwIPHuXU=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
+github.com/rogpeppe/go-internal v1.6.1/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTEfhy4qGm1nDQc=
 github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
 github.com/rogpeppe/go-internal v1.10.0/go.mod h1:UQnix2H7Ngw/k4C5ijL5+65zddjncjaFoBhdsK/akog=
 github.com/rs/xid v1.2.1/go.mod h1:+uKXf+4Djp6Md1KODXJxgGQPKngRmWyn10oCKFzNHOQ=
@@ -327,8 +329,9 @@ github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGr
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/vearutop/statigz v1.4.3 h1:eDWkkbQuiG1h8Eu4feV3Rb1x6048LMNIudT77a7Husc=
 github.com/vearutop/statigz v1.4.3/go.mod h1:LYTolBLiz9oJISwiVKnOQoIwhO1LWX1A7OECawGS8XE=
-github.com/vingarcia/ksql v1.12.0 h1:MAYqaIWZkqDVeTVHOfyWCOhpBE+YHuE4WiPlcy7mzAU=
 github.com/vingarcia/ksql v1.12.0/go.mod h1:cklqGp1qUCr7zcWSrMp30X3Gg/sCD2E8A57znh4sBKc=
+github.com/vingarcia/ksql v1.12.2 h1:QziS87voZ1Csl79ZVi1U1WL2wjLNBQTcAUXkwlZtW14=
+github.com/vingarcia/ksql v1.12.2/go.mod h1:DHp/nhVu1nHpBBXH/FRw6JLgIcvcM3+uo2+PfUNdo0g=
 github.com/vingarcia/ksql/adapters/kpgx v1.12.0 h1:BCvULWC1DIqiXtWWGuPPQX9FpPfCW3910cGD5jKycaM=
 github.com/vingarcia/ksql/adapters/kpgx v1.12.0/go.mod h1:oLDK/FIH/PzsgpPmBTZmkPrhnexARv+C6kuOyEPzAzk=
 github.com/vishvananda/netlink v1.1.0/go.mod h1:cTgwzPIzzgDAYoQrMm0EdrjRUBkTqKYppBueQtXaqoE=
