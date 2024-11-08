@@ -9,25 +9,29 @@ type SchemaUpdateError struct {
 
 // used for the database and GET requests
 type Schema struct {
-	UID              string  `json:"uid" ksql:"uid"`
-	Created          int64   `json:"created" ksql:"created"`
-	Mtime            int64   `json:"mtime" ksql:"mtime"`
-	UserUID          string  `json:"user_uid" ksql:"user_uid"`
-	CollectionUID    *string `json:"collection_uid" ksql:"collection_uid,nullable"`
-	Name             string  `json:"name" ksql:"name"`
-	Description      string  `json:"description" ksql:"description"`
-	ShortDescription string  `json:"short_description" ksql:"short_description"`
-	CDBCollection    string  `json:"cdb_collection" ksql:"cdb_collection"`
-	Complete         bool    `json:"complete" ksql:"complete"`
-	SizeX            int     `json:"size_x" ksql:"size_x"`
-	SizeY            int     `json:"size_y" ksql:"size_y"`
-	SizeZ            int     `json:"size_z" ksql:"size_z"`
-	TotalSize        int     `json:"total_size" ksql:"total_size"`
-	TotalParts       int     `json:"total_parts" ksql:"total_parts"`
-	Downloads        int     `json:"downloads" ksql:"downloads"`
-	Views            int     `json:"views" ksql:"views"`
-	License          string  `json:"license" ksql:"license"`
-	Stars            int     `json:"stars" ksql:"stars"`
+	UID              string  `json:"uid" gorm:"primarykey;column:uid"`
+	Created          int64   `json:"created" gorm:"column:created"`
+	Mtime            int64   `json:"mtime" gorm:"column:mtime"`
+	UserUID          string  `json:"user_uid" gorm:"column:user_uid"`
+	CollectionUID    *string `json:"collection_uid" gorm:"column:collection_uid"`
+	Name             string  `json:"name" gorm:"column:name"`
+	Description      string  `json:"description" gorm:"column:description"`
+	ShortDescription string  `json:"short_description" gorm:"column:short_description"`
+	CDBCollection    string  `json:"cdb_collection" gorm:"column:cdb_collection"`
+	Complete         bool    `json:"complete" gorm:"column:complete"`
+	SizeX            int     `json:"size_x" gorm:"column:size_x"`
+	SizeY            int     `json:"size_y" gorm:"column:size_y"`
+	SizeZ            int     `json:"size_z" gorm:"column:size_z"`
+	TotalSize        int     `json:"total_size" gorm:"column:total_size"`
+	TotalParts       int     `json:"total_parts" gorm:"column:total_parts"`
+	Downloads        int     `json:"downloads" gorm:"column:downloads"`
+	Views            int     `json:"views" gorm:"column:views"`
+	License          string  `json:"license" gorm:"column:license"`
+	Stars            int     `json:"stars" gorm:"column:stars"`
+}
+
+func (s *Schema) TableName() string {
+	return "schema"
 }
 
 func (s *Schema) UnmarshalJSON(data []byte) error {
