@@ -72,8 +72,12 @@ func (sc *SchemaClient) applyBlockChanges(mb_startpos *mt.Pos, mb *mt.MapBlock) 
 			Param2: mb.Param2[i],
 		}
 		sc.opts.SetNode(s_pos, node)
-		// TODO: metadata
 
+		md := &parser.MetadataEntry{
+			Inventories: mb.Inventory[i],
+			Fields:      mb.Fields[i],
+		}
+		sc.opts.SetMeta(pos, md)
 	}
 
 	return nil

@@ -2,6 +2,7 @@ package core_test
 
 import (
 	"blockexchange/core"
+	"blockexchange/parser"
 	"blockexchange/types"
 	"fmt"
 	"testing"
@@ -13,7 +14,7 @@ import (
 )
 
 func TestSchemaClient(t *testing.T) {
-	//t.SkipNow()
+	t.SkipNow()
 
 	opts := &core.SchemaClientOpts{
 		Pull: &types.SchematicPull{
@@ -36,6 +37,12 @@ func TestSchemaClient(t *testing.T) {
 		SetNode: func(pos *mt.Pos, node *mt.Node) error {
 			if node.Name != "air" {
 				fmt.Printf("would set node: %v @ %s\n", node, pos)
+			}
+			return nil
+		},
+		SetMeta: func(pos *mt.Pos, md *parser.MetadataEntry) error {
+			if md.Fields != nil || md.Inventories != nil {
+				fmt.Printf("would set metadata: %v @ %s\n", md, pos)
 			}
 			return nil
 		},
