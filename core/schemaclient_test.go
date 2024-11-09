@@ -13,15 +13,15 @@ import (
 )
 
 func TestSchemaClient(t *testing.T) {
-	t.SkipNow()
+	//t.SkipNow()
 
 	opts := &core.SchemaClientOpts{
 		Pull: &types.SchematicPull{
 			Hostname: "127.0.0.1",
 			Port:     30000,
-			PosX:     -270,
-			PosY:     0,
-			PosZ:     190,
+			PosX:     0,
+			PosY:     100,
+			PosZ:     0,
 		},
 		PullClient: &types.SchematicPullClient{
 			Username: "test",
@@ -29,12 +29,14 @@ func TestSchemaClient(t *testing.T) {
 		},
 		Schema: &types.Schema{
 			UID:   uuid.NewString(),
-			SizeX: 100,
-			SizeY: 100,
-			SizeZ: 100,
+			SizeX: 20,
+			SizeY: 2,
+			SizeZ: 2,
 		},
 		SetNode: func(pos *mt.Pos, node *mt.Node) error {
-			fmt.Printf("would set node: %v @ %s\n", node, pos)
+			if node.Name != "air" {
+				fmt.Printf("would set node: %v @ %s\n", node, pos)
+			}
 			return nil
 		},
 	}

@@ -105,7 +105,8 @@ func (sc *SchemaClient) blockDataHandler(ch chan commands.Command, errchan chan 
 
 			mb, err := mapparser.ParseNetwork(ser_ver, cmd.BlockData)
 			if err != nil {
-				fmt.Printf("map parse error @ %v: %v\n", cmd.Pos, err)
+				errchan <- fmt.Errorf("map parse error @ %v: %v", cmd.Pos, err)
+				return
 			}
 
 			err = sc.applyBlockChanges(pos1, mb)
@@ -143,7 +144,43 @@ func (sc *SchemaClient) Run() error {
 		return fmt.Errorf("login error: %v", err)
 	}
 
-	go commandclient.ClientReady(client)
+	go func() {
+		ch = make(chan commands.Command, 100)
+		client.AddListener(ch)
+		defer client.RemoveListener(ch)
+
+		for o := range ch {
+			switch cmd := o.(type) {
+			case *commands.ServerCSMRestrictionFlags:
+				err := client.SendCommand(commands.NewClientReady(5, 5, 5, "bx-bot", 4))
+				if err != nil {
+					errchan <- fmt.Errorf("send command error: %v", err)
+				}
+
+				ppos := commands.NewClientPlayerPos()
+				err = client.SendCommand(ppos)
+				if err != nil {
+					errchan <- fmt.Errorf("send command error: %v", err)
+				}
+
+			case *commands.ServerMovePlayer:
+				ppos := commands.NewClientPlayerPos()
+				ppos.Pitch = uint32(cmd.Pitch)
+				ppos.Yaw = uint32(cmd.Yaw)
+				ppos.RequestViewRange = 15
+				ppos.FOV = 149
+				ppos.PosX = uint32(cmd.X * 10)
+				ppos.PosY = uint32(cmd.Y * 10)
+				ppos.PosZ = uint32(cmd.Z * 10)
+				err = client.SendCommand(ppos)
+				if err != nil {
+					errchan <- fmt.Errorf("send command error: %v", err)
+				}
+			}
+		}
+	}()
+
+	//go commandclient.ClientReady(client)
 
 	select {
 	case <-time.After(5 * time.Second):
