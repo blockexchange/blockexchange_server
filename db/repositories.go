@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 
-	"github.com/vingarcia/ksql"
 	"gorm.io/gorm"
 )
 
@@ -24,7 +23,7 @@ type Repositories struct {
 	Lock                 *DBLock
 }
 
-func NewRepositories(kdb ksql.Provider, g *gorm.DB, DB *sql.DB) *Repositories {
+func NewRepositories(g *gorm.DB, DB *sql.DB) *Repositories {
 	return &Repositories{
 		AccessTokenRepo:      &AccessTokenRepository{g: g},
 		UserRepo:             &UserRepository{g: g},
