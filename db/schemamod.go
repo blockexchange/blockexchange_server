@@ -23,5 +23,5 @@ func (r *SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error
 }
 
 func (r *SchemaModRepository) RemoveSchemaMods(schema_uid string) error {
-	return r.g.Delete(types.SchemaMod{SchemaUID: schema_uid}).Error
+	return r.g.Where("schema_uid = ?", schema_uid).Delete(types.SchemaMod{}).Error
 }
