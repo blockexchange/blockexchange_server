@@ -12,14 +12,18 @@ func GetSchemaPartOrderID(offset_x, offset_y, offset_z int) int {
 type SchemaPartIterator func() (*SchemaPart, error)
 
 type SchemaPart struct {
-	OrderID   int64  `json:"order_id" ksql:"order_id"`
-	SchemaUID string `json:"schema_uid" ksql:"schema_uid"`
-	OffsetX   int    `json:"offset_x" ksql:"offset_x"`
-	OffsetY   int    `json:"offset_y" ksql:"offset_y"`
-	OffsetZ   int    `json:"offset_z" ksql:"offset_z"`
-	Mtime     int64  `json:"mtime" ksql:"mtime"`
-	Data      []byte `json:"data" ksql:"data"`
-	MetaData  []byte `json:"metadata" ksql:"metadata"`
+	OrderID   int64  `json:"order_id" gorm:"column:order_id"`
+	SchemaUID string `json:"schema_uid" gorm:"primarykey;column:schema_uid"`
+	OffsetX   int    `json:"offset_x" gorm:"primarykey;column:offset_x"`
+	OffsetY   int    `json:"offset_y" gorm:"primarykey;column:offset_y"`
+	OffsetZ   int    `json:"offset_z" gorm:"primarykey;column:offset_z"`
+	Mtime     int64  `json:"mtime" gorm:"column:mtime"`
+	Data      []byte `json:"data" gorm:"column:data"`
+	MetaData  []byte `json:"metadata" gorm:"column:metadata"`
+}
+
+func (sp *SchemaPart) TableName() string {
+	return "schemapart"
 }
 
 func (s *SchemaPart) UnmarshalJSON(data []byte) error {

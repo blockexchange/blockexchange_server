@@ -1,19 +1,19 @@
 package db
 
 import (
-	"context"
 	"database/sql"
 	"embed"
 	"fmt"
 	"os"
 
 	_ "github.com/jackc/pgx/v5"
-	"github.com/vingarcia/ksql"
-	"github.com/vingarcia/ksql/adapters/kpgx"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/pgx"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 //go:embed migrations/*.sql
@@ -29,6 +29,11 @@ func Init() (*Repositories, error) {
 		os.Getenv("PGDATABASE"))
 
 	fmt.Printf("Connecting to %s\n", url)
+
+	g, err := gorm.Open(postgres.Open(url), &gorm.Config{})
+	if err != nil {
+		return nil, fmt.Errorf("gorm open: %v", err)
+	}
 
 	db, err := sql.Open("pgx", url)
 	if err != nil {
@@ -60,11 +65,5 @@ func Init() (*Repositories, error) {
 		return nil, err
 	}
 
-	ctx := context.Background()
-	kdb, err := kpgx.New(ctx, url, ksql.Config{})
-	if err != nil {
-		return nil, err
-	}
-
-	return NewRepositories(kdb, db), nil
+	return NewRepositories(g, db), nil
 }

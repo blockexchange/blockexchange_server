@@ -15,10 +15,10 @@ func TestCollection(t *testing.T) {
 	u := &types.User{
 		Name: fmt.Sprintf("test_%d", rand.Intn(1000)),
 	}
+	assert.NoError(t, repos.UserRepo.CreateUser(u))
 
 	// create
 
-	assert.NoError(t, repos.UserRepo.CreateUser(u))
 	c := &types.Collection{
 		UserUID: u.UID,
 		Name:    "test",

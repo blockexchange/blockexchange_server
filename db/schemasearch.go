@@ -2,18 +2,17 @@ package db
 
 import (
 	"blockexchange/types"
-	"context"
 	"database/sql"
 	"fmt"
 	"strings"
 
 	"github.com/lib/pq"
-	"github.com/vingarcia/ksql"
+	"gorm.io/gorm"
 )
 
 type SchemaSearchRepository struct {
-	kdb ksql.Provider
-	DB  *sql.DB
+	g  *gorm.DB
+	DB *sql.DB
 }
 
 func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search *types.SchemaSearchRequest, with_order bool) []any {
@@ -139,8 +138,8 @@ func (r *SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int64
 	query := strings.Builder{}
 	query.WriteString("select count(*) as count")
 	params := r.buildWhereQuery(&query, search, false)
-	c := &types.Count{}
-	return c.Count, r.kdb.QueryOne(context.Background(), c, query.String(), params...)
+	var c int64
+	return c, r.g.Raw(query.String(), params...).Scan(&c).Error
 }
 
 func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*types.SchemaSearchResponse, error) {

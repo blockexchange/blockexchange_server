@@ -35,4 +35,8 @@ func TestGetSchemaModsByIDs(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, sm)
 	assert.Equal(t, 2, len(sm))
+
+	smc, err := repos.SchemaModRepo.GetSchemaModCount()
+	assert.NoError(t, err)
+	assert.NotNil(t, smc)
 }

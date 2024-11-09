@@ -2,45 +2,42 @@ package db
 
 import (
 	"blockexchange/types"
-	"context"
 
 	"github.com/google/uuid"
-	"github.com/vingarcia/ksql"
+	"gorm.io/gorm"
 )
 
-var accessTokenTable = ksql.NewTable("access_token", "uid")
-
 type AccessTokenRepository struct {
-	kdb ksql.Provider
+	g *gorm.DB
 }
 
 func (r *AccessTokenRepository) GetAccessTokensByUserUID(user_uid string) ([]*types.AccessToken, error) {
 	list := []*types.AccessToken{}
-	return list, r.kdb.Query(context.Background(), &list, "from access_token where user_uid = $1", user_uid)
+	err := r.g.Where(types.AccessToken{UserUID: user_uid}).Find(&list).Error
+	return list, err
 }
 
 func (r *AccessTokenRepository) GetAccessTokenByTokenAndUserUID(token string, user_uid string) (*types.AccessToken, error) {
-	t := &types.AccessToken{}
-	err := r.kdb.QueryOne(context.Background(), t, "from access_token where token = $1 and user_uid = $2", token, user_uid)
-	if err == ksql.ErrRecordNotFound {
-		return nil, nil
+	list := []*types.AccessToken{}
+	err := r.g.Where(types.AccessToken{UserUID: user_uid, Token: token}).Limit(1).Find(&list).Error
+	if err != nil || len(list) == 0 {
+		return nil, err
+	} else {
+		return list[0], nil
 	}
-	return t, err
 }
 
 func (r *AccessTokenRepository) CreateAccessToken(access_token *types.AccessToken) error {
 	if access_token.UID == "" {
 		access_token.UID = uuid.NewString()
 	}
-	return r.kdb.Insert(context.Background(), accessTokenTable, access_token)
+	return r.g.Create(access_token).Error
 }
 
 func (r *AccessTokenRepository) IncrementAccessTokenUseCount(uid string) error {
-	_, err := r.kdb.Exec(context.Background(), "update access_token set usecount = usecount + 1 where uid = $1", uid)
-	return err
+	return r.g.Raw("update access_token set usecount = usecount + 1 where uid = ?", uid).Error
 }
 
 func (r *AccessTokenRepository) RemoveAccessToken(uid string, user_uid string) error {
-	_, err := r.kdb.Exec(context.Background(), "delete from access_token where uid = $1 and user_uid = $2", uid, user_uid)
-	return err
+	return r.g.Delete(types.AccessToken{UID: uid, UserUID: user_uid}).Error
 }

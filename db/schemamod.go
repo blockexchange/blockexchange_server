@@ -2,32 +2,26 @@ package db
 
 import (
 	"blockexchange/types"
-	"context"
 
-	"github.com/vingarcia/ksql"
+	"gorm.io/gorm"
 )
 
-var schemamodTable = ksql.NewTable("schemamod", "schema_uid", "mod_name")
-
 type SchemaModRepository struct {
-	kdb ksql.Provider
+	g *gorm.DB
 }
 
 func (r *SchemaModRepository) GetSchemaModsBySchemaUID(schema_uid string) ([]*types.SchemaMod, error) {
-	list := []*types.SchemaMod{}
-	return list, r.kdb.Query(context.Background(), &list, "from schemamod where schema_uid = $1", schema_uid)
+	return FindMulti[types.SchemaMod](r.g.Where(types.SchemaMod{SchemaUID: schema_uid}))
 }
 
 func (r *SchemaModRepository) GetSchemaModCount() ([]*types.SchemaModCount, error) {
-	list := []*types.SchemaModCount{}
-	return list, r.kdb.Query(context.Background(), &list, "select mod_name, count(*) as count from schemamod group by mod_name order by count desc")
+	return FindMulti[types.SchemaModCount](r.g.Select("mod_name", "count(*) as count").Table("schemamod").Group("mod_name").Order("count desc"))
 }
 
 func (r *SchemaModRepository) CreateSchemaMod(schema_mod *types.SchemaMod) error {
-	return r.kdb.Insert(context.Background(), schemamodTable, schema_mod)
+	return r.g.Create(schema_mod).Error
 }
 
 func (r *SchemaModRepository) RemoveSchemaMods(schema_uid string) error {
-	_, err := r.kdb.Exec(context.Background(), "delete from schemamod where schema_uid = $1", schema_uid)
-	return err
+	return r.g.Where("schema_uid = ?", schema_uid).Delete(types.SchemaMod{}).Error
 }

@@ -2,52 +2,38 @@ package db
 
 import (
 	"blockexchange/types"
-	"context"
 
 	"github.com/google/uuid"
-	"github.com/vingarcia/ksql"
+	"gorm.io/gorm"
 )
 
-var collectionTable = ksql.NewTable("collection", "uid")
-
 type CollectionRepository struct {
-	kdb ksql.Provider
+	g *gorm.DB
 }
 
 func (r *CollectionRepository) GetCollectionByUID(uid string) (*types.Collection, error) {
-	c := &types.Collection{}
-	err := r.kdb.QueryOne(context.Background(), c, "from collection where uid = $1", uid)
-	if err == ksql.ErrRecordNotFound {
-		return nil, nil
-	}
-	return c, err
+	return FindSingle[types.Collection](r.g.Where(types.Collection{UID: uid}))
 }
 
 func (r *CollectionRepository) GetCollectionsByUserUID(user_uid string) ([]*types.Collection, error) {
-	list := []*types.Collection{}
-	return list, r.kdb.Query(context.Background(), &list, "from collection where user_uid = $1", user_uid)
+	return FindMulti[types.Collection](r.g.Where(types.Collection{UserUID: user_uid}))
 }
 
 func (r *CollectionRepository) GetCollectionByUserUIDAndName(user_uid, name string) (*types.Collection, error) {
-	c := &types.Collection{}
-	err := r.kdb.QueryOne(context.Background(), c, "from collection where user_uid = $1 and name = $2", user_uid, name)
-	if err == ksql.ErrRecordNotFound {
-		return nil, nil
-	}
-	return c, err
+	return FindSingle[types.Collection](r.g.Where(types.Collection{UserUID: user_uid, Name: name}))
 }
 
 func (r *CollectionRepository) CreateCollection(c *types.Collection) error {
 	if c.UID == "" {
 		c.UID = uuid.NewString()
 	}
-	return r.kdb.Insert(context.Background(), collectionTable, c)
+	return r.g.Create(c).Error
 }
 
 func (r *CollectionRepository) UpdateCollection(c *types.Collection) error {
-	return r.kdb.Patch(context.Background(), collectionTable, c)
+	return r.g.Save(c).Error
 }
 
 func (r *CollectionRepository) DeleteCollection(collection_uid string) error {
-	return r.kdb.Delete(context.Background(), collectionTable, collection_uid)
+	return r.g.Delete(types.Collection{UID: collection_uid}).Error
 }

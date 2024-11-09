@@ -2,48 +2,36 @@ package db
 
 import (
 	"blockexchange/types"
-	"context"
 
-	"github.com/vingarcia/ksql"
+	"gorm.io/gorm"
 )
 
-var schemaStarTable = ksql.NewTable("user_schema_star", "user_uid", "schema_uid")
-
 type SchemaStarRepository struct {
-	kdb ksql.Provider
+	g *gorm.DB
 }
 
 func (r *SchemaStarRepository) Create(ss *types.SchemaStar) error {
-	return r.kdb.Insert(context.Background(), schemaStarTable, ss)
+	return r.g.Create(ss).Error
 }
 
 func (r *SchemaStarRepository) Delete(ss *types.SchemaStar) error {
-	return r.kdb.Delete(context.Background(), schemaStarTable, ss)
+	return r.g.Delete(ss).Error
 }
 
 func (r *SchemaStarRepository) GetBySchemaUID(schema_uid string) ([]*types.SchemaStar, error) {
-	list := []*types.SchemaStar{}
-	return list, r.kdb.Query(context.Background(), &list, "from user_schema_star where schema_uid = $1", schema_uid)
+	return FindMulti[types.SchemaStar](r.g.Where("schema_uid = ?", schema_uid))
 }
 
 func (r *SchemaStarRepository) GetBySchemaAndUserID(schema_uid string, user_uid string) (*types.SchemaStar, error) {
-	ss := &types.SchemaStar{}
-	err := r.kdb.QueryOne(context.Background(), ss, "from user_schema_star where schema_uid = $1 and user_uid = $2", schema_uid, user_uid)
-	if err == ksql.ErrRecordNotFound {
-		return nil, nil
-	} else {
-		return ss, err
-	}
+	return FindSingle[types.SchemaStar](r.g.Where("schema_uid = ?", schema_uid).Where("user_uid = ?", user_uid))
 }
 
 func (r *SchemaStarRepository) CountBySchemaUID(schema_uid string) (int64, error) {
-	c := &types.Count{}
-	err := r.kdb.QueryOne(context.Background(), c, "select count(*) as count from user_schema_star where schema_uid = $1", schema_uid)
-	return c.Count, err
+	var c int64
+	return c, r.g.Model(types.SchemaStar{}).Where("schema_uid = ?", schema_uid).Count(&c).Error
 }
 
 func (r *SchemaStarRepository) CountByUserUID(user_uid string) (int64, error) {
-	c := &types.Count{}
-	err := r.kdb.QueryOne(context.Background(), c, "select count(*) from user_schema_star uss join schema s on s.uid = uss.schema_uid where s.user_uid = $1", user_uid)
-	return c.Count, err
+	var c int64
+	return c, r.g.Raw("select count(*) from user_schema_star uss join schema s on s.uid = uss.schema_uid where s.user_uid = ?", user_uid).Scan(&c).Error
 }

@@ -6,21 +6,33 @@ import (
 )
 
 type Mod struct {
-	Name         string `json:"name" ksql:"name"`
-	Source       string `json:"source" ksql:"source"`
-	MediaLicense string `json:"media_license" ksql:"media_license"`
+	Name         string `json:"name" gorm:"primarykey;column:name"`
+	Source       string `json:"source" gorm:"column:source"`
+	MediaLicense string `json:"media_license" gorm:"column:media_license"`
+}
+
+func (m *Mod) TableName() string {
+	return "mod"
 }
 
 type Nodedefinition struct {
-	Name       string `json:"name" ksql:"name"`
-	ModName    string `json:"mod_name" ksql:"mod_name"`
-	Definition string `json:"definition" ksql:"definition"`
+	Name       string `json:"name" gorm:"primarykey;column:name"`
+	ModName    string `json:"mod_name" gorm:"column:mod_name"`
+	Definition string `json:"definition" gorm:"column:definition"`
+}
+
+func (n *Nodedefinition) TableName() string {
+	return "nodedefinition"
 }
 
 type Mediafile struct {
-	Name    string `json:"name" ksql:"name"`
-	ModName string `json:"mod_name" ksql:"mod_name"`
-	Data    []byte `json:"data" ksql:"data"`
+	Name    string `json:"name" gorm:"primarykey;column:name"`
+	ModName string `json:"mod_name" gorm:"column:mod_name"`
+	Data    []byte `json:"data" gorm:"column:data"`
+}
+
+func (m *Mediafile) TableName() string {
+	return "mediafile"
 }
 
 func (mf *Mediafile) UnmarshalJSON(data []byte) error {

@@ -1,18 +1,14 @@
 package db
 
 import (
-	"blockexchange/types"
-	"context"
-
-	"github.com/vingarcia/ksql"
+	"gorm.io/gorm"
 )
 
 type MetaRepository struct {
-	kdb ksql.Provider
+	g *gorm.DB
 }
 
 func (r *MetaRepository) CountEntries(table string) (int64, error) {
-	c := &types.Count{}
-	err := r.kdb.QueryOne(context.Background(), c, "SELECT reltuples::bigint as count FROM pg_catalog.pg_class WHERE relname = $1", table)
-	return c.Count, err
+	var c int64
+	return c, r.g.Raw("SELECT reltuples::bigint as count FROM pg_catalog.pg_class WHERE relname = ?", table).Scan(&c).Error
 }
