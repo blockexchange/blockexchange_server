@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 
-	"github.com/vingarcia/ksql"
+	"gorm.io/gorm"
 )
 
 type Repositories struct {
@@ -23,22 +23,21 @@ type Repositories struct {
 	Lock                 *DBLock
 }
 
-func NewRepositories(kdb ksql.Provider, DB *sql.DB) *Repositories {
-
+func NewRepositories(g *gorm.DB, DB *sql.DB) *Repositories {
 	return &Repositories{
-		AccessTokenRepo:      &AccessTokenRepository{kdb: kdb},
-		UserRepo:             &UserRepository{kdb: kdb},
-		SchemaRepo:           &SchemaRepository{kdb: kdb},
-		SchemaPartRepo:       &SchemaPartRepository{kdb: kdb},
-		SchemaModRepo:        &SchemaModRepository{kdb: kdb},
-		SchemaSearchRepo:     &SchemaSearchRepository{kdb: kdb, DB: DB},
-		SchemaScreenshotRepo: &SchemaScreenshotRepository{kdb: kdb},
-		TagRepo:              &TagRepository{kdb: kdb},
-		CollectionRepo:       &CollectionRepository{kdb: kdb},
-		SchemaTagRepo:        &SchemaTagRepository{kdb: kdb},
-		SchemaStarRepo:       &SchemaStarRepository{kdb: kdb},
-		MetaRepository:       &MetaRepository{kdb: kdb},
-		MediaRepo:            &MediaRepository{kdb: kdb},
+		AccessTokenRepo:      &AccessTokenRepository{g: g},
+		UserRepo:             &UserRepository{g: g},
+		SchemaRepo:           &SchemaRepository{g: g},
+		SchemaPartRepo:       &SchemaPartRepository{g: g},
+		SchemaModRepo:        &SchemaModRepository{g: g},
+		SchemaSearchRepo:     &SchemaSearchRepository{g: g, DB: DB},
+		SchemaScreenshotRepo: &SchemaScreenshotRepository{g: g},
+		TagRepo:              &TagRepository{g: g},
+		CollectionRepo:       &CollectionRepository{g: g},
+		SchemaTagRepo:        &SchemaTagRepository{g: g},
+		SchemaStarRepo:       &SchemaStarRepository{g: g},
+		MetaRepository:       &MetaRepository{g: g},
+		MediaRepo:            &MediaRepository{g: g},
 		Lock:                 NewLock(DB),
 	}
 }

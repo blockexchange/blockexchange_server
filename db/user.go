@@ -2,63 +2,43 @@ package db
 
 import (
 	"blockexchange/types"
-	"context"
 
 	"github.com/google/uuid"
-	"github.com/vingarcia/ksql"
+	"gorm.io/gorm"
 )
 
-var userTable = ksql.NewTable("public.user", "uid")
-
 type UserRepository struct {
-	kdb ksql.Provider
+	g *gorm.DB
 }
 
 func (r *UserRepository) GetUserByUID(uid string) (*types.User, error) {
-	u := &types.User{}
-	err := r.kdb.QueryOne(context.Background(), u, "from public.user where uid = $1", uid)
-	if err == ksql.ErrRecordNotFound {
-		return nil, nil
-	}
-	return u, err
+	return FindSingle[types.User](r.g.Where(types.User{UID: uid}))
 }
 
 func (r *UserRepository) CountUsers() (int64, error) {
-	c := &types.Count{}
-	err := r.kdb.QueryOne(context.Background(), c, "select count(*) as count from public.user")
-	return c.Count, err
+	var c int64
+	return c, r.g.Model(types.User{}).Count(&c).Error
 }
 
 func (r *UserRepository) GetUserByName(name string) (*types.User, error) {
-	u := &types.User{}
-	err := r.kdb.QueryOne(context.Background(), u, "from public.user where name = $1", name)
-	if err == ksql.ErrRecordNotFound {
-		return nil, nil
-	}
-	return u, err
+	return FindSingle[types.User](r.g.Where(types.User{Name: name}))
 }
 
 func (r *UserRepository) GetUserByExternalIdAndType(external_id string, ut types.UserType) (*types.User, error) {
-	u := &types.User{}
-	err := r.kdb.QueryOne(context.Background(), u, "from public.user where external_id = $1 and type = $2", external_id, ut)
-	if err == ksql.ErrRecordNotFound {
-		return nil, nil
-	}
-	return u, err
+	return FindSingle[types.User](r.g.Where(types.User{ExternalID: &external_id, Type: ut}))
 }
 
 func (r *UserRepository) GetUsers(limit, offset int) ([]*types.User, error) {
-	list := []*types.User{}
-	return list, r.kdb.Query(context.Background(), &list, "from public.user limit $1 offset $2", limit, offset)
+	return FindMulti[types.User](r.g.Model(types.User{}))
 }
 
 func (r *UserRepository) CreateUser(user *types.User) error {
 	if user.UID == "" {
 		user.UID = uuid.NewString()
 	}
-	return r.kdb.Insert(context.Background(), userTable, user)
+	return r.g.Create(user).Error
 }
 
 func (r *UserRepository) UpdateUser(user *types.User) error {
-	return r.kdb.Patch(context.Background(), userTable, user)
+	return r.g.Updates(user).Error
 }

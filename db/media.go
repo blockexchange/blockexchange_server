@@ -2,106 +2,76 @@ package db
 
 import (
 	"blockexchange/types"
-	"context"
 
-	"github.com/vingarcia/ksql"
+	"gorm.io/gorm"
 )
 
 type MediaRepository struct {
-	kdb ksql.Provider
+	g *gorm.DB
 }
 
 // mod
 
-var modTable = ksql.NewTable("mod", "name")
-
 func (r *MediaRepository) CreateMod(m *types.Mod) error {
-	return r.kdb.Insert(context.Background(), modTable, m)
+	return r.g.Create(m).Error
 }
 
 func (r *MediaRepository) UpdateMod(m *types.Mod) error {
-	return r.kdb.Patch(context.Background(), modTable, m)
+	return r.g.Updates(m).Error
 }
 
 func (r *MediaRepository) GetModByName(name string) (*types.Mod, error) {
-	m := &types.Mod{}
-	err := r.kdb.QueryOne(context.Background(), m, "from mod where name = $1", name)
-	if err == ksql.ErrRecordNotFound {
-		return nil, nil
-	} else {
-		return m, err
-	}
+	return FindSingle[types.Mod](r.g.Where(types.Mod{Name: name}))
 }
 
 func (r *MediaRepository) GetMods() ([]*types.Mod, error) {
-	list := []*types.Mod{}
-	err := r.kdb.Query(context.Background(), &list, "from mod")
-	return list, err
+	return FindMulti[types.Mod](r.g.Model(types.Mod{}))
 }
 
 func (r *MediaRepository) RemoveMod(name string) error {
-	return r.kdb.Delete(context.Background(), modTable, name)
+	return r.g.Delete(types.Mod{Name: name}).Error
 }
 
 // nodedef
 
-var nodedefTable = ksql.NewTable("nodedefinition", "name")
-
 func (r *MediaRepository) CreateNodedefinition(nd *types.Nodedefinition) error {
-	return r.kdb.Insert(context.Background(), nodedefTable, nd)
+	return r.g.Create(nd).Error
 }
 
 func (r *MediaRepository) UpdateNodedefinition(nd *types.Nodedefinition) error {
-	return r.kdb.Patch(context.Background(), nodedefTable, nd)
+	return r.g.Updates(nd).Error
 }
 
 func (r *MediaRepository) GetNodedefinitionByName(name string) (*types.Nodedefinition, error) {
-	nd := &types.Nodedefinition{}
-	err := r.kdb.QueryOne(context.Background(), nd, "from nodedefinition where name = $1", name)
-	if err == ksql.ErrRecordNotFound {
-		return nil, nil
-	} else {
-		return nd, err
-	}
+	return FindSingle[types.Nodedefinition](r.g.Where(types.Nodedefinition{Name: name}))
 }
+
 func (r *MediaRepository) GetNodedefinitions() ([]*types.Nodedefinition, error) {
-	list := []*types.Nodedefinition{}
-	err := r.kdb.Query(context.Background(), &list, "from nodedefinition")
-	return list, err
+	return FindMulti[types.Nodedefinition](r.g.Model(types.Nodedefinition{}))
 }
 
 func (r *MediaRepository) RemoveNodedefinition(name string) error {
-	return r.kdb.Delete(context.Background(), nodedefTable, name)
+	return r.g.Delete(types.Nodedefinition{Name: name}).Error
 }
 
 // mediafile
 
-var mediafileTable = ksql.NewTable("mediafile", "name")
-
 func (r *MediaRepository) CreateMediafile(mf *types.Mediafile) error {
-	return r.kdb.Insert(context.Background(), mediafileTable, mf)
+	return r.g.Create(mf).Error
 }
 
 func (r *MediaRepository) UpdateMediafile(mf *types.Mediafile) error {
-	return r.kdb.Patch(context.Background(), mediafileTable, mf)
+	return r.g.Updates(mf).Error
 }
 
 func (r *MediaRepository) GetMediafileByName(name string) (*types.Mediafile, error) {
-	mf := &types.Mediafile{}
-	err := r.kdb.QueryOne(context.Background(), mf, "from mediafile where name = $1", name)
-	if err == ksql.ErrRecordNotFound {
-		return nil, nil
-	} else {
-		return mf, err
-	}
+	return FindSingle[types.Mediafile](r.g.Where(types.Mediafile{Name: name}))
 }
 
 func (r *MediaRepository) GetMediafiles() ([]*types.Mediafile, error) {
-	list := []*types.Mediafile{}
-	err := r.kdb.Query(context.Background(), &list, "from mediafile")
-	return list, err
+	return FindMulti[types.Mediafile](r.g.Model(types.Mediafile{}))
 }
 
 func (r *MediaRepository) RemoveMediafile(name string) error {
-	return r.kdb.Delete(context.Background(), mediafileTable, name)
+	return r.g.Delete(types.Mediafile{Name: name}).Error
 }
