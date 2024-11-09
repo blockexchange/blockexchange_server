@@ -89,7 +89,7 @@ func (m *SchemaMap) createBlock(mbpos *mt.Pos) *parser.ParsedSchemaPart {
 	// clip to schematic size
 	area := mt.NewArea(pos1, pos2).Union(m.area)
 	if area == nil {
-		// outside ot schematic size
+		// outside of schematic size
 		return nil
 	}
 	size := area.Size()
@@ -162,7 +162,25 @@ func (m *SchemaMap) SetNode(pos *mt.Pos, node *mt.Node) error {
 }
 
 func (m *SchemaMap) SetMeta(pos *mt.Pos, md *parser.MetadataEntry) error {
-	// TODO
+	mbpos := pos.Divide(16).Multiply(16)
+
+	mapblock, err := m.getPart(mbpos)
+	if err != nil {
+		return fmt.Errorf("getpart error: %v", err)
+	}
+	if mapblock == nil {
+		// create new mapblock
+		mapblock = m.createBlock(mbpos)
+	}
+
+	rel_pos := pos.Subtract(mbpos)
+	meta := mapblock.Meta.Metadata
+	key := meta.GetKey(rel_pos.X(), rel_pos.Y(), rel_pos.Z())
+
+	entry := meta.Meta[key]
+	entry.Fields = md.Fields
+	entry.Inventories = md.Inventories
+
 	return nil
 }
 
