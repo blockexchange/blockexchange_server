@@ -29,7 +29,9 @@ func (r *UserRepository) GetUserByExternalIdAndType(external_id string, ut types
 }
 
 func (r *UserRepository) GetUsers(limit, offset int) ([]*types.User, error) {
-	return FindMulti[types.User](r.g.Model(types.User{}))
+	list := make([]*types.User, 0)
+	err := r.g.Offset(offset).Limit(limit).Find(&list).Error
+	return list, err
 }
 
 func (r *UserRepository) CreateUser(user *types.User) error {
