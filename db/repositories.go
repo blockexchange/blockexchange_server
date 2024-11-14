@@ -14,6 +14,8 @@ type Repositories struct {
 	SchemaModRepo        *SchemaModRepository
 	SchemaSearchRepo     *SchemaSearchRepository
 	SchemaScreenshotRepo *SchemaScreenshotRepository
+	SchemaPullRepo       *SchemaPullRepository
+	SchemaPullClientRepo *SchemaPullClientRepository
 	TagRepo              *TagRepository
 	CollectionRepo       *CollectionRepository
 	SchemaTagRepo        *SchemaTagRepository
@@ -32,6 +34,8 @@ func NewRepositories(g *gorm.DB, DB *sql.DB) *Repositories {
 		SchemaModRepo:        &SchemaModRepository{g: g},
 		SchemaSearchRepo:     &SchemaSearchRepository{g: g, DB: DB},
 		SchemaScreenshotRepo: &SchemaScreenshotRepository{g: g},
+		SchemaPullRepo:       &SchemaPullRepository{g: g},
+		SchemaPullClientRepo: &SchemaPullClientRepository{g: g},
 		TagRepo:              &TagRepository{g: g},
 		CollectionRepo:       &CollectionRepository{g: g},
 		SchemaTagRepo:        &SchemaTagRepository{g: g},
