@@ -35,14 +35,8 @@ func NewSchemaMap(repo *db.SchemaPartRepository, schema *types.Schema) *SchemaMa
 	}
 }
 
-func (m *SchemaMap) getKey(mbpos *mt.Pos) int64 {
-	return int64(mbpos[0]) +
-		int64(mbpos[1])<<16 +
-		int64(mbpos[2])<<32
-}
-
 func (m *SchemaMap) getPart(mbpos *mt.Pos) (*parser.ParsedSchemaPart, error) {
-	key := m.getKey(mbpos)
+	key := MapKey(mbpos)
 
 	if m.changedparts[key] != nil {
 		// found block in changed map
@@ -115,7 +109,7 @@ func (m *SchemaMap) createBlock(mbpos *mt.Pos) *parser.ParsedSchemaPart {
 		},
 	}
 
-	key := m.getKey(mbpos)
+	key := MapKey(mbpos)
 	m.changedparts[key] = psp
 
 	return psp
@@ -171,7 +165,7 @@ func (m *SchemaMap) SetNode(pos *mt.Pos, node *mt.Node, md *parser.MetadataEntry
 	}
 
 	// mark changed
-	key := m.getKey(mbpos)
+	key := MapKey(mbpos)
 	m.changedparts[key] = mapblock
 
 	return nil
@@ -204,6 +198,20 @@ func (m *SchemaMap) GetNode(pos *mt.Pos) (*mt.Node, error) {
 }
 
 func (m *SchemaMap) Close() error {
-	// TODO: save all changed parts
+
+	for key, block := range m.changedparts {
+		pos := ParseMapKey(key)
+
+		part, err := block.Convert()
+		if err != nil {
+			return fmt.Errorf("error converting part @ %v: %v", pos, err)
+		}
+
+		err = m.repo.CreateOrUpdateSchemaPart(part)
+		if err != nil {
+			return fmt.Errorf("error updating schemapart @ %v: %v", pos, err)
+		}
+	}
+
 	return nil
 }
