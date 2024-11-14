@@ -154,6 +154,8 @@ github.com/minetest-go/maprenderer v1.0.23 h1:oOP396tWJasV7eU4g0hBx4WsB350qmmey4
 github.com/minetest-go/maprenderer v1.0.23/go.mod h1:1sXL5WYdf37QKpc9kLAl4Acl671jfV9YLKgcIBKXfy8=
 github.com/minetest-go/minetest_client v1.0.2 h1:djOrjyQGpO4LtwhfSa3KAqLsAvPozhVkf6i7otxgDV4=
 github.com/minetest-go/minetest_client v1.0.2/go.mod h1:zhOPNh58pKsFoYnHqo34nD0kL30KMooUgXD2/6vPSK4=
+github.com/minetest-go/minetest_client v1.0.3 h1:UQQq73Jy8eyXkoqtHmUF85yZ6sfQrNJRJhUCqDpYTIw=
+github.com/minetest-go/minetest_client v1.0.3/go.mod h1:zhOPNh58pKsFoYnHqo34nD0kL30KMooUgXD2/6vPSK4=
 github.com/minetest-go/oauth v1.0.1 h1:JJqZ7mkWxkQodTeqDdwqJAwxMkV8cq1TRcNwPtchWzQ=
 github.com/minetest-go/oauth v1.0.1/go.mod h1:P4PS5ubffPFwqKnmu3+k9KkIqn0XffO2VGkTn1XzgEY=
 github.com/minetest-go/types v1.0.7 h1:McQVnHQysqXegJbHnVl66TOS/172yi5b70sosWRCvuk=

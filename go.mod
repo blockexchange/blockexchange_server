@@ -15,7 +15,7 @@ require (
 	github.com/minetest-go/colormapping v1.0.5
 	github.com/minetest-go/mapparser v1.0.4
 	github.com/minetest-go/maprenderer v1.0.23
-	github.com/minetest-go/minetest_client v1.0.2
+	github.com/minetest-go/minetest_client v1.0.3
 	github.com/minetest-go/oauth v1.0.1
 	github.com/minetest-go/types v1.0.7
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646

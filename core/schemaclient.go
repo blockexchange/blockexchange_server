@@ -83,7 +83,8 @@ func (sc *SchemaClient) applyBlockChanges(mb_startpos *mt.Pos, mb *mt.MapBlock) 
 	return nil
 }
 
-func (sc *SchemaClient) blockDataHandler(ch chan commands.Command, errchan chan error) {
+func (sc *SchemaClient) blockDataHandler(client *commandclient.CommandClient, errchan chan error) {
+	ch := client.CommandChannel()
 	var ser_ver = uint8(28)
 
 	for o := range ch {
@@ -125,13 +126,7 @@ func (sc *SchemaClient) blockDataHandler(ch chan commands.Command, errchan chan 
 func (sc *SchemaClient) Run() error {
 
 	client := commandclient.NewCommandClient(sc.opts.Pull.Hostname, sc.opts.Pull.Port)
-	//go commandclient.DebugHandler(client)
 	errchan := make(chan error)
-
-	ch := make(chan commands.Command, 100)
-	client.AddListener(ch)
-	defer client.RemoveListener(ch)
-	go sc.blockDataHandler(ch, errchan)
 
 	err := client.Connect()
 	if err != nil {
@@ -148,43 +143,12 @@ func (sc *SchemaClient) Run() error {
 		return fmt.Errorf("login error: %v", err)
 	}
 
-	go func() {
-		ch = make(chan commands.Command, 100)
-		client.AddListener(ch)
-		defer client.RemoveListener(ch)
+	err = clientReady(client)
+	if err != nil {
+		return fmt.Errorf("clientready error: %v", err)
+	}
 
-		for o := range ch {
-			switch cmd := o.(type) {
-			case *commands.ServerCSMRestrictionFlags:
-				err := client.SendCommand(commands.NewClientReady(5, 5, 5, "bx-bot", 4))
-				if err != nil {
-					errchan <- fmt.Errorf("send command error: %v", err)
-				}
-
-				ppos := commands.NewClientPlayerPos()
-				err = client.SendCommand(ppos)
-				if err != nil {
-					errchan <- fmt.Errorf("send command error: %v", err)
-				}
-
-			case *commands.ServerMovePlayer:
-				ppos := commands.NewClientPlayerPos()
-				ppos.Pitch = uint32(cmd.Pitch)
-				ppos.Yaw = uint32(cmd.Yaw)
-				ppos.RequestViewRange = 15
-				ppos.FOV = 149
-				ppos.PosX = uint32(cmd.X * 10)
-				ppos.PosY = uint32(cmd.Y * 10)
-				ppos.PosZ = uint32(cmd.Z * 10)
-				err = client.SendCommand(ppos)
-				if err != nil {
-					errchan <- fmt.Errorf("send command error: %v", err)
-				}
-			}
-		}
-	}()
-
-	//go commandclient.ClientReady(client)
+	go sc.blockDataHandler(client, errchan)
 
 	select {
 	case <-time.After(5 * time.Second):
@@ -198,5 +162,39 @@ func (sc *SchemaClient) Run() error {
 		return fmt.Errorf("disconnect error: %v", err)
 	}
 
+	return nil
+}
+
+func clientReady(client *commandclient.CommandClient) error {
+	for o := range client.CommandChannel() {
+		switch cmd := o.(type) {
+		case *commands.ServerCSMRestrictionFlags:
+			err := client.SendCommand(commands.NewClientReady(5, 5, 5, "bx-bot", 4))
+			if err != nil {
+				return fmt.Errorf("send command error: %v", err)
+			}
+
+			ppos := commands.NewClientPlayerPos()
+			err = client.SendCommand(ppos)
+			if err != nil {
+				return fmt.Errorf("send command error: %v", err)
+			}
+
+		case *commands.ServerMovePlayer:
+			ppos := commands.NewClientPlayerPos()
+			ppos.Pitch = uint32(cmd.Pitch)
+			ppos.Yaw = uint32(cmd.Yaw)
+			ppos.RequestViewRange = 15
+			ppos.FOV = 149
+			ppos.PosX = uint32(cmd.X * 10)
+			ppos.PosY = uint32(cmd.Y * 10)
+			ppos.PosZ = uint32(cmd.Z * 10)
+			err := client.SendCommand(ppos)
+			if err != nil {
+				return fmt.Errorf("send command error: %v", err)
+			}
+			return nil
+		}
+	}
 	return nil
 }
