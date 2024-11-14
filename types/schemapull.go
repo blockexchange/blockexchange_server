@@ -3,6 +3,7 @@ package types
 // schematic <- 1:1 -> schematic-pull
 type SchematicPull struct {
 	SchemaUID string `json:"schema_uid" gorm:"primarykey;column:schema_uid"`
+	Enabled   bool   `json:"enabled" gorm:"column:enabled"`
 	PosX      int    `json:"pos_x" gorm:"column:pos_x"`
 	PosY      int    `json:"pos_y" gorm:"column:pos_y"`
 	PosZ      int    `json:"pos_z" gorm:"column:pos_z"`

@@ -18,6 +18,10 @@ func (r *SchemaPullRepository) GetBySchemaUID(schema_uid string) (*types.Schemat
 	return FindSingle[types.SchematicPull](r.g.Where("schema_uid = ?", schema_uid))
 }
 
+func (r *SchemaPullRepository) GetByNextRun(next_run_lt int64) ([]*types.SchematicPull, error) {
+	return FindMulti[types.SchematicPull](r.g.Where("enabled = ?", true).Where("next_run < ?", next_run_lt))
+}
+
 func (r *SchemaPullRepository) Update(sp *types.SchematicPull) error {
 	return r.g.Select("*").Updates(sp).Error
 }
