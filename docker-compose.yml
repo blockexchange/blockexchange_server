@@ -12,6 +12,8 @@ services:
    - "postgres"
    - "-c"
    - "log_statement=all"
+  ports:
+   - "5432:5432"
 
  blockexchange:
   image: golang:1.22.4

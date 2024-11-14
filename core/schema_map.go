@@ -89,12 +89,13 @@ func (m *SchemaMap) createBlock(mbpos *mt.Pos) *parser.ParsedSchemaPart {
 	size := area.Size()
 
 	psp := &parser.ParsedSchemaPart{
-		PosX:    mbpos.X(),
-		PosY:    mbpos.Y(),
-		PosZ:    mbpos.Z(),
-		NodeIDS: make([]int16, area.Volume()),
-		Param1:  make([]byte, area.Volume()),
-		Param2:  make([]byte, area.Volume()),
+		PosX:           mbpos.X(),
+		PosY:           mbpos.Y(),
+		PosZ:           mbpos.Z(),
+		NodeIDS:        make([]int16, area.Volume()),
+		Param1:         make([]byte, area.Volume()),
+		Param2:         make([]byte, area.Volume()),
+		NodeNameLookup: make(map[int16]string),
 		Meta: &parser.SchemaPartMetadata{
 			NodeMapping: map[string]int16{},
 			Size: parser.SchemaPartSize{
@@ -206,6 +207,7 @@ func (m *SchemaMap) Close() error {
 		if err != nil {
 			return fmt.Errorf("error converting part @ %v: %v", pos, err)
 		}
+		part.SchemaUID = m.schema.UID
 
 		err = m.repo.CreateOrUpdateSchemaPart(part)
 		if err != nil {
