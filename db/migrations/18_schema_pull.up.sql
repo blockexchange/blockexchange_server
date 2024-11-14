@@ -5,6 +5,7 @@ create table schema_pull(
     pos_y int not null,
     pos_z int not null,
     interval int not null,
+    next_run bigint not null default 0,
     hostname varchar(128) not null,
     port int not null
 );
