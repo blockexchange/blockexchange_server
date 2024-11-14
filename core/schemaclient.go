@@ -19,12 +19,18 @@ type SchemaClientOpts struct {
 	SetNode    func(pos *mt.Pos, node *mt.Node, md *parser.MetadataEntry) error
 }
 
+type SchemaClientStats struct {
+	UsedMapblocks     int
+	ReceivedMapblocks int
+}
+
 type SchemaClient struct {
 	opts            *SchemaClientOpts
 	origin          *mt.Pos
 	area            *mt.Area
 	ser_ver         uint8
 	id_node_mapping map[int]string
+	stats           *SchemaClientStats
 }
 
 func NewSchemaClient(opts *SchemaClientOpts) *SchemaClient {
@@ -44,7 +50,12 @@ func NewSchemaClient(opts *SchemaClientOpts) *SchemaClient {
 			CONTENT_IGNORE:  "ignore",
 			CONTENT_UNKNOWN: "unknown",
 		},
+		stats: &SchemaClientStats{},
 	}
+}
+
+func (sc *SchemaClient) Stats() *SchemaClientStats {
+	return sc.stats
 }
 
 func (sc *SchemaClient) applyBlockChanges(mb_startpos *mt.Pos, mb *mt.MapBlock) error {
@@ -104,7 +115,7 @@ func (sc *SchemaClient) serverInitHandler(client *commandclient.CommandClient) {
 	}
 }
 
-func (sc *SchemaClient) blockDataHandler(client *commandclient.CommandClient, errchan chan error) {
+func (sc *SchemaClient) blockDataHandler(client *commandclient.CommandClient) error {
 	for o := range client.CommandChannel() {
 		switch cmd := o.(type) {
 		case *commands.ServerBlockData:
@@ -112,6 +123,7 @@ func (sc *SchemaClient) blockDataHandler(client *commandclient.CommandClient, er
 			pos2 := pos1.Add(mt.NewPos(15, 15, 15))
 			area := mt.NewArea(pos1, pos2)
 			fmt.Printf("Blockdata: %d bytes, pos1: %s, pos2: %s\n", len(cmd.BlockData), pos1, pos2)
+			sc.stats.ReceivedMapblocks++
 
 			if !area.Intersects(sc.area) {
 				// no valid data
@@ -120,28 +132,35 @@ func (sc *SchemaClient) blockDataHandler(client *commandclient.CommandClient, er
 
 			mb, err := mapparser.ParseNetwork(sc.ser_ver, cmd.BlockData)
 			if err != nil {
-				errchan <- fmt.Errorf("map parse error @ %v: %v", cmd.Pos, err)
-				return
+				return fmt.Errorf("map parse error @ %v: %v", cmd.Pos, err)
 			}
 
 			err = sc.applyBlockChanges(pos1, mb)
 			if err != nil {
-				errchan <- fmt.Errorf("apply block changes error: %v", err)
-				return
+				return fmt.Errorf("apply block changes error: %v", err)
 			}
+
+			sc.stats.UsedMapblocks++
 		}
 	}
+
+	return nil
 }
 
-func (sc *SchemaClient) Run() error {
+func (sc *SchemaClient) Run(d time.Duration) error {
 
 	client := commandclient.NewCommandClient(sc.opts.Pull.Hostname, sc.opts.Pull.Port)
-	errchan := make(chan error)
 
 	err := client.Connect()
 	if err != nil {
 		return fmt.Errorf("connect error: %v", err)
 	}
+
+	go func() {
+		// disconnect after timeout
+		time.Sleep(d)
+		client.Disconnect()
+	}()
 
 	err = commandclient.Init(client, sc.opts.PullClient.Username)
 	if err != nil {
@@ -153,7 +172,6 @@ func (sc *SchemaClient) Run() error {
 		return fmt.Errorf("login error: %v", err)
 	}
 
-	// TODO: timeout
 	sc.serverInitHandler(client)
 
 	err = clientReady(client)
@@ -161,18 +179,9 @@ func (sc *SchemaClient) Run() error {
 		return fmt.Errorf("clientready error: %v", err)
 	}
 
-	go sc.blockDataHandler(client, errchan)
-
-	select {
-	case <-time.After(5 * time.Second):
-		break
-	case err = <-errchan:
-		return fmt.Errorf("blockhandler error: %v", err)
-	}
-
-	err = client.Disconnect()
+	err = sc.blockDataHandler(client)
 	if err != nil {
-		return fmt.Errorf("disconnect error: %v", err)
+		return fmt.Errorf("blockhandler error: %v", err)
 	}
 
 	return nil

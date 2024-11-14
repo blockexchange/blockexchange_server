@@ -6,6 +6,7 @@ import (
 	"blockexchange/types"
 	"fmt"
 	"testing"
+	"time"
 
 	mt "github.com/minetest-go/types"
 
@@ -46,8 +47,9 @@ func TestSchemaClient(t *testing.T) {
 	}
 
 	sc := core.NewSchemaClient(opts)
-	err := sc.Run()
+	err := sc.Run(time.Second * 5)
 	assert.NoError(t, err)
+	fmt.Printf("Stats: %v\n", sc.Stats())
 	t.FailNow()
 
 }
