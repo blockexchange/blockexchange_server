@@ -14,8 +14,8 @@ func (r *SchemaPullClientRepository) Create(sp *types.SchematicPullClient) error
 	return r.g.Create(sp).Error
 }
 
-func (r *SchemaPullClientRepository) GetBySchemaPullUID(schema_pull_uid string) ([]*types.SchematicPullClient, error) {
-	return FindMulti[types.SchematicPullClient](r.g.Where("schema_pull_uid = ?", schema_pull_uid))
+func (r *SchemaPullClientRepository) GetBySchemaUID(schema_uid string) ([]*types.SchematicPullClient, error) {
+	return FindMulti[types.SchematicPullClient](r.g.Where("schema_pull_uid = ?", schema_uid))
 }
 
 func (r *SchemaPullClientRepository) Update(sp *types.SchematicPullClient) error {
