@@ -121,7 +121,7 @@ func (m *SchemaMap) createBlock(mbpos *mt.Pos) *parser.ParsedSchemaPart {
 	return psp
 }
 
-func (m *SchemaMap) SetNode(pos *mt.Pos, node *mt.Node) error {
+func (m *SchemaMap) SetNode(pos *mt.Pos, node *mt.Node, md *parser.MetadataEntry) error {
 	mbpos := pos.Divide(16).Multiply(16)
 
 	mapblock, err := m.getPart(mbpos)
@@ -151,35 +151,28 @@ func (m *SchemaMap) SetNode(pos *mt.Pos, node *mt.Node) error {
 		mapblock.Meta.NodeMapping[node.Name] = nodeid
 	}
 
+	// node data
 	mapblock.Param1[index] = byte(node.Param1)
 	mapblock.Param2[index] = byte(node.Param2)
 	mapblock.NodeIDS[index] = nodeid
 
+	// metadata
+	meta := mapblock.Meta.Metadata
+	meta_key := meta.GetKey(rel_pos.X(), rel_pos.Y(), rel_pos.Z())
+
+	if md != nil {
+		// overwrite
+		entry := meta.Meta[meta_key]
+		entry.Fields = md.Fields
+		entry.Inventories = md.Inventories
+	} else {
+		// clear
+		meta.Meta[meta_key] = nil
+	}
+
+	// mark changed
 	key := m.getKey(mbpos)
 	m.changedparts[key] = mapblock
-
-	return nil
-}
-
-func (m *SchemaMap) SetMeta(pos *mt.Pos, md *parser.MetadataEntry) error {
-	mbpos := pos.Divide(16).Multiply(16)
-
-	mapblock, err := m.getPart(mbpos)
-	if err != nil {
-		return fmt.Errorf("getpart error: %v", err)
-	}
-	if mapblock == nil {
-		// create new mapblock
-		mapblock = m.createBlock(mbpos)
-	}
-
-	rel_pos := pos.Subtract(mbpos)
-	meta := mapblock.Meta.Metadata
-	key := meta.GetKey(rel_pos.X(), rel_pos.Y(), rel_pos.Z())
-
-	entry := meta.Meta[key]
-	entry.Fields = md.Fields
-	entry.Inventories = md.Inventories
 
 	return nil
 }
@@ -208,11 +201,6 @@ func (m *SchemaMap) GetNode(pos *mt.Pos) (*mt.Node, error) {
 		Param2: int(mapblock.Param2[index]),
 		Pos:    pos,
 	}, nil
-}
-
-func (m *SchemaMap) GetMeta(pos *mt.Pos) (*parser.MetadataEntry, error) {
-	// TODO
-	return nil, nil
 }
 
 func (m *SchemaMap) Close() error {

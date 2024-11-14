@@ -16,14 +16,14 @@ type SchemaClientOpts struct {
 	Pull       *types.SchematicPull
 	PullClient *types.SchematicPullClient
 	Schema     *types.Schema
-	SetNode    func(pos *mt.Pos, node *mt.Node) error
-	SetMeta    func(pos *mt.Pos, md *parser.MetadataEntry) error
+	SetNode    func(pos *mt.Pos, node *mt.Node, md *parser.MetadataEntry) error
 }
 
 type SchemaClient struct {
 	opts            *SchemaClientOpts
 	origin          *mt.Pos
 	area            *mt.Area
+	ser_ver         uint8
 	id_node_mapping map[int]string
 }
 
@@ -35,9 +35,10 @@ func NewSchemaClient(opts *SchemaClientOpts) *SchemaClient {
 	fmt.Printf("Origin: %v, pos2: %v, size: %v\n", origin, pos2, size)
 
 	return &SchemaClient{
-		opts:   opts,
-		origin: origin,
-		area:   mt.NewArea(origin, pos2),
+		opts:    opts,
+		origin:  origin,
+		area:    mt.NewArea(origin, pos2),
+		ser_ver: 28,
 		id_node_mapping: map[int]string{
 			CONTENT_AIR:     "air",
 			CONTENT_IGNORE:  "ignore",
@@ -71,32 +72,41 @@ func (sc *SchemaClient) applyBlockChanges(mb_startpos *mt.Pos, mb *mt.MapBlock) 
 			Param1: mb.Param1[i],
 			Param2: mb.Param2[i],
 		}
-		sc.opts.SetNode(s_pos, node)
 
-		md := &parser.MetadataEntry{
-			Inventories: mb.Inventory[i],
-			Fields:      mb.Fields[i],
+		var md *parser.MetadataEntry
+		if mb.Inventory[i] != nil || mb.Fields[i] != nil {
+			// metadata available
+			md = &parser.MetadataEntry{
+				Inventories: mb.Inventory[i],
+				Fields:      mb.Fields[i],
+			}
 		}
-		sc.opts.SetMeta(pos, md)
+
+		sc.opts.SetNode(s_pos, node, md)
 	}
 
 	return nil
 }
 
-func (sc *SchemaClient) blockDataHandler(client *commandclient.CommandClient, errchan chan error) {
-	ch := client.CommandChannel()
-	var ser_ver = uint8(28)
-
-	for o := range ch {
+func (sc *SchemaClient) serverInitHandler(client *commandclient.CommandClient) {
+	for o := range client.CommandChannel() {
 		switch cmd := o.(type) {
 		case *commands.ServerHello:
 			fmt.Printf("Version: %d\n", cmd.SerializationVersion)
-			ser_ver = cmd.SerializationVersion
+			sc.ser_ver = cmd.SerializationVersion
 		case *commands.ServerNodeDefinitions:
 			for _, ndef := range cmd.Definitions {
 				sc.id_node_mapping[int(ndef.ID)] = ndef.Name
 			}
 			fmt.Printf("Mapped %d nodedefs\n", len(cmd.Definitions))
+			return
+		}
+	}
+}
+
+func (sc *SchemaClient) blockDataHandler(client *commandclient.CommandClient, errchan chan error) {
+	for o := range client.CommandChannel() {
+		switch cmd := o.(type) {
 		case *commands.ServerBlockData:
 			pos1 := cmd.Pos.Multiply(16)
 			pos2 := pos1.Add(mt.NewPos(15, 15, 15))
@@ -108,7 +118,7 @@ func (sc *SchemaClient) blockDataHandler(client *commandclient.CommandClient, er
 				continue
 			}
 
-			mb, err := mapparser.ParseNetwork(ser_ver, cmd.BlockData)
+			mb, err := mapparser.ParseNetwork(sc.ser_ver, cmd.BlockData)
 			if err != nil {
 				errchan <- fmt.Errorf("map parse error @ %v: %v", cmd.Pos, err)
 				return
@@ -142,6 +152,9 @@ func (sc *SchemaClient) Run() error {
 	if err != nil {
 		return fmt.Errorf("login error: %v", err)
 	}
+
+	// TODO: timeout
+	sc.serverInitHandler(client)
 
 	err = clientReady(client)
 	if err != nil {

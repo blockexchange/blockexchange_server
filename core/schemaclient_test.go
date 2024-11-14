@@ -34,14 +34,11 @@ func TestSchemaClient(t *testing.T) {
 			SizeY: 2,
 			SizeZ: 2,
 		},
-		SetNode: func(pos *mt.Pos, node *mt.Node) error {
+		SetNode: func(pos *mt.Pos, node *mt.Node, md *parser.MetadataEntry) error {
 			if node.Name != "air" {
 				fmt.Printf("would set node: %v @ %s\n", node, pos)
 			}
-			return nil
-		},
-		SetMeta: func(pos *mt.Pos, md *parser.MetadataEntry) error {
-			if md.Fields != nil || md.Inventories != nil {
+			if md != nil {
 				fmt.Printf("would set metadata: %v @ %s\n", md, pos)
 			}
 			return nil
