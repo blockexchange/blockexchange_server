@@ -30,7 +30,7 @@ func NewRepositories(g *gorm.DB, DB *sql.DB) *Repositories {
 		SchemaRepo:           &SchemaRepository{g: g},
 		SchemaPartRepo:       &SchemaPartRepository{g: g},
 		SchemaModRepo:        &SchemaModRepository{g: g},
-		SchemaSearchRepo:     &SchemaSearchRepository{g: g, DB: DB},
+		SchemaSearchRepo:     &SchemaSearchRepository{DB: DB},
 		SchemaScreenshotRepo: &SchemaScreenshotRepository{g: g},
 		TagRepo:              &TagRepository{g: g},
 		CollectionRepo:       &CollectionRepository{g: g},

@@ -7,11 +7,9 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
-	"gorm.io/gorm"
 )
 
 type SchemaSearchRepository struct {
-	g  *gorm.DB
 	DB *sql.DB
 }
 
@@ -139,7 +137,12 @@ func (r *SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int64
 	query.WriteString("select count(*) as count")
 	params := r.buildWhereQuery(&query, search, false)
 	var c int64
-	return c, r.g.Raw(query.String(), params...).Scan(&c).Error
+	rows, err := r.DB.Query(query.String(), params...)
+	if err != nil {
+		return 0, err
+	}
+	rows.Next()
+	return c, rows.Scan(&c)
 }
 
 func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*types.SchemaSearchResponse, error) {
