@@ -25,28 +25,34 @@ func (r *SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) 
 }
 
 func (r *SchemaPartRepository) GetBySchemaUIDAndOffset(schema_uid string, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
-	return FindSingle[types.SchemaPart](r.g.Where(types.SchemaPart{
-		SchemaUID: schema_uid,
-		OffsetX:   offset_x,
-		OffsetY:   offset_y,
-		OffsetZ:   offset_z,
-	}))
+	g := r.g.Model(types.SchemaPart{})
+	g = g.Where("offset_x = ?", offset_x)
+	g = g.Where("offset_y = ?", offset_y)
+	g = g.Where("offset_z = ?", offset_z)
+	g = g.Where("schema_uid = ?", schema_uid)
+	return FindSingle[types.SchemaPart](g)
 }
 
 func (r *SchemaPartRepository) GetBySchemaUIDAndRange(schema_uid string, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error) {
-	g := r.g.Model(types.SchemaPart{}).Where("schema_uid = ?", schema_uid)
+	g := r.g.Model(types.SchemaPart{})
+	g = g.Where("schema_uid = ?", schema_uid)
 	g = g.Where("offset_x >= ?", x1).Where("offset_y >= ?", y1).Where("offest_z >= ?", z1)
 	g = g.Where("offset_x <= ?", x2).Where("offset_y <= ?", y2).Where("offest_z <= ?", z2)
 	return FindMulti[types.SchemaPart](g)
 }
 
 func (r *SchemaPartRepository) RemoveBySchemaUIDAndOffset(schema_uid string, offset_x, offset_y, offset_z int) error {
-	return r.g.Delete(types.SchemaPart{SchemaUID: schema_uid, OffsetX: offset_x, OffsetY: offset_y, OffsetZ: offset_z}).Error
+	g := r.g.Where("offset_x = ?", offset_x)
+	g = g.Where("offset_y = ?", offset_y)
+	g = g.Where("offset_z = ?", offset_z)
+	g = g.Where("schema_uid = ?", schema_uid)
+	return g.Delete(types.SchemaPart{}).Error
 }
 
 func (r *SchemaPartRepository) GetNextBySchemaUIDAndOffset(schema_uid string, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
 	order_id := types.GetSchemaPartOrderID(offset_x, offset_y, offset_z)
-	g := r.g.Model(types.SchemaPart{}).Where("schema_uid = ?", schema_uid)
+	g := r.g.Model(types.SchemaPart{})
+	g = g.Where("schema_uid = ?", schema_uid)
 	g = g.Where("order_id > ?", order_id)
 	g = g.Order("order_id asc")
 	return FindSingle[types.SchemaPart](g)
