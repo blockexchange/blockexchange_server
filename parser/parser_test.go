@@ -18,6 +18,32 @@ func TestIntConversion(t *testing.T) {
 	assert.Equal(t, int16(3), value)
 }
 
+func TestParseSchemaPartPos(t *testing.T) {
+	f, err := os.Open("testdata/schemapart_2.json")
+	assert.NoError(t, err)
+	assert.NotNil(t, f)
+
+	part := &types.SchemaPart{}
+	err = json.NewDecoder(f).Decode(part)
+	assert.NoError(t, err)
+	assert.NotNil(t, f)
+	assert.Equal(t, 16, part.OffsetZ)
+	assert.Equal(t, 0, part.OffsetY)
+	assert.Equal(t, 0, part.OffsetX)
+
+	psp, err := ParseSchemaPart(part)
+	assert.NoError(t, err)
+	assert.NotNil(t, psp)
+
+	part2, err := psp.Convert()
+	assert.NoError(t, err)
+	assert.NotNil(t, part2)
+
+	assert.Equal(t, 16, part2.OffsetZ)
+	assert.Equal(t, 0, part2.OffsetY)
+	assert.Equal(t, 0, part2.OffsetX)
+}
+
 func TestParseSchemaPart(t *testing.T) {
 	f, err := os.Open("testdata/schemapart_1.json")
 	assert.NoError(t, err)

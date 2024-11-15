@@ -13,7 +13,9 @@ require (
 	github.com/jackc/pgx/v5 v5.7.1
 	github.com/lib/pq v1.10.9
 	github.com/minetest-go/colormapping v1.0.5
+	github.com/minetest-go/mapparser v1.0.4
 	github.com/minetest-go/maprenderer v1.0.23
+	github.com/minetest-go/minetest_client v1.0.3
 	github.com/minetest-go/oauth v1.0.1
 	github.com/minetest-go/types v1.0.7
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
@@ -40,6 +42,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/klauspost/compress v1.16.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/text v0.18.0 // indirect

@@ -90,6 +90,11 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/schema/{schema_uid}/screenshot/update", api.Secure(api.UpdateSchemaPreview)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{schema_uid}/screenshot", api.GetFirstSchemaScreenshot)
 
+	r.HandleFunc("/api/schema/{schema_uid}/pull", api.GetSchemaPull).Methods(http.MethodGet)
+	r.HandleFunc("/api/schema/{schema_uid}/pull", api.Secure(api.CreateSchemaPull)).Methods(http.MethodPost)
+
+	r.HandleFunc("/api/schema/{schema_uid}/pullclients", api.GetSchemaPullClients).Methods(http.MethodGet)
+
 	r.HandleFunc("/api/search/schema", api.SearchSchema).Methods(http.MethodPost)
 	r.HandleFunc("/api/count/schema", api.CountSchema).Methods(http.MethodPost)
 
