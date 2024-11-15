@@ -59,7 +59,8 @@ func (r *SchemaPartRepository) GetNextBySchemaUIDAndOffset(schema_uid string, of
 }
 
 func (r *SchemaPartRepository) GetNextBySchemaUIDAndMtime(schema_uid string, mtime int64) (*types.SchemaPart, error) {
-	g := r.g.Model(types.SchemaPart{}).Where("schema_uid = ?", schema_uid)
+	g := r.g.Model(types.SchemaPart{})
+	g = g.Where("schema_uid = ?", schema_uid)
 	g = g.Where("mtime > ?", mtime)
 	g = g.Order("mtime asc")
 	return FindSingle[types.SchemaPart](g)
@@ -75,6 +76,6 @@ func (r *SchemaPartRepository) CountNextBySchemaUIDAndMtime(schema_uid string, m
 
 func (r *SchemaPartRepository) GetFirstBySchemaUID(schema_uid string) (*types.SchemaPart, error) {
 	g := r.g.Model(types.SchemaPart{}).Where("schema_uid = ?", schema_uid)
-	g = g.Order("mtime asc")
+	g = g.Order("order_id asc")
 	return FindSingle[types.SchemaPart](g)
 }
