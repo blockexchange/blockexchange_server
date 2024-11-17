@@ -21,9 +21,14 @@ type MetadataEntry struct {
 	Fields      map[string]string   `json:"fields"`
 }
 
+type MetadataTimer struct {
+	Timeout float64 `json:"timeout"`
+	Elapsed float64 `json:"elapsed"`
+}
+
 type Metadata struct {
-	Meta map[string]*MetadataEntry `json:"meta"`
-	//TODO: timers
+	Meta   map[string]*MetadataEntry `json:"meta"`
+	Timers map[string]*MetadataTimer `json:"timers"`
 }
 
 func (m Metadata) GetKey(x, y, z int) string {
