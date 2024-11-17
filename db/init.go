@@ -5,11 +5,13 @@ import (
 	"embed"
 	"fmt"
 	"os"
+	"time"
 
-	_ "github.com/jackc/pgx/v5"
+	"cirello.io/pglock"
+	_ "github.com/lib/pq"
 
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/pgx"
+	mpg "github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 
 	"gorm.io/driver/postgres"
@@ -20,6 +22,7 @@ import (
 var migrations embed.FS
 
 func Init() (*Repositories, error) {
+	// main pg url
 	url := fmt.Sprintf(
 		"user=%s password=%s port=%s host=%s dbname=%s sslmode=disable",
 		os.Getenv("PGUSER"),
@@ -30,17 +33,21 @@ func Init() (*Repositories, error) {
 
 	fmt.Printf("Connecting to %s\n", url)
 
+	// gorm instance
+
 	g, err := gorm.Open(postgres.Open(url), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("gorm open: %v", err)
 	}
 
-	db, err := sql.Open("pgx", url)
+	// db migrations
+
+	db, err := sql.Open("postgres", url)
 	if err != nil {
 		return nil, err
 	}
 
-	driver, err := pgx.WithInstance(db, &pgx.Config{})
+	driver, err := mpg.WithInstance(db, &mpg.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -65,5 +72,17 @@ func Init() (*Repositories, error) {
 		return nil, err
 	}
 
-	return NewRepositories(g, db), nil
+	// pglock
+
+	pgl, err := pglock.New(db, pglock.WithLeaseDuration(3*time.Second), pglock.WithHeartbeatFrequency(1*time.Second))
+	if err != nil {
+		return nil, fmt.Errorf("cannot create lock client: %v", err)
+	}
+
+	err = pgl.TryCreateTable()
+	if err != nil {
+		return nil, fmt.Errorf("cannot create table: %v", err)
+	}
+
+	return NewRepositories(g, db, pgl), nil
 }

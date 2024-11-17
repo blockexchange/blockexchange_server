@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 
+	"cirello.io/pglock"
 	"gorm.io/gorm"
 )
 
@@ -22,10 +23,10 @@ type Repositories struct {
 	SchemaStarRepo       *SchemaStarRepository
 	MetaRepository       *MetaRepository
 	MediaRepo            *MediaRepository
-	Lock                 *DBLock
+	PGLock               *pglock.Client
 }
 
-func NewRepositories(g *gorm.DB, DB *sql.DB) *Repositories {
+func NewRepositories(g *gorm.DB, DB *sql.DB, pgl *pglock.Client) *Repositories {
 	return &Repositories{
 		AccessTokenRepo:      &AccessTokenRepository{g: g},
 		UserRepo:             &UserRepository{g: g},
@@ -42,6 +43,6 @@ func NewRepositories(g *gorm.DB, DB *sql.DB) *Repositories {
 		SchemaStarRepo:       &SchemaStarRepository{g: g},
 		MetaRepository:       &MetaRepository{g: g},
 		MediaRepo:            &MediaRepository{g: g},
-		Lock:                 NewLock(DB),
+		PGLock:               pgl,
 	}
 }

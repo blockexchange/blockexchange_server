@@ -149,5 +149,6 @@ func (api Api) UpdateSchemaPreview(w http.ResponseWriter, r *http.Request, ctx *
 	}
 
 	// update screenshot
+	_, err = api.core.UpdatePreview(schema)
 	Send(w, true, err)
 }
