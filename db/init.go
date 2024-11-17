@@ -57,7 +57,7 @@ func Init() (*Repositories, error) {
 		return nil, err
 	}
 
-	m, err := migrate.NewWithInstance("iofs", d, "pgx", driver)
+	m, err := migrate.NewWithInstance("iofs", d, "postgres", driver)
 	if err != nil {
 		return nil, err
 	}
