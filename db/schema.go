@@ -63,8 +63,8 @@ func (r *SchemaRepository) CalculateStats(uid string) error {
 			from schemapart sp where sp.schema_uid = s.uid
 		),
 		total_parts = (select count(*) from schemapart sp where sp.schema_uid = s.uid),
-		stars = (select count(*) from user_schema_star where schema_uid = $1)
-		where uid = ?
+		stars = (select count(*) from user_schema_star where schema_uid = s.uid)
+		where s.uid = ?;
 	`, uid).Error
 }
 
