@@ -1,15 +1,7 @@
 
 import Breadcrumb, { START, SERVER_IMPORT } from "../Breadcrumb.js";
 import { schema_create } from "../../api/schema.js";
-
-function validate_pos_string(str) {
-	const re = /^-?[0-9]+$/;
-	const parts = str.split(",");
-	if (parts.length != 3) {
-		return false;
-	}
-	return (re.test(parts[0]) && re.test(parts[1]) && re.test(parts[2]));
-}
+import { validate_pos_string, parse_pos_string, sort_pos } from "../../util/pos.js";
 
 export default {
 	components: {
@@ -30,8 +22,15 @@ export default {
 		create: async function() {
 			this.error_message = "";
 			try {
+				let pos1 = parse_pos_string(this.pos1);
+				let pos2 = parse_pos_string(this.pos2);
+				[pos1, pos2] = sort_pos(pos1, pos2);
+
 				const result = await schema_create({
-					name: this.name
+					name: this.name,
+					size_x: pos2.x - pos1.x + 1,
+					size_y: pos2.y - pos1.y + 1,
+					size_z: pos2.z - pos1.z + 1
 				});
 			} catch (e) {
 				this.error_message = e.message;
