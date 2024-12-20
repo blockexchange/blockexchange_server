@@ -4,8 +4,7 @@ package types
 type SchematicPull struct {
 	SchemaUID string `json:"schema_uid" gorm:"primarykey;column:schema_uid"`
 	Enabled   bool   `json:"enabled" gorm:"column:enabled"`
-	Pos1      string `json:"pos1" gorm:"column:pos1"`
-	Pos2      string `json:"pos2" gorm:"column:pos2"`
+	Origin    string `json:"origin" gorm:"column:origin"`
 	Interval  int64  `json:"interval" gorm:"column:interval"` // interval in seconds
 	NextRun   int64  `json:"next_run" gorm:"column:next_run"` // time.Now().UnixMilli()
 	Hostname  string `json:"hostname" gorm:"column:hostname"`

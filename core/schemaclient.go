@@ -33,12 +33,14 @@ type SchemaClient struct {
 	stats           *SchemaClientStats
 }
 
-func NewSchemaClient(opts *SchemaClientOpts) *SchemaClient {
-	origin := mt.NewPos(opts.Pull.PosX, opts.Pull.PosY, opts.Pull.PosZ)
+func NewSchemaClient(opts *SchemaClientOpts) (*SchemaClient, error) {
+	origin, err := types.ParsePos(opts.Pull.Origin)
+	if err != nil {
+		return nil, fmt.Errorf("errors parsing origin: %v", err)
+	}
+
 	size := mt.NewPos(opts.Schema.SizeX, opts.Schema.SizeY, opts.Schema.SizeZ)
 	pos2 := origin.Add(size.Add(mt.NewPos(-1, -1, -1)))
-
-	fmt.Printf("Origin: %v, pos2: %v, size: %v\n", origin, pos2, size)
 
 	return &SchemaClient{
 		opts:    opts,
@@ -51,7 +53,7 @@ func NewSchemaClient(opts *SchemaClientOpts) *SchemaClient {
 			CONTENT_UNKNOWN: "unknown",
 		},
 		stats: &SchemaClientStats{},
-	}
+	}, nil
 }
 
 func (sc *SchemaClient) Stats() *SchemaClientStats {

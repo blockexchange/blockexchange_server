@@ -21,9 +21,7 @@ func TestSchemaClient(t *testing.T) {
 		Pull: &types.SchematicPull{
 			Hostname: "127.0.0.1",
 			Port:     30000,
-			PosX:     0,
-			PosY:     100,
-			PosZ:     0,
+			Origin:   "0,100,0",
 		},
 		PullClient: &types.SchematicPullClient{
 			Username: "test",
@@ -46,9 +44,12 @@ func TestSchemaClient(t *testing.T) {
 		},
 	}
 
-	sc := core.NewSchemaClient(opts)
-	err := sc.Run(time.Second * 5)
+	sc, err := core.NewSchemaClient(opts)
 	assert.NoError(t, err)
+
+	err = sc.Run(time.Second * 5)
+	assert.NoError(t, err)
+
 	fmt.Printf("Stats: %v\n", sc.Stats())
 	t.FailNow()
 
