@@ -1,4 +1,4 @@
-FROM node:22.8.0-alpine as node-app
+FROM node:23.2.0-alpine as node-app
 WORKDIR /public
 COPY /public/package-lock.json /public/package.json ./
 RUN npm ci
@@ -6,7 +6,7 @@ COPY public/ .
 RUN npm run jshint && \
 	npm run bundle
 
-FROM golang:1.23.1 as go-app
+FROM golang:1.23.3 as go-app
 WORKDIR /data
 COPY go.mod go.sum ./
 RUN go mod download

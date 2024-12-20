@@ -35,11 +35,11 @@ func (r *SchemaRepository) UpdateSchema(schema *types.Schema) error {
 }
 
 func (r *SchemaRepository) IncrementViews(uid string) error {
-	return r.g.Raw("update schema set views = views + 1 where uid = ?", uid).Error
+	return r.g.Exec("update schema set views = views + 1 where uid = ?", uid).Error
 }
 
 func (r *SchemaRepository) IncrementDownloads(uid string) error {
-	return r.g.Raw("update schema set downloads = downloads + 1 where uid = ?", uid).Error
+	return r.g.Exec("update schema set downloads = downloads + 1 where uid = ?", uid).Error
 }
 
 func (r *SchemaRepository) DeleteSchema(uid string) error {
@@ -55,7 +55,7 @@ func (r *SchemaRepository) DeleteOldIncompleteSchema(time_before int64) error {
 }
 
 func (r *SchemaRepository) CalculateStats(uid string) error {
-	return r.g.Raw(`
+	return r.g.Exec(`
 		update schema s
 		set total_size = (
 			select
@@ -63,8 +63,8 @@ func (r *SchemaRepository) CalculateStats(uid string) error {
 			from schemapart sp where sp.schema_uid = s.uid
 		),
 		total_parts = (select count(*) from schemapart sp where sp.schema_uid = s.uid),
-		stars = (select count(*) from user_schema_star where schema_uid = $1)
-		where uid = ?
+		stars = (select count(*) from user_schema_star where schema_uid = s.uid)
+		where s.uid = ?;
 	`, uid).Error
 }
 

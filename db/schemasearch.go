@@ -141,6 +141,7 @@ func (r *SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int64
 	if err != nil {
 		return 0, err
 	}
+	defer rows.Close()
 	rows.Next()
 	return c, rows.Scan(&c)
 }
@@ -178,6 +179,7 @@ func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*t
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		e := &types.SchemaSearchResponse{
