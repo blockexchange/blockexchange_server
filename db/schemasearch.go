@@ -4,6 +4,7 @@ import (
 	"blockexchange/types"
 	"database/sql"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/lib/pq"
@@ -12,6 +13,8 @@ import (
 type SchemaSearchRepository struct {
 	DB *sql.DB
 }
+
+var nonAlphanumericRegex = regexp.MustCompile(`[^a-zA-Z0-9 ]+`)
 
 func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search *types.SchemaSearchRequest, with_order bool) []any {
 	query.WriteString(" from schema s where true=true")
@@ -27,7 +30,11 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 
 	if search.Keywords != nil {
 		query.WriteString(fmt.Sprintf(" and to_tsvector('english', description || ' ' || name) @@ to_tsquery($%d)", i))
-		params = append(params, *search.Keywords)
+		// remove non-alpha/non-numbers
+		keywords := nonAlphanumericRegex.ReplaceAllString(*search.Keywords, "")
+		// remove double spaces
+		keywords = strings.ReplaceAll(keywords, "  ", " ")
+		params = append(params, strings.Join(strings.Split(strings.TrimSpace(keywords), " "), "&"))
 		i++
 	}
 
