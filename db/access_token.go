@@ -35,7 +35,7 @@ func (r *AccessTokenRepository) CreateAccessToken(access_token *types.AccessToke
 }
 
 func (r *AccessTokenRepository) IncrementAccessTokenUseCount(uid string) error {
-	return r.g.Raw("update access_token set usecount = usecount + 1 where uid = ?", uid).Error
+	return r.g.Exec("update access_token set usecount = usecount + 1 where uid = ?", uid).Error
 }
 
 func (r *AccessTokenRepository) RemoveAccessToken(uid string, user_uid string) error {
