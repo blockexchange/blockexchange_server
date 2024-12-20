@@ -2,7 +2,9 @@
 create table schema_pull(
     schema_uid uuid primary key not null references public.schema(uid) on delete cascade,
     enabled boolean not null,
-    origin varchar(32) not null,
+    pos_x int not null,
+    pos_y int not null,
+    pos_z int not null,
     interval int not null,
     next_run bigint not null default 0,
     hostname varchar(128) not null,

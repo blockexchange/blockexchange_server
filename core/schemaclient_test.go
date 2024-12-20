@@ -21,7 +21,9 @@ func TestSchemaClient(t *testing.T) {
 		Pull: &types.SchematicPull{
 			Hostname: "127.0.0.1",
 			Port:     30000,
-			Origin:   "0,100,0",
+			PosX:     0,
+			PosY:     100,
+			PosZ:     0,
 		},
 		PullClient: &types.SchematicPullClient{
 			Username: "test",
