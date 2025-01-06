@@ -1,4 +1,5 @@
 import Import from './components/pages/Import.js';
+import ImportServer from './components/pages/ImportServer.js';
 import Login from './components/pages/Login.js';
 import Mod from './components/pages/Mod.js';
 import Profile from './components/pages/Profile.js';
@@ -42,6 +43,8 @@ export default [{
 	path: "/collections/:username/:collection_name", component: UserCollection, props: true
 },{
 	path: "/import", component: Import
+},{
+	path: "/import-server", component: ImportServer
 },{
 	path: "/tags", component: Tags
 }];

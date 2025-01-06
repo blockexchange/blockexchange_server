@@ -49,6 +49,10 @@ export default {
 					Upload Worldedit or Blockexchange schematics
 				</h5>
 				<input ref="upload" type="file" class="form-control" v-on:change="on_upload" multiple accept=".we,.zip"/>
+				<router-link to="/import-server">
+					<i class="fa fa-server"></i>
+					Import schematic from a public server
+				</router-link>
 				<hr>
 				<ul>
 					<li v-for="res in results">

@@ -70,5 +70,5 @@ func (r *SchemaRepository) CalculateStats(uid string) error {
 
 func (r *SchemaRepository) GetTotalSize() (int64, error) {
 	var c int64
-	return c, r.g.Raw("select sum(total_size) as count from schema").Scan(&c).Error
+	return c, r.g.Raw("select coalesce(sum(total_size),0) as count from schema").Scan(&c).Error
 }

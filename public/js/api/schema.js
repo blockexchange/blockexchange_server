@@ -1,4 +1,19 @@
 
+// 200 = resolve, else reject
+function statusCheck(r) {
+    if (r.status == 200) {
+        return r.json();
+    } else {
+        return r.json().then(msg => Promise.reject(msg));
+    }
+}
+
+export const schema_create = schema => fetch(`${BaseURL}/api/schema`, {
+    method: "POST",
+    body: JSON.stringify(schema)
+})
+.then(statusCheck);
+
 export const schema_search = search => fetch(`${BaseURL}/api/search/schema`, {
     method: "POST",
     body: JSON.stringify(search)
@@ -15,13 +30,7 @@ export const schema_update = schema => fetch(`${BaseURL}/api/schema/${schema.uid
     method: "PUT",
     body: JSON.stringify(schema)
 })
-.then(r => {
-    if (r.status == 200) {
-        return r.json();
-    } else {
-        return r.json().then(msg => Promise.reject(msg));
-    }
-});
+.then(statusCheck);
 
 export const schema_set_tags = (schema_uid, tags) => fetch(`${BaseURL}/api/schema/${schema_uid}/tags`, {
     method: "POST",
