@@ -1,4 +1,4 @@
-FROM node:23.6.1-alpine as node-app
+FROM node:23.8.0-alpine as node-app
 WORKDIR /public
 COPY /public/package-lock.json /public/package.json ./
 RUN npm ci
