@@ -17,7 +17,7 @@ require (
 	github.com/minetest-go/oauth v1.0.2
 	github.com/minetest-go/types v1.0.7
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
-	github.com/prometheus/client_golang v1.21.0
+	github.com/prometheus/client_golang v1.21.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/crypto v0.31.0
