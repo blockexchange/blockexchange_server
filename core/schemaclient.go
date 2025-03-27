@@ -160,7 +160,7 @@ func (sc *SchemaClient) Run(d time.Duration) error {
 		client.Disconnect()
 	}()
 
-	err = commandclient.Init(client, sc.opts.PullClient.Username)
+	err = commandclient.Init(client, sc.opts.PullClient.Username, nil)
 	if err != nil {
 		return fmt.Errorf("init error: %v", err)
 	}
