@@ -30,5 +30,5 @@ export function sort_pos(pos1, pos2) {
         x: Math.max(pos1.x, pos2.x),
         y: Math.max(pos1.y, pos2.y),
         z: Math.max(pos1.z, pos2.z)
-    }]
+    }];
 }

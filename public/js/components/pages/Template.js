@@ -1,4 +1,4 @@
-import Breadcrumb, { START, MOD } from "../Breadcrumb.js";
+import Breadcrumb, { START } from "../Breadcrumb.js";
 
 export default {
 	components: {

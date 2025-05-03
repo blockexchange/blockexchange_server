@@ -26,7 +26,7 @@ export default {
 				let pos2 = parse_pos_string(this.pos2);
 				[pos1, pos2] = sort_pos(pos1, pos2);
 
-				const result = await schema_create({
+				await schema_create({
 					name: this.name,
 					size_x: pos2.x - pos1.x + 1,
 					size_y: pos2.y - pos1.y + 1,
