@@ -64,7 +64,7 @@ export default {
                     Download as BX schematic
                 </a>
                 <a class="btn btn-outline-success"
-                    v-bind:class="{disabled: schema.total_parts >= 200}"
+                    v-bind:class="{disabled: schema.total_parts >= 500}"
                     :href="BaseURL + '/api/export_we/' + schema.uid + '/' + schema.name + '.we'">
                     <i class="fa fa-download"></i>
                     Download as WE schematic
