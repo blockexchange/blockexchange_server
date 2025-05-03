@@ -69,7 +69,7 @@ export default {
                     <i class="fa fa-download"></i>
                     Download as WE schematic
                     <i class="fa fa-triangle-exclamation"
-                        v-if="schema.total_parts >= 200"
+                        v-if="schema.total_parts >= 500"
                         style="color: red;"
                         title="WE-Import disable due to schematic size"></i>
                     <i class="fa fa-triangle-exclamation"
