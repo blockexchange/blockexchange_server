@@ -37,8 +37,7 @@ export default {
 			<schema-detail
 				:search_result="data.search_result"
 				:allow_edit="allow_edit(data.search_result.schema)"
-				v-on:save="update_data"
-				/>
+			/>
 		</loading-block>
 	`
 };

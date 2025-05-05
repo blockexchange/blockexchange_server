@@ -63,7 +63,6 @@ export default {
 
                 this.edit_mode = false;
                 this.$router.push(`/schema/${this.username}/${this.schema.name}`);
-                this.$emit("save");
             })
             .catch(e => {
                 this.error_response = e;

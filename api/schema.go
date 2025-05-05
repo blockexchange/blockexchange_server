@@ -49,7 +49,7 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	schema := types.Schema{}
 	err := json.NewDecoder(r.Body).Decode(&schema)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -67,8 +67,17 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	// remove incomplete schema with same name if it exists
 	err = api.SchemaRepo.DeleteIncompleteSchema(ctx.Claims.UserUID, schema.Name)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, http.StatusInternalServerError, err.Error())
 		return
+	}
+
+	existing_schema, err := api.SchemaRepo.GetSchemaByUserUIDAndName(ctx.Claims.UserUID, schema.Name)
+	if err != nil {
+		SendError(w, http.StatusInternalServerError, fmt.Sprintf("error checking existing schema: %v", err))
+		return
+	}
+	if existing_schema != nil {
+		SendError(w, http.StatusConflict, fmt.Sprintf("schematic already exists with same name: '%s'", schema.Name))
 	}
 
 	schema.UserUID = ctx.Claims.UserUID
