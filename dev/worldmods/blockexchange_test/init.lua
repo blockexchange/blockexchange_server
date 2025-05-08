@@ -8,13 +8,6 @@ local compare_area = dofile(MP.."/compare_area.lua")
 
 print("[blockexchange_test] executing integration test")
 
--- propagate error
-local function fail(msg)
-    minetest.after(0, function()
-        error(msg)
-    end)
-end
-
 local size = {x=30, y=30, z=30}
 local pos1 = {x=0, y=-10, z=0}
 local pos2 = vector.add(pos1, size)
@@ -25,35 +18,29 @@ local playername = "singleplayer"
 local username = "Testuser"
 local schemaname = "test_schema" .. math.random(1000)
 
-minetest.register_on_mods_loaded(function()
-    minetest.after(1, function()
-        blockexchange.api.get_token(username, "default"):next(function(token)
-            blockexchange.set_token(playername, token)
-            return blockexchange.emerge(playername, pos1, pos2_load)
-        end):next(function()
-            return blockexchange.save(playername, pos1, pos2, schemaname)
-        end):next(function()
-            return blockexchange.load(playername, pos1_load, username, schemaname)
-        end):next(function()
-            local success, msg = compare_area(pos1, pos2, pos1_load, pos2_load, {}) -- TODO: fix/enable full checks
-            if not success then
-                fail("loaded area does not match: " .. msg)
-            end
-            return true
-        end):next(function()
-            return blockexchange.save(playername, pos1, pos2, schemaname, true)
-        end):next(function()
-            return blockexchange.load(playername, pos1_load, username, schemaname, true)
-        end):next(function()
-            local success, msg = compare_area(pos1, pos2, pos1_load, pos2_load)
-            if not success then
-                fail("local loaded area does not match: " .. msg)
-            end
-            return true
-        end):next(function()
-            minetest.request_shutdown("test done")
-        end):catch(function(http_code)
-            fail("http error: " .. http_code)
-        end)
+Promise.async(function(await)
+    await(Promise.mods_loaded())
+    await(Promise.after(1))
+    local token = await(blockexchange.api.get_token(username, "default"))
+    blockexchange.set_token(playername, token)
+    await(blockexchange.emerge(playername, pos1, pos2_load))
+    await(blockexchange.save(playername, pos1, pos2, schemaname))
+    await(blockexchange.load(playername, pos1_load, username, schemaname))
+    local success, msg = compare_area(pos1, pos2, pos1_load, pos2_load, {}) -- TODO: fix/enable full checks
+    if not success then
+        error("loaded area does not match: " .. msg, 0)
+    end
+
+    await(blockexchange.save(playername, pos1, pos2, schemaname, true))
+    await(blockexchange.load(playername, pos1_load, username, schemaname, true))
+    success, msg = compare_area(pos1, pos2, pos1_load, pos2_load)
+    if not success then
+        error("local loaded area does not match: " .. msg, 0)
+    end
+
+    minetest.request_shutdown("test done")
+end):catch(function(e)
+    minetest.after(0, function()
+        error(e)
     end)
 end)

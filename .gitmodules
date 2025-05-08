@@ -16,3 +16,6 @@
 [submodule "dev/worldmods/promise"]
 	path = dev/worldmods/promise
 	url = https://github.com/mt-mods/promise
+[submodule "dev/minetest_game"]
+	path = dev/minetest_game
+	url = https://github.com/luanti-org/minetest_game

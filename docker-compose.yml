@@ -43,27 +43,26 @@ services:
   working_dir: /data
   command: ["go", "run", "."]
 
- minetest:
-  image: registry.gitlab.com/minetest/minetest/server:5.7.0
+ luanti:
+  image: ghcr.io/luanti-org/luanti:5.11.0
   user: root
   volumes:
    - "world_data:/root/.minetest/worlds/world"
-   - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
-   - "./dev/minetest.conf:/etc/minetest/minetest.conf"
+   - "./dev/minetest.conf:/minetest.conf"
+   - "./dev/worldmods:/world/worldmods"
+   - "./dev/minetest_game:/root/.minetest/games/minetest_game"
   ports:
    - "30000:30000/udp"
+  entrypoint: "luantiserver --config /minetest.conf --world /world --gameid minetest_game"
 
  mod-integration-test:
-  image: registry.gitlab.com/minetest/minetest/server:5.7.0
+  image: ghcr.io/luanti-org/luanti:5.11.0
   user: root
   volumes:
-   - "./dev/minetest-test.conf:/etc/minetest/minetest.conf:ro"
-   - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
-  environment:
-   http_proxy: ""
-   https_proxy: ""
-   HTTP_PROXY: ""
-   HTTPS_PROXY: ""
+   - "./dev/minetest-test.conf:/minetest.conf:ro"
+   - "./dev/worldmods:/world/worldmods"
+   - "./dev/minetest_game:/root/.minetest/games/minetest_game"
+  entrypoint: "luantiserver --config /minetest.conf --world /world --gameid minetest_game"
 
  integration-test:
   image: golang:1.22.4
