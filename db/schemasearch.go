@@ -38,6 +38,12 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 		i++
 	}
 
+	if search.Type != nil {
+		query.WriteString(fmt.Sprintf(" and type = $%d", i))
+		params = append(params, *search.Type)
+		i++
+	}
+
 	if search.SchemaName != nil {
 		query.WriteString(fmt.Sprintf(" and name = $%d", i))
 		params = append(params, *search.SchemaName)
@@ -157,6 +163,7 @@ func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*t
 	query := strings.Builder{}
 	fields := []string{
 		"uid",
+		"type",
 		"created",
 		"mtime",
 		"user_uid",
@@ -196,6 +203,7 @@ func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*t
 		}
 		err = rows.Scan(
 			&e.Schema.UID,
+			&e.Schema.Type,
 			&e.Schema.Created,
 			&e.Schema.Mtime,
 			&e.Schema.UserUID,
