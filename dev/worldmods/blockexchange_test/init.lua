@@ -22,7 +22,11 @@ Promise.async(function(await)
     await(Promise.mods_loaded())
     await(Promise.after(1))
     local token = await(blockexchange.api.get_token(username, "default"))
-    blockexchange.set_token(playername, token)
+
+    local player_settings = blockexchange.get_player_settings(playername)
+    player_settings.token = token
+    blockexchange.set_player_settings(playername, player_settings)
+
     await(blockexchange.emerge(playername, pos1, pos2_load))
     await(blockexchange.save(playername, pos1, pos2, schemaname))
     await(blockexchange.load(playername, pos1_load, username, schemaname))
@@ -31,8 +35,8 @@ Promise.async(function(await)
         error("loaded area does not match: " .. msg, 0)
     end
 
-    await(blockexchange.save(playername, pos1, pos2, schemaname, true))
-    await(blockexchange.load(playername, pos1_load, username, schemaname, true))
+    await(blockexchange.save_local(playername, pos1, pos2, schemaname))
+    await(blockexchange.load_local(playername, pos1_load, schemaname))
     success, msg = compare_area(pos1, pos2, pos1_load, pos2_load)
     if not success then
         error("local loaded area does not match: " .. msg, 0)
