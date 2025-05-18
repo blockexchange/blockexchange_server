@@ -5,6 +5,7 @@ import (
 	"blockexchange/types"
 	"bytes"
 	"fmt"
+	"image"
 	"image/png"
 	"time"
 
@@ -83,17 +84,42 @@ func (c *Core) getNodeAccessor(schema *types.Schema) mtypes.NodeAccessor {
 }
 
 func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, error) {
-	max_pos := mtypes.NewPos(schema.SizeX-1, schema.SizeY-1, schema.SizeZ-1)
-	max_axis := max(max_pos.X(), max_pos.Y(), max_pos.Z())
 
-	opts := maprenderer.NewDefaultIsoRenderOpts()
-	if max_axis < 10 {
-		opts.CubeLen = 48
-	} else if max_axis < 50 {
-		opts.CubeLen = 16
+	var img image.Image
+	var err error
+
+	switch schema.Type {
+	case types.SchemaTypeSchematic:
+		// isometric preview for simple schematic
+		max_pos := mtypes.NewPos(schema.SizeX-1, schema.SizeY-1, schema.SizeZ-1)
+		max_axis := max(max_pos.X(), max_pos.Y(), max_pos.Z())
+
+		opts := maprenderer.NewDefaultIsoRenderOpts()
+		if max_axis < 10 {
+			opts.CubeLen = 48
+		} else if max_axis < 50 {
+			opts.CubeLen = 16
+		}
+
+		img, err = maprenderer.RenderIsometric(
+			c.getNodeAccessor(schema),
+			cm.GetColor,
+			zeroPos,
+			max_pos,
+			opts,
+		)
+	case types.SchemaTypeMap:
+		// world-center fixed map preview
+		img, err = maprenderer.RenderMap(
+			c.getNodeAccessor(schema),
+			cm.GetColor,
+			mtypes.NewPos(-500, -50, -500),
+			mtypes.NewPos(500, 100, 500),
+			&maprenderer.MapRenderOpts{},
+		)
+	default:
+		return nil, fmt.Errorf("unsupported schema type: %d", schema.Type)
 	}
-
-	img, err := maprenderer.RenderIsometric(c.getNodeAccessor(schema), cm.GetColor, zeroPos, max_pos, opts)
 	if err != nil {
 		return nil, fmt.Errorf("render error: %v, schema-uid: %s", err, schema.UID)
 	}
