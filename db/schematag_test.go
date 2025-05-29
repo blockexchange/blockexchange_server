@@ -24,6 +24,13 @@ func TestGetSchemaTagsByIDs(t *testing.T) {
 	}
 	assert.NoError(t, repos.SchemaRepo.CreateSchema(s))
 
+	s2 := &types.Schema{
+		UID:     uuid.NewString(),
+		UserUID: u.UID,
+		Name:    "test2",
+	}
+	assert.NoError(t, repos.SchemaRepo.CreateSchema(s2))
+
 	t1 := &types.Tag{Name: fmt.Sprintf("tag_%d", rand.Intn(10000))}
 	assert.NoError(t, repos.TagRepo.Create(t1))
 
@@ -33,6 +40,24 @@ func TestGetSchemaTagsByIDs(t *testing.T) {
 	st1 := &types.SchemaTag{TagUID: t1.UID, SchemaUID: s.UID}
 	assert.NoError(t, repos.SchemaTagRepo.Create(st1))
 
-	st2 := &types.SchemaTag{TagUID: t1.UID, SchemaUID: s.UID}
+	st2 := &types.SchemaTag{TagUID: t1.UID, SchemaUID: s2.UID}
 	assert.NoError(t, repos.SchemaTagRepo.Create(st2))
+
+	list, err := repos.SchemaTagRepo.GetBySchemaUID(s.UID)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(list))
+
+	list, err = repos.SchemaTagRepo.GetBySchemaUID(s2.UID)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(list))
+
+	assert.NoError(t, repos.SchemaTagRepo.Delete(s.UID, t1.UID))
+
+	list, err = repos.SchemaTagRepo.GetBySchemaUID(s.UID)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(list))
+
+	list, err = repos.SchemaTagRepo.GetBySchemaUID(s2.UID)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(list))
 }

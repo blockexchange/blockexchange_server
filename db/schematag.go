@@ -19,7 +19,7 @@ func (r *SchemaTagRepository) Create(st *types.SchemaTag) error {
 }
 
 func (r *SchemaTagRepository) Delete(schema_uid string, tag_uid string) error {
-	return r.g.Delete(types.SchemaTag{SchemaUID: schema_uid, TagUID: tag_uid}).Error
+	return r.g.Where(types.SchemaTag{SchemaUID: schema_uid, TagUID: tag_uid}).Delete(types.SchemaTag{}).Error
 }
 
 func (r *SchemaTagRepository) GetBySchemaUID(schema_uid string) ([]*types.SchemaTag, error) {
