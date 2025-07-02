@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var err_unauthorized = errors.New("unauthorized")
+var ErrUnauthorized = errors.New("unauthorized")
 
 func GetPermissions(user *types.User, management bool) []types.JWTPermission {
 	permissions := []types.JWTPermission{
@@ -112,12 +112,16 @@ func (c *Core) ParseJWT(token string) (*types.Claims, error) {
 		return []byte(c.cfg.Key), nil
 	})
 
+	if errors.Is(err, jwt.ErrSignatureInvalid) {
+		return nil, ErrUnauthorized
+	}
+
 	if err != nil {
 		return nil, err
 	}
 
 	if !t.Valid {
-		return nil, err_unauthorized
+		return nil, ErrUnauthorized
 	}
 
 	claims, ok := t.Claims.(*types.Claims)

@@ -51,6 +51,10 @@ func (api *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 	c, err := api.core.GetClaims(r)
+	if err == core.ErrUnauthorized {
+		w.WriteHeader(401)
+		return
+	}
 	if c == nil || c.UserUID == "" {
 		api.core.RemoveClaims(w)
 		Send(w, nil, err)
