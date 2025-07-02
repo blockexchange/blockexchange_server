@@ -68,6 +68,8 @@ services:
  mod-integration-test:
   image: ghcr.io/luanti-org/luanti:5.11.0
   user: root
+  depends_on:
+   - blockexchange
   volumes:
    - "./dev/minetest-test.conf:/minetest.conf:ro"
    - "./dev/worldmods:/world/worldmods"
@@ -90,7 +92,6 @@ services:
    - PGPORT=5432
    - LOGLEVEL=debug
   working_dir: /data
-#  command: ["go", "test", "-run", "TestSearchSchema", "./..."]
   command: ["go", "test", "./...", "-p", "1", "-coverprofile=profile.cov"]
 
 volumes:
