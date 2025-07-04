@@ -23,6 +23,7 @@ func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 	}
 	if schema == nil {
 		SendError(w, http.StatusNotFound, "schema not found")
+		return
 	}
 
 	if r.URL.Query().Get("download") == "true" {

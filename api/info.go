@@ -29,6 +29,10 @@ type InfoHandler struct {
 
 var stats atomic.Pointer[Stats]
 
+func init() {
+	stats.Store(&Stats{})
+}
+
 func (api *Api) UpdateStats() error {
 	new_stats := &Stats{}
 	var err error
