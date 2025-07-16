@@ -16,7 +16,7 @@ RUN go vet && \
 	go test ./... && \
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
 
-FROM alpine:3.22.0
+FROM alpine:3.22.1
 COPY --from=go-app /data/blockexchange /
 EXPOSE 8080
 
