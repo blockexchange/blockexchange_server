@@ -72,6 +72,16 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		return
 	}
 
+	existing_schema, err := api.SchemaRepo.GetSchemaByUserUIDAndName(ctx.Claims.UserUID, schema.Name)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("error checking existing name: '%s'", err.Error()))
+		return
+	}
+	if existing_schema != nil {
+		SendError(w, 500, "schema with that name already exists")
+		return
+	}
+
 	schema.UserUID = ctx.Claims.UserUID
 	schema.Created = time.Now().UnixMilli()
 
