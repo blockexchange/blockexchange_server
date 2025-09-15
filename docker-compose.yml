@@ -47,7 +47,7 @@ services:
    - BLOCKEXCHANGE_TEST_DATA=true
    - BASE_URL=http://localhost:8080
    - EXECUTE_JOBS=true
-   - WEBDEV=false
+   - WEBDEV=true
   ports:
    - "8080:8080"
   working_dir: /data

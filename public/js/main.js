@@ -3,6 +3,9 @@ import routes from './routes.js';
 import { fetch_info } from './service/info.js';
 import { fetch_tags } from './service/tags.js';
 import { check_login } from './service/login.js';
+import * as THREE from 'three';
+
+console.log(THREE); //TODO
 
 function start(){
 	// create router instance
@@ -15,8 +18,6 @@ function start(){
 	const app = Vue.createApp(App);
 	app.use(router);
 	app.mount("#app");
-
-	console.log(window.THREE); //TODO
 }
 
 Promise.all([check_login(), fetch_info(), fetch_tags()])

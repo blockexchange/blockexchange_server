@@ -21,6 +21,8 @@
     "vue-router": "^4.0.14"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
     "jshint": "2.13.6",
     "rollup": "4.22.4"
   }
