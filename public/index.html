@@ -8,6 +8,20 @@
 		<meta name="{{$key}}" content="{{$value}}"/>
 		{{end}}
 
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "{{.BaseURL}}/node_modules/three/build/three.module.min.js",
+					"three/examples/jsm/controls/OrbitControls":"./jsm/controls/OrbitControls.js",
+					"three/examples/jsm/libs/stats.module":"./jsm/libs/stats.module.js"
+				}
+			}
+    	</script>
+		<script type="module">
+			import * as THREE from 'three';
+			window.THREE = THREE;
+		</script>
+
 		<link rel="icon" href="{{.BaseURL}}/pics/bx_big.png" type="image/png">
 		<link rel="stylesheet" href="{{.BaseURL}}/node_modules/bootswatch/dist/darkly/bootstrap.min.css"/>
 		<link rel="stylesheet" href="{{.BaseURL}}/node_modules/@fortawesome/fontawesome-free/css/all.min.css"/>

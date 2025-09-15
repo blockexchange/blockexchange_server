@@ -15,6 +15,8 @@ function start(){
 	const app = Vue.createApp(App);
 	app.use(router);
 	app.mount("#app");
+
+	console.log(window.THREE); //TODO
 }
 
 Promise.all([check_login(), fetch_info(), fetch_tags()])

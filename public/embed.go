@@ -14,4 +14,6 @@ import (
 //go:embed node_modules/@fortawesome/fontawesome-free/webfonts/*
 //go:embed node_modules/marked/lib/marked.umd.js
 //go:embed node_modules/dompurify/dist/purify.min.js
+//go:embed node_modules/three/build/three.module.min.js
+//go:embed node_modules/three/build/three.core.min.js
 var Webapp embed.FS

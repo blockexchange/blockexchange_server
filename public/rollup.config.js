@@ -5,6 +5,9 @@ module.exports = [{
 		file :'js/bundle.js',
 		format: 'iife',
 		sourcemap: true,
-		compact: true
+		compact: true,
+		globals: {
+			three: "THREE"
+		}
 	}
 }];
