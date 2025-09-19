@@ -1,5 +1,4 @@
-import { schema_search } from "../api/schema.js";
-import { get_schemapart_by_ofset } from "../api/schema_part.js";
+import { count_schemaparts_by_mtime, get_next_schemapart_by_mtime, get_next_schemapart_by_offset, get_schemapart_by_offset } from "../api/schema_part.js";
 import { get_colormapping } from "../api/colormapping.js";
 import { decompressSync } from 'fflate';
 
@@ -28,11 +27,7 @@ export default {
         };
     },
     mounted: async function() {
-        const list = await schema_search({ schema_name: this.name, user_name: this.username })
-        const schema = list[0].schema;
-        console.log(schema);
-
-        const part = await get_schemapart_by_ofset(schema.uid, 0, 0, 0);
+        const part = await get_next_schemapart_by_mtime(this.schema_uid, 0);
         console.log(part);
 
         const buf = base64ToArrayBuffer(part.metadata);
@@ -75,14 +70,36 @@ export default {
         const axesHelper = new AxesHelper( 5 );
         this.scene.add( axesHelper );
 
-        this.scene.add(new AmbientLight(0xffffff));
+        this.scene.add(new AmbientLight(0xffffff)); //TODO: dark/light mode
 
-        this.controls.addEventListener( 'change', () => this.render() );
+        this.controls.addEventListener('change', () => this.render());
 
         this.animate()
+
+        const part_count = await count_schemaparts_by_mtime(this.schema_uid, 0);
+        console.log("Parts: " + part_count);
+
+        var pos_x = 0, pos_y = 0, pos_z = 0;
+        var schema_part = await get_schemapart_by_offset(this.schema_uid, pos_x, pos_y, pos_z);
+
+        do {
+            var schema_part = await get_next_schemapart_by_offset(this.schema_uid, pos_x, pos_y, pos_z);
+            if (!schema_part) {
+                break;
+            }
+
+            // TODO: render stuff
+
+            pos_x = schema_part.offset_x;
+            pos_y = schema_part.offset_y;
+            pos_z = schema_part.offset_z;
+        } while (true);
     },
     methods: {
         animate: function() {
+            if (!this.active) {
+                return;
+            }
             this.controls.update()
             window.requestAnimationFrame(() => this.animate())
         },
@@ -94,7 +111,8 @@ export default {
         }
     },
     beforeUnmount: function() {
-        console.log("beforeUnmount")
+        this.scene.remove();
+        this.controls.remove();
         this.active = false;
     },
     template: /*html*/`

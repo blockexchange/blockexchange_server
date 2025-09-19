@@ -3,11 +3,6 @@ import routes from './routes.js';
 import { fetch_info } from './service/info.js';
 import { fetch_tags } from './service/tags.js';
 import { check_login } from './service/login.js';
-import * as THREE from 'three';
-import { decompressSync } from 'fflate';
-
-console.log(THREE); //TODO
-console.log(decompressSync); //TODO
 
 function start(){
 	// create router instance

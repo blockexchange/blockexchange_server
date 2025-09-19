@@ -5,6 +5,8 @@ export const schema_search = search => fetch(`${BaseURL}/api/search/schema`, {
 })
 .then(r => r.json());
 
+export const get_schema_by_uid = uid => fetch(`${BaseURL}/api/schema/${uid}`).then(r => r.json());
+
 export const schema_count = search => fetch(`${BaseURL}/api/count/schema`, {
     method: "POST",
     body: JSON.stringify(search)
