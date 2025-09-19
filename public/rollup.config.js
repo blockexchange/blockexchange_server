@@ -1,3 +1,5 @@
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const terser = require('@rollup/plugin-terser');
 
 module.exports = [{
 	input: 'js/main.js',
@@ -5,6 +7,8 @@ module.exports = [{
 		file :'js/bundle.js',
 		format: 'iife',
 		sourcemap: true,
-		compact: true
-	}
+		compact: true,
+		plugins: [terser()]
+	},
+	plugins: [nodeResolve()]
 }];

@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
 	"image/png"
 	"time"
 
@@ -24,6 +25,10 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (c *Core) GetColorMapping() map[string]*color.RGBA {
+	return cm.GetColors()
 }
 
 func (c *Core) getNodeAccessor(schema *types.Schema) mtypes.NodeAccessor {

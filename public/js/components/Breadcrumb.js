@@ -60,3 +60,7 @@ export const USER_COLLECTION = (username, collection_name) => {
 export const SCHEMA_DETAIL = (username, name) => {
     return { name: `Schematic ${name}`, icon: "landmark", link: `/schema/${username}/${name}` };
 };
+
+export const THREE_VIEW = (username, name) => {
+    return { name: `3D-Preview`, icon: "cubes", link: `/schema/${username}/${name}/3dview` };
+}
