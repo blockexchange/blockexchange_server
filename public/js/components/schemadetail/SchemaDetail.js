@@ -275,6 +275,10 @@ export default {
                     <div class="card-header">
                         <i class="fa fa-image"></i>
                         Preview
+                        <router-link class="btn btn-xs btn-primary" :to="'/schema/' + username + '/' + schema.name + '/3dview'">
+                            <i class="fa fa-cubes"></i>
+                            3D-Preview
+                        </router-link>
                     </div>
                     <div class="card-body">
                         <div class="text-center" style="min-height: 600px;">
