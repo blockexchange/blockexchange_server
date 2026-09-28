@@ -36,8 +36,8 @@ func (r *SchemaPartRepository) GetBySchemaUIDAndOffset(schema_uid string, offset
 func (r *SchemaPartRepository) GetBySchemaUIDAndRange(schema_uid string, x1, y1, z1, x2, y2, z2 int) ([]*types.SchemaPart, error) {
 	g := r.g.Model(types.SchemaPart{})
 	g = g.Where("schema_uid = ?", schema_uid)
-	g = g.Where("offset_x >= ?", x1).Where("offset_y >= ?", y1).Where("offest_z >= ?", z1)
-	g = g.Where("offset_x <= ?", x2).Where("offset_y <= ?", y2).Where("offest_z <= ?", z2)
+	g = g.Where("offset_x >= ?", x1).Where("offset_y >= ?", y1).Where("offset_z >= ?", z1)
+	g = g.Where("offset_x <= ?", x2).Where("offset_y <= ?", y2).Where("offset_z <= ?", z2)
 	return FindMulti[types.SchemaPart](g)
 }
 
