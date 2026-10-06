@@ -122,9 +122,8 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 
 	if with_order {
 		if search.OrderColumn != nil && search.OrderDirection != nil && types.OrderColumns[*search.OrderColumn] && types.OrderDirections[*search.OrderDirection] {
-			query.WriteString(fmt.Sprintf(" order by $%d %s", i, *search.OrderDirection))
-			params = append(params, *search.OrderColumn)
-			i++
+			// column and direction are validated against allow-lists, bind parameters can't be used for identifiers
+			query.WriteString(fmt.Sprintf(" order by %s %s", *search.OrderColumn, *search.OrderDirection))
 		} else {
 			query.WriteString(" order by mtime desc")
 		}
@@ -150,13 +149,8 @@ func (r *SchemaSearchRepository) Count(search *types.SchemaSearchRequest) (int64
 	query.WriteString("select count(*) as count")
 	params := r.buildWhereQuery(&query, search, false)
 	var c int64
-	rows, err := r.DB.Query(query.String(), params...)
-	if err != nil {
-		return 0, err
-	}
-	defer rows.Close()
-	rows.Next()
-	return c, rows.Scan(&c)
+	err := r.DB.QueryRow(query.String(), params...).Scan(&c)
+	return c, err
 }
 
 func (r *SchemaSearchRepository) Search(search *types.SchemaSearchRequest) ([]*types.SchemaSearchResponse, error) {

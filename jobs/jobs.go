@@ -25,57 +25,47 @@ func Start(repos *db.Repositories, api *api.Api) {
 
 }
 
-func updateStats(api *api.Api, pgl *pglock.Client) {
+// runLocked executes fn every interval while holding the named cluster-wide lock
+func runLocked(pgl *pglock.Client, name string, interval time.Duration, fn func()) {
 	for {
-		lock, err := pgl.Acquire("update-stats")
+		lock, err := pgl.Acquire(name)
 		if err != nil {
-			logrus.WithError(err).Error("update stats lock")
+			logrus.WithError(err).WithField("job", name).Error("job lock")
 			time.Sleep(time.Second * 10)
 			continue
 		}
 
-		err = api.UpdateStats()
-		if err != nil {
-			logrus.WithError(err).Error("update stats")
-		}
+		fn()
 
 		lock.Close()
-		time.Sleep(30 * time.Minute)
+		time.Sleep(interval)
 	}
 }
 
-func cleanupSchemas(schemarepo *db.SchemaRepository, pgl *pglock.Client) {
-	for {
-		lock, err := pgl.Acquire("schema-cleanup")
+func updateStats(api *api.Api, pgl *pglock.Client) {
+	runLocked(pgl, "update-stats", 30*time.Minute, func() {
+		err := api.UpdateStats()
 		if err != nil {
-			logrus.WithError(err).Error("schema cleanup lock")
-			time.Sleep(time.Second * 10)
-			continue
+			logrus.WithError(err).Error("update stats")
 		}
+	})
+}
 
+func cleanupSchemas(schemarepo *db.SchemaRepository, pgl *pglock.Client) {
+	runLocked(pgl, "schema-cleanup", 5*time.Minute, func() {
 		logrus.Trace("Removing old and incomplete schemas")
 		now := time.Now().Unix() * 1000
-		err = schemarepo.DeleteOldIncompleteSchema(now - (3600 * 1000 * 24))
+		err := schemarepo.DeleteOldIncompleteSchema(now - (3600 * 1000 * 24))
 		if err != nil {
 			logrus.WithError(err).Error("schema cleanup")
 		}
-
-		lock.Close()
-		time.Sleep(5 * time.Minute)
-	}
+	})
 }
 
 func updateScreenshots(c *core.Core, sr *db.SchemaSearchRepository, pgl *pglock.Client) {
 	from := time.Now().Add(-10*time.Minute).Unix() * 1000
 
-	for {
-		lock, err := pgl.Acquire("update-screenshots")
-		if err != nil {
-			logrus.WithError(err).Error("screenshot update lock")
-			time.Sleep(time.Second * 10)
-			continue
-		}
-
+	runLocked(pgl, "update-screenshots", 5*time.Minute, func() {
 		logrus.Trace("updating schema previews")
 		complete := true
 		list, err := sr.Search(&types.SchemaSearchRequest{
@@ -84,8 +74,7 @@ func updateScreenshots(c *core.Core, sr *db.SchemaSearchRepository, pgl *pglock.
 		})
 		if err != nil {
 			logrus.WithError(err).Error("schema search")
-			time.Sleep(time.Second * 10)
-			continue
+			return
 		}
 
 		for _, r := range list {
@@ -104,8 +93,5 @@ func updateScreenshots(c *core.Core, sr *db.SchemaSearchRepository, pgl *pglock.
 				from = r.Schema.Mtime
 			}
 		}
-
-		lock.Close()
-		time.Sleep(5 * time.Minute)
-	}
+	})
 }
