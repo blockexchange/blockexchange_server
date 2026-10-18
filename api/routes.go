@@ -61,6 +61,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	r.HandleFunc("/api/tags", api.GetTags).Methods(http.MethodGet)
 
+	r.HandleFunc("/api/colormapping", api.GetColorMapping).Methods(http.MethodGet)
+
 	r.HandleFunc("/api/schemamod/count", api.GetSchemaModCount).Methods(http.MethodGet)
 
 	r.HandleFunc("/api/schema/{schema_uid}", api.GetSchema).Methods(http.MethodGet)

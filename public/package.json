@@ -15,11 +15,15 @@
     "@fortawesome/fontawesome-free": "^6.1.1",
     "bootswatch": "^5.3.1",
     "dompurify": "^3.2.4",
+    "fflate": "^0.8.2",
     "marked": "^11.1.0",
+    "three": "^0.180.0",
     "vue": "^3.2.33",
     "vue-router": "^4.0.14"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
     "jshint": "2.13.6",
     "rollup": "4.22.4"
   }

@@ -41,6 +41,15 @@
 		<script src="{{.BaseURL}}/node_modules/vue-router/dist/vue-router.global.prod.js"></script>
 		{{end}}
 		{{if .Webdev}}
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "{{.BaseURL}}/node_modules/three/build/three.module.min.js",
+					"three/examples/": "{{.BaseURL}}/node_modules/three/examples/",
+					"fflate": "{{.BaseURL}}/node_modules/fflate/esm/browser.js"
+				}
+			}
+    	</script>
 		<script src="{{.BaseURL}}/js/main.js" type="module"></script>
 		{{else}}
 		<script src="{{.BaseURL}}/js/bundle.js"></script>

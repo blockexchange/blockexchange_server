@@ -60,6 +60,31 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 		public.RenderIndex(w, r, meta)
 	})
 
+	r.HandleFunc("/schema/{username}/{name}/3dview", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		username := vars["username"]
+		schema, err := api.SchemaRepo.GetSchemaByUsernameAndName(username, vars["name"])
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+		if schema == nil {
+			SendError(w, 404, "not found")
+			return
+		}
+
+		meta := map[string]string{
+			"og:site_name":   "Blockexchange 3D-Preview",
+			"og:description": schema.ShortDescription,
+			"og:title":       fmt.Sprintf("'%s' by %s", schema.Name, username),
+			"og:type":        "Schematic",
+			"og:url":         fmt.Sprintf("%s/schema/%s/%s", api.cfg.BaseURL, username, schema.Name),
+			"og:image":       fmt.Sprintf("%s/api/schema/%s/screenshot", api.cfg.BaseURL, schema.UID),
+		}
+
+		public.RenderIndex(w, r, meta)
+	})
+
 	r.HandleFunc("/user/{username}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		username := vars["username"]

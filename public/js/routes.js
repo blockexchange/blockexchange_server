@@ -13,6 +13,7 @@ import UserSchemas from './components/pages/UserSchemas.js';
 import UserCollections from './components/pages/UserCollections.js';
 import UserCollection from './components/pages/UserCollection.js';
 import Mods from './components/pages/Mods.js';
+import ThreePreview from './components/pages/ThreePreview.js';
 
 export default [{
 	path: "/", component: Start
@@ -34,6 +35,8 @@ export default [{
 	path: "/search", component: Search,
 },{
 	path: "/schema/:username/:name", component: SchemaDetail, props: true
+},{
+	path: "/schema/:username/:name/3dview", component: ThreePreview, props: true
 },{
 	path: "/schema/:username", component: UserSchemas, props: true
 },{
