@@ -1,7 +1,8 @@
+import { reactive } from 'vue';
 
 import { get_info } from "../api/info.js";
 
-const store = Vue.reactive({});
+const store = reactive({});
 
 export const fetch_info = () => get_info().then(i => Object.assign(store, i));
 

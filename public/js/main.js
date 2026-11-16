@@ -1,3 +1,9 @@
+import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+
+import 'bootswatch/dist/darkly/bootstrap.min.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 import App from './app.js';
 import routes from './routes.js';
 import { fetch_info } from './service/info.js';
@@ -6,13 +12,13 @@ import { check_login } from './service/login.js';
 
 function start(){
 	// create router instance
-	const router = VueRouter.createRouter({
-		history: VueRouter.createWebHistory(),
+	const router = createRouter({
+		history: createWebHistory(),
 		routes: routes
 	});
 
 	// start vue
-	const app = Vue.createApp(App);
+	const app = createApp(App);
 	app.use(router);
 	app.mount("#app");
 }

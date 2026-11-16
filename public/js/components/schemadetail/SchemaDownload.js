@@ -7,11 +7,6 @@ export default {
     components: {
         "clipboard-copy": ClipboardCopy
     },
-    data: function() {
-        return {
-            BaseURL
-        };
-    },
     computed: {
         can_use_placement_tool: function() {
             return (this.schema.size_x <= max_placement_tool_size &&
@@ -59,13 +54,13 @@ export default {
             </u>
             <div class="btn-group">
                 <a class="btn btn-outline-success"
-                    :href="BaseURL + '/api/export_bx/' + schema.uid + '/' + schema.name + '.zip'">
+                    :href="'/api/export_bx/' + schema.uid + '/' + schema.name + '.zip'">
                     <i class="fa fa-download"></i>
                     Download as BX schematic
                 </a>
                 <a class="btn btn-outline-success"
                     v-bind:class="{disabled: schema.total_parts >= 500}"
-                    :href="BaseURL + '/api/export_we/' + schema.uid + '/' + schema.name + '.we'">
+                    :href="'/api/export_we/' + schema.uid + '/' + schema.name + '.we'">
                     <i class="fa fa-download"></i>
                     Download as WE schematic
                     <i class="fa fa-triangle-exclamation"

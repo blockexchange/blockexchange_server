@@ -1,5 +1,5 @@
 
-export const login = (name, password) => fetch(`${BaseURL}/api/login`, {
+export const login = (name, password) => fetch(`/api/login`, {
     method: "POST",
     body: JSON.stringify({
         name: name,
@@ -8,8 +8,8 @@ export const login = (name, password) => fetch(`${BaseURL}/api/login`, {
 })
 .then(r => r.status == 200);
 
-export const logout = () => fetch(`${BaseURL}/api/login`, {
+export const logout = () => fetch(`/api/login`, {
     method: "DELETE"
 });
 
-export const get_claims = renew => fetch(`${BaseURL}/api/login${renew ? "?renew=true": ""}`).then(r => r.status == 200 ? r.json() : null);
+export const get_claims = renew => fetch(`/api/login${renew ? "?renew=true": ""}`).then(r => r.status == 200 ? r.json() : null);

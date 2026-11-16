@@ -14,8 +14,7 @@ export default {
 	},
 	data: function() {
 		return {
-			breadcrumb: [START, USER_SCHEMAS(this.username), SCHEMA_DETAIL(this.username, this.name)],
-			BaseURL
+			breadcrumb: [START, USER_SCHEMAS(this.username), SCHEMA_DETAIL(this.username, this.name)]
 		};
 	},
 	methods: {

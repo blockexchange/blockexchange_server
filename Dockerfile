@@ -3,15 +3,14 @@ WORKDIR /public
 COPY /public/package-lock.json /public/package.json ./
 RUN npm ci
 COPY public/ .
-RUN npm run jshint && \
-	npm run bundle
+RUN npm run build
 
 FROM golang:1.26 as go-app
 WORKDIR /data
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-COPY --from=node-app /public /data/public
+COPY --from=node-app /public/dist /data/public/dist
 RUN go vet && \
 	go test ./... && \
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .

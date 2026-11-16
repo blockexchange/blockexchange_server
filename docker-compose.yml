@@ -23,10 +23,28 @@ services:
   depends_on:
    - postgres
 
+ frontend:
+  image: node:24-alpine
+  volumes:
+   - ".:/app"
+  working_dir: /app/public
+  environment:
+   - API_TARGET=http://blockexchange:8080
+  ports:
+   - "5173:5173"
+  command: ["sh", "-c", "npm ci && npm run build && npm run dev -- --host"]
+  healthcheck:
+   test: ["CMD", "test", "-f", "/app/public/dist/index.html"]
+   interval: 3s
+   retries: 100
+
  blockexchange:
   image: golang:1.26
   depends_on:
-   - postgres
+   postgres:
+    condition: service_started
+   frontend:
+    condition: service_healthy
   volumes:
    - ".:/data"
    - "go_dir:/go"

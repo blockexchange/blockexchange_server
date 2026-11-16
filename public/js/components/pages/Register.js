@@ -49,7 +49,7 @@ export default {
 	},
 	computed: {
 		captcha_src: function() {
-			return this.captcha_id ? `${BaseURL}/api/captcha/${this.captcha_id}.png` : null;
+			return this.captcha_id ? `/api/captcha/${this.captcha_id}.png` : null;
 		},
 		can_register: function() {
 			return this.name && this.password && this.password == this.password2 && this.captcha_answer;

@@ -1,9 +1,10 @@
+import { reactive } from 'vue';
 import Breadcrumb, { START, SCHEMA_IMPORT } from "../Breadcrumb.js";
 
 import { import_schematic } from "../../api/import.js";
 import { get_username } from "../../service/login.js";
 
-const store = Vue.reactive({
+const store = reactive({
 	breadcrumb: [START, SCHEMA_IMPORT],
 	results: []
 });
@@ -15,7 +16,7 @@ export default {
 	data: () => store,
 	methods: {
 		import_file: function(file) {
-			const res = Vue.reactive({
+			const res = reactive({
 				filename: file.name,
 				busy: true,
 				schema: null,

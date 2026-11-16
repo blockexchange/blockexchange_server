@@ -1,17 +1,17 @@
 
-export const schema_search = search => fetch(`${BaseURL}/api/search/schema`, {
+export const schema_search = search => fetch(`/api/search/schema`, {
     method: "POST",
     body: JSON.stringify(search)
 })
 .then(r => r.json());
 
-export const schema_count = search => fetch(`${BaseURL}/api/count/schema`, {
+export const schema_count = search => fetch(`/api/count/schema`, {
     method: "POST",
     body: JSON.stringify(search)
 })
 .then(r => r.json());
 
-export const schema_update = schema => fetch(`${BaseURL}/api/schema/${schema.uid}`, {
+export const schema_update = schema => fetch(`/api/schema/${schema.uid}`, {
     method: "PUT",
     body: JSON.stringify(schema)
 })
@@ -23,7 +23,7 @@ export const schema_update = schema => fetch(`${BaseURL}/api/schema/${schema.uid
     }
 });
 
-export const schema_set_tags = (schema_uid, tags) => fetch(`${BaseURL}/api/schema/${schema_uid}/tags`, {
+export const schema_set_tags = (schema_uid, tags) => fetch(`/api/schema/${schema_uid}/tags`, {
     method: "POST",
     body: JSON.stringify(tags)
 })
@@ -40,7 +40,7 @@ export const schema_update_info = schema_uid => fetch(`/api/schema/${schema_uid}
 .then(r => r.json());
 
 
-export const schema_delete = schema_uid => fetch(`${BaseURL}/api/schema/${schema_uid}`, {
+export const schema_delete = schema_uid => fetch(`/api/schema/${schema_uid}`, {
     method: "DELETE",
 })
 .then(r => r.json());

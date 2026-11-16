@@ -1,2 +1,2 @@
 
-export const get_tags = () => fetch(`${BaseURL}/api/tags`).then(r => r.json());
+export const get_tags = () => fetch(`/api/tags`).then(r => r.json());

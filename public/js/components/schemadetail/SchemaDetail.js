@@ -1,3 +1,5 @@
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import format_size from "../../util/format_size.js";
 import format_time from "../../util/format_time.js";
 
@@ -34,7 +36,6 @@ export default {
     },
     data: function() {
         return {
-            BaseURL,
             cache_counter: Date.now(),
             edit_mode: false,
             error_response: null,
@@ -186,8 +187,8 @@ export default {
                             <li>
                                 <b>License:</b>
                                 <span v-if="!edit_mode">
-                                    <img v-if="schema.license == 'CC0'" :src="BaseURL + '/pics/license_cc0.png'">
-                                    <img v-else-if="schema.license == 'CC-BY-SA'" :src="BaseURL + '/pics/license_cc-by-sa.png'">
+                                    <img v-if="schema.license == 'CC0'" :src="'/pics/license_cc0.png'">
+                                    <img v-else-if="schema.license == 'CC-BY-SA'" :src="'/pics/license_cc-by-sa.png'">
                                     <span v-else class="badge bg-secondary">{{schema.license}}</span>
                                 </span>
                                 <select v-else class="form-control" v-model="schema.license">
@@ -278,7 +279,7 @@ export default {
                     </div>
                     <div class="card-body">
                         <div class="text-center" style="min-height: 600px;">
-                            <img :src="BaseURL + '/api/schema/' + schema.uid + '/screenshot?cachebust=' + cache_counter" class="img-fluid">
+                            <img :src="'/api/schema/' + schema.uid + '/screenshot?cachebust=' + cache_counter" class="img-fluid">
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,8 @@
+import { reactive } from 'vue';
 
 import { get_claims as fetch_claims, login as api_login, logout as api_logout } from '../api/login.js';
 
-const store = Vue.reactive({
+const store = reactive({
     claims: null
 });
 

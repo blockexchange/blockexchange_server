@@ -59,13 +59,13 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 
 	// static files
 	if cfg.WebDev {
-		logrus.WithFields(logrus.Fields{"dir": "public"}).Info("Using live mode")
-		fs := http.FileServer(http.FS(os.DirFS("public")))
+		logrus.WithFields(logrus.Fields{"dir": "public/dist"}).Info("Using live mode")
+		fs := http.FileServer(http.FS(os.DirFS("public/dist")))
 		r.PathPrefix("/").HandlerFunc(fs.ServeHTTP)
 
 	} else {
 		logrus.Info("Using embed mode")
-		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding))
+		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding, statigz.FSPrefix(public.Prefix)))
 	}
 
 	return a, r, nil

@@ -34,9 +34,9 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 		var err error
 		if cfg.WebDev {
 			// live mode: read from disk
-			data, err = os.ReadFile("public/index.html")
+			data, err = os.ReadFile("public/dist/index.html")
 		} else {
-			data, err = public.Webapp.ReadFile("index.html")
+			data, err = public.Webapp.ReadFile(public.Prefix + "/index.html")
 		}
 		if err != nil {
 			SendError(w, 500, err.Error())

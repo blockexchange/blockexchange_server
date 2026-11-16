@@ -1,3 +1,5 @@
 public/node_modules
 blockexchange
 docker-compose.yml
+public/node_modules
+public/dist

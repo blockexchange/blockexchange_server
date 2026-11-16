@@ -1,3 +1,4 @@
+import { reactive } from 'vue';
 import { schema_search, schema_count } from "../api/schema.js";
 import { get_tags } from "../service/tags.js";
 
@@ -6,7 +7,7 @@ import debounce from "../util/debounce.js";
 import SchemaList from "./SchemaList.js";
 import PagedContent from "./PagedContent.js";
 
-const store = Vue.reactive({
+const store = reactive({
     count: 0,
     busy: false,
     keywords: "",

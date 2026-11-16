@@ -8,7 +8,7 @@ export default {
     methods: {
         format_size,
         preview_src: function(schema) {
-            return BaseURL + '/api/schema/' + schema.uid + '/screenshot?height=240&width=360';
+            return '/api/schema/' + schema.uid + '/screenshot?height=240&width=360';
         },
         schema_link: function(entry) {
             return '/schema/' + entry.username + '/' + entry.schema.name;
