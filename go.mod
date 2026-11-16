@@ -3,7 +3,7 @@ module blockexchange
 go 1.26.0
 
 require (
-	cirello.io/pglock v1.16.0
+	cirello.io/pglock v1.18.0
 	github.com/Shopify/go-lua v0.0.0-20221004153744-91867de107cf
 	github.com/dchest/captcha v1.1.0
 	github.com/golang-jwt/jwt/v4 v4.5.2
@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/handlers v1.5.2
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/golang-lru/v2 v2.0.7
-	github.com/lib/pq v1.11.0
+	github.com/lib/pq v1.12.3
 	github.com/minetest-go/colormapping v1.0.5
 	github.com/minetest-go/maprenderer v1.0.24
 	github.com/minetest-go/oauth v1.0.2
@@ -30,7 +30,7 @@ require (
 	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
-	github.com/jackc/pgx/v5 v5.9.2 // indirect
+	github.com/jackc/pgx/v5 v5.11.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
