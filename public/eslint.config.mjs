@@ -11,5 +11,13 @@ export default [
 			sourceType: 'module',
 			globals: { ...globals.browser }
 		}
+	},
+	{
+		files: ['*.mjs'],
+		languageOptions: {
+			ecmaVersion: 'latest',
+			sourceType: 'module',
+			globals: { ...globals.node }
+		}
 	}
 ];
