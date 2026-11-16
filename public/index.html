@@ -4,13 +4,9 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
 		<meta name="theme-color" content="#000">
-		{{range $key, $value := .Meta}}
-		<meta name="{{$key}}" content="{{$value}}"/>
-		{{end}}
-
-		<link rel="icon" href="{{.BaseURL}}/pics/bx_big.png" type="image/png">
-		<link rel="stylesheet" href="{{.BaseURL}}/node_modules/bootswatch/dist/darkly/bootstrap.min.css"/>
-		<link rel="stylesheet" href="{{.BaseURL}}/node_modules/@fortawesome/fontawesome-free/css/all.min.css"/>
+		<link rel="icon" href="/pics/bx_big.png" type="image/png">
+		<link rel="stylesheet" href="/node_modules/bootswatch/dist/darkly/bootstrap.min.css"/>
+		<link rel="stylesheet" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css"/>
 		<title>Block exchange</title>
 	</head>
 	<body>
@@ -27,23 +23,14 @@
 			</div>
 		</app>
 		<script>
-			window.BaseURL = "{{.BaseURL}}";
+			window.BaseURL = "";
 		</script>
 
 		<!-- app bootstrap -->
-		<script src="{{.BaseURL}}/node_modules/marked/lib/marked.umd.js"></script>
-		<script src="{{.BaseURL}}/node_modules/dompurify/dist/purify.min.js"></script>
-		{{if .Webdev}}
-		<script src="{{.BaseURL}}/node_modules/vue/dist/vue.global.js"></script>
-		<script src="{{.BaseURL}}/node_modules/vue-router/dist/vue-router.global.js"></script>
-		{{else}}
-		<script src="{{.BaseURL}}/node_modules/vue/dist/vue.global.prod.js"></script>
-		<script src="{{.BaseURL}}/node_modules/vue-router/dist/vue-router.global.prod.js"></script>
-		{{end}}
-		{{if .Webdev}}
-		<script src="{{.BaseURL}}/js/main.js" type="module"></script>
-		{{else}}
-		<script src="{{.BaseURL}}/js/bundle.js"></script>
-		{{end}}
+		<script src="/node_modules/marked/lib/marked.umd.js"></script>
+		<script src="/node_modules/dompurify/dist/purify.min.js"></script>
+		<script src="/node_modules/vue/dist/vue.global.prod.js"></script>
+		<script src="/node_modules/vue-router/dist/vue-router.global.prod.js"></script>
+		<script src="/js/bundle.js"></script>
 	</body>
 </html>
