@@ -3,7 +3,7 @@ WORKDIR /public
 COPY /public/package-lock.json /public/package.json ./
 RUN npm ci
 COPY public/ .
-RUN npm run build
+RUN npm run lint && npm run build
 
 FROM golang:1.27 as go-app
 WORKDIR /data

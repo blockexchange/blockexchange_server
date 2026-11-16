@@ -16,7 +16,7 @@ jobs:
 
     - name: Install npm modules
       run: |
-        cd public && npm ci && npm run build
+        cd public && npm ci && npm run lint && npm run build
 
     - name: Start  services
       run: |

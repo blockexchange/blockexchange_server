@@ -17,6 +17,7 @@ services:
   image: node:24-alpine
   volumes:
    - ".:/app"
+   - "node_modules:/app/public/node_modules"
   working_dir: /app/public
   environment:
    - API_TARGET=http://blockexchange:8080
@@ -74,6 +75,7 @@ services:
   entrypoint: "luantiserver --config /minetest.conf --world /world --gameid minetest_game"
 
  mod-integration-test:
+  profiles: ["test"]
   image: ghcr.io/luanti-org/luanti:5.18.0
   user: root
   depends_on:
@@ -85,6 +87,7 @@ services:
   entrypoint: "luantiserver --config /minetest.conf --world /world --gameid minetest_game"
 
  integration-test:
+  profiles: ["test"]
   image: golang:1.27
   depends_on:
    - postgres
@@ -107,3 +110,4 @@ volumes:
   world_data: {}
   go_cache: {}
   go_dir: {}
+  node_modules: {}
