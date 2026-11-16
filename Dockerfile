@@ -5,7 +5,7 @@ RUN npm ci
 COPY public/ .
 RUN npm run build
 
-FROM golang:1.26 as go-app
+FROM golang:1.27 as go-app
 WORKDIR /data
 COPY go.mod go.sum ./
 RUN go mod download

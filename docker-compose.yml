@@ -2,26 +2,16 @@ version: "3.6"
 
 services:
  postgres:
-  image: postgres:16.1
+  image: postgres:18.7
   restart: always
   environment:
    POSTGRES_PASSWORD: enter
   volumes:
-   - "postgres:/var/lib/postgresql/data"
+   - "postgres:/var/lib/postgresql"
   command:
    - "postgres"
    - "-c"
    - "log_statement=all"
-
- pgweb:
-  restart: always
-  image: sosedoff/pgweb:0.16.2
-  environment:
-    PGWEB_DATABASE_URL: postgres://postgres:enter@postgres:5432/postgres?sslmode=disable
-  ports:
-   - "8081:8081"
-  depends_on:
-   - postgres
 
  frontend:
   image: node:24-alpine
@@ -39,7 +29,7 @@ services:
    retries: 100
 
  blockexchange:
-  image: golang:1.26
+  image: golang:1.27
   depends_on:
    postgres:
     condition: service_started
@@ -72,7 +62,7 @@ services:
   command: ["go", "run", "."]
 
  luanti:
-  image: ghcr.io/luanti-org/luanti:5.11.0
+  image: ghcr.io/luanti-org/luanti:5.18.0
   user: root
   volumes:
    - "world_data:/root/.minetest/worlds/world"
@@ -84,7 +74,7 @@ services:
   entrypoint: "luantiserver --config /minetest.conf --world /world --gameid minetest_game"
 
  mod-integration-test:
-  image: ghcr.io/luanti-org/luanti:5.11.0
+  image: ghcr.io/luanti-org/luanti:5.18.0
   user: root
   depends_on:
    - blockexchange
@@ -95,7 +85,7 @@ services:
   entrypoint: "luantiserver --config /minetest.conf --world /world --gameid minetest_game"
 
  integration-test:
-  image: golang:1.26
+  image: golang:1.27
   depends_on:
    - postgres
   volumes:
