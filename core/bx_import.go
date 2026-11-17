@@ -12,7 +12,7 @@ import (
 func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 	res, err := bx.ParseBXContent(data)
 	if err != nil {
-		return nil, fmt.Errorf("parse error: %v", err)
+		return nil, fmt.Errorf("parse error: %w", err)
 	}
 
 	newSchemaName, err := c.FindUnusedSchemaname(res.Schema.Name, username)

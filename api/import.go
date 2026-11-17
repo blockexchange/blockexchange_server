@@ -1,6 +1,8 @@
 package api
 
 import (
+	"blockexchange/schematic/bx"
+	"blockexchange/schematic/worldedit"
 	"blockexchange/types"
 	"errors"
 	"fmt"
@@ -17,13 +19,15 @@ func (api *Api) ImportSchematic(w http.ResponseWriter, r *http.Request, ctx *Sec
 	vars := mux.Vars(r)
 	filename := vars["filename"]
 
-	data, err := io.ReadAll(r.Body)
+	// abort reading as soon as the limit is exceeded instead of buffering the whole body
+	data, err := io.ReadAll(http.MaxBytesReader(w, r.Body, MAX_SIZE))
 	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-	if len(data) > MAX_SIZE {
-		SendError(w, 500, fmt.Sprintf("filesize larger that %d bytes", MAX_SIZE))
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			SendError(w, http.StatusRequestEntityTooLarge, fmt.Sprintf("filesize larger than %d bytes", MAX_SIZE))
+			return
+		}
+		SendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -34,11 +38,16 @@ func (api *Api) ImportSchematic(w http.ResponseWriter, r *http.Request, ctx *Sec
 	} else if strings.HasSuffix(filename, ".zip") {
 		schema, err = api.core.ImportBX(data, ctx.Claims.Username)
 	} else {
-		err = errors.New("unrecognized file extension")
+		SendError(w, http.StatusBadRequest, "unrecognized file extension")
+		return
 	}
 
+	if errors.Is(err, worldedit.ErrInvalidSchematic) || errors.Is(err, bx.ErrInvalidBX) {
+		SendError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
