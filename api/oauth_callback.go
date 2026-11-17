@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/minetest-go/oauth"
+	"github.com/luanti-golang/oauth"
 )
 
 func (api *Api) OauthCallback(w http.ResponseWriter, r *http.Request, user_info *oauth.OauthUserInfo) error {

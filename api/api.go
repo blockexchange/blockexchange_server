@@ -11,7 +11,7 @@ import (
 	"sync/atomic"
 
 	"github.com/gorilla/mux"
-	"github.com/minetest-go/colormapping"
+	"github.com/luanti-golang/colormapping"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/vearutop/statigz"

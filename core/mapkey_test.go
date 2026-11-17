@@ -4,7 +4,7 @@ import (
 	"blockexchange/core"
 	"testing"
 
-	mt "github.com/minetest-go/types"
+	mt "github.com/luanti-golang/types"
 	"github.com/stretchr/testify/assert"
 )
 

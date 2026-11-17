@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/golang-lru/v2/expirable"
-	mt "github.com/minetest-go/types"
+	mt "github.com/luanti-golang/types"
 )
 
 const (

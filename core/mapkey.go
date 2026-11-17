@@ -1,6 +1,6 @@
 package core
 
-import mt "github.com/minetest-go/types"
+import mt "github.com/luanti-golang/types"
 
 // +/- 2000 mapblocks
 const key_offset = 2000

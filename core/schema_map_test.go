@@ -6,7 +6,7 @@ import (
 	"blockexchange/types"
 	"testing"
 
-	mt "github.com/minetest-go/types"
+	mt "github.com/luanti-golang/types"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"

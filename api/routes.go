@@ -4,7 +4,7 @@ import (
 	"blockexchange/types"
 	"net/http"
 
-	"github.com/minetest-go/oauth"
+	"github.com/luanti-golang/oauth"
 
 	"github.com/dchest/captcha"
 	"github.com/gorilla/mux"

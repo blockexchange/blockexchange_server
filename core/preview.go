@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/hashicorp/golang-lru/v2/expirable"
-	"github.com/minetest-go/colormapping"
-	"github.com/minetest-go/maprenderer"
-	mtypes "github.com/minetest-go/types"
+	"github.com/luanti-golang/colormapping"
+	"github.com/luanti-golang/maprenderer"
+	mtypes "github.com/luanti-golang/types"
 )
 
 var cm *colormapping.ColorMapping = colormapping.NewColorMapping()
