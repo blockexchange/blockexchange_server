@@ -73,8 +73,8 @@ github.com/luanti-golang/colormapping v1.1.0 h1:VYNzeuO6hiSWb/KrBgmp7dz7mZFxcase
 github.com/luanti-golang/colormapping v1.1.0/go.mod h1:Sbq917/zANGr1gdVcESTD7bFcUwbIU7mVMY1kQ6hZAQ=
 github.com/luanti-golang/mapparser v1.0.6 h1:zLErxmQf6QQW9YVbNbZKPe64SSC1MYo8lpN8qniBxMc=
 github.com/luanti-golang/mapparser v1.0.6/go.mod h1:/8sLesCFhLzsvgBF354Ku64y5h1IQ5qxVC3Qp+zXgCE=
-github.com/luanti-golang/maprenderer v1.1.0 h1:ypAgtDM7wNIjgJDlmKRDklYfRPncNne0PXnm+9Q1kcE=
-github.com/luanti-golang/maprenderer v1.1.0/go.mod h1:FQ8xIBPnaHC1LGFqV/AKYzXSrTtyK6rZVgFaFatFVAs=
+github.com/luanti-golang/maprenderer v1.2.0 h1:K93yoT65u1SAbLbLpPEJSMyN55nn37twydQUHDrXC4o=
+github.com/luanti-golang/maprenderer v1.2.0/go.mod h1:FQ8xIBPnaHC1LGFqV/AKYzXSrTtyK6rZVgFaFatFVAs=
 github.com/luanti-golang/oauth v1.1.0 h1:qAFOKG1/1pViiybmR3QVlLvTFIsW5JwocuCiXUfdKIc=
 github.com/luanti-golang/oauth v1.1.0/go.mod h1:PUAmZ8/aQ7LZJx6ecfO4XHfpIY/O9Mi0Ef+zB5OhXWM=
 github.com/luanti-golang/types v1.0.8 h1:NQpRglDgov4MXkFf2gzF6WQzUFQiGzou/9vNq+KGqUI=

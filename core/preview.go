@@ -95,6 +95,7 @@ func (c *Core) UpdatePreview(schema *types.Schema) (*types.SchemaScreenshot, err
 		max_axis := max(max_pos.X(), max_pos.Y(), max_pos.Z())
 
 		opts := maprenderer.NewDefaultIsoRenderOpts()
+		opts.EnableTransparency = true
 		if max_axis < 10 {
 			opts.CubeLen = 48
 		} else if max_axis < 50 {
