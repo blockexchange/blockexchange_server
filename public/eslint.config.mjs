@@ -1,23 +1,30 @@
 import js from '@eslint/js';
 import globals from 'globals';
+import pluginVue from 'eslint-plugin-vue';
+import tseslint from 'typescript-eslint';
+import { defineConfig } from 'eslint/config';
 
-export default [
+export default defineConfig(
 	{ ignores: ['dist/', 'node_modules/'] },
 	js.configs.recommended,
+	...tseslint.configs.recommended,
+	...pluginVue.configs['flat/essential'],
 	{
-		files: ['js/**/*.js'],
+		files: ['**/*.vue'],
 		languageOptions: {
-			ecmaVersion: 'latest',
-			sourceType: 'module',
-			globals: { ...globals.browser }
+			parserOptions: { parser: tseslint.parser }
 		}
 	},
 	{
-		files: ['*.mjs'],
-		languageOptions: {
-			ecmaVersion: 'latest',
-			sourceType: 'module',
-			globals: { ...globals.node }
+		files: ['src/**/*.{ts,vue}'],
+		languageOptions: { globals: { ...globals.browser } },
+		rules: {
+			// page components are single words (Login, Users, ...)
+			'vue/multi-word-component-names': 'off'
 		}
+	},
+	{
+		files: ['*.config.{ts,mjs}'],
+		languageOptions: { globals: { ...globals.node } }
 	}
-];
+);

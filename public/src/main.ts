@@ -1,0 +1,32 @@
+import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+
+import 'bootswatch/dist/darkly/bootstrap.min.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+import App from './App.vue';
+import routes from './routes';
+import { fetch_info } from './service/info';
+import { fetch_tags } from './service/tags';
+import { check_login } from './service/login';
+
+function start() {
+	const router = createRouter({
+		history: createWebHistory(),
+		routes: routes
+	});
+
+	createApp(App)
+	.use(router)
+	.mount("#app");
+}
+
+Promise.all([check_login(), fetch_info(), fetch_tags()])
+.then(() => start())
+.catch(e => {
+	console.error(e);
+	const el = document.getElementById("app");
+	if (el) {
+		el.textContent = `Error while starting the app: ${e}`;
+	}
+});

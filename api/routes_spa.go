@@ -27,6 +27,7 @@ func (api *Api) SetupSPARoutes(r *mux.Router, cfg *types.Config) {
 		"/search",
 		"/register",
 		"/profile",
+		"/tags",
 	}
 
 	serveIndex := func(w http.ResponseWriter, r *http.Request) {
