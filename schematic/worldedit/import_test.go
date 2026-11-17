@@ -2,6 +2,7 @@ package worldedit_test
 
 import (
 	"blockexchange/schematic/worldedit"
+	"fmt"
 	"os"
 	"testing"
 
@@ -63,4 +64,37 @@ func TestImportComplex(t *testing.T) {
 	assert.NotNil(t, parts)
 
 	assert.Equal(t, 8, len(parts))
+}
+
+func TestImportNodeIDsPerPart(t *testing.T) {
+	// 40000 distinct node names would overflow a global int16 node-id counter
+	entries := make([]*worldedit.WEEntry, 0)
+	for i := 0; i < 40000; i++ {
+		entries = append(entries, &worldedit.WEEntry{
+			Name: fmt.Sprintf("mod:node_%d", i),
+			X:    i % 200,
+			Y:    (i / 200) % 200,
+			Z:    0,
+		})
+	}
+
+	parts, err := worldedit.Import(entries)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, parts)
+
+	for _, part := range parts {
+		mapping := part.Meta.NodeMapping
+		assert.Equal(t, int16(0), mapping["air"])
+
+		// ids are dense in [0, len(mapping))
+		seen := map[int16]bool{}
+		for _, id := range mapping {
+			assert.True(t, id >= 0 && int(id) < len(mapping), "id %d out of range", id)
+			assert.False(t, seen[id], "duplicate id %d", id)
+			seen[id] = true
+		}
+		for _, id := range part.NodeIDS {
+			assert.True(t, id >= 0 && int(id) < len(mapping))
+		}
+	}
 }

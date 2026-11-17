@@ -18,7 +18,6 @@ func Import(entries []*WEEntry) ([]*parser.ParsedSchemaPart, error) {
 	max_x, max_y, max_z := GetBoundaries(entries)
 	max_mbx, max_mby, max_mbz := getMapblockPos(max_x, max_y, max_z)
 	parts := make(map[string]*parser.ParsedSchemaPart)
-	var nextNodeID int16 = 1
 
 	for _, entry := range entries {
 		mbx, mby, mbz := getMapblockPos(entry.X, entry.Y, entry.Z)
@@ -73,10 +72,10 @@ func Import(entries []*WEEntry) ([]*parser.ParsedSchemaPart, error) {
 		}
 		parts[index] = part
 
-		var nodeID int16 = part.Meta.NodeMapping[entry.Name]
-		if nodeID == 0 {
-			nodeID = nextNodeID
-			nextNodeID++
+		// node-ids are allocated per part (max 16^3 nodes + air per part, fits into int16)
+		nodeID, found := part.Meta.NodeMapping[entry.Name]
+		if !found {
+			nodeID = int16(len(part.Meta.NodeMapping))
 			part.Meta.NodeMapping[entry.Name] = nodeID
 		}
 

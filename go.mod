@@ -4,7 +4,6 @@ go 1.27
 
 require (
 	cirello.io/pglock v1.18.0
-	github.com/Shopify/go-lua v0.0.0-20221004153744-91867de107cf
 	github.com/dchest/captcha v1.1.0
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/golang-migrate/migrate/v4 v4.20.1
