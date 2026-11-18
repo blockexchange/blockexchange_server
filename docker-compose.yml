@@ -13,9 +13,9 @@ services:
 
  frontend:
   image: node:24-alpine
+  user: "${UID:-1000}:${GID:-1000}"
   volumes:
    - ".:/app"
-   - "node_modules:/app/public/node_modules"
   working_dir: /app/public
   environment:
    - API_TARGET=http://blockexchange:8080
