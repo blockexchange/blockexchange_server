@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { login as service_login, logout as service_logout, get_username } from "../../service/login";
-import { get_cdb_login, get_discord_login, get_github_login, get_mesehub_login, get_codeberg_login, get_base_url } from "../../service/info";
+import { get_cdb_login, get_discord_login, get_github_login, get_mesehub_login, get_codeberg_login } from "../../service/info";
 
 const router = useRouter();
 
@@ -15,7 +15,6 @@ const login_failed = ref(false);
 const current_user = computed(get_username);
 const valid_input = computed(() => username.value != "" && password.value != "");
 
-const base_url = computed(get_base_url);
 const providers = computed(() => [
 	{ name: "GitHub", url: get_github_login(), icon: "fa-brands fa-github" },
 	{ name: "Discord", url: get_discord_login(), icon: "fa-brands fa-discord" },
@@ -72,7 +71,7 @@ async function logout() {
 						<div class="d-grid gap-2" v-if="providers.length">
 							<a v-for="p in providers" :key="p.name" :href="p.url" class="btn btn-secondary bx-provider-btn">
 								<i :class="p.icon" v-if="p.icon"></i>
-								<img :src="(base_url ?? '') + (p.img ?? '')" alt="" v-else>
+								<img :src="p.img" alt="" v-else>
 								Continue with {{ p.name }}
 							</a>
 						</div>
