@@ -10,7 +10,8 @@ import { fetch_info } from './service/info';
 import { fetch_tags } from './service/tags';
 import { check_login } from './service/login';
 
-function start() {
+try {
+	await Promise.all([check_login(), fetch_info(), fetch_tags()]);
 	const router = createRouter({
 		history: createWebHashHistory(),
 		routes: routes
@@ -19,11 +20,6 @@ function start() {
 	createApp(App)
 	.use(router)
 	.mount("#app");
-}
-
-try {
-	await Promise.all([check_login(), fetch_info(), fetch_tags()]);
-	start();
 } catch (e) {
 	console.error(e);
 	const el = document.getElementById("app");
