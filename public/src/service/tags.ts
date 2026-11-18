@@ -6,5 +6,7 @@ const store = reactive<{ list: Tag[] }>({
 	list: []
 });
 
-export const fetch_tags = () => api_get_tags().then(l => store.list = l);
+export const fetch_tags = async () => {
+	store.list = await api_get_tags();
+};
 export const get_tags = () => store.list;

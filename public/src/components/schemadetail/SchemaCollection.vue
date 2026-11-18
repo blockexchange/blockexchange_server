@@ -14,8 +14,8 @@ const collection_uid = defineModel<string | null>({ required: true });
 
 const collections = ref<Collection[]>([]);
 
-onMounted(() => {
-	get_collections_by_username(props.username).then(c => collections.value = c);
+onMounted(async () => {
+	collections.value = await get_collections_by_username(props.username);
 });
 </script>
 

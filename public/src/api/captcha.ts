@@ -1,1 +1,4 @@
-export const create_captcha = () => fetch(`/api/captcha`).then(r => r.text());
+export const create_captcha = async () => {
+	const r = await fetch(`/api/captcha`);
+	return await r.text();
+};

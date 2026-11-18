@@ -10,11 +10,16 @@ const props = defineProps<{
 	username: string;
 }>();
 
+async function fetch_user(): Promise<User & { stars: number }> {
+	const l = await search_users({ name: props.username });
+	const u = l[0]!;
+	const stars = await count_user_schema_stars(u.uid);
+	return { ...u, stars };
+}
+
 function fetch_data() {
 	return {
-		user: search_users({ name: props.username })
-			.then(l => l[0]!)
-			.then(u => count_user_schema_stars(u.uid).then((stars): User & { stars: number } => ({ ...u, stars }))),
+		user: fetch_user(),
 		schema_count: schema_count({ user_name: props.username })
 	};
 }

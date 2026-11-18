@@ -8,18 +8,17 @@ import { get_tags } from "../service/tags";
 
 const list = ref<SchemaSearchResponse[]>([]);
 
-onMounted(() => {
+onMounted(async () => {
 	const featured = get_tags().find(t => t.name == "featured");
 	if (!featured) {
 		return;
 	}
 
-	schema_search({
+	list.value = await schema_search({
 		tag_uid: featured.uid,
 		limit: 12,
 		complete: true
-	})
-	.then(l => list.value = l);
+	});
 });
 </script>
 

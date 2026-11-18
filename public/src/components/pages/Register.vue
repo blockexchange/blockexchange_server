@@ -22,28 +22,26 @@ const register_result = ref<Partial<RegisterResponse>>({});
 const captcha_src = computed(() => captcha_id.value ? `/api/captcha/${captcha_id.value}.png` : null);
 const can_register = computed(() => name.value && password.value && password.value == password2.value && captcha_answer.value);
 
-function update_captcha() {
-	create_captcha().then(c => captcha_id.value = c);
+async function update_captcha() {
+	captcha_id.value = await create_captcha();
 }
 
-function register() {
-	api_register({
+async function register() {
+	const r = await api_register({
 		name: name.value,
 		password: password.value,
 		captcha_id: captcha_id.value ?? "",
 		captcha_answer: captcha_answer.value
-	})
-	.then(r => {
-		register_result.value = r;
-		if (!r.success) {
-			// update captcha
-			update_captcha();
-		} else {
-			// register and redirect
-			login(name.value, password.value)
-			.then(() => router.push("/profile"));
-		}
 	});
+	register_result.value = r;
+	if (!r.success) {
+		// update captcha
+		await update_captcha();
+	} else {
+		// register and redirect
+		await login(name.value, password.value);
+		await router.push("/profile");
+	}
 }
 
 onMounted(update_captcha);

@@ -5,7 +5,9 @@ import type { Info } from "../api/types";
 
 const store = reactive<Partial<Info>>({});
 
-export const fetch_info = () => get_info().then(i => Object.assign(store, i));
+export const fetch_info = async () => {
+	Object.assign(store, await get_info());
+};
 
 export const get_base_url = () => store.base_url;
 export const get_github_login = () => store.oauth_login?.github;

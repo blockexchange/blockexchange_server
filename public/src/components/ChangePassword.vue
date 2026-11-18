@@ -12,19 +12,20 @@ const password_wrong = ref(false);
 const success = ref(false);
 const busy = ref(false);
 
-function change_password() {
+async function change_password() {
 	password_wrong.value = false;
 	success.value = false;
 	busy.value = true;
-	api_change_password(props.useruid, {
-		old_password: old_password.value,
-		new_password: new_password.value
-	}).then(s => {
+	try {
+		const s = await api_change_password(props.useruid, {
+			old_password: old_password.value,
+			new_password: new_password.value
+		});
 		password_wrong.value = !s;
 		success.value = s;
-	}).finally(() => {
+	} finally {
 		busy.value = false;
-	});
+	}
 }
 </script>
 

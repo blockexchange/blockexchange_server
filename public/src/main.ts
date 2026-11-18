@@ -21,12 +21,13 @@ function start() {
 	.mount("#app");
 }
 
-Promise.all([check_login(), fetch_info(), fetch_tags()])
-.then(() => start())
-.catch(e => {
+try {
+	await Promise.all([check_login(), fetch_info(), fetch_tags()]);
+	start();
+} catch (e) {
 	console.error(e);
 	const el = document.getElementById("app");
 	if (el) {
 		el.textContent = `Error while starting the app: ${e}`;
 	}
-});
+}

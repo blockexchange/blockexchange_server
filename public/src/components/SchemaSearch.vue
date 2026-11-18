@@ -30,11 +30,13 @@ function search_body(limit?: number, offset?: number): SchemaSearchRequest {
 const fetch_entries = (limit: number, offset: number) => schema_search(search_body(limit, offset));
 const count_entries = () => schema_count(search_body());
 
-const get_count = debounce(() => {
+const get_count = debounce(async () => {
 	store.busy = true;
-	schema_count(search_body())
-	.then(c => store.count = c)
-	.then(() => store.busy = false);
+	try {
+		store.count = await schema_count(search_body());
+	} finally {
+		store.busy = false;
+	}
 }, 250);
 
 function search() {

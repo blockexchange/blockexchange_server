@@ -13,17 +13,22 @@ const stars = defineModel<number>("stars", { required: true });
 const schema_star = ref<unknown>(null);
 const logged_in = computed(is_logged_in);
 
-function update_star() {
+async function update_star() {
 	if (is_logged_in()) {
-		get_schema_star(props.schema_uid)
-		.then(s => schema_star.value = s)
-		.then(() => count_schema_stars(props.schema_uid))
-		.then(count => stars.value = count);
+		schema_star.value = await get_schema_star(props.schema_uid);
+		stars.value = await count_schema_stars(props.schema_uid);
 	}
 }
 
-const star = () => star_schema(props.schema_uid).then(update_star);
-const unstar = () => unstar_schema(props.schema_uid).then(update_star);
+async function star() {
+	await star_schema(props.schema_uid);
+	await update_star();
+}
+
+async function unstar() {
+	await unstar_schema(props.schema_uid);
+	await update_star();
+}
 
 onMounted(update_star);
 </script>

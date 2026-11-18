@@ -25,14 +25,15 @@ const current_page = ref(1);
 
 const pages = computed(() => Math.ceil(total_count.value / per_page));
 
-function update() {
+async function update() {
 	busy.value = true;
 	current_page.value = +(route.query.page || 1);
-	props.count_entries()
-	.then(c => total_count.value = c)
-	.then(() => props.fetch_entries(per_page, (current_page.value-1)*per_page))
-	.then(l => list.value = l)
-	.then(() => busy.value = false);
+	try {
+		total_count.value = await props.count_entries();
+		list.value = await props.fetch_entries(per_page, (current_page.value-1)*per_page);
+	} finally {
+		busy.value = false;
+	}
 }
 
 function get_route(page: number): RouteLocationRaw {

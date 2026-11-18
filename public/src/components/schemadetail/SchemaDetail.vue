@@ -59,51 +59,51 @@ watch(() => props.search_result, sr => {
 
 const available_tags = computed(() => get_all_tags().filter(t => !t.restricted || has_permission("ADMIN")));
 
-function save() {
+async function save() {
 	error_response.value = null;
-	schema_update(schema.value)
-	.then(() => {
-		// set tags
-		schema_set_tags(schema.value.uid, tags.value);
+	try {
+		await schema_update(schema.value);
+	} catch (e) {
+		error_response.value = e as SchemaUpdateError;
+		return;
+	}
 
-		edit_mode.value = false;
-		router.push(`/schema/${username.value}/${schema.value.name}`);
-		emit("save");
-	})
-	.catch((e: SchemaUpdateError) => {
-		error_response.value = e;
-	});
+	// set tags
+	await schema_set_tags(schema.value.uid, tags.value);
+
+	edit_mode.value = false;
+	await router.push(`/schema/${username.value}/${schema.value.name}`);
+	emit("save");
 }
 
-function update_mods() {
+async function update_mods() {
 	mods_busy.value = true;
-	schema_update_mods(schema.value.uid)
-	.then(m => {
-		mods.value = m;
+	try {
+		mods.value = await schema_update_mods(schema.value.uid);
+	} finally {
 		mods_busy.value = false;
-	});
+	}
 }
 
-function update_info() {
-	schema_update_info(schema.value.uid)
-	.then(s => {
-		schema.value.total_size = s.total_size;
-		schema.value.total_parts = s.total_parts;
-	});
+async function update_info() {
+	const s = await schema_update_info(schema.value.uid);
+	schema.value.total_size = s.total_size;
+	schema.value.total_parts = s.total_parts;
 }
 
-function update_screenshot() {
+async function update_screenshot() {
 	screenshot_busy.value = true;
-	schema_update_screenshot(schema.value.uid)
-	.then(() => {
-		screenshot_busy.value = false;
+	try {
+		await schema_update_screenshot(schema.value.uid);
 		cache_counter.value = Date.now();
-	});
+	} finally {
+		screenshot_busy.value = false;
+	}
 }
 
-function delete_schema() {
-	schema_delete(schema.value.uid)
-	.then(() => router.push(`/schema/${username.value}`));
+async function delete_schema() {
+	await schema_delete(schema.value.uid);
+	await router.push(`/schema/${username.value}`);
 }
 
 const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: false }) as string);

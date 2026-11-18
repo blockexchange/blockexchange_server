@@ -25,26 +25,31 @@ const mesehub_login = computed(get_mesehub_login);
 const codeberg_login = computed(get_codeberg_login);
 const base_url = computed(get_base_url);
 
-function login() {
+async function login() {
 	busy.value = true;
 	error_message.value = "";
-	service_login(username.value, password.value)
-	.then(claims => {
+	let claims;
+	try {
+		claims = await service_login(username.value, password.value);
+	} finally {
 		busy.value = false;
-		if (!claims) {
-			// no luck
-			error_message.value = "Login failed!";
-		} else {
-			// go to base page
-			router.push("/profile");
-		}
-	});
+	}
+	if (!claims) {
+		// no luck
+		error_message.value = "Login failed!";
+	} else {
+		// go to base page
+		await router.push("/profile");
+	}
 }
 
-function logout() {
+async function logout() {
 	busy.value = true;
-	service_logout()
-	.then(() => busy.value = false);
+	try {
+		await service_logout();
+	} finally {
+		busy.value = false;
+	}
 }
 </script>
 

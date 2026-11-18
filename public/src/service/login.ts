@@ -15,24 +15,18 @@ export const get_user_type = () => store.claims ? store.claims.type : null;
 export const get_username = () => store.claims ? store.claims.username : null;
 export const has_permission = (permission: Permission) => store.claims ? store.claims.permissions.includes(permission) : false;
 
-export const check_login = (renew?: boolean) => fetch_claims(renew).then(c => {
+export const check_login = async (renew?: boolean) => {
+	const c = await fetch_claims(renew);
 	store.claims = c;
 	return c;
-});
-
-export const login = (name: string, password: string) => {
-	return api_login(name, password)
-	.then(success => {
-		if (success) {
-			return check_login();
-		}
-		return null;
-	});
 };
 
-export const logout = () => {
-	return api_logout()
-	.then(() => {
-		store.claims = null;
-	});
+export const login = async (name: string, password: string) => {
+	const success = await api_login(name, password);
+	return success ? await check_login() : null;
+};
+
+export const logout = async () => {
+	await api_logout();
+	store.claims = null;
 };

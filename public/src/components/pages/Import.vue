@@ -12,7 +12,7 @@ const breadcrumb = [START, SCHEMA_IMPORT];
 const username = computed(get_username);
 const upload = useTemplateRef<HTMLInputElement>("upload");
 
-function import_file(file: File) {
+async function import_file(file: File) {
 	const res = reactive<ImportResult>({
 		filename: file.name,
 		busy: true,
@@ -21,11 +21,14 @@ function import_file(file: File) {
 	});
 	store.results.push(res);
 
-	file.arrayBuffer()
-	.then(buf => import_schematic(buf, file.name))
-	.then(s => res.schema = s)
-	.catch((e: ErrorResponse) => res.error = e)
-	.finally(() => res.busy = false);
+	try {
+		const buf = await file.arrayBuffer();
+		res.schema = await import_schematic(buf, file.name);
+	} catch (e) {
+		res.error = e as ErrorResponse;
+	} finally {
+		res.busy = false;
+	}
 }
 
 function on_upload() {

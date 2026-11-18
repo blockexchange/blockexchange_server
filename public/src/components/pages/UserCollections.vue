@@ -22,25 +22,24 @@ const new_collection_name = ref("");
 const valid_name = computed(() => /^[a-zA-Z0-9_.-]*$/.test(new_collection_name.value));
 const duplicate_name = computed(() => collections.value.some(c => c.name == new_collection_name.value));
 
-function update() {
+async function update() {
 	busy.value = true;
-	get_collections_by_username(props.username)
-	.then(c => {
+	try {
+		const c = await get_collections_by_username(props.username);
 		c.sort((a, b) => a.name.localeCompare(b.name));
 		collections.value = c;
+	} finally {
 		busy.value = false;
-	});
+	}
 }
 
-function create_collection() {
-	api_create_collection({
+async function create_collection() {
+	await api_create_collection({
 		name: new_collection_name.value,
 		user_uid: get_user_uid() ?? ""
-	})
-	.then(() => {
-		new_collection_name.value = "";
-		update();
 	});
+	new_collection_name.value = "";
+	await update();
 }
 
 onMounted(update);

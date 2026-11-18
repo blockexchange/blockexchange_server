@@ -11,13 +11,17 @@ const password_1 = ref("");
 const password_2 = ref("");
 const busy = ref(false);
 
-function unlink() {
+async function unlink() {
 	busy.value = true;
-	unlink_oauth(props.useruid, {
-		new_password: password_1.value
-	})
-	.then(() => check_login(true))
-	.then(() => location.reload());
+	try {
+		await unlink_oauth(props.useruid, {
+			new_password: password_1.value
+		});
+		await check_login(true);
+		location.reload();
+	} finally {
+		busy.value = false;
+	}
 }
 </script>
 

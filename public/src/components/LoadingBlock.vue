@@ -14,17 +14,18 @@ defineSlots<{
 const busy = ref(false);
 const data = ref(null) as Ref<T | null>;
 
-function update_data() {
+async function update_data() {
 	busy.value = true;
-	const promise_map = props.fetch_data();
-	const keys = Object.keys(promise_map) as (keyof T)[];
-	Promise.all(keys.map(k => promise_map[k]))
-	.then(values => {
+	try {
+		const promise_map = props.fetch_data();
+		const keys = Object.keys(promise_map) as (keyof T)[];
+		const values = await Promise.all(keys.map(k => promise_map[k]));
 		const result = {} as T;
 		keys.forEach((k, i) => result[k] = values[i] as T[typeof k]);
 		data.value = result;
+	} finally {
 		busy.value = false;
-	});
+	}
 }
 
 onMounted(update_data);

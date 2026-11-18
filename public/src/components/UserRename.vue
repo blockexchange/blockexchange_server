@@ -16,22 +16,18 @@ onMounted(() => {
 	name.value = get_claims()?.username ?? "";
 });
 
-function rename() {
-	search_users({ name: name.value })
-	.then(list => {
-		username_taken.value = list.length > 0;
-		const claims = get_claims();
-		if (username_taken.value || !claims) {
-			return;
-		}
-		return get_user(claims.user_uid)
-		.then(user => {
-			user.name = name.value;
-			return save_user(user);
-		})
-		.then(() => check_login(true))
-		.then(() => location.reload());
-	});
+async function rename() {
+	const list = await search_users({ name: name.value });
+	username_taken.value = list.length > 0;
+	const claims = get_claims();
+	if (username_taken.value || !claims) {
+		return;
+	}
+	const user = await get_user(claims.user_uid);
+	user.name = name.value;
+	await save_user(user);
+	await check_login(true);
+	location.reload();
 }
 </script>
 

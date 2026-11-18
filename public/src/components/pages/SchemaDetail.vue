@@ -17,11 +17,16 @@ const props = defineProps<{
 
 const breadcrumb = computed(() => [START, USER_SCHEMAS(props.username), SCHEMA_DETAIL(props.username, props.name)]);
 
-const fetch_data = () => ({
-	search_result: schema_search({
+const fetch_search_result = async () => {
+	const r = await schema_search({
 		schema_name: props.name,
 		user_name: props.username
-	}).then(r => r[0]!)
+	});
+	return r[0]!;
+};
+
+const fetch_data = () => ({
+	search_result: fetch_search_result()
 });
 
 const allow_edit = (schema: Schema) => (get_user_uid() == schema.user_uid || has_permission("ADMIN"));

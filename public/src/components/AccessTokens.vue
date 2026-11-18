@@ -17,24 +17,22 @@ const new_days = ref(365);
 
 const is_expired = (at: AccessToken) => Date.now() > at.expires;
 
-function update() {
-	get_access_tokens().then(l => list.value = l);
+async function update() {
+	list.value = await get_access_tokens();
 }
 
-function create() {
-	create_access_token({
+async function create() {
+	await create_access_token({
 		name: new_name.value,
 		expires: Date.now() + (1000 * 3600 * 24 * new_days.value)
-	})
-	.then(() => {
-		new_name.value = "";
-		update();
 	});
+	new_name.value = "";
+	await update();
 }
 
-function remove(at: AccessToken) {
-	delete_access_token(at.uid)
-	.then(() => update());
+async function remove(at: AccessToken) {
+	await delete_access_token(at.uid);
+	await update();
 }
 
 onMounted(update);

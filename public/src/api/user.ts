@@ -17,14 +17,18 @@ export const get_user = (id: string) => fetch_json<User>(`/api/user/${id}`);
 
 export const count_user_schema_stars = (uid: string) => fetch_json<number>(`/api/user/${uid}/schemastars`);
 
-export const change_password = (userid: string, chpwd: ChangePassword) => fetch(`/api/user/${userid}/changepassword`, {
-	method: "POST",
-	body: JSON.stringify(chpwd)
-})
-.then(r => r.status == 200);
+export const change_password = async (userid: string, chpwd: ChangePassword) => {
+	const r = await fetch(`/api/user/${userid}/changepassword`, {
+		method: "POST",
+		body: JSON.stringify(chpwd)
+	});
+	return r.status == 200;
+};
 
-export const unlink_oauth = (userid: string, chpwd: ChangePassword) => fetch(`/api/user/${userid}/unlink-oauth`, {
-	method: "POST",
-	body: JSON.stringify(chpwd)
-})
-.then(r => r.status == 200);
+export const unlink_oauth = async (userid: string, chpwd: ChangePassword) => {
+	const r = await fetch(`/api/user/${userid}/unlink-oauth`, {
+		method: "POST",
+		body: JSON.stringify(chpwd)
+	});
+	return r.status == 200;
+};
