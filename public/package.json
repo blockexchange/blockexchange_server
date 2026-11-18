@@ -30,5 +30,9 @@
     "vite": "^7.0.0",
     "vue-tsc": "^3.3.14"
   },
-  "type": "module"
+  "type": "module",
+  "allowScripts": {
+    "esbuild": true,
+    "@fortawesome/fontawesome-free": true
+  }
 }
