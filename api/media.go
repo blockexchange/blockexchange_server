@@ -98,7 +98,7 @@ func (api Api) CreateOrUpdateNodedefs(w http.ResponseWriter, r *http.Request, ct
 			err = api.MediaRepo.CreateNodedefinition(nd)
 		} else {
 			// update
-			err = api.MediaRepo.UpdateNodedefinition(existing_nd)
+			err = api.MediaRepo.UpdateNodedefinition(nd)
 		}
 		if err != nil {
 			SendError(w, 500, fmt.Sprintf("update/insert error: %s", err.Error()))
@@ -156,7 +156,7 @@ func (api Api) CreateOrUpdateMediafiles(w http.ResponseWriter, r *http.Request, 
 			err = api.MediaRepo.CreateMediafile(mediafile)
 		} else {
 			// update
-			err = api.MediaRepo.UpdateMediafile(exsiting_mf)
+			err = api.MediaRepo.UpdateMediafile(mediafile)
 		}
 		if err != nil {
 			SendError(w, 500, fmt.Sprintf("update/insert error: %s", err.Error()))

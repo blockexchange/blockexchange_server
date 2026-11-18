@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"compress/zlib"
 	"encoding/json"
+	"fmt"
+	"io"
 )
 
 const offset = 32768
@@ -92,7 +94,10 @@ func ParseSchemaPart(part *types.SchemaPart) (*ParsedSchemaPart, error) {
 	result.Param2 = make([]byte, size)
 
 	data := make([]byte, size*4)
-	r.Read(data)
+	_, err = io.ReadFull(r, data)
+	if err != nil {
+		return nil, fmt.Errorf("read schemapart data: %w", err)
+	}
 
 	for i := 0; i < size; i++ {
 		result.NodeIDS[i] = int16((int(data[i*2]) * 256) + int(data[(i*2)+1]) - offset)
