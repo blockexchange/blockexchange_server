@@ -20,16 +20,17 @@ onMounted(async () => {
 </script>
 
 <template>
-	<div v-if="!edit_mode">
-		<router-link :to="'/collections/' + username + '/' + collection_name" class="btn btn-success w-100" v-if="collection_name">
-			<i class="fa fa-object-group"></i>
-			Part of the <span class="badge bg-primary">{{ collection_name }}</span> collection
-		</router-link>
-	</div>
-	<div v-else>
-		<select class="form-control" v-model="collection_uid">
-			<option :value="null"></option>
+	<router-link v-if="!edit_mode && collection_name" :to="'/collections/' + username + '/' + collection_name" class="d-flex justify-content-between align-items-center text-decoration-none">
+		<span><i class="fa fa-object-group me-2"></i>{{ collection_name }}</span>
+		<span class="small">View all <i class="fa fa-chevron-right"></i></span>
+	</router-link>
+	<template v-if="edit_mode">
+		<select class="form-select" v-model="collection_uid" aria-label="Collection">
+			<option :value="null">Not in a collection</option>
 			<option v-for="c in collections" :key="c.uid" :value="c.uid">{{ c.name }}</option>
 		</select>
-	</div>
+		<div class="form-text" v-if="collections.length == 0">
+			You don't have any collections yet.
+		</div>
+	</template>
 </template>

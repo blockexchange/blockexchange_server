@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import BreadCrumb from "../Breadcrumb.vue";
+import PageHeader from "../PageHeader.vue";
 import PagedContent from "../PagedContent.vue";
 import SchemaList from "../SchemaList.vue";
+import EmptyState from "../EmptyState.vue";
 import { START, USER_COLLECTION, USER_COLLECTIONS } from "../../util/breadcrumbs";
 import { schema_search, schema_count } from "../../api/schema";
 import type { SchemaSearchRequest } from "../../api/types";
@@ -28,13 +29,24 @@ const count_entries = () => schema_count(search_body());
 </script>
 
 <template>
-	<bread-crumb :items="breadcrumb"/>
+	<page-header :title="collection_name" :breadcrumb="breadcrumb">
+		<span class="text-muted-bx">
+			A collection by <router-link :to="'/user/' + username">{{ username }}</router-link>
+		</span>
+	</page-header>
 	<paged-content
+		:key="username + '/' + collection_name"
 		:fetch_entries="fetch_entries"
 		:count_entries="count_entries"
 		:per_page="24">
 		<template #body="{ list }">
-			<schema-list :list="list"/>
+			<schema-list :list="list" :show_author="false">
+				<template #empty>
+					<empty-state icon="object-group" title="This collection is empty">
+						Add schematics to it from their edit view.
+					</empty-state>
+				</template>
+			</schema-list>
 		</template>
 	</paged-content>
 </template>

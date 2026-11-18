@@ -15,6 +15,7 @@ import UserSchemas from './components/pages/UserSchemas.vue';
 import UserCollections from './components/pages/UserCollections.vue';
 import UserCollection from './components/pages/UserCollection.vue';
 import Mods from './components/pages/Mods.vue';
+import NotFound from './components/pages/NotFound.vue';
 
 const routes: RouteRecordRaw[] = [{
 	path: "/", component: Start
@@ -46,6 +47,8 @@ const routes: RouteRecordRaw[] = [{
 	path: "/import", component: Import
 },{
 	path: "/tags", component: Tags
+},{
+	path: "/:pathMatch(.*)*", component: NotFound
 }];
 
 export default routes;

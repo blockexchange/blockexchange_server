@@ -10,26 +10,17 @@ function close() {
 </script>
 
 <template>
-	<div class="toast-container top-50 start-50 translate-middle">
-		<div class="toast show" v-if="store.message">
+	<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+		<div class="toast show border-danger" role="alert" aria-live="assertive" v-if="store.message">
 			<div class="toast-header text-bg-danger">
-				<strong class="me-auto">
-					<i class="fa-solid fa-triangle-exclamation"></i>
-					Error
-				</strong>
-				<small>
-					{{ store.title }}
-					<span v-if="store.status">Code: {{ store.status }}</span>
-				</small>
-				<button type="button" class="btn-close" @click="close"></button>
+				<i class="fa-solid fa-triangle-exclamation me-2"></i>
+				<strong class="me-auto">Something went wrong</strong>
+				<small v-if="store.status">HTTP {{ store.status }}</small>
+				<button type="button" class="btn-close ms-2" data-bs-theme="dark" aria-label="Close" @click="close"></button>
 			</div>
 			<div class="toast-body">
-				<p>
-					<b>Message:</b> {{ store.message }}
-				</p>
-				<p>
-					<b>URL:</b> {{ store.url }}
-				</p>
+				<p class="mb-1">{{ store.message }}</p>
+				<small class="text-muted-bx text-break" v-if="store.url">{{ store.title }} {{ store.url }}</small>
 			</div>
 		</div>
 	</div>

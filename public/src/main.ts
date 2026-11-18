@@ -1,8 +1,10 @@
 import { createApp } from 'vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-import 'bootswatch/dist/darkly/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import './style.css';
+import './service/theme';
 
 import App from './App.vue';
 import routes from './routes';
@@ -14,7 +16,8 @@ try {
 	await Promise.all([check_login(), fetch_info(), fetch_tags()]);
 	const router = createRouter({
 		history: createWebHashHistory(),
-		routes: routes
+		routes: routes,
+		scrollBehavior: () => ({ top: 0 })
 	});
 
 	createApp(App)
@@ -24,6 +27,10 @@ try {
 	console.error(e);
 	const el = document.getElementById("app");
 	if (el) {
-		el.textContent = `Error while starting the app: ${e}`;
+		el.innerHTML = "";
+		const div = document.createElement("div");
+		div.className = "container py-5 text-center";
+		div.textContent = `Block exchange could not be loaded: ${e}. Please try again in a moment.`;
+		el.appendChild(div);
 	}
 }

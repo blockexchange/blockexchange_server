@@ -1,6 +1,8 @@
 <script setup lang="ts" generic="T">
 import { computed, onMounted, ref, watch, type Ref } from 'vue';
-import { useRoute, type RouteLocationRaw } from 'vue-router';
+import { useRoute } from 'vue-router';
+import Pagination from './Pagination.vue';
+import LoadingSpinner from './LoadingSpinner.vue';
 
 // the table classes are passed as attributes
 defineOptions({ inheritAttrs: false });
@@ -36,34 +38,21 @@ async function update() {
 	}
 }
 
-function get_route(page: number): RouteLocationRaw {
-	return {
-		path: route.path,
-		query: { ...route.query, page: page }
-	};
-}
-
 onMounted(update);
 watch(() => route.fullPath, update);
 </script>
 
 <template>
-	<table v-bind="$attrs">
-		<thead>
-			<slot name="header"></slot>
-		</thead>
-		<tbody>
-			<slot name="body" :list="list"></slot>
-		</tbody>
-	</table>
-	<div class="btn-group">
-		<router-link
-			:to="get_route(i)"
-			v-for="i in pages"
-			:key="i"
-			class="btn btn-xs btn-secondary"
-			:class="{disabled: current_page == i}">
-			{{ i }}
-		</router-link>
+	<div class="table-responsive">
+		<table v-bind="$attrs">
+			<thead>
+				<slot name="header"></slot>
+			</thead>
+			<tbody>
+				<slot name="body" :list="list"></slot>
+			</tbody>
+		</table>
 	</div>
+	<loading-spinner v-if="busy && list.length == 0"/>
+	<pagination :current="current_page" :pages="pages" v-if="!busy"/>
 </template>

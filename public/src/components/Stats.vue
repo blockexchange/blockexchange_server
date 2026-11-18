@@ -8,11 +8,30 @@ const stats = computed(get_stats);
 </script>
 
 <template>
-	<span v-if="stats">
-		<b>Database Statistics:</b>
-		Schematics: <span class="badge bg-secondary">{{ format_count(stats.schema_count) }}</span>
-		Schematic parts: <span class="badge bg-secondary">{{ format_count(stats.schemapart_count) }}</span>
-		Users: <span class="badge bg-secondary">{{ format_count(stats.user_count) }}</span>
-		Total size: <span class="badge bg-secondary">{{ format_size(stats.total_size) }}</span>
-	</span>
+	<div class="row g-3" v-if="stats && stats.schema_count >= 0">
+		<div class="col-6 col-md-3">
+			<div class="bx-stat">
+				<div class="value">{{ format_count(stats.schema_count) }}</div>
+				<div class="label">Schematics</div>
+			</div>
+		</div>
+		<div class="col-6 col-md-3">
+			<div class="bx-stat">
+				<div class="value">{{ format_count(stats.user_count) }}</div>
+				<div class="label">Builders</div>
+			</div>
+		</div>
+		<div class="col-6 col-md-3">
+			<div class="bx-stat">
+				<div class="value">{{ format_count(stats.schemapart_count) }}</div>
+				<div class="label">Stored parts</div>
+			</div>
+		</div>
+		<div class="col-6 col-md-3">
+			<div class="bx-stat">
+				<div class="value">{{ format_size(stats.total_size) }}</div>
+				<div class="label">Total data</div>
+			</div>
+		</div>
+	</div>
 </template>

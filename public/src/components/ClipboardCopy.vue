@@ -6,17 +6,22 @@ const props = defineProps<{
 }>();
 
 const copied = ref(false);
+let timer: ReturnType<typeof setTimeout> | undefined;
 
-function copy() {
+async function copy() {
+	await navigator.clipboard.writeText(props.text);
 	copied.value = true;
-	navigator.clipboard.writeText(props.text);
+	clearTimeout(timer);
+	timer = setTimeout(() => copied.value = false, 1500);
 }
 </script>
 
 <template>
-	<span class="badge bg-secondary" @click="copy">
-		{{ text }}
-		&nbsp;
-		<i class="fa fa-copy" :style="{'color': copied ? 'green' : undefined}"></i>
+	<span class="bx-cmd">
+		<code>{{ text }}</code>
+		<button type="button" :class="{copied}" @click="copy" :title="copied ? 'Copied' : 'Copy to clipboard'">
+			<i class="fa" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+			<span class="visually-hidden">Copy</span>
+		</button>
 	</span>
 </template>
