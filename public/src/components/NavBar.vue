@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { get_claims, has_permission, logout } from "../service/login";
+import ThemeSwitcher from "./ThemeSwitcher.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -35,7 +36,7 @@ async function do_logout() {
 </script>
 
 <template>
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark bx-navbar">
+	<nav class="navbar navbar-expand-lg bg-body-tertiary bx-navbar">
 		<div class="container-xl">
 			<router-link to="/" class="navbar-brand d-flex align-items-center gap-2">
 				<img src="/pics/blockexchange_logo_small.png" alt="">
@@ -71,19 +72,20 @@ async function do_logout() {
 					</li>
 				</ul>
 				<div class="d-flex flex-column flex-lg-row gap-2" v-if="!claims">
-					<router-link to="/login" class="btn btn-outline-light btn-sm">
+					<router-link to="/login" class="btn btn-outline-secondary btn-sm">
 						Log in
 					</router-link>
 					<router-link to="/register" class="btn btn-success btn-sm">
 						Sign up
 					</router-link>
+					<theme-switcher/>
 				</div>
 				<div class="d-flex flex-column flex-lg-row gap-2 align-items-lg-center" v-else>
 					<router-link to="/import" class="btn btn-success btn-sm">
 						<i class="fa fa-upload"></i> Upload
 					</router-link>
 					<div class="dropdown" ref="user_menu">
-						<button class="btn btn-secondary btn-sm dropdown-toggle w-100"
+						<button class="btn btn-outline-secondary btn-sm dropdown-toggle w-100"
 							type="button"
 							:aria-expanded="user_menu_open"
 							@click="user_menu_open = !user_menu_open">
@@ -127,6 +129,7 @@ async function do_logout() {
 							</li>
 						</ul>
 					</div>
+					<theme-switcher/>
 				</div>
 			</div>
 		</div>

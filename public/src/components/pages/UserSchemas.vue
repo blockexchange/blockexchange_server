@@ -28,7 +28,7 @@ const count_entries = () => schema_count(search_body());
 <template>
 	<page-header :title="'Schematics by ' + username" :breadcrumb="breadcrumb">
 		<template #actions>
-			<router-link :to="'/user/' + username" class="btn btn-outline-light">
+			<router-link :to="'/user/' + username" class="btn btn-outline-secondary">
 				<i class="fa fa-user"></i> View profile
 			</router-link>
 		</template>

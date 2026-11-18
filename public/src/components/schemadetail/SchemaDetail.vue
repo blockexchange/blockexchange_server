@@ -177,11 +177,11 @@ const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: 
 				<template v-if="!edit_mode">
 					<schema-star :schema_uid="schema.uid" v-model:stars="schema.stars"/>
 					<template v-if="allow_edit">
-						<button type="button" class="btn btn-outline-light" @click="start_edit">
+						<button type="button" class="btn btn-outline-secondary" @click="start_edit">
 							<i class="fa fa-pen"></i> Edit
 						</button>
 						<div class="dropdown">
-							<button type="button" class="btn btn-outline-light dropdown-toggle" :aria-expanded="tools_open" @click="tools_open = !tools_open">
+							<button type="button" class="btn btn-outline-secondary dropdown-toggle" :aria-expanded="tools_open" @click="tools_open = !tools_open">
 								<span class="spinner-border spinner-border-sm" v-if="screenshot_busy || mods_busy"></span>
 								<i class="fa fa-screwdriver-wrench" v-else></i>
 								<span class="visually-hidden">More actions</span>
@@ -227,7 +227,7 @@ const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: 
 			<!-- main column -->
 			<div class="col-lg-8 d-flex flex-column gap-4">
 				<div class="card overflow-hidden">
-					<div class="text-center bg-black">
+					<div class="text-center bx-preview">
 						<img :src="'/api/schema/' + schema.uid + '/screenshot?cachebust=' + cache_counter" class="img-fluid" :alt="'Preview of ' + schema.name">
 					</div>
 				</div>

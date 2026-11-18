@@ -118,7 +118,7 @@ watch(() => store.tag_name, search);
 		<template #body="{ list, total }">
 			<div class="d-flex justify-content-between align-items-center mb-3 small text-muted-bx">
 				<span>
-					<b class="text-light">{{ total }}</b> {{ total == 1 ? 'schematic' : 'schematics' }}
+					<b class="text-body-emphasis">{{ total }}</b> {{ total == 1 ? 'schematic' : 'schematics' }}
 					<template v-if="has_filter">match your filters</template>
 				</span>
 				<button type="button" class="btn btn-link btn-sm p-0" v-if="has_filter" @click="reset">

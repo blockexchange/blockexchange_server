@@ -55,10 +55,10 @@ async function logout() {
 				<div class="card-body p-4">
 					<template v-if="current_user">
 						<h1 class="h4 mb-3">You're logged in</h1>
-						<p class="text-muted-bx">Signed in as <b class="text-light">{{ current_user }}</b>.</p>
+						<p class="text-muted-bx">Signed in as <b class="text-body-emphasis">{{ current_user }}</b>.</p>
 						<div class="d-grid gap-2">
 							<router-link :to="'/user/' + current_user" class="btn btn-success">Go to my schematics</router-link>
-							<button class="btn btn-outline-light" type="button" :disabled="busy" @click="logout">
+							<button class="btn btn-outline-secondary" type="button" :disabled="busy" @click="logout">
 								<span class="spinner-border spinner-border-sm" v-if="busy"></span>
 								Log out
 							</button>
@@ -69,7 +69,7 @@ async function logout() {
 						<p class="text-muted-bx small mb-4">Log in to upload, star and manage your schematics.</p>
 
 						<div class="d-grid gap-2" v-if="providers.length">
-							<a v-for="p in providers" :key="p.name" :href="p.url" class="btn btn-secondary bx-provider-btn">
+							<a v-for="p in providers" :key="p.name" :href="p.url" class="btn btn-outline-secondary bx-provider-btn">
 								<i :class="p.icon" v-if="p.icon"></i>
 								<img :src="p.img" alt="" v-else>
 								Continue with {{ p.name }}

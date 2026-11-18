@@ -29,13 +29,13 @@ const account_type = (t: string) => t == "LOCAL" ? "Password" : t.charAt(0) + t.
 			<template #body="{ list }">
 				<tr v-for="entry in list" :key="entry.uid">
 					<td>
-						<router-link class="link-light text-decoration-none d-inline-flex align-items-center gap-2" :to="'/user/' + entry.name">
+						<router-link class="link-body-emphasis text-decoration-none d-inline-flex align-items-center gap-2" :to="'/user/' + entry.name">
 							<img v-if="entry.avatar_url" :src="entry.avatar_url" height="32" width="32" class="rounded" alt="" loading="lazy"/>
-							<span v-else class="rounded bg-secondary d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+							<span v-else class="rounded bg-secondary-subtle d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
 								<i class="fa fa-user text-muted-bx"></i>
 							</span>
 							<span>{{ entry.name }}</span>
-							<span class="badge bg-warning text-dark" v-if="entry.role == 'ADMIN'">Admin</span>
+							<span class="badge text-bg-warning" v-if="entry.role == 'ADMIN'">Admin</span>
 						</router-link>
 					</td>
 					<td class="d-none d-sm-table-cell small text-muted-bx">

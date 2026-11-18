@@ -27,11 +27,11 @@ const fetch_data = () => ({
 		<div class="d-flex flex-wrap gap-2">
 			<router-link
 				:to="{path: '/search', query: {mod_name: mod.mod_name}}"
-				class="btn btn-secondary btn-sm"
+				class="btn btn-outline-secondary btn-sm"
 				v-for="mod in data.mods.filter(m => m.mod_name.toLowerCase().includes(filter.toLowerCase()))"
 				:key="mod.mod_name">
 				{{ mod.mod_name }}
-				<span class="badge bg-dark rounded-pill ms-1">{{ mod.count }}</span>
+				<span class="badge text-bg-secondary rounded-pill ms-1">{{ mod.count }}</span>
 			</router-link>
 		</div>
 		<empty-state icon="box-archive" title="No mods match your filter"

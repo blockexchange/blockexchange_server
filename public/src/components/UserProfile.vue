@@ -35,13 +35,13 @@ const account_type = (t: string) => t == "LOCAL" ? "Block exchange account" : `L
 		<div class="card mb-4">
 			<div class="card-body d-flex flex-wrap align-items-center gap-3">
 				<img v-if="data.user.avatar_url" :src="data.user.avatar_url" height="72" width="72" class="rounded" alt=""/>
-				<div v-else class="rounded bg-secondary d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
+				<div v-else class="rounded bg-secondary-subtle d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
 					<i class="fa fa-user fa-2x text-muted-bx"></i>
 				</div>
 				<div class="flex-grow-1">
 					<h1 class="h3 mb-1">
 						{{ data.user.name }}
-						<span class="badge bg-warning text-dark fs-6 align-middle" v-if="data.user.role == 'ADMIN'">Admin</span>
+						<span class="badge text-bg-warning fs-6 align-middle" v-if="data.user.role == 'ADMIN'">Admin</span>
 					</h1>
 					<div class="small text-muted-bx">
 						<template v-if="data.user.created > 0">Joined {{ new Date(data.user.created).toLocaleDateString() }} · </template>

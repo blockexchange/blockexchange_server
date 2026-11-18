@@ -43,7 +43,7 @@ const schema_link = (entry: SchemaSearchResponse) => '/schema/' + entry.username
 					</span>
 				</div>
 				<div class="bx-meta small text-muted-bx" v-if="show_author">
-					by <router-link :to="'/user/' + entry.username" class="link-light">{{ entry.username }}</router-link>
+					by <router-link :to="'/user/' + entry.username" class="link-body-emphasis">{{ entry.username }}</router-link>
 				</div>
 				<p class="small text-muted-bx mt-2 mb-2 text-truncate" v-if="entry.schema.short_description">
 					{{ entry.schema.short_description }}
@@ -53,13 +53,13 @@ const schema_link = (entry: SchemaSearchResponse) => '/schema/' + entry.username
 						v-for="tag in entry.tags"
 						:key="tag"
 						:to="{path: '/search', query: {tag_name: tag}}"
-						class="badge bg-success text-decoration-none">
+						class="badge text-bg-success text-decoration-none">
 						{{ tag }}
 					</router-link>
 					<router-link
 						v-if="entry.collection_name"
 						:to="'/collections/' + entry.username + '/' + entry.collection_name"
-						class="badge bg-info text-decoration-none"
+						class="badge text-bg-info text-decoration-none"
 						title="Collection">
 						<i class="fa fa-object-group"></i> {{ entry.collection_name }}
 					</router-link>

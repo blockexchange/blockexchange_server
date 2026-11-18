@@ -18,8 +18,8 @@ const tags = computed(get_tags);
 			:to="{path: '/search', query: {tag_name: tag.name}}"
 			class="list-group-item list-group-item-action">
 			<div class="d-flex justify-content-between align-items-center">
-				<span><span class="badge bg-success me-2">{{ tag.name }}</span>{{ tag.description }}</span>
-				<span class="badge bg-secondary" v-if="tag.restricted"><i class="fa fa-lock"></i> restricted</span>
+				<span><span class="badge text-bg-success me-2">{{ tag.name }}</span>{{ tag.description }}</span>
+				<span class="badge text-bg-secondary" v-if="tag.restricted"><i class="fa fa-lock"></i> restricted</span>
 			</div>
 		</router-link>
 	</div>

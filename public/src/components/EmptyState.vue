@@ -10,7 +10,7 @@ withDefaults(defineProps<{
 <template>
 	<div class="bx-empty">
 		<i :class="['fa', 'fa-' + icon]"></i>
-		<h2 class="h5 text-light">{{ title }}</h2>
+		<h2 class="h5 text-body-emphasis">{{ title }}</h2>
 		<slot></slot>
 	</div>
 </template>

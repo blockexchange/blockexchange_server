@@ -35,12 +35,12 @@ onMounted(update_star);
 
 <template>
 	<button type="button" class="btn"
-		:class="schema_star ? 'btn-warning' : 'btn-outline-warning'"
+		:class="schema_star ? 'btn-warning' : 'btn-outline-secondary'"
 		:disabled="!logged_in"
 		:title="logged_in ? (schema_star ? 'Remove your star' : 'Star this schematic') : 'Log in to star schematics'"
 		@click="schema_star ? unstar() : star()">
-		<i :class="schema_star ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
+		<i :class="schema_star ? 'fa-solid fa-star' : 'fa-regular fa-star bx-star'"></i>
 		{{ schema_star ? 'Starred' : 'Star' }}
-		<span class="badge rounded-pill ms-1" :class="schema_star ? 'bg-dark' : 'bg-secondary'">{{ stars }}</span>
+		<span class="badge rounded-pill ms-1" :class="schema_star ? 'text-bg-dark' : 'text-bg-secondary'">{{ stars }}</span>
 	</button>
 </template>

@@ -17,7 +17,7 @@ const claims = computed(get_claims);
 <template>
 	<page-header title="Account settings" :breadcrumb="breadcrumb">
 		<template #actions v-if="claims">
-			<router-link :to="'/user/' + claims.username" class="btn btn-outline-light">
+			<router-link :to="'/user/' + claims.username" class="btn btn-outline-secondary">
 				<i class="fa fa-user"></i> View public profile
 			</router-link>
 		</template>

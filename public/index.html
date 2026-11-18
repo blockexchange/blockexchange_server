@@ -3,15 +3,26 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
-		<meta name="theme-color" content="#222222">
+		<meta name="color-scheme" content="light dark">
 		<meta name="description" content="Block exchange: share, find and place Luanti/Minetest schematics across worlds and servers.">
 		<link rel="icon" href="/pics/bx_big.png" type="image/png">
 		<title>Block exchange</title>
+		<script>
+			// apply the stored or system theme before the app loads to avoid a flash
+			(function() {
+				var t = null;
+				try { t = localStorage.getItem("bx-theme"); } catch (e) {}
+				if (t != "light" && t != "dark") {
+					t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+				}
+				document.documentElement.setAttribute("data-bs-theme", t);
+			})();
+		</script>
 	</head>
-	<body style="background-color: #222; color: #fff;">
+	<body>
 		<!-- app root -->
 		<div id="app">
-			<div style="text-align: center; padding-top: 30vh; font-family: sans-serif; color: #9aa0a6;">
+			<div style="text-align: center; padding-top: 30vh; font-family: sans-serif; color: #888;">
 				Loading Block exchange…
 			</div>
 		</div>

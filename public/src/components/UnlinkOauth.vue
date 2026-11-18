@@ -33,7 +33,7 @@ async function unlink() {
 
 <template>
 	<p class="text-muted-bx">
-		You log in with <b class="text-light">{{ provider.toLowerCase() }}</b>.
+		You log in with <b class="text-body-emphasis">{{ provider.toLowerCase() }}</b>.
 		To log in with a username and password instead, set a password below.
 		This permanently removes the link to {{ provider.toLowerCase() }}.
 	</p>

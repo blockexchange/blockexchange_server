@@ -16,7 +16,7 @@ function search() {
 </script>
 
 <template>
-	<section class="bx-hero">
+	<section class="bx-hero" data-bs-theme="dark">
 		<h1>Share your builds <span class="accent">across worlds</span></h1>
 		<p class="lead">
 			Block exchange is a free schematic library for Luanti (formerly Minetest).

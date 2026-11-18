@@ -16,7 +16,7 @@ function close() {
 				<i class="fa-solid fa-triangle-exclamation me-2"></i>
 				<strong class="me-auto">Something went wrong</strong>
 				<small v-if="store.status">HTTP {{ store.status }}</small>
-				<button type="button" class="btn-close btn-close-white ms-2" aria-label="Close" @click="close"></button>
+				<button type="button" class="btn-close ms-2" data-bs-theme="dark" aria-label="Close" @click="close"></button>
 			</div>
 			<div class="toast-body">
 				<p class="mb-1">{{ store.message }}</p>

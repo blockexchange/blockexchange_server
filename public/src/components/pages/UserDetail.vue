@@ -35,10 +35,10 @@ const count_entries = () => schema_count(search_body());
 	<user-profile :username="username" :key="username">
 		<template #actions v-if="is_own">
 			<router-link to="/import" class="btn btn-sm btn-success"><i class="fa fa-upload"></i> Import files</router-link>
-			<router-link :to="'/collections/' + username" class="btn btn-sm btn-outline-light" v-if="show_collections">
+			<router-link :to="'/collections/' + username" class="btn btn-sm btn-outline-secondary" v-if="show_collections">
 				<i class="fa fa-object-group"></i> Collections
 			</router-link>
-			<router-link to="/profile" class="btn btn-sm btn-outline-light"><i class="fa fa-gear"></i> Account settings</router-link>
+			<router-link to="/profile" class="btn btn-sm btn-outline-secondary"><i class="fa fa-gear"></i> Account settings</router-link>
 		</template>
 	</user-profile>
 	<h2 class="bx-section-title">{{ is_own ? 'Your schematics' : 'Schematics' }}</h2>
