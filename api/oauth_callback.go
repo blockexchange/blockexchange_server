@@ -44,7 +44,7 @@ func (api *Api) OauthCallback(w http.ResponseWriter, r *http.Request, user_info 
 	}
 	api.core.SetClaims(w, token, dur)
 
-	target := api.cfg.BaseURL + "/profile"
+	target := api.cfg.BaseURL + "/#/profile"
 	http.Redirect(w, r, target, http.StatusSeeOther)
 
 	return nil

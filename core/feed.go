@@ -13,7 +13,7 @@ import (
 
 const template_str = `
 Schema created: **{{.Schema.Name}}** by **{{.User.Name}}**
-Link: {{.BaseURL}}/schema/{{.User.Name}}/{{.Schema.Name}}
+Link: {{.BaseURL}}/#/schema/{{.User.Name}}/{{.Schema.Name}}
 `
 
 var feed_template = template.Must(template.New("main").Parse(template_str))

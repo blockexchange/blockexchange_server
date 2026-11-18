@@ -54,8 +54,8 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 
 	// api surface
 	a.SetupRoutes(r, cfg)
-	// client app routes
-	a.SetupSPARoutes(r, cfg)
+	// redirects from the old history-mode frontend urls
+	a.SetupLegacyRedirects(r)
 
 	// static files
 	if cfg.WebDev {

@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 
 import 'bootswatch/dist/darkly/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -12,7 +12,7 @@ import { check_login } from './service/login';
 
 function start() {
 	const router = createRouter({
-		history: createWebHistory(),
+		history: createWebHashHistory(),
 		routes: routes
 	});
 
