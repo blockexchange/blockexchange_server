@@ -22,7 +22,8 @@ jobs:
       run: |
         docker compose up -d postgres
         sleep 10
-        docker compose up -d blockexchange
+        # the frontend is already built above, skip the dev-server container
+        docker compose up -d --no-deps blockexchange
 
     - name: Wait for services to come up
       uses: cygnetdigital/wait_for_response@v2.0.0
@@ -36,7 +37,7 @@ jobs:
       run: docker compose up --exit-code-from integration-test integration-test
 
     - name: Execute mod tests
-      run: docker compose up --exit-code-from mod-integration-test mod-integration-test
+      run: docker compose up --no-deps --exit-code-from mod-integration-test mod-integration-test
 
     - uses: shogo82148/actions-goveralls@v1.11.5
       with:
