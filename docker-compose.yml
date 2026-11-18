@@ -6,10 +6,6 @@ services:
    POSTGRES_PASSWORD: enter
   volumes:
    - "postgres:/var/lib/postgresql"
-  command:
-   - "postgres"
-   - "-c"
-   - "log_statement=all"
 
  frontend:
   image: node:24-alpine
