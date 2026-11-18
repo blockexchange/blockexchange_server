@@ -1,6 +1,8 @@
 <script setup lang="ts" generic="T">
 import { computed, onMounted, ref, watch, type Ref } from 'vue';
-import { useRoute, type RouteLocationRaw } from 'vue-router';
+import { useRoute } from 'vue-router';
+import Pagination from './Pagination.vue';
+import LoadingSpinner from './LoadingSpinner.vue';
 
 const props = defineProps<{
 	fetch_entries: (limit: number, offset: number) => Promise<T[]>;
@@ -9,8 +11,7 @@ const props = defineProps<{
 }>();
 
 defineSlots<{
-	body(props: { list: T[] }): unknown;
-	busy?(): unknown;
+	body(props: { list: T[]; total: number }): unknown;
 }>();
 
 const route = useRoute();
@@ -34,32 +35,14 @@ async function update() {
 	}
 }
 
-function get_route(page: number): RouteLocationRaw {
-	return {
-		path: route.path,
-		query: { ...route.query, page: page }
-	};
-}
-
 onMounted(update);
 watch(() => route.fullPath, update);
 </script>
 
 <template>
-	<slot name="body" :list="list"></slot>
-	<slot name="busy" v-if="busy">
-		<div class="alert alert-primary">
-			<i class="fa fa-spinner fa-spin"></i> Loading...
-		</div>
-	</slot>
-	<div class="btn-group" v-if="!busy">
-		<router-link
-			:to="get_route(i)"
-			v-for="i in pages"
-			:key="i"
-			class="btn btn-xs btn-secondary"
-			:class="{disabled: current_page == i}">
-			{{ i }}
-		</router-link>
-	</div>
+	<loading-spinner v-if="busy"/>
+	<template v-else>
+		<slot name="body" :list="list" :total="total_count"></slot>
+		<pagination :current="current_page" :pages="pages"/>
+	</template>
 </template>

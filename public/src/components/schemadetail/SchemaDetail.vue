@@ -5,7 +5,7 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
 import format_size from "../../util/format_size";
-import format_time from "../../util/format_time";
+const format_date = (ts: number) => new Date(ts).toLocaleDateString();
 
 import ModalPrompt from "../ModalPrompt.vue";
 import SchemaStar from "./SchemaStar.vue";
@@ -45,6 +45,8 @@ const error_response = ref<SchemaUpdateError | null>(null);
 const screenshot_busy = ref(false);
 const mods_busy = ref(false);
 const delete_prompt = ref(false);
+const tools_open = ref(false);
+const saving = ref(false);
 
 // the schema object is edited in place (reactive object owned by the parent's loading-block)
 const schema = computed(() => props.search_result.schema);
@@ -61,22 +63,37 @@ const available_tags = computed(() => get_all_tags().filter(t => !t.restricted |
 
 async function save() {
 	error_response.value = null;
+	saving.value = true;
 	try {
 		await schema_update(schema.value);
+		// set tags
+		await schema_set_tags(schema.value.uid, tags.value);
 	} catch (e) {
 		error_response.value = e as SchemaUpdateError;
 		return;
+	} finally {
+		saving.value = false;
 	}
-
-	// set tags
-	await schema_set_tags(schema.value.uid, tags.value);
 
 	edit_mode.value = false;
 	await router.push(`/schema/${username.value}/${schema.value.name}`);
 	emit("save");
 }
 
+function cancel_edit() {
+	// discard the in-place edits by reloading the schematic
+	edit_mode.value = false;
+	error_response.value = null;
+	emit("save");
+}
+
+function start_edit() {
+	tools_open.value = false;
+	edit_mode.value = true;
+}
+
 async function update_mods() {
+	tools_open.value = false;
 	mods_busy.value = true;
 	try {
 		mods.value = await schema_update_mods(schema.value.uid);
@@ -86,12 +103,14 @@ async function update_mods() {
 }
 
 async function update_info() {
+	tools_open.value = false;
 	const s = await schema_update_info(schema.value.uid);
 	schema.value.total_size = s.total_size;
 	schema.value.total_parts = s.total_parts;
 }
 
 async function update_screenshot() {
+	tools_open.value = false;
 	screenshot_busy.value = true;
 	try {
 		await schema_update_screenshot(schema.value.uid);
@@ -111,163 +130,204 @@ const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: 
 
 <template>
 	<div>
-		<modal-prompt v-if="delete_prompt" title="Confirm deletion" @close="delete_prompt = false">
+		<modal-prompt v-if="delete_prompt" title="Delete schematic?" @close="delete_prompt = false">
 			<template #body>
-				<p>Confirm deletion of schematic <b>{{ schema.name }}</b></p>
+				<p class="mb-0">
+					<b>{{ schema.name }}</b> will be removed for everyone, including the in-game
+					<code>/bx_load</code> command. This can't be undone.
+				</p>
 			</template>
 			<template #footer>
-				<a class="btn btn-secondary" @click="delete_prompt = false">
-					<i class="fa fa-times"></i> Abort
-				</a>
-				<a class="btn btn-danger" @click="delete_schema">
-					<i class="fa fa-trash"></i> Delete
-				</a>
+				<button type="button" class="btn btn-secondary" @click="delete_prompt = false">Cancel</button>
+				<button type="button" class="btn btn-danger" @click="delete_schema">
+					<i class="fa fa-trash"></i> Delete schematic
+				</button>
 			</template>
 		</modal-prompt>
-		<div class="row">
-			<div class="col-md-6">
-				<h3 v-if="!edit_mode">
-					{{ schema.name }}
-					<small class="text-muted">by {{ username }}</small>
-					&nbsp;
-					<schema-star :schema_uid="schema.uid" v-model:stars="schema.stars"/>
-				</h3>
-				<div v-else class="input-group has-validation">
-					<input type="text" class="form-control" v-model="schema.name" :class="{'is-invalid': error_response}">
-					<div class="invalid-feedback" v-if="error_response && error_response.name_taken">
-						Schematic name already taken
+
+		<!-- header -->
+		<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+			<div class="flex-grow-1" style="min-width: 0;">
+				<template v-if="!edit_mode">
+					<h1 class="h2 mb-1 text-break">{{ schema.name }}</h1>
+					<div class="text-muted-bx">
+						by <router-link :to="'/user/' + username">{{ username }}</router-link>
+						<template v-if="schema.short_description"> · {{ schema.short_description }}</template>
 					</div>
-					<div class="invalid-feedback" v-if="error_response && error_response.name_invalid">
-						Schematic name invalid, allowed chars: a to z, A to Z, 0 to 9 and -, _
+				</template>
+				<div v-else class="row g-2">
+					<div class="col-md-5">
+						<label class="form-label small" for="schema-name">Name</label>
+						<input id="schema-name" type="text" class="form-control" v-model="schema.name" :class="{'is-invalid': error_response}">
+						<div class="invalid-feedback" v-if="error_response && error_response.name_taken">
+							You already have a schematic with this name.
+						</div>
+						<div class="invalid-feedback" v-else-if="error_response && error_response.name_invalid">
+							Only letters (a-z, A-Z), numbers, - and _ are allowed.
+						</div>
+						<div class="invalid-feedback" v-else>Saving failed.</div>
+					</div>
+					<div class="col-md-7">
+						<label class="form-label small" for="schema-short">Short description</label>
+						<input id="schema-short" type="text" class="form-control" v-model="schema.short_description" placeholder="One line, shown in search results"/>
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6">
-				<div class="btn-group float-end" v-if="allow_edit && !edit_mode">
-					<a class="btn btn-sm btn-secondary" @click="edit_mode = true">
-						<i class="fa fa-edit"></i> Edit
-					</a>
-					<a class="btn btn-sm btn-secondary" :class="{'disabled': screenshot_busy}" @click="update_screenshot">
-						<i v-if="screenshot_busy" class="fa fa-spinner fa-spin"></i>
-						<i v-else class="fa fa-image"></i>
-						Update screenshot
-					</a>
-					<a class="btn btn-sm btn-secondary" :class="{'disabled': mods_busy}" @click="update_mods">
-						<i v-if="mods_busy" class="fa fa-spinner fa-spin"></i>
-						<i v-else class="fa fa-box-archive"></i>
-						Update modnames
-					</a>
-					<a class="btn btn-sm btn-secondary" @click="update_info">
-						<i class="fa fa-chart-simple"></i>
-						Update stats
-					</a>
-					<a class="btn btn-sm btn-danger" @click="delete_prompt = true">
-						<i class="fa fa-trash"></i> Delete
-					</a>
-				</div>
-				<div class="btn-group float-end" v-if="edit_mode">
-					<a class="btn btn-sm btn-success" @click="save">
-						<i class="fa fa-save"></i> Save
-					</a>
-				</div>
+			<div class="d-flex flex-wrap gap-2 align-items-center">
+				<template v-if="!edit_mode">
+					<schema-star :schema_uid="schema.uid" v-model:stars="schema.stars"/>
+					<template v-if="allow_edit">
+						<button type="button" class="btn btn-outline-light" @click="start_edit">
+							<i class="fa fa-pen"></i> Edit
+						</button>
+						<div class="dropdown">
+							<button type="button" class="btn btn-outline-light dropdown-toggle" :aria-expanded="tools_open" @click="tools_open = !tools_open">
+								<span class="spinner-border spinner-border-sm" v-if="screenshot_busy || mods_busy"></span>
+								<i class="fa fa-screwdriver-wrench" v-else></i>
+								<span class="visually-hidden">More actions</span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-end" :class="{show: tools_open}" style="right: 0;">
+								<li>
+									<button class="dropdown-item" type="button" :disabled="screenshot_busy" @click="update_screenshot">
+										<i class="fa fa-image fa-fw"></i> Regenerate preview
+									</button>
+								</li>
+								<li>
+									<button class="dropdown-item" type="button" :disabled="mods_busy" @click="update_mods">
+										<i class="fa fa-box-archive fa-fw"></i> Re-scan used mods
+									</button>
+								</li>
+								<li>
+									<button class="dropdown-item" type="button" @click="update_info">
+										<i class="fa fa-chart-simple fa-fw"></i> Recalculate size
+									</button>
+								</li>
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<button class="dropdown-item text-danger" type="button" @click="tools_open = false; delete_prompt = true">
+										<i class="fa fa-trash fa-fw"></i> Delete
+									</button>
+								</li>
+							</ul>
+						</div>
+					</template>
+				</template>
+				<template v-else>
+					<button type="button" class="btn btn-secondary" @click="cancel_edit">Cancel</button>
+					<button type="button" class="btn btn-success" :disabled="saving" @click="save">
+						<span class="spinner-border spinner-border-sm" v-if="saving"></span>
+						<i class="fa fa-check" v-else></i>
+						Save changes
+					</button>
+				</template>
 			</div>
 		</div>
-		<hr>
-		<div class="row">
-			<div class="col-md-4">
-				<div class="card">
-					<div class="card-header">
-						<i class="fa fa-magnifying-glass"></i>
-						Details
+
+		<div class="row g-4">
+			<!-- main column -->
+			<div class="col-lg-8 d-flex flex-column gap-4">
+				<div class="card overflow-hidden">
+					<div class="text-center bg-black">
+						<img :src="'/api/schema/' + schema.uid + '/screenshot?cachebust=' + cache_counter" class="img-fluid" :alt="'Preview of ' + schema.name">
 					</div>
+				</div>
+
+				<section class="card" v-if="edit_mode || schema.description">
+					<div class="card-header">Description</div>
 					<div class="card-body">
-						<ul>
-							<li><b>Created:</b> {{ format_time(schema.created) }}</li>
-							<li><b>Modified:</b> {{ format_time(schema.mtime) }}</li>
-							<li><b>Size:</b> {{ format_size(schema.total_size) }}</li>
-							<li><b>Dimensions:</b> {{ schema.size_x }} / {{ schema.size_y }} / {{ schema.size_z }} nodes</li>
-							<li><b>Parts:</b> {{ schema.total_parts }}</li>
-							<li><b>Downloads:</b> {{ schema.downloads }}</li>
-							<li>
-								<b>License:</b>
-								<span v-if="!edit_mode">
-									<img v-if="schema.license == 'CC0'" src="/pics/license_cc0.png">
-									<img v-else-if="schema.license == 'CC-BY-SA'" src="/pics/license_cc-by-sa.png">
-									<span v-else class="badge bg-secondary">{{ schema.license }}</span>
-								</span>
-								<select v-else class="form-control" v-model="schema.license">
+						<div v-if="!edit_mode" class="markdown-body" v-html="markdown(schema.description)"></div>
+						<template v-else>
+							<textarea v-model="schema.description" rows="10" class="form-control font-monospace"></textarea>
+							<div class="form-text">Markdown is supported.</div>
+						</template>
+					</div>
+				</section>
+
+				<section class="card" v-if="!edit_mode">
+					<div class="card-header"><i class="fa fa-download"></i> Use this schematic</div>
+					<div class="card-body">
+						<schema-download :schema="schema" :username="username"/>
+					</div>
+				</section>
+			</div>
+
+			<!-- sidebar -->
+			<aside class="col-lg-4 d-flex flex-column gap-4">
+				<section class="card">
+					<div class="card-header">Details</div>
+					<div class="card-body">
+						<dl class="bx-dl row mb-0">
+							<dt class="col-5">Dimensions</dt>
+							<dd class="col-7" title="Width × height × depth in nodes">{{ schema.size_x }} × {{ schema.size_y }} × {{ schema.size_z }}</dd>
+							<dt class="col-5">Size</dt>
+							<dd class="col-7">{{ format_size(schema.total_size) }} <span class="text-muted-bx small">({{ schema.total_parts }} parts)</span></dd>
+							<dt class="col-5">Downloads</dt>
+							<dd class="col-7">{{ schema.downloads }}</dd>
+							<dt class="col-5">Created</dt>
+							<dd class="col-7">{{ format_date(schema.created) }}</dd>
+							<dt class="col-5">Updated</dt>
+							<dd class="col-7">{{ format_date(schema.mtime) }}</dd>
+							<dt class="col-5">License</dt>
+							<dd class="col-7 mb-0">
+								<template v-if="!edit_mode">
+									<img v-if="schema.license == 'CC0'" src="/pics/license_cc0.png" alt="CC0" title="CC0: public domain">
+									<img v-else-if="schema.license == 'CC-BY-SA'" src="/pics/license_cc-by-sa.png" alt="CC-BY-SA" title="CC-BY-SA: credit the author, share alike">
+									<span v-else>{{ schema.license }}</span>
+								</template>
+								<select v-else class="form-select form-select-sm" v-model="schema.license" aria-label="License">
 									<option value="CC0">CC0</option>
 									<option value="CC-BY-SA">CC-BY-SA</option>
 									<option value="MIT">MIT</option>
 									<option value="Proprietary">Proprietary</option>
 								</select>
-							</li>
-						</ul>
+							</dd>
+						</dl>
 					</div>
-				</div>
-				<br>
-				<div class="card">
-					<div class="card-header">
-						<i class="fa fa-file-lines"></i>
-						Description
-					</div>
+				</section>
+
+				<section class="card">
+					<div class="card-header">Required mods</div>
 					<div class="card-body">
-						<p v-if="!edit_mode">{{ schema.short_description }}</p>
-						<input v-else type="text" class="form-control" v-model="schema.short_description" placeholder="Short description"/>
-						<hr>
-						<div v-if="!edit_mode" v-html="markdown(schema.description)"></div>
-						<textarea v-else v-model="schema.description" rows="10" class="form-control"></textarea>
-					</div>
-				</div>
-				<br>
-				<div class="card">
-					<div class="card-header">
-						<i class="fa fa-box-archive"></i>
-						Used mods
-					</div>
-					<div class="card-body">
+						<p class="small text-muted-bx" v-if="!edit_mode && mods.length">Install these in your world before placing the schematic.</p>
+						<div class="d-flex flex-wrap gap-1">
+							<mod-badge v-for="mod in mods" :key="mod" :name="mod"/>
+							<span class="small text-muted-bx" v-if="!mods.length">No mods detected.</span>
+						</div>
 						<a v-if="!edit_mode && schema.cdb_collection"
-							class="btn btn-xs btn-outline-success w-100"
-							target="new"
-							:href="'https://content.minetest.net/collections/' + schema.cdb_collection + '/'">
-							<i class="fa fa-box-archive"></i>
-							Open CDB Mod collection
+							class="btn btn-sm btn-outline-success w-100 mt-3"
+							target="_blank"
+							rel="noopener"
+							:href="'https://content.luanti.org/collections/' + schema.cdb_collection + '/'">
+							Get all mods as a ContentDB collection
 							<i class="fa fa-up-right-from-square"></i>
 						</a>
-						<hr v-if="schema.cdb_collection">
-						<input v-if="edit_mode" type="text" class="form-control" v-model="schema.cdb_collection" placeholder="CDB Collection in the 'username/collectionname' form"/>
-						<mod-badge v-for="mod in mods" :key="mod" :name="mod"/>
-					</div>
-				</div>
-				<br>
-				<div class="card">
-					<div class="card-header">
-						<i class="fa fa-tags"></i>
-						Tags
-					</div>
-					<div class="card-body">
-						<template v-if="!edit_mode">
-							<tag-badge v-for="tag in tags" :key="tag" :name="tag"/>
-						</template>
-						<div v-else>
-							<ul>
-								<li v-for="tag in available_tags" :key="tag.uid">
-									<input type="checkbox" class="form-check-input" :value="tag.name" v-model="tags"/>
-									<span class="badge bg-success">
-										<i class="fa fa-tag"></i>
-										{{ tag.name }}
-									</span>
-								</li>
-							</ul>
+						<div v-if="edit_mode" class="mt-3">
+							<label class="form-label small" for="schema-cdb">ContentDB collection</label>
+							<input id="schema-cdb" type="text" class="form-control form-control-sm" v-model="schema.cdb_collection" placeholder="username/collection_name"/>
 						</div>
 					</div>
-				</div>
-				<br>
-				<div class="card" v-if="edit_mode || search_result.collection_name">
-					<div class="card-header">
-						<i class="fa fa-object-group"></i>
-						Collection
+				</section>
+
+				<section class="card" v-if="edit_mode || tags.length">
+					<div class="card-header">Tags</div>
+					<div class="card-body">
+						<div class="d-flex flex-wrap gap-1" v-if="!edit_mode">
+							<tag-badge v-for="tag in tags" :key="tag" :name="tag"/>
+						</div>
+						<div v-else>
+							<div class="form-check" v-for="tag in available_tags" :key="tag.uid">
+								<input type="checkbox" class="form-check-input" :id="'tag-' + tag.uid" :value="tag.name" v-model="tags"/>
+								<label class="form-check-label" :for="'tag-' + tag.uid">
+									{{ tag.name }}
+									<span class="small text-muted-bx" v-if="tag.description">· {{ tag.description }}</span>
+								</label>
+							</div>
+						</div>
 					</div>
+				</section>
+
+				<section class="card" v-if="edit_mode || search_result.collection_name">
+					<div class="card-header">Collection</div>
 					<div class="card-body">
 						<schema-collection
 							v-model="schema.collection_uid"
@@ -275,31 +335,8 @@ const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: 
 							:edit_mode="edit_mode"
 							:collection_name="search_result.collection_name"/>
 					</div>
-				</div>
-			</div>
-			<div class="col-md-8">
-				<div class="card">
-					<div class="card-header">
-						<i class="fa fa-image"></i>
-						Preview
-					</div>
-					<div class="card-body">
-						<div class="text-center" style="min-height: 600px;">
-							<img :src="'/api/schema/' + schema.uid + '/screenshot?cachebust=' + cache_counter" class="img-fluid">
-						</div>
-					</div>
-				</div>
-				<br>
-				<div class="card">
-					<div class="card-header">
-						<i class="fa fa-download"></i>
-						Download
-					</div>
-					<div class="card-body">
-						<schema-download :schema="schema" :username="username"/>
-					</div>
-				</div>
-			</div>
+				</section>
+			</aside>
 		</div>
 	</div>
 </template>

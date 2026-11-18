@@ -5,10 +5,7 @@ defineProps<{
 </script>
 
 <template>
-	<router-link :to="{path: '/search', query: {tag_name: name}}">
-		<span class="badge bg-success" style="margin-right: 5px;">
-			<i class="fa fa-tag"></i>
-			{{ name }}
-		</span>
+	<router-link :to="{path: '/search', query: {tag_name: name}}" class="badge bg-success text-decoration-none fw-normal">
+		{{ name }}
 	</router-link>
 </template>

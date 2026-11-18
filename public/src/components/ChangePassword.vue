@@ -23,6 +23,10 @@ async function change_password() {
 		});
 		password_wrong.value = !s;
 		success.value = s;
+		if (s) {
+			old_password.value = "";
+			new_password.value = "";
+		}
 	} finally {
 		busy.value = false;
 	}
@@ -30,20 +34,25 @@ async function change_password() {
 </script>
 
 <template>
-	<h5>Change password</h5>
-	<div class="input-group has-validation">
-		<input type="password" v-model="old_password" placeholder="Old password" class="form-control" :class="{'is-invalid': password_wrong}"/>
-		<input type="password" v-model="new_password" placeholder="New password" class="form-control" :class="{'is-valid': success}"/>
-		<button class="btn btn-primary" :disabled="!old_password || !new_password || busy" @click="change_password">
-			<i class="fa fa-edit" v-if="!busy"></i>
-			<i class="fa fa-spinner fa-spin" v-if="busy"></i>
-			Change password
-		</button>
-		<div class="invalid-feedback" v-if="password_wrong">
-			Password invalid
+	<form class="row g-2 align-items-start" @submit.prevent="change_password">
+		<div class="col-sm-4">
+			<label class="form-label small" for="pw-old">Current password</label>
+			<input id="pw-old" type="password" v-model="old_password" autocomplete="current-password" class="form-control" :class="{'is-invalid': password_wrong}"/>
+			<div class="invalid-feedback">The current password is wrong.</div>
 		</div>
-		<div class="valid-feedback" v-if="success">
-			Password changed
+		<div class="col-sm-4">
+			<label class="form-label small" for="pw-new">New password</label>
+			<input id="pw-new" type="password" v-model="new_password" autocomplete="new-password" class="form-control"/>
 		</div>
+		<div class="col-sm-4">
+			<label class="form-label small d-none d-sm-block">&nbsp;</label>
+			<button class="btn btn-primary w-100" type="submit" :disabled="!old_password || !new_password || busy">
+				<span class="spinner-border spinner-border-sm" v-if="busy"></span>
+				Change password
+			</button>
+		</div>
+	</form>
+	<div class="alert alert-success py-2 small mt-3 mb-0" v-if="success">
+		<i class="fa fa-check"></i> Your password has been changed.
 	</div>
 </template>

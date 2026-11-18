@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { Schema } from "../../api/types";
 import ClipboardCopy from "../ClipboardCopy.vue";
 
@@ -10,6 +10,8 @@ const props = defineProps<{
 	username: string;
 }>();
 
+const tab = ref<"online" | "offline">("online");
+
 const can_use_placement_tool = computed(() => (
 	props.schema.size_x <= max_placement_tool_size &&
 	props.schema.size_y <= max_placement_tool_size &&
@@ -18,82 +20,70 @@ const can_use_placement_tool = computed(() => (
 </script>
 
 <template>
-	<div class="row">
-		<div class="col-md-6">
-			<u>
-				<h4>Online</h4>
-			</u>
-			<h5>Single placement</h5>
-			<ul>
-				<li>
-					Download and install the <router-link to="/mod">blockexchange</router-link>-mod
-				</li>
-				<li>
-					Select the origin position with <clipboard-copy text="/bx_pos1"/>
-				</li>
-				<li>
-					Check if the placement fits with <clipboard-copy :text="'/bx_allocate ' + username + ' ' + schema.name"/>
-				</li>
-				<li>
-					Place the schematic with <clipboard-copy :text="'/bx_load ' + username + ' ' + schema.name"/>
-				</li>
-			</ul>
-			<h5 v-if="can_use_placement_tool">Multiple placements with the placement tool</h5>
-			<ul v-if="can_use_placement_tool">
-				<li>
-					Download and install the <router-link to="/mod">blockexchange</router-link>-mod
-				</li>
-				<li>
-					Create a placement tool with <clipboard-copy :text="'/bx_placer ' + username + ' ' + schema.name"/>
-				</li>
-				<li>
-					Point and click to place the schematic
-				</li>
-			</ul>
+	<ul class="nav nav-pills mb-3 gap-1">
+		<li class="nav-item">
+			<button type="button" class="nav-link" :class="{active: tab == 'online'}" @click="tab = 'online'">
+				<i class="fa fa-globe"></i> In-game
+			</button>
+		</li>
+		<li class="nav-item">
+			<button type="button" class="nav-link" :class="{active: tab == 'offline'}" @click="tab = 'offline'">
+				<i class="fa fa-file-zipper"></i> Download file
+			</button>
+		</li>
+	</ul>
+
+	<div v-if="tab == 'online'">
+		<p class="small text-muted-bx">
+			Needs the <router-link to="/mod">blockexchange mod</router-link> with web access enabled.
+		</p>
+		<ol class="d-flex flex-column gap-2">
+			<li>Stand at the spot where the schematic should start and run <clipboard-copy text="/bx_pos1"/></li>
+			<li>Optional: preview the area it will fill <clipboard-copy :text="'/bx_allocate ' + username + ' ' + schema.name"/></li>
+			<li>Place it <clipboard-copy :text="'/bx_load ' + username + ' ' + schema.name"/></li>
+		</ol>
+		<div class="bx-note" :class="{'mb-3': can_use_placement_tool}">
+			<i class="fa fa-triangle-exclamation"></i>
+			Placing replaces any blocks already in that area.
 		</div>
-		<div class="col-md-6">
-			<u>
-				<h4>Offline</h4>
-			</u>
-			<div class="btn-group">
-				<a class="btn btn-outline-success"
-					:href="'/api/export_bx/' + schema.uid + '/' + schema.name + '.zip'">
-					<i class="fa fa-download"></i>
-					Download as BX schematic
-				</a>
-				<a class="btn btn-outline-success"
-					:class="{disabled: schema.total_parts >= 500}"
-					:href="'/api/export_we/' + schema.uid + '/' + schema.name + '.we'">
-					<i class="fa fa-download"></i>
-					Download as WE schematic
-					<i class="fa fa-triangle-exclamation"
-						v-if="schema.total_parts >= 500"
-						style="color: red;"
-						title="WE-Import disable due to schematic size"></i>
-					<i class="fa fa-triangle-exclamation"
-						v-else-if="schema.total_parts > 50"
-						style="color: yellow;"
-						title="WE-Import might be slow due to schematic size"></i>
-				</a>
-			</div>
-			<ul>
-				<li>
-					Download and install the <router-link to="/mod">blockexchange</router-link>-mod
-				</li>
-				<li>
-					Download the Blockexchange schematic with the above button and place it in the
-					<b class="text-muted">{world-folder}/bxschems/</b> folder
-				</li>
-				<li>
-					Select the origin position with <clipboard-copy text="/bx_pos1"/>
-				</li>
-				<li>
-					Check if the placement fits with <clipboard-copy :text="'/bx_allocate_local ' + schema.name"/>
-				</li>
-				<li>
-					Place the schematic with <clipboard-copy :text="'/bx_load_local ' + schema.name"/>
-				</li>
-			</ul>
+		<template v-if="can_use_placement_tool">
+			<h3 class="h6 fw-bold mt-3">Placing it several times?</h3>
+			<p class="mb-0">
+				Get a placement tool and click wherever you want a copy:
+				<clipboard-copy :text="'/bx_placer ' + username + ' ' + schema.name"/>
+			</p>
+		</template>
+	</div>
+
+	<div v-else>
+		<div class="d-flex flex-wrap gap-2 mb-3">
+			<a class="btn btn-success"
+				:href="'/api/export_bx/' + schema.uid + '/' + schema.name + '.zip'">
+				<i class="fa fa-download"></i>
+				Block exchange file (.zip)
+			</a>
+			<a class="btn btn-outline-success"
+				:class="{disabled: schema.total_parts >= 500}"
+				:aria-disabled="schema.total_parts >= 500"
+				:href="'/api/export_we/' + schema.uid + '/' + schema.name + '.we'">
+				<i class="fa fa-download"></i>
+				WorldEdit file (.we)
+			</a>
 		</div>
+		<div class="bx-note info mb-3" v-if="schema.total_parts >= 500">
+			<i class="fa fa-circle-info"></i>
+			This schematic is too large for the WorldEdit format. Use the Block exchange file instead.
+		</div>
+		<div class="bx-note mb-3" v-else-if="schema.total_parts > 50">
+			<i class="fa fa-triangle-exclamation"></i>
+			This is a large schematic, so the WorldEdit file may be slow to import.
+		</div>
+		<p class="small text-muted-bx">To place the Block exchange file without an internet connection:</p>
+		<ol class="d-flex flex-column gap-2 mb-0">
+			<li>Put the .zip file into the <code>bxschems</code> folder of your world (<code>&lt;world&gt;/bxschems/</code>).</li>
+			<li>Mark the starting point <clipboard-copy text="/bx_pos1"/></li>
+			<li>Optional: preview the area <clipboard-copy :text="'/bx_allocate_local ' + schema.name"/></li>
+			<li>Place it <clipboard-copy :text="'/bx_load_local ' + schema.name"/></li>
+		</ol>
 	</div>
 </template>

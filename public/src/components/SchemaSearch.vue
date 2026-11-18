@@ -10,6 +10,7 @@ import debounce from "../util/debounce";
 
 import SchemaList from "./SchemaList.vue";
 import PagedContent from "./PagedContent.vue";
+import EmptyState from "./EmptyState.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -30,77 +31,107 @@ function search_body(limit?: number, offset?: number): SchemaSearchRequest {
 const fetch_entries = (limit: number, offset: number) => schema_search(search_body(limit, offset));
 const count_entries = () => schema_count(search_body());
 
-const get_count = debounce(async () => {
-	store.busy = true;
-	try {
-		store.count = await schema_count(search_body());
-	} finally {
-		store.busy = false;
-	}
-}, 250);
+const has_filter = computed(() => !!(store.keywords || store.tag_name || store.mod_name));
 
+const filter_query = () => ({
+	q: store.keywords ? store.keywords : undefined,
+	tag_name: store.tag_name ? store.tag_name : undefined,
+	mod_name: store.mod_name ? store.mod_name : undefined
+});
+
+// apply the filters to the url, a new search starts at the first page
 function search() {
-	// set data on query
-	router.push({
-		path: route.path,
-		query: {
-			q: store.keywords ? store.keywords : undefined,
-			tag_name: store.tag_name ? store.tag_name : undefined,
-			mod_name: store.mod_name ? store.mod_name : undefined,
-			page: route.query.page
-		}
-	});
+	router.replace({ path: route.path, query: filter_query() });
+}
+
+const search_debounced = debounce(search, 400);
+
+function reset() {
+	store.keywords = "";
+	store.tag_name = "";
+	store.mod_name = "";
+	search();
 }
 
 // get data from query
 const query_string = (v: unknown) => typeof v == "string" ? v : "";
-if (route.query.q) {
+if (route.query.q || route.query.tag_name || route.query.mod_name) {
+	// link with filters (e.g. a tag or mod badge): use exactly these filters
 	store.keywords = query_string(route.query.q);
-}
-if (route.query.tag_name) {
 	store.tag_name = query_string(route.query.tag_name);
-}
-if (route.query.mod_name) {
 	store.mod_name = query_string(route.query.mod_name);
+} else if (has_filter.value) {
+	// restore the previous search
+	router.replace({ path: route.path, query: { ...filter_query(), page: route.query.page } });
 }
 
-watch(() => [store.keywords, store.mod_name, store.tag_name], get_count);
+// keep the form in sync when a filter link is followed while on this page
+const own_path = route.path;
+watch(() => route.query, q => {
+	if (route.path != own_path) {
+		// navigating away, keep the stored search
+		return;
+	}
+	store.keywords = query_string(q.q);
+	store.tag_name = query_string(q.tag_name);
+	store.mod_name = query_string(q.mod_name);
+});
 
-// count and search on route load
-get_count();
-search();
+watch(() => [store.keywords, store.mod_name], search_debounced);
+watch(() => store.tag_name, search);
 </script>
 
 <template>
-	<div class="row">
-		<div class="col-md-6 col-xs-4">
-			<input type="text" class="form-control" v-model="store.keywords" @keyup.enter="search" placeholder="Keywords"/>
+	<form class="card mb-3" @submit.prevent="search" role="search">
+		<div class="card-body">
+			<div class="row g-2">
+				<div class="col-12 col-lg-5">
+					<label class="form-label small text-muted-bx" for="search-keywords">Keywords</label>
+					<div class="input-group">
+						<span class="input-group-text"><i class="fa fa-magnifying-glass"></i></span>
+						<input id="search-keywords" type="search" class="form-control" v-model="store.keywords" placeholder="e.g. house, tower, bridge"/>
+					</div>
+				</div>
+				<div class="col-6 col-lg-3">
+					<label class="form-label small text-muted-bx" for="search-mod">Uses mod</label>
+					<input id="search-mod" type="search" class="form-control" v-model="store.mod_name" placeholder="e.g. default"/>
+				</div>
+				<div class="col-6 col-lg-2">
+					<label class="form-label small text-muted-bx" for="search-tag">Tag</label>
+					<select id="search-tag" class="form-select" v-model="store.tag_name">
+						<option value="">Any tag</option>
+						<option v-for="tag in tags" :key="tag.uid" :value="tag.name">{{ tag.name }}</option>
+					</select>
+				</div>
+				<div class="col-12 col-lg-2 d-flex align-items-end">
+					<button class="btn btn-success w-100" type="submit">
+						Search
+					</button>
+				</div>
+			</div>
 		</div>
-		<div class="col-md-2 col-xs-4">
-			<input type="text" class="form-control" v-model="store.mod_name" @keyup.enter="search" placeholder="Modname"/>
-		</div>
-		<div class="col-md-2 col-xs-4">
-			<select class="form-control" v-model="store.tag_name">
-				<option value="">All tags</option>
-				<option v-for="tag in tags" :key="tag.uid" :value="tag.name">{{ tag.name }}</option>
-			</select>
-		</div>
-		<div class="col-md-2 col-xs-4">
-			<button class="btn btn-success w-100" @click="search">
-				<i class="fa fa-spinner fa-spin" v-if="store.busy"></i>
-				<i class="fa-solid fa-magnifying-glass" v-else></i>
-				Search
-				<span class="badge rounded-pill bg-secondary">{{ store.count }}</span>
-			</button>
-		</div>
-	</div>
-	<hr>
+	</form>
 	<paged-content
 		:fetch_entries="fetch_entries"
 		:count_entries="count_entries"
 		:per_page="24">
-		<template #body="{ list }">
-			<schema-list :list="list"/>
+		<template #body="{ list, total }">
+			<div class="d-flex justify-content-between align-items-center mb-3 small text-muted-bx">
+				<span>
+					<b class="text-light">{{ total }}</b> {{ total == 1 ? 'schematic' : 'schematics' }}
+					<template v-if="has_filter">match your filters</template>
+				</span>
+				<button type="button" class="btn btn-link btn-sm p-0" v-if="has_filter" @click="reset">
+					<i class="fa fa-xmark"></i> Clear filters
+				</button>
+			</div>
+			<schema-list :list="list">
+				<template #empty v-if="!has_filter">
+					<empty-state icon="cubes" title="No schematics yet">
+						<p class="mb-0">Be the first to share a build. <router-link to="/mod">Here's how</router-link>.</p>
+					</empty-state>
+				</template>
+			</schema-list>
 		</template>
 	</paged-content>
 </template>

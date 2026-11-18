@@ -34,9 +34,13 @@ onMounted(update_star);
 </script>
 
 <template>
-	<button class="btn btn-outline-primary" :disabled="!logged_in" @click="schema_star ? unstar() : star()">
-		<i class="fa fa-star" :style="{color: schema_star ? 'yellow' : ''}"></i>
-		<span class="badge bg-secondary rouded-pill">{{ stars }}</span>
-		{{ schema_star ? 'Unstar' : 'Star' }}
+	<button type="button" class="btn"
+		:class="schema_star ? 'btn-warning' : 'btn-outline-warning'"
+		:disabled="!logged_in"
+		:title="logged_in ? (schema_star ? 'Remove your star' : 'Star this schematic') : 'Log in to star schematics'"
+		@click="schema_star ? unstar() : star()">
+		<i :class="schema_star ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
+		{{ schema_star ? 'Starred' : 'Star' }}
+		<span class="badge rounded-pill ms-1" :class="schema_star ? 'bg-dark' : 'bg-secondary'">{{ stars }}</span>
 	</button>
 </template>

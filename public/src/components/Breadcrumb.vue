@@ -4,29 +4,21 @@ import type { BreadcrumbItem } from "../util/breadcrumbs";
 defineProps<{
 	items: BreadcrumbItem[];
 }>();
-
-function get_icon_class(item: BreadcrumbItem) {
-	const cl: Record<string, boolean> = {};
-	if (item.icon){
-		cl.fa = true;
-		cl["fa-" + item.icon] = true;
-	}
-	return cl;
-}
 </script>
 
 <template>
-	<nav>
-		<ol class="breadcrumb text-bg-secondary" style="padding: 5px; border-radius: 5px;">
-			<li class="breadcrumb-item" v-for="item in items" :key="item.name">
-				<router-link class="link-light" :to="item.link" v-if="item.link">
-					<i :class="get_icon_class(item)" v-if="item.icon"></i>
+	<nav aria-label="breadcrumb" v-if="items.length > 1">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"
+				v-for="(item, i) in items"
+				:key="item.name"
+				:class="{active: i == items.length - 1}"
+				:aria-current="i == items.length - 1 ? 'page' : undefined">
+				<router-link :to="item.link" v-if="item.link && i < items.length - 1">
+					<i :class="['fa', 'fa-' + item.icon]" v-if="item.icon && i == 0"></i>
 					{{ item.name }}
 				</router-link>
-				<span v-else>
-					<i :class="get_icon_class(item)" v-if="item.icon"></i>
-					{{ item.name }}
-				</span>
+				<span v-else>{{ item.name }}</span>
 			</li>
 		</ol>
 	</nav>

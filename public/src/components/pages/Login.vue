@@ -2,45 +2,41 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { login as service_login, logout as service_logout, is_logged_in } from "../../service/login";
+import { login as service_login, logout as service_logout, get_username } from "../../service/login";
 import { get_cdb_login, get_discord_login, get_github_login, get_mesehub_login, get_codeberg_login, get_base_url } from "../../service/info";
-import BreadCrumb from "../Breadcrumb.vue";
-import { LOGIN, START } from "../../util/breadcrumbs";
 
 const router = useRouter();
 
-const breadcrumb = [START, LOGIN];
 const username = ref("");
 const password = ref("");
 const busy = ref(false);
-const error_message = ref("");
+const login_failed = ref(false);
 
-const logged_in = computed(is_logged_in);
+const current_user = computed(get_username);
 const valid_input = computed(() => username.value != "" && password.value != "");
 
-const github_login = computed(get_github_login);
-const cdb_login = computed(get_cdb_login);
-const discord_login = computed(get_discord_login);
-const mesehub_login = computed(get_mesehub_login);
-const codeberg_login = computed(get_codeberg_login);
 const base_url = computed(get_base_url);
+const providers = computed(() => [
+	{ name: "GitHub", url: get_github_login(), icon: "fa-brands fa-github" },
+	{ name: "Discord", url: get_discord_login(), icon: "fa-brands fa-discord" },
+	{ name: "ContentDB", url: get_cdb_login(), img: "/pics/contentdb.png" },
+	{ name: "Codeberg", url: get_codeberg_login(), img: "/pics/codeberg.png" },
+	{ name: "Mesehub", url: get_mesehub_login(), img: "/pics/default_mese_crystal.png" }
+].filter(p => p.url));
 
 async function login() {
 	busy.value = true;
-	error_message.value = "";
-	let claims;
+	login_failed.value = false;
 	try {
-		claims = await service_login(username.value, password.value);
+		const claims = await service_login(username.value, password.value);
+		if (!claims) {
+			login_failed.value = true;
+			return;
+		}
 	} finally {
 		busy.value = false;
 	}
-	if (!claims) {
-		// no luck
-		error_message.value = "Login failed!";
-	} else {
-		// go to base page
-		await router.push("/profile");
-	}
+	await router.push("/user/" + get_username());
 }
 
 async function logout() {
@@ -54,67 +50,58 @@ async function logout() {
 </script>
 
 <template>
-	<bread-crumb :items="breadcrumb"/>
-	<div class="row">
-		<div class="col-md-2"></div>
-		<div class="col-md-8 card" style="padding: 20px;">
-			<div class="row">
-				<div class="col-md-6">
-					<h5>Login with username and password</h5>
-					<form @submit.prevent="login">
-						<input type="text"
-							class="form-control"
-							placeholder="Username"
-							:disabled="logged_in"
-							v-model="username"/>
-						<input type="password"
-							class="form-control"
-							placeholder="Password"
-							:disabled="logged_in"
-							v-model="password"/>
-						<button class="btn btn-primary w-100" v-if="!logged_in" type="submit" :disabled="!valid_input">
-							<i class="fa-solid fa-right-to-bracket"></i>
-							Login
-							<i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
-							<span class="badge bg-danger">{{ error_message }}</span>
-						</button>
-						<a class="btn btn-secondary w-100" v-if="logged_in" @click="logout">
-							<i class="fa-solid fa-right-from-bracket"></i>
-							Logout
-							<i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
-						</a>
-						Register a new account <router-link to="/register">here</router-link>
-					</form>
-				</div>
-				<div class="col-md-6">
-					<h5>Login with external provider</h5>
-					<a :href="github_login" class="btn btn-secondary w-100" :class="{disabled: logged_in}" v-if="github_login">
-						<i class="fab fa-github"></i>
-						Login with Github
-					</a>
-					&nbsp;
-					<a :href="cdb_login" class="btn btn-secondary w-100" :class="{disabled: logged_in}" v-if="cdb_login">
-						<img :src="base_url + '/pics/contentdb.png'" height="24" width="24">
-						Login with ContentDB
-					</a>
-					&nbsp;
-					<a :href="discord_login" class="btn btn-secondary w-100" :class="{disabled: logged_in}" v-if="discord_login">
-						<i class="fab fa-discord"></i>
-						Login with Discord
-					</a>
-					&nbsp;
-					<a :href="mesehub_login" class="btn btn-secondary w-100" :class="{disabled: logged_in}" v-if="mesehub_login">
-						<img :src="base_url + '/pics/default_mese_crystal.png'">
-						Login with Mesehub
-					</a>
-					&nbsp;
-					<a :href="codeberg_login" class="btn btn-secondary w-100" :class="{disabled: logged_in}" v-if="codeberg_login">
-						<img :src="base_url + '/pics/codeberg.png'" height="24" width="24">
-						Login with Codeberg
-					</a>
+	<div class="row justify-content-center">
+		<div class="col-sm-10 col-md-7 col-lg-5">
+			<div class="card">
+				<div class="card-body p-4">
+					<template v-if="current_user">
+						<h1 class="h4 mb-3">You're logged in</h1>
+						<p class="text-muted-bx">Signed in as <b class="text-light">{{ current_user }}</b>.</p>
+						<div class="d-grid gap-2">
+							<router-link :to="'/user/' + current_user" class="btn btn-success">Go to my schematics</router-link>
+							<button class="btn btn-outline-light" type="button" :disabled="busy" @click="logout">
+								<span class="spinner-border spinner-border-sm" v-if="busy"></span>
+								Log out
+							</button>
+						</div>
+					</template>
+					<template v-else>
+						<h1 class="h4 mb-1">Log in</h1>
+						<p class="text-muted-bx small mb-4">Log in to upload, star and manage your schematics.</p>
+
+						<div class="d-grid gap-2" v-if="providers.length">
+							<a v-for="p in providers" :key="p.name" :href="p.url" class="btn btn-secondary bx-provider-btn">
+								<i :class="p.icon" v-if="p.icon"></i>
+								<img :src="(base_url ?? '') + (p.img ?? '')" alt="" v-else>
+								Continue with {{ p.name }}
+							</a>
+						</div>
+						<div class="bx-divider" v-if="providers.length">or with a username</div>
+
+						<form @submit.prevent="login" novalidate>
+							<div class="alert alert-danger py-2 small" v-if="login_failed" role="alert">
+								<i class="fa fa-circle-exclamation"></i>
+								Wrong username or password.
+							</div>
+							<div class="mb-3">
+								<label class="form-label" for="login-username">Username</label>
+								<input id="login-username" type="text" class="form-control" autocomplete="username" autofocus v-model="username"/>
+							</div>
+							<div class="mb-3">
+								<label class="form-label" for="login-password">Password</label>
+								<input id="login-password" type="password" class="form-control" autocomplete="current-password" v-model="password"/>
+							</div>
+							<button class="btn btn-success w-100" type="submit" :disabled="!valid_input || busy">
+								<span class="spinner-border spinner-border-sm" v-if="busy"></span>
+								Log in
+							</button>
+						</form>
+					</template>
 				</div>
 			</div>
+			<p class="text-center small text-muted-bx mt-3" v-if="!current_user">
+				New here? <router-link to="/register">Create an account</router-link>
+			</p>
 		</div>
-		<div class="col-md-4"></div>
 	</div>
 </template>
