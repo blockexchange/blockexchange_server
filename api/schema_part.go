@@ -26,8 +26,7 @@ var partsDownloaded = promauto.NewCounter(prometheus.CounterOpts{
 func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	schemapart := &types.SchemaPart{}
 	err := json.NewDecoder(r.Body).Decode(schemapart)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -62,8 +61,7 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 
 func (api *Api) DeleteSchemaPart(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	schema_uid, x, y, z, err := extractSchemaPartVars(r)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -73,16 +71,14 @@ func (api *Api) DeleteSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 	}
 
 	err = api.SchemaPartRepo.RemoveBySchemaUIDAndOffset(schema_uid, x, y, z)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
 	// update schema mtime
 	schema.Mtime = time.Now().UnixMilli()
 	err = api.SchemaRepo.UpdateSchema(schema)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -113,8 +109,7 @@ func extractSchemaPartVars(r *http.Request) (string, int, int, int, error) {
 
 func (api *Api) GetSchemaPart(w http.ResponseWriter, r *http.Request) {
 	schema_uid, x, y, z, err := extractSchemaPartVars(r)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -130,8 +125,7 @@ func (api *Api) GetSchemaPart(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) GetSchemaPartChunk(w http.ResponseWriter, r *http.Request) {
 	schema_uid, x, y, z, err := extractSchemaPartVars(r)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -147,8 +141,7 @@ func (api *Api) GetSchemaPartChunk(w http.ResponseWriter, r *http.Request) {
 
 func (api *Api) GetNextSchemaPart(w http.ResponseWriter, r *http.Request) {
 	schema_uid, x, y, z, err := extractSchemaPartVars(r)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -167,8 +160,7 @@ func (api *Api) GetNextSchemaPartByMtime(w http.ResponseWriter, r *http.Request)
 	schema_uid := vars["schema_uid"]
 
 	mtime, err := strconv.Atoi(vars["mtime"])
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -187,14 +179,12 @@ func (api *Api) CountNextSchemaPartByMtime(w http.ResponseWriter, r *http.Reques
 	schema_uid := vars["schema_uid"]
 
 	mtime, err := strconv.Atoi(vars["mtime"])
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
 	count, err := api.SchemaPartRepo.CountNextBySchemaUIDAndMtime(schema_uid, int64(mtime))
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 

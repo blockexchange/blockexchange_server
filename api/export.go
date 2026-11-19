@@ -72,20 +72,17 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 	e := worldedit.NewExporter(w)
 
 	err := api.core.SchemapartCallback(schema_uid, e.Export)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
 	err = e.Close()
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
 	err = api.incrementDownloadStats(schema_uid, r)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 }
@@ -95,8 +92,7 @@ func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 	schema_uid := vars["schema_uid"]
 
 	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	if schema == nil {
@@ -105,33 +101,28 @@ func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 	}
 
 	schemamods, err := api.SchemaModRepo.GetSchemaModsBySchemaUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
 	e := bx.NewExporter(w)
 	err = e.ExportMetadata(schema, schemamods)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
 	err = api.core.SchemapartCallback(schema_uid, e.Export)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
 	err = e.Close()
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
 	err = api.incrementDownloadStats(schema_uid, r)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 }

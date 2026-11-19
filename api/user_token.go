@@ -18,8 +18,7 @@ func (api *Api) GetAccessTokens(w http.ResponseWriter, r *http.Request, ctx *Sec
 func (api *Api) CreateAccessToken(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	at := &types.AccessToken{}
 	err := json.NewDecoder(r.Body).Decode(at)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 

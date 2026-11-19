@@ -9,8 +9,7 @@ import (
 func (api *Api) CountSchema(w http.ResponseWriter, r *http.Request) {
 	search := &types.SchemaSearchRequest{}
 	err := json.NewDecoder(r.Body).Decode(search)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -21,8 +20,7 @@ func (api *Api) CountSchema(w http.ResponseWriter, r *http.Request) {
 func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 	search := &types.SchemaSearchRequest{}
 	err := json.NewDecoder(r.Body).Decode(search)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -37,8 +35,7 @@ func (api *Api) SearchSchema(w http.ResponseWriter, r *http.Request) {
 	}
 
 	list, err := api.SchemaSearchRepo.Search(search)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 

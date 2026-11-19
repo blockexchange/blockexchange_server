@@ -50,3 +50,12 @@ func Send(w http.ResponseWriter, o any, err error) {
 		SendJson(w, o)
 	}
 }
+
+// sends a 500 response if err is not nil and returns true in that case
+func SendIfError(w http.ResponseWriter, err error) bool {
+	if err == nil {
+		return false
+	}
+	SendError(w, 500, err.Error())
+	return true
+}

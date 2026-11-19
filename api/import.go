@@ -46,8 +46,7 @@ func (api *Api) ImportSchematic(w http.ResponseWriter, r *http.Request, ctx *Sec
 		SendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err != nil {
-		SendError(w, http.StatusInternalServerError, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 

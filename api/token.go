@@ -13,8 +13,7 @@ import (
 func (api *Api) RequestToken(w http.ResponseWriter, r *http.Request) {
 	login := types.Login{}
 	err := json.NewDecoder(r.Body).Decode(&login)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -24,8 +23,7 @@ func (api *Api) RequestToken(w http.ResponseWriter, r *http.Request) {
 	}).Debug("POST /api/token")
 
 	user, err := api.UserRepo.GetUserByName(login.Username)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	if user == nil {
@@ -36,8 +34,7 @@ func (api *Api) RequestToken(w http.ResponseWriter, r *http.Request) {
 	if login.Token != "" {
 		// login with token
 		access_token, err := api.AccessTokenRepo.GetAccessTokenByTokenAndUserUID(login.Token, user.UID)
-		if err != nil {
-			SendError(w, 500, err.Error())
+		if SendIfError(w, err) {
 			return
 		}
 
@@ -53,8 +50,7 @@ func (api *Api) RequestToken(w http.ResponseWriter, r *http.Request) {
 
 		permissions := core.GetPermissions(user, false)
 		token, err := api.core.CreateJWT(user, permissions, time.Until(time.Unix(access_token.Expires, 0)))
-		if err != nil {
-			SendError(w, 500, err.Error())
+		if SendIfError(w, err) {
 			return
 		}
 		api.AccessTokenRepo.IncrementAccessTokenUseCount(access_token.UID)

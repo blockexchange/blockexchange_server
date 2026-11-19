@@ -26,8 +26,7 @@ func (api Api) GetSchemaScreenshots(w http.ResponseWriter, r *http.Request) {
 	schema_uid := vars["schema_uid"]
 
 	screenshots, err := api.SchemaScreenshotRepo.GetAllBySchemaUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	for _, s := range screenshots {
@@ -41,8 +40,7 @@ func (api Api) GetScreenshotByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	screenshot_uid := vars["screenshot_uid"]
 	screenshot, err := api.SchemaScreenshotRepo.GetByUID(screenshot_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	if screenshot == nil {
@@ -62,8 +60,7 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 	schema_uid := vars["schema_uid"]
 
 	screenshot, err := api.SchemaScreenshotRepo.GetLatestBySchemaUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	if screenshot == nil {
@@ -97,8 +94,7 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 		}
 
 		img, err := png.Decode(bytes.NewReader(screenshot.Data))
-		if err != nil {
-			SendError(w, 500, err.Error())
+		if SendIfError(w, err) {
 			return
 		}
 
@@ -112,8 +108,7 @@ func (api Api) GetFirstSchemaScreenshot(w http.ResponseWriter, r *http.Request) 
 
 		buf := bytes.NewBuffer([]byte{})
 		err = png.Encode(buf, newImage)
-		if err != nil {
-			SendError(w, 500, err.Error())
+		if SendIfError(w, err) {
 			return
 		}
 

@@ -13,8 +13,7 @@ func (api *Api) GetSchemaMods(w http.ResponseWriter, r *http.Request) {
 	schema_uid := vars["schema_uid"]
 
 	list, err := api.SchemaModRepo.GetSchemaModsBySchemaUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -37,8 +36,7 @@ func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 
 	modlist := make([]string, 0)
 	err := json.NewDecoder(r.Body).Decode(&modlist)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -47,8 +45,7 @@ func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 	}
 
 	current_mod_list, err := api.SchemaModRepo.GetSchemaModsBySchemaUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -67,8 +64,7 @@ func (api *Api) CreateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 			ModName:   mod_name,
 			SchemaUID: schema_uid,
 		})
-		if err != nil {
-			SendError(w, 500, err.Error())
+		if SendIfError(w, err) {
 			return
 		}
 	}
@@ -87,15 +83,13 @@ func (api *Api) UpdateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 
 	// extract modnames from schemaparts
 	modnames, err := api.core.ExtractModnames(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
 	// remove old modnames
 	err = api.Repositories.SchemaModRepo.RemoveSchemaMods(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -105,8 +99,7 @@ func (api *Api) UpdateSchemaMods(w http.ResponseWriter, r *http.Request, ctx *Se
 			SchemaUID: schema_uid,
 			ModName:   modname,
 		})
-		if err != nil {
-			SendError(w, 500, err.Error())
+		if SendIfError(w, err) {
 			return
 		}
 	}

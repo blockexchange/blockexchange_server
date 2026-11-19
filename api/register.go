@@ -9,8 +9,7 @@ import (
 func (api *Api) Register(w http.ResponseWriter, r *http.Request) {
 	rr := &types.RegisterRequest{}
 	err := json.NewDecoder(r.Body).Decode(rr)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 

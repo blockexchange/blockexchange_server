@@ -17,8 +17,7 @@ func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 	schema_uid := vars["schema_uid"]
 
 	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	if schema == nil {
@@ -28,8 +27,7 @@ func (api Api) GetSchema(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Query().Get("download") == "true" {
 		err = api.incrementDownloadStats(schema_uid, r)
-		if err != nil {
-			SendError(w, 500, err.Error())
+		if SendIfError(w, err) {
 			return
 		}
 	}
@@ -49,8 +47,7 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	}
 	schema := types.Schema{}
 	err := json.NewDecoder(r.Body).Decode(&schema)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -67,8 +64,7 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 	// remove incomplete schema with same name if it exists
 	err = api.SchemaRepo.DeleteIncompleteSchema(ctx.Claims.UserUID, schema.Name)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -86,8 +82,7 @@ func (api Api) CreateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	schema.Created = time.Now().UnixMilli()
 
 	err = api.SchemaRepo.CreateSchema(&schema)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -105,8 +100,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 	updated_schema := types.Schema{}
 	err := json.NewDecoder(r.Body).Decode(&updated_schema)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -126,8 +120,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 
 	// check if the name already exists
 	existing_schema, err := api.SchemaRepo.GetSchemaByUserUIDAndName(schema.UserUID, updated_schema.Name)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	if existing_schema != nil && existing_schema.UID != schema.UID {
@@ -147,8 +140,7 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	schema.CollectionUID = updated_schema.CollectionUID
 
 	err = api.SchemaRepo.UpdateSchema(schema)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 

@@ -26,8 +26,7 @@ func (api *Api) StarSchema(w http.ResponseWriter, r *http.Request, ctx *SecureCo
 	schema_uid := vars["schema_uid"]
 
 	err := api.SchemaStarRepo.Create(&types.SchemaStar{SchemaUID: schema_uid, UserUID: ctx.Claims.UserUID})
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -40,8 +39,7 @@ func (api *Api) UnStarSchema(w http.ResponseWriter, r *http.Request, ctx *Secure
 	schema_uid := vars["schema_uid"]
 
 	err := api.SchemaStarRepo.Delete(&types.SchemaStar{SchemaUID: schema_uid, UserUID: ctx.Claims.UserUID})
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 

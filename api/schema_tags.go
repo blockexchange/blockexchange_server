@@ -25,8 +25,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 	// assemble maps
 	new_tag_names := []string{}
 	err := json.NewDecoder(r.Body).Decode(&new_tag_names)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	new_tag_name_map := map[string]bool{}
@@ -35,8 +34,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 	}
 
 	tags, err := api.TagRepo.GetAll()
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	tag_id_name_map := map[string]string{}
@@ -49,8 +47,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 	}
 
 	existing_tag_list, err := api.SchemaTagRepo.GetBySchemaUID(schema.UID)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	existing_tags := map[string]bool{}
@@ -73,8 +70,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 		}
 
 		err = api.SchemaTagRepo.Create(&types.SchemaTag{TagUID: id, SchemaUID: schema.UID})
-		if err != nil {
-			SendError(w, 500, err.Error())
+		if SendIfError(w, err) {
 			return
 		}
 	}
@@ -90,8 +86,7 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 			}
 
 			err = api.SchemaTagRepo.Delete(schema.UID, id)
-			if err != nil {
-				SendError(w, 500, err.Error())
+			if SendIfError(w, err) {
 				return
 			}
 		}

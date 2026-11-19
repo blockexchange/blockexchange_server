@@ -13,14 +13,12 @@ import (
 func (api *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 	login := types.Login{}
 	err := json.NewDecoder(r.Body).Decode(&login)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
 	user, err := api.Repositories.UserRepo.GetUserByName(login.Username)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 	if user == nil {
@@ -40,8 +38,7 @@ func (api *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 	permissions := core.GetPermissions(user, true)
 	dur := time.Duration(7 * 24 * time.Hour)
 	token, err := api.core.CreateJWT(user, permissions, dur)
-	if err != nil {
-		SendError(w, 500, err.Error())
+	if SendIfError(w, err) {
 		return
 	}
 
@@ -64,15 +61,13 @@ func (api *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Get("renew") == "true" || c.ExpiresAt.Before(time.Now().Add(1*time.Hour)) {
 		// renew claims
 		user, err := api.UserRepo.GetUserByUID(c.UserUID)
-		if err != nil {
-			SendError(w, 500, err.Error())
+		if SendIfError(w, err) {
 			return
 		}
 		dur := time.Duration(7 * 24 * time.Hour)
 		permissions := core.GetPermissions(user, true)
 		token, err := api.core.CreateJWT(user, permissions, dur)
-		if err != nil {
-			SendError(w, 500, err.Error())
+		if SendIfError(w, err) {
 			return
 		}
 		api.core.SetClaims(w, token, dur)
