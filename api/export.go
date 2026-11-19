@@ -4,6 +4,7 @@ import (
 	"blockexchange/schematic/bx"
 	"blockexchange/schematic/worldedit"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -13,55 +14,45 @@ import (
 )
 
 var ip_downloads_cache = expirable.NewLRU[string, bool](1000, nil, time.Hour*10)
-
-func (api *Api) incrementDownloadStats(schema_uid string, r *http.Request) error {
-	origin := r.Header.Get("X-Forwarded-For")
-	origin_parts := strings.Split(origin, ",")
-	if len(origin_parts) >= 1 {
-		ip := strings.TrimSpace(origin_parts[0])
-		cache_key := fmt.Sprintf("download_marker/%s/%s", schema_uid, ip)
-
-		m, ok := ip_downloads_cache.Get(cache_key)
-		if ok && m {
-			//already incremented stat for this ip, skip
-			return nil
-		}
-
-		// mark as incremented
-		ip_downloads_cache.Add(cache_key, true)
-	}
-
-	err := api.SchemaRepo.IncrementDownloads(schema_uid)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 var ip_views_cache = expirable.NewLRU[string, bool](1000, nil, time.Hour*10)
 
-func (api *Api) incrementViewStats(schema_uid string, r *http.Request) error {
-	origin := r.Header.Get("X-Forwarded-For")
-	origin_parts := strings.Split(origin, ",")
-	if len(origin_parts) >= 1 {
-		ip := strings.TrimSpace(origin_parts[0])
-		cache_key := fmt.Sprintf("view_marker/%s/%s", schema_uid, ip)
-
-		m, ok := ip_views_cache.Get(cache_key)
-		if ok && m {
-			//already incremented stat for this ip, skip
-			return nil
-		}
-
-		// mark as incremented
-		ip_views_cache.Add(cache_key, true)
+// returns the client ip, preferring the first X-Forwarded-For entry
+// and falling back to the connection's remote address
+func clientIP(r *http.Request) string {
+	forwarded := strings.TrimSpace(strings.Split(r.Header.Get("X-Forwarded-For"), ",")[0])
+	if forwarded != "" {
+		return forwarded
 	}
-
-	err := api.SchemaRepo.IncrementViews(schema_uid)
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
-		return err
+		return r.RemoteAddr
 	}
-	return nil
+	return host
+}
+
+// marks the (schema, client ip) pair in the cache and returns true
+// if it was not marked yet, i.e. the stat should be counted
+func markFirstHit(cache *expirable.LRU[string, bool], schema_uid string, r *http.Request) bool {
+	cache_key := fmt.Sprintf("%s/%s", schema_uid, clientIP(r))
+	if marked, ok := cache.Get(cache_key); ok && marked {
+		return false
+	}
+	cache.Add(cache_key, true)
+	return true
+}
+
+func (api *Api) incrementDownloadStats(schema_uid string, r *http.Request) error {
+	if !markFirstHit(ip_downloads_cache, schema_uid, r) {
+		return nil
+	}
+	return api.SchemaRepo.IncrementDownloads(schema_uid)
+}
+
+func (api *Api) incrementViewStats(schema_uid string, r *http.Request) error {
+	if !markFirstHit(ip_views_cache, schema_uid, r) {
+		return nil
+	}
+	return api.SchemaRepo.IncrementViews(schema_uid)
 }
 
 func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
