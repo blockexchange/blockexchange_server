@@ -7,7 +7,8 @@ import {
 	get_luanti_media_connections,
 	create_luanti_media_connection,
 	update_luanti_media_connection,
-	delete_luanti_media_connection
+	delete_luanti_media_connection,
+	run_luanti_media_connection
 } from "../../api/luanti_media_connection";
 import type { LuantiMediaConnection, LuantiMediaConnectionRequest } from "../../api/types";
 import format_time from "../../util/format_time";
@@ -18,6 +19,8 @@ const allowed = computed(() => has_permission("MEDIA"));
 const list = ref<LuantiMediaConnection[]>([]);
 const error = ref("");
 const busy = ref(false);
+// ids of the connections with a manual run in progress
+const running = ref<Set<string>>(new Set());
 
 // id of the connection being edited, null while adding a new one
 const editing_id = ref<string | null>(null);
@@ -82,6 +85,22 @@ async function remove(c: LuantiMediaConnection) {
 	}
 }
 
+async function run(c: LuantiMediaConnection) {
+	running.value.add(c.id);
+	error.value = "";
+	try {
+		const updated = await run_luanti_media_connection(c.id);
+		const i = list.value.findIndex(e => e.id == updated.id);
+		if (i >= 0) {
+			list.value[i] = updated;
+		}
+	} catch (e) {
+		error.value = `Running "${c.hostname}:${c.port}" failed: ${error_message(e)}`;
+	} finally {
+		running.value.delete(c.id);
+	}
+}
+
 onMounted(() => {
 	if (allowed.value) {
 		update().catch(e => error.value = `Loading failed: ${error_message(e)}`);
@@ -90,7 +109,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<page-header title="Luanti connections" subtitle="Luanti servers that node definitions and media files are fetched from." :breadcrumb="breadcrumb"/>
+	<page-header title="Luanti connections" subtitle="Luanti servers that node definitions and media files are fetched from, once a day or on demand with Run." :breadcrumb="breadcrumb"/>
 	<div class="alert alert-warning" v-if="!allowed">
 		<i class="fa fa-lock"></i> You need the <b>MEDIA</b> permission to manage Luanti connections.
 	</div>
@@ -167,6 +186,11 @@ onMounted(() => {
 								</template>
 							</td>
 							<td class="text-end text-nowrap">
+								<button type="button" class="btn btn-sm btn-outline-success me-1" @click="run(c)" :disabled="running.has(c.id)" :title="'Fetch media from ' + c.hostname + ' now'">
+									<span class="spinner-border spinner-border-sm" v-if="running.has(c.id)"></span>
+									<i class="fa fa-play" v-else></i>
+									Run
+								</button>
 								<button type="button" class="btn btn-sm btn-outline-primary me-1" @click="edit(c)" :title="'Edit ' + c.hostname">
 									<i class="fa fa-pen"></i>
 									<span class="visually-hidden">Edit</span>

@@ -16,3 +16,8 @@ export const update_luanti_media_connection = (id: string, req: LuantiMediaConne
 export const delete_luanti_media_connection = (id: string) => fetch_json_checked<boolean>(`/api/media/luanti-connection/${encodeURIComponent(id)}`, {
 	method: "DELETE"
 });
+
+// fetches the node definitions and media files right away, resolves with the updated status
+export const run_luanti_media_connection = (id: string) => fetch_json_checked<LuantiMediaConnection>(`/api/media/luanti-connection/${encodeURIComponent(id)}/run`, {
+	method: "POST"
+});

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // MediaQuery filters and pages node definitions and media files
@@ -93,4 +94,20 @@ func (r *MediaRepository) SearchMediafileInfos(q MediaQuery) ([]*types.Mediafile
 func (r *MediaRepository) CountMediafiles(q string) (int64, error) {
 	var c int64
 	return c, applyMediaFilter(r.g.Model(types.Mediafile{}), q).Count(&c).Error
+}
+
+// inserts or replaces the given node definitions (by name)
+func (r *MediaRepository) UpsertNodedefinitions(list []*types.Nodedefinition) error {
+	if len(list) == 0 {
+		return nil
+	}
+	return r.g.Clauses(clause.OnConflict{UpdateAll: true}).CreateInBatches(list, 500).Error
+}
+
+// inserts or replaces the given media files (by name)
+func (r *MediaRepository) UpsertMediafiles(list []*types.Mediafile) error {
+	if len(list) == 0 {
+		return nil
+	}
+	return r.g.Clauses(clause.OnConflict{UpdateAll: true}).CreateInBatches(list, 50).Error
 }

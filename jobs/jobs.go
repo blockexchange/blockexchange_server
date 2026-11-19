@@ -19,6 +19,7 @@ func Start(repos *db.Repositories, api *api.Api) {
 		// start jobs
 		go cleanupSchemas(repos.SchemaRepo, repos.PGLock)
 		go updateScreenshots(c, api.SchemaSearchRepo, repos.PGLock)
+		go syncLuantiMedia(c, repos.PGLock)
 	}
 	// per-node stats job
 	go updateStats(api, repos.PGLock)
@@ -93,5 +94,13 @@ func updateScreenshots(c *core.Core, sr *db.SchemaSearchRepository, pgl *pglock.
 				from = r.Schema.Mtime
 			}
 		}
+	})
+}
+
+// fetches node definitions and media files from the configured luanti servers once a day,
+// checked hourly so the schedule survives restarts
+func syncLuantiMedia(c *core.Core, pgl *pglock.Client) {
+	runLocked(pgl, "luanti-media-sync", time.Hour, func() {
+		c.SyncDueLuantiMediaConnections(24 * time.Hour)
 	})
 }

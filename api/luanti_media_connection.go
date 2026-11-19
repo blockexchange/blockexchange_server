@@ -1,8 +1,10 @@
 package api
 
 import (
+	"blockexchange/core"
 	"blockexchange/types"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -119,4 +121,31 @@ func (api Api) DeleteLuantiMediaConnection(w http.ResponseWriter, r *http.Reques
 	}
 	err := api.LuantiMediaConnectionRepo.Delete(mux.Vars(r)["id"])
 	Send(w, true, err)
+}
+
+// fetches the node definitions and media files of the connection right away and returns the updated status
+func (api Api) RunLuantiMediaConnection(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	if !ctx.CheckPermission(w, types.JWTPermissionMedia) {
+		return
+	}
+	c, err := api.LuantiMediaConnectionRepo.GetByID(mux.Vars(r)["id"])
+	if SendIfError(w, err) {
+		return
+	}
+	if c == nil {
+		SendError(w, http.StatusNotFound, "connection not found")
+		return
+	}
+
+	// a failed sync is reported in the last_updated_* fields, not as an error response
+	err = api.core.SyncLuantiMediaConnection(c)
+	if errors.Is(err, core.ErrLuantiSyncRunning) {
+		SendError(w, http.StatusConflict, err.Error())
+		return
+	}
+	if SendIfError(w, err) {
+		return
+	}
+	redactLuantiMediaConnection(c)
+	Send(w, c, nil)
 }

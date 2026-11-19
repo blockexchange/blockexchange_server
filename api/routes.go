@@ -54,6 +54,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/media/luanti-connection", api.Secure(api.CreateLuantiMediaConnection)).Methods(http.MethodPost)
 	r.HandleFunc("/api/media/luanti-connection/{id}", api.Secure(api.UpdateLuantiMediaConnection)).Methods(http.MethodPut)
 	r.HandleFunc("/api/media/luanti-connection/{id}", api.Secure(api.DeleteLuantiMediaConnection)).Methods(http.MethodDelete)
+	r.HandleFunc("/api/media/luanti-connection/{id}/run", api.Secure(api.RunLuantiMediaConnection)).Methods(http.MethodPost)
 
 	// mod api
 	r.HandleFunc("/api/token", api.RequestToken).Methods(http.MethodPost)
