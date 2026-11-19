@@ -53,6 +53,7 @@ services:
    - BASE_URL=http://localhost:8080
    - EXECUTE_JOBS=true
    - WEBDEV=true
+   - DEFAULT_ROLE=ADMIN
   ports:
    - "8080:8080"
   working_dir: /data

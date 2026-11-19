@@ -41,7 +41,7 @@ func (c *Core) RegisterOauth(user_info *oauth.OauthUserInfo) (*types.User, error
 		Created:    time.Now().Unix() * 1000,
 		Name:       new_name,
 		Type:       types.UserType(user_info.Provider),
-		Role:       types.UserRoleDefault,
+		Role:       c.cfg.DefaultRole,
 		ExternalID: &user_info.ExternalID,
 		AvatarURL:  user_info.AvatarURL,
 	}
@@ -83,7 +83,7 @@ func (c *Core) RegisterLocal(rr *types.RegisterRequest) (*types.User, *types.Che
 		Created: time.Now().Unix() * 1000,
 		Name:    rr.Name,
 		Type:    types.UserTypeLocal,
-		Role:    types.UserRoleDefault,
+		Role:    c.cfg.DefaultRole,
 		Hash:    string(hash),
 	}
 	err = c.repos.UserRepo.CreateUser(user)

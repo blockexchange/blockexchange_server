@@ -31,6 +31,7 @@ type Config struct {
 	CookiePath          string
 	CookieSecure        bool
 	CookieName          string
+	DefaultRole         UserRole
 }
 
 func CreateConfig() *Config {
@@ -45,6 +46,11 @@ func CreateConfig() *Config {
 		CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
 		CookieName:   "blockexchange-v2",
 		OauthLogin:   &OauthLogin{},
+		DefaultRole:  UserRoleDefault,
+	}
+
+	if os.Getenv("DEFAULT_ROLE") != "" {
+		cfg.DefaultRole = UserRole(os.Getenv("DEFAULT_ROLE"))
 	}
 
 	if os.Getenv("DISCORD_APP_ID") != "" {
@@ -93,4 +99,13 @@ func CreateConfig() *Config {
 	}
 
 	return cfg
+}
+
+func (cfg *Config) Validate() error {
+	switch cfg.DefaultRole {
+	case UserRoleDefault, UserRoleAdmin:
+	default:
+		return fmt.Errorf("invalid DEFAULT_ROLE '%s', expected '%s' or '%s'", cfg.DefaultRole, UserRoleDefault, UserRoleAdmin)
+	}
+	return nil
 }

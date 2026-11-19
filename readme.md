@@ -34,6 +34,7 @@ Required:
 Optional:
 * **DISCORD_SCHEMA_FEED_URL** discord webhook for the "new schema" feed
 * **BASE_URL** Application base url, used for redirects (without trailing slash)
+* **DEFAULT_ROLE** Role assigned to newly registered users, `DEFAULT` (default) or `ADMIN`
 * **GITHUB_APP_SECRET** Github app secret key
 * **GITHUB_APP_ID** Github app ID
 * **DISCORD_APP_SECRET** Discord app secret key

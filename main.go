@@ -23,6 +23,12 @@ func main() {
 	}
 
 	logrus.Info("Starting")
+	cfg := types.CreateConfig()
+	err := cfg.Validate()
+	if err != nil {
+		panic(err)
+	}
+
 	repos, err := db.Init()
 	if err != nil {
 		panic(err)
@@ -37,8 +43,6 @@ func main() {
 	}
 
 	// set up server
-	cfg := types.CreateConfig()
-
 	api, router, err := api.NewApi(repos, cfg)
 	if err != nil {
 		panic(err)
