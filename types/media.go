@@ -5,16 +5,6 @@ import (
 	"encoding/json"
 )
 
-type Mod struct {
-	Name         string `json:"name" gorm:"primarykey;column:name"`
-	Source       string `json:"source" gorm:"column:source"`
-	MediaLicense string `json:"media_license" gorm:"column:media_license"`
-}
-
-func (m *Mod) TableName() string {
-	return "mod"
-}
-
 type Nodedefinition struct {
 	Name       string `json:"name" gorm:"primarykey;column:name"`
 	ModName    string `json:"mod_name" gorm:"column:mod_name"`

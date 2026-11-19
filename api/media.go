@@ -9,69 +9,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// mod
-
-func (api Api) CreateOrUpdateMod(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
-	if !ctx.CheckPermission(w, types.JWTPermissionMedia) {
-		return
-	}
-
-	vars := mux.Vars(r)
-	modname := vars["modname"]
-	is_new := false
-
-	m, err := api.MediaRepo.GetModByName(modname)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("db error: %s", err.Error()))
-		return
-	}
-	if m == nil {
-		is_new = true
-		m = &types.Mod{}
-	}
-
-	err = json.NewDecoder(r.Body).Decode(m)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("json error: %s", err.Error()))
-		return
-	}
-
-	m.Name = modname
-
-	if is_new {
-		err = api.MediaRepo.CreateMod(m)
-	} else {
-		err = api.MediaRepo.UpdateMod(m)
-	}
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("update/insert error: %s", err.Error()))
-		return
-	}
-
-	Send(w, m, nil)
-}
-
-func (api Api) GetMod(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	m, err := api.MediaRepo.GetModByName(vars["modname"])
-	Send(w, m, err)
-}
-
-func (api Api) GetMods(w http.ResponseWriter, r *http.Request) {
-	m, err := api.MediaRepo.GetMods()
-	Send(w, m, err)
-}
-
-func (api Api) DeleteMod(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
-	if !ctx.CheckPermission(w, types.JWTPermissionMedia) {
-		return
-	}
-
-	vars := mux.Vars(r)
-	err := api.MediaRepo.RemoveMod(vars["modname"])
-	Send(w, true, err)
-}
-
 // nodedef
 
 func (api Api) CreateOrUpdateNodedefs(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {

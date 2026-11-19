@@ -36,12 +36,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/accesstoken", api.Secure(api.CreateAccessToken)).Methods(http.MethodPost)
 	r.HandleFunc("/api/accesstoken/{id}", api.Secure(api.DeleteAccessToken)).Methods(http.MethodDelete)
 
-	// mod uploads / ui downloads and manages
-
-	r.HandleFunc("/api/media/mod/{modname}", api.Secure(api.CreateOrUpdateMod)).Methods(http.MethodPost)
-	r.HandleFunc("/api/media/mod/{modname}", api.GetMod).Methods(http.MethodGet)
-	r.HandleFunc("/api/media/mod", api.GetMods).Methods(http.MethodGet)
-	r.HandleFunc("/api/media/mod/{modname}", api.Secure(api.DeleteMod)).Methods(http.MethodDelete)
+	// media uploads / ui downloads and manages
 
 	r.HandleFunc("/api/media/nodedef", api.Secure(api.CreateOrUpdateNodedefs)).Methods(http.MethodPost)
 	r.HandleFunc("/api/media/nodedef", api.GetNodedefinitions).Methods(http.MethodGet)

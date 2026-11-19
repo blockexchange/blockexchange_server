@@ -7,60 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestModEntity(t *testing.T) {
+func TestMedia(t *testing.T) {
 	repos := CreateTestDatabase(t)
 	mr := repos.MediaRepo
-
-	mod := &types.Mod{
-		Name:         "mymod",
-		Source:       "https://...",
-		MediaLicense: "CC-BY-3.0",
-	}
-
-	// cleanup
-	mr.RemoveMod("mymod")
-
-	// create
-	assert.NoError(t, mr.CreateMod(mod))
-
-	// read
-	mod2, err := mr.GetModByName("mymod")
-	assert.NoError(t, err)
-	assert.NotNil(t, mod2)
-	assert.EqualValues(t, mod, mod2)
-
-	// update
-	mod.Source = "http://..."
-	assert.NoError(t, mr.UpdateMod(mod))
-
-	// read
-	mod2, err = mr.GetModByName("mymod")
-	assert.NoError(t, err)
-	assert.NotNil(t, mod2)
-	assert.EqualValues(t, mod, mod2)
-
-	// delete
-	assert.NoError(t, mr.RemoveMod("mymod"))
-
-	// read
-	mod2, err = mr.GetModByName("mymod")
-	assert.NoError(t, err)
-	assert.Nil(t, mod2)
-}
-
-func TestModMedia(t *testing.T) {
-	repos := CreateTestDatabase(t)
-	mr := repos.MediaRepo
-
-	mod := &types.Mod{
-		Name:         "mymod",
-		Source:       "https://...",
-		MediaLicense: "CC-BY-3.0",
-	}
-
-	// prepare
-	mr.RemoveMod("mymod")
-	assert.NoError(t, mr.CreateMod(mod))
 
 	// create nodedef
 	nd := &types.Nodedefinition{
@@ -105,8 +54,4 @@ func TestModMedia(t *testing.T) {
 
 	// remove media
 	assert.NoError(t, mr.RemoveMediafile("default_stone.png"))
-
-	// remove all
-	assert.NoError(t, mr.RemoveMod("mymod"))
-
 }

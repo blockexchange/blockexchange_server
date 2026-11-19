@@ -10,28 +10,6 @@ type MediaRepository struct {
 	g *gorm.DB
 }
 
-// mod
-
-func (r *MediaRepository) CreateMod(m *types.Mod) error {
-	return r.g.Create(m).Error
-}
-
-func (r *MediaRepository) UpdateMod(m *types.Mod) error {
-	return r.g.Updates(m).Error
-}
-
-func (r *MediaRepository) GetModByName(name string) (*types.Mod, error) {
-	return FindSingle[types.Mod](r.g.Where(types.Mod{Name: name}))
-}
-
-func (r *MediaRepository) GetMods() ([]*types.Mod, error) {
-	return FindMulti[types.Mod](r.g.Model(types.Mod{}))
-}
-
-func (r *MediaRepository) RemoveMod(name string) error {
-	return r.g.Delete(types.Mod{Name: name}).Error
-}
-
 // nodedef
 
 func (r *MediaRepository) CreateNodedefinition(nd *types.Nodedefinition) error {
