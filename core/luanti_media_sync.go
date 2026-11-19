@@ -25,8 +25,8 @@ import (
 // upper bound for a whole sync run (connect, login and media download)
 const luantiSyncTimeout = 5 * time.Minute
 
-// timeout for connecting and logging in
-const luantiConnectTimeout = 30 * time.Second
+// timeout for connecting, logging in and downloading the media (Connect waits for all of it)
+const luantiConnectTimeout = 3 * time.Minute
 
 var ErrLuantiSyncRunning = errors.New("a sync for this connection is already running")
 
@@ -46,14 +46,10 @@ type luantiMediaResult struct {
 // connects to the luanti server and collects the node definitions and media files it sends while joining
 func fetchLuantiMedia(ctx context.Context, conn *types.LuantiMediaConnection) (*luantiMediaResult, error) {
 	var (
-		mu         sync.Mutex
-		announced  = map[string][20]byte{}
-		media      = map[string][]byte{}
-		bunches    = map[uint16]bool{}
-		skipped    = 0
-		mediaDone  = make(chan struct{})
-		doneOnce   sync.Once
-		closeMedia = func() { doneOnce.Do(func() { close(mediaDone) }) }
+		mu        sync.Mutex
+		announced = map[string][20]byte{}
+		media     = map[string][]byte{}
+		skipped   = 0
 	)
 
 	log := logrus.WithField("connection", conn.ID)
@@ -75,10 +71,6 @@ func fetchLuantiMedia(ctx context.Context, conn *types.LuantiMediaConnection) (*
 			announced[f.Name] = f.SHA1
 		}
 		mu.Unlock()
-		if len(p.Files) == 0 {
-			// nothing to download
-			closeMedia()
-		}
 	})
 	client.Handle(c, func(p *protocol.ToClientMedia) {
 		mu.Lock()
@@ -92,28 +84,15 @@ func fetchLuantiMedia(ctx context.Context, conn *types.LuantiMediaConnection) (*
 			}
 			media[f.Name] = f.Data
 		}
-		bunches[p.BunchIndex] = true
-		done := len(bunches) >= int(p.NumBunches)
 		mu.Unlock()
-		if done {
-			closeMedia()
-		}
 	})
 
+	// returns once all requested media files arrived
 	err := c.Connect(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("connect: %w", err)
 	}
 	defer c.Close()
-
-	// Connect may return before all media bunches arrived, wait for them explicitly
-	select {
-	case <-mediaDone:
-	case <-c.Done():
-		return nil, fmt.Errorf("connection closed while downloading media: %v", c.Wait())
-	case <-ctx.Done():
-		return nil, fmt.Errorf("media download: %w", ctx.Err())
-	}
 
 	defs := c.NodeDefs()
 	if len(defs) == 0 {
