@@ -13,7 +13,7 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/lib/pq v1.12.3
 	github.com/luanti-golang/colormapping v1.1.0
-	github.com/luanti-golang/luanti-client v0.1.1
+	github.com/luanti-golang/luanti-client v0.1.2
 	github.com/luanti-golang/maprenderer v1.2.0
 	github.com/luanti-golang/oauth v1.1.0
 	github.com/luanti-golang/types v1.0.8

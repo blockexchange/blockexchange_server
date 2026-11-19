@@ -59,6 +59,7 @@ func fetchLuantiMedia(ctx context.Context, conn *types.LuantiMediaConnection) (*
 		Password:       conn.Password,
 		Register:       true,
 		RequestMedia:   true,
+		SkipJoin:       true, // fetch without showing up as a joined player
 		ConnectTimeout: luantiConnectTimeout,
 		Logf: func(format string, args ...any) {
 			log.Debugf("luanti-client: "+format, args...)
