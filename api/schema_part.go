@@ -31,19 +31,8 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	schema, err := api.SchemaRepo.GetSchemaByUID(schemapart.SchemaUID)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("getby schemaUID error: %s", err))
-		return
-	}
-
+	schema := api.loadOwnedSchema(w, ctx, schemapart.SchemaUID, false)
 	if schema == nil {
-		SendError(w, 500, "no schema found")
-		return
-	}
-
-	if schema.UserUID != ctx.Claims.UserUID {
-		SendError(w, 403, "you are not the owner of the schema")
 		return
 	}
 
@@ -78,19 +67,8 @@ func (api *Api) DeleteSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
+	schema := api.loadOwnedSchema(w, ctx, schema_uid, false)
 	if schema == nil {
-		SendError(w, 500, "no schema found")
-		return
-	}
-
-	if schema.UserUID != ctx.Claims.UserUID {
-		SendError(w, 403, "you are not the owner of the schema")
 		return
 	}
 

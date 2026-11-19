@@ -16,27 +16,15 @@ func (api Api) UpdateSchemaTags(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 
-	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema := api.loadOwnedSchema(w, ctx, schema_uid, true)
 	if schema == nil {
-		SendError(w, 404, "not found")
 		return
 	}
-
-	// check permissions
 	is_admin := ctx.HasPermission(types.JWTPermissionAdmin)
-	if !is_admin && schema.UserUID != ctx.Claims.UserUID {
-		// not an admin and not the owner
-		SendError(w, 403, "unauthorized")
-		return
-	}
 
 	// assemble maps
 	new_tag_names := []string{}
-	err = json.NewDecoder(r.Body).Decode(&new_tag_names)
+	err := json.NewDecoder(r.Body).Decode(&new_tag_names)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

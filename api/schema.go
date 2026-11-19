@@ -110,22 +110,9 @@ func (api Api) UpdateSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 		return
 	}
 
-	// fetch saved schema
-	schema, err := api.SchemaRepo.GetSchemaByUID(updated_schema.UID)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	// fetch saved schema and check permissions
+	schema := api.loadOwnedSchema(w, ctx, updated_schema.UID, true)
 	if schema == nil {
-		SendError(w, http.StatusNotFound, "schema not found")
-		return
-	}
-
-	// check permissions
-	is_admin := ctx.HasPermission(types.JWTPermissionAdmin)
-	if !is_admin && schema.UserUID != ctx.Claims.UserUID {
-		// not an admin and not the owner
-		SendError(w, 403, "unauthorized")
 		return
 	}
 
@@ -172,21 +159,12 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 	vars := mux.Vars(r)
 	schema_uid := vars["schema_uid"]
 
-	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("GetSchemaById: %s", err))
-		return
-	}
+	schema := api.loadOwnedSchema(w, ctx, schema_uid, true)
 	if schema == nil {
-		SendError(w, http.StatusNotFound, "schema not found")
 		return
 	}
 
-	if !ctx.HasPermission(types.JWTPermissionAdmin) && schema.UserUID != ctx.Claims.UserUID {
-		SendError(w, 403, "you are not the owner of the schema")
-		return
-	}
-
+	var err error
 	notify_feed := false
 	if !schema.Complete {
 		// initial upload, complete schema
@@ -251,24 +229,11 @@ func (api Api) DeleteSchema(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	vars := mux.Vars(r)
 	schema_uid := vars["schema_uid"]
 
-	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	schema := api.loadOwnedSchema(w, ctx, schema_uid, true)
 	if schema == nil {
-		SendError(w, http.StatusNotFound, "schema not found")
 		return
 	}
 
-	// check permissions
-	is_admin := ctx.HasPermission(types.JWTPermissionAdmin)
-	if !is_admin && schema.UserUID != ctx.Claims.UserUID {
-		// not an admin and not the owner
-		SendError(w, 403, "unauthorized")
-		return
-	}
-
-	err = api.SchemaRepo.DeleteSchema(schema.UID)
+	err := api.SchemaRepo.DeleteSchema(schema.UID)
 	Send(w, true, err)
 }

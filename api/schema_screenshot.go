@@ -1,7 +1,6 @@
 package api
 
 import (
-	"blockexchange/types"
 	"bytes"
 	"fmt"
 	"image/png"
@@ -137,18 +136,12 @@ func (api Api) UpdateSchemaPreview(w http.ResponseWriter, r *http.Request, ctx *
 	vars := mux.Vars(r)
 	schema_uid := vars["schema_uid"]
 
-	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
-	if err != nil {
-		SendError(w, 500, "GetSchemaById::"+err.Error())
-		return
-	}
-
-	if schema.UserUID != ctx.Claims.UserUID && !ctx.Claims.HasPermission(types.JWTPermissionAdmin) {
-		SendError(w, 403, "you are not the owner of the schema")
+	schema := api.loadOwnedSchema(w, ctx, schema_uid, true)
+	if schema == nil {
 		return
 	}
 
 	// update screenshot
-	_, err = api.core.UpdatePreview(schema)
+	_, err := api.core.UpdatePreview(schema)
 	Send(w, true, err)
 }
