@@ -164,3 +164,15 @@ export interface SchemaModCount {
 	mod_name: string;
 	count: number;
 }
+
+export interface Nodedefinition {
+	name: string;
+	mod_name: string;
+	definition: string;
+}
+
+export interface MediafileInfo {
+	name: string;
+	mod_name: string;
+	size: number;
+}

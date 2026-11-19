@@ -41,3 +41,10 @@ func (mf *Mediafile) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
+
+// mediafile metadata without the binary data
+type MediafileInfo struct {
+	Name    string `json:"name" gorm:"column:name"`
+	ModName string `json:"mod_name" gorm:"column:mod_name"`
+	Size    int64  `json:"size" gorm:"column:size"`
+}

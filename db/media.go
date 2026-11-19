@@ -2,9 +2,28 @@ package db
 
 import (
 	"blockexchange/types"
+	"strings"
 
 	"gorm.io/gorm"
 )
+
+// MediaQuery filters and pages node definitions and media files
+type MediaQuery struct {
+	// case-insensitive substring match on the name or mod name, empty matches all
+	Query  string
+	Limit  int
+	Offset int
+}
+
+var likeEscaper = strings.NewReplacer(`\`, `\\`, "%", `\%`, "_", `\_`)
+
+func applyMediaFilter(g *gorm.DB, q string) *gorm.DB {
+	if q == "" {
+		return g
+	}
+	pattern := "%" + likeEscaper.Replace(q) + "%"
+	return g.Where("name ilike ? or mod_name ilike ?", pattern, pattern)
+}
 
 type MediaRepository struct {
 	g *gorm.DB
@@ -26,6 +45,16 @@ func (r *MediaRepository) GetNodedefinitionByName(name string) (*types.Nodedefin
 
 func (r *MediaRepository) GetNodedefinitions() ([]*types.Nodedefinition, error) {
 	return FindMulti[types.Nodedefinition](r.g.Model(types.Nodedefinition{}))
+}
+
+func (r *MediaRepository) SearchNodedefinitions(q MediaQuery) ([]*types.Nodedefinition, error) {
+	g := applyMediaFilter(r.g.Model(types.Nodedefinition{}), q.Query)
+	return FindMulti[types.Nodedefinition](g.Order("name").Limit(q.Limit).Offset(q.Offset))
+}
+
+func (r *MediaRepository) CountNodedefinitions(q string) (int64, error) {
+	var c int64
+	return c, applyMediaFilter(r.g.Model(types.Nodedefinition{}), q).Count(&c).Error
 }
 
 func (r *MediaRepository) RemoveNodedefinition(name string) error {
@@ -52,4 +81,16 @@ func (r *MediaRepository) GetMediafiles() ([]*types.Mediafile, error) {
 
 func (r *MediaRepository) RemoveMediafile(name string) error {
 	return r.g.Delete(types.Mediafile{Name: name}).Error
+}
+
+func (r *MediaRepository) SearchMediafileInfos(q MediaQuery) ([]*types.MediafileInfo, error) {
+	list := make([]*types.MediafileInfo, 0)
+	g := applyMediaFilter(r.g.Model(types.Mediafile{}), q.Query)
+	err := g.Select("name, mod_name, length(data) as size").Order("name").Limit(q.Limit).Offset(q.Offset).Scan(&list).Error
+	return list, err
+}
+
+func (r *MediaRepository) CountMediafiles(q string) (int64, error) {
+	var c int64
+	return c, applyMediaFilter(r.g.Model(types.Mediafile{}), q).Count(&c).Error
 }

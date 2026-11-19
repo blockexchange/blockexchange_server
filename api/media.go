@@ -1,13 +1,32 @@
 package api
 
 import (
+	"blockexchange/db"
 	"blockexchange/types"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
+
+const maxMediaPageSize = 500
+
+// parses the optional "q", "limit" and "offset" query params, no limit means all entries
+func parseMediaQuery(r *http.Request) db.MediaQuery {
+	q := db.MediaQuery{
+		Query: r.URL.Query().Get("q"),
+		Limit: -1,
+	}
+	if limit, err := strconv.Atoi(r.URL.Query().Get("limit")); err == nil && limit > 0 {
+		q.Limit = min(limit, maxMediaPageSize)
+	}
+	if offset, err := strconv.Atoi(r.URL.Query().Get("offset")); err == nil && offset > 0 {
+		q.Offset = offset
+	}
+	return q
+}
 
 // nodedef
 
@@ -53,8 +72,13 @@ func (api Api) GetNodedefinition(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api Api) GetNodedefinitions(w http.ResponseWriter, r *http.Request) {
-	m, err := api.MediaRepo.GetNodedefinitions()
+	m, err := api.MediaRepo.SearchNodedefinitions(parseMediaQuery(r))
 	Send(w, m, err)
+}
+
+func (api Api) CountNodedefinitions(w http.ResponseWriter, r *http.Request) {
+	c, err := api.MediaRepo.CountNodedefinitions(r.URL.Query().Get("q"))
+	Send(w, c, err)
 }
 
 func (api Api) DeleteNodedefinition(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
@@ -102,6 +126,16 @@ func (api Api) CreateOrUpdateMediafiles(w http.ResponseWriter, r *http.Request, 
 	}
 
 	Send(w, true, nil)
+}
+
+func (api Api) GetMediafileInfos(w http.ResponseWriter, r *http.Request) {
+	m, err := api.MediaRepo.SearchMediafileInfos(parseMediaQuery(r))
+	Send(w, m, err)
+}
+
+func (api Api) CountMediafiles(w http.ResponseWriter, r *http.Request) {
+	c, err := api.MediaRepo.CountMediafiles(r.URL.Query().Get("q"))
+	Send(w, c, err)
 }
 
 func (api Api) GetMediafile(w http.ResponseWriter, r *http.Request) {

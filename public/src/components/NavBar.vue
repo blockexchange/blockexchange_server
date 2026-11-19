@@ -9,6 +9,7 @@ const router = useRouter();
 
 const claims = computed(get_claims);
 const is_admin = computed(() => has_permission('ADMIN'));
+const has_media = computed(() => has_permission('MEDIA'));
 
 const menu_open = ref(false);
 const user_menu_open = ref(false);
@@ -118,6 +119,19 @@ async function do_logout() {
 								<li>
 									<router-link to="/tags" class="dropdown-item">
 										<i class="fa fa-tags fa-fw"></i> Tags
+									</router-link>
+								</li>
+							</template>
+							<template v-if="has_media">
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<router-link to="/nodedefinitions" class="dropdown-item">
+										<i class="fa fa-cube fa-fw"></i> Node definitions
+									</router-link>
+								</li>
+								<li>
+									<router-link to="/mediafiles" class="dropdown-item">
+										<i class="fa fa-image fa-fw"></i> Media files
 									</router-link>
 								</li>
 							</template>

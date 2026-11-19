@@ -15,6 +15,8 @@ import UserSchemas from './components/pages/UserSchemas.vue';
 import UserCollections from './components/pages/UserCollections.vue';
 import UserCollection from './components/pages/UserCollection.vue';
 import Mods from './components/pages/Mods.vue';
+import Nodedefinitions from './components/pages/Nodedefinitions.vue';
+import Mediafiles from './components/pages/Mediafiles.vue';
 import NotFound from './components/pages/NotFound.vue';
 
 const routes: RouteRecordRaw[] = [{
@@ -47,6 +49,10 @@ const routes: RouteRecordRaw[] = [{
 	path: "/import", component: Import
 },{
 	path: "/tags", component: Tags
+},{
+	path: "/nodedefinitions", component: Nodedefinitions
+},{
+	path: "/mediafiles", component: Mediafiles
 },{
 	path: "/:pathMatch(.*)*", component: NotFound
 }];

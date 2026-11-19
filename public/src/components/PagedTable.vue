@@ -7,10 +7,13 @@ import LoadingSpinner from './LoadingSpinner.vue';
 // the table classes are passed as attributes
 defineOptions({ inheritAttrs: false });
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	fetch_entries: (limit: number, offset: number) => Promise<T[]>;
 	count_entries: () => Promise<number>;
-}>();
+	per_page?: number;
+}>(), {
+	per_page: 20
+});
 
 defineSlots<{
 	header(): unknown;
@@ -19,20 +22,19 @@ defineSlots<{
 
 const route = useRoute();
 
-const per_page = 20;
 const list = ref([]) as Ref<T[]>;
 const busy = ref(false);
 const total_count = ref(0);
 const current_page = ref(1);
 
-const pages = computed(() => Math.ceil(total_count.value / per_page));
+const pages = computed(() => Math.ceil(total_count.value / props.per_page));
 
 async function update() {
 	busy.value = true;
 	current_page.value = +(route.query.page || 1);
 	try {
 		total_count.value = await props.count_entries();
-		list.value = await props.fetch_entries(per_page, (current_page.value-1)*per_page);
+		list.value = await props.fetch_entries(props.per_page, (current_page.value-1)*props.per_page);
 	} finally {
 		busy.value = false;
 	}
@@ -40,6 +42,8 @@ async function update() {
 
 onMounted(update);
 watch(() => route.fullPath, update);
+
+defineExpose({ update });
 </script>
 
 <template>

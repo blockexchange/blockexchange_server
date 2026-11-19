@@ -14,6 +14,8 @@ export const USERS: BreadcrumbItem = { name: "Users", icon: "users", link: "/use
 export const SEARCH: BreadcrumbItem = { name: "Browse", icon: "search", link: "/search" };
 export const SCHEMA_IMPORT: BreadcrumbItem = { name: "Import files", icon: "upload", link: "/import" };
 export const TAGS: BreadcrumbItem = { name: "Tags", icon: "tags", link: "/tags" };
+export const NODEDEFINITIONS: BreadcrumbItem = { name: "Node definitions", icon: "cube", link: "/nodedefinitions" };
+export const MEDIAFILES: BreadcrumbItem = { name: "Media files", icon: "image", link: "/mediafiles" };
 
 export const USER_DETAIL = (username: string): BreadcrumbItem => {
 	return { name: username, icon: "user", link: `/user/${username}` };
