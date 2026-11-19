@@ -17,7 +17,9 @@ services:
    - API_TARGET=http://blockexchange:8080
   ports:
    - "5173:5173"
-  command: ["sh", "-c", "npm ci && npm run build && npm run dev -- --host"]
+  # initial (type-checked) build for the healthcheck, then keep dist/ current for the go server
+  # on :8080 while the vite dev server runs on :5173
+  command: ["sh", "-c", "npm ci && npm run build && (npx vite build --watch & npm run dev -- --host)"]
   healthcheck:
    test: ["CMD", "test", "-f", "/app/public/dist/index.html"]
    interval: 3s
