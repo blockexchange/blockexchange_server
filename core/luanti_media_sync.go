@@ -17,9 +17,9 @@ import (
 	"cirello.io/pglock"
 	"github.com/sirupsen/logrus"
 
-	"luanti-client/client"
-	"luanti-client/protocol"
-	"luanti-client/viewerdef"
+	"github.com/luanti-golang/luanti-client/client"
+	"github.com/luanti-golang/luanti-client/protocol"
+	"github.com/luanti-golang/luanti-client/viewerdef"
 )
 
 // upper bound for a whole sync run (connect, login and media download)

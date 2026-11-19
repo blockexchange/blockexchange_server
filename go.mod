@@ -13,6 +13,7 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/lib/pq v1.12.3
 	github.com/luanti-golang/colormapping v1.1.0
+	github.com/luanti-golang/luanti-client v0.1.0
 	github.com/luanti-golang/maprenderer v1.2.0
 	github.com/luanti-golang/oauth v1.1.0
 	github.com/luanti-golang/types v1.0.8
@@ -24,7 +25,6 @@ require (
 	golang.org/x/crypto v0.59.0
 	gorm.io/driver/postgres v1.6.3
 	gorm.io/gorm v1.31.2
-	luanti-client v0.0.0-20261119072942-89408cd11f78
 )
 
 require (
@@ -50,5 +50,3 @@ require (
 	golang.org/x/text v0.44.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 )
-
-replace luanti-client => github.com/luanti-golang/luanti-client v0.0.0-20261119072942-89408cd11f78
