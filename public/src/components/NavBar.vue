@@ -134,6 +134,11 @@ async function do_logout() {
 										<i class="fa fa-image fa-fw"></i> Media files
 									</router-link>
 								</li>
+								<li>
+									<router-link to="/luanti-connections" class="dropdown-item">
+										<i class="fa fa-server fa-fw"></i> Luanti connections
+									</router-link>
+								</li>
 							</template>
 							<li><hr class="dropdown-divider"></li>
 							<li>

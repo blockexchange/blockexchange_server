@@ -176,3 +176,21 @@ export interface MediafileInfo {
 	mod_name: string;
 	size: number;
 }
+
+export interface LuantiMediaConnection {
+	id: string;
+	hostname: string;
+	port: number;
+	username: string;
+	last_updated_timestamp: number;
+	last_updated_success: boolean;
+	last_updated_message: string;
+}
+
+export interface LuantiMediaConnectionRequest {
+	hostname: string;
+	port: number;
+	username: string;
+	// empty on update keeps the stored password
+	password: string;
+}

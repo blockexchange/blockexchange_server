@@ -17,6 +17,7 @@ import UserCollection from './components/pages/UserCollection.vue';
 import Mods from './components/pages/Mods.vue';
 import Nodedefinitions from './components/pages/Nodedefinitions.vue';
 import Mediafiles from './components/pages/Mediafiles.vue';
+import LuantiConnections from './components/pages/LuantiConnections.vue';
 import NotFound from './components/pages/NotFound.vue';
 
 const routes: RouteRecordRaw[] = [{
@@ -53,6 +54,8 @@ const routes: RouteRecordRaw[] = [{
 	path: "/nodedefinitions", component: Nodedefinitions
 },{
 	path: "/mediafiles", component: Mediafiles
+},{
+	path: "/luanti-connections", component: LuantiConnections
 },{
 	path: "/:pathMatch(.*)*", component: NotFound
 }];

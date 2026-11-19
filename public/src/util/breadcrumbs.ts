@@ -16,6 +16,7 @@ export const SCHEMA_IMPORT: BreadcrumbItem = { name: "Import files", icon: "uplo
 export const TAGS: BreadcrumbItem = { name: "Tags", icon: "tags", link: "/tags" };
 export const NODEDEFINITIONS: BreadcrumbItem = { name: "Node definitions", icon: "cube", link: "/nodedefinitions" };
 export const MEDIAFILES: BreadcrumbItem = { name: "Media files", icon: "image", link: "/mediafiles" };
+export const LUANTI_CONNECTIONS: BreadcrumbItem = { name: "Luanti connections", icon: "server", link: "/luanti-connections" };
 
 export const USER_DETAIL = (username: string): BreadcrumbItem => {
 	return { name: username, icon: "user", link: `/user/${username}` };
