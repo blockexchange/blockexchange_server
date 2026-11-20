@@ -129,7 +129,8 @@ func (api *Api) GetSchemaPartChunk(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	to_pos_offset := 16 * 4
+	// a chunk covers 4x4x4 parts, the range is inclusive so stop before the next chunk
+	to_pos_offset := (16 * 4) - 1
 	schemaparts, err := api.SchemaPartRepo.GetBySchemaUIDAndRange(schema_uid, x, y, z, x+to_pos_offset, y+to_pos_offset, z+to_pos_offset)
 	if err == nil && schemaparts == nil {
 		w.WriteHeader(http.StatusNoContent)
