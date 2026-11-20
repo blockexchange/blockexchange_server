@@ -37,3 +37,7 @@ export const USER_COLLECTION = (username: string, collection_name: string): Brea
 export const SCHEMA_DETAIL = (username: string, name: string): BreadcrumbItem => {
 	return { name: name, icon: "landmark", link: `/schema/${username}/${name}` };
 };
+
+export const SCHEMA_VIEW_3D = (username: string, name: string): BreadcrumbItem => {
+	return { name: "3D view", icon: "cube", link: `/schema/${username}/${name}/3d` };
+};

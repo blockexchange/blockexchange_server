@@ -175,6 +175,9 @@ const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: 
 			</div>
 			<div class="d-flex flex-wrap gap-2 align-items-center">
 				<template v-if="!edit_mode">
+					<router-link :to="'/schema/' + username + '/' + schema.name + '/3d'" class="btn btn-outline-primary">
+						<i class="fa fa-cube"></i> 3D View
+					</router-link>
 					<schema-star :schema_uid="schema.uid" v-model:stars="schema.stars"/>
 					<template v-if="allow_edit">
 						<button type="button" class="btn btn-outline-secondary" @click="start_edit">

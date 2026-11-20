@@ -194,3 +194,23 @@ export interface LuantiMediaConnectionRequest {
 	// empty on update keeps the stored password
 	password: string;
 }
+
+// media file including the base64 encoded data
+export interface Mediafile {
+	name: string;
+	mod_name: string;
+	data: string;
+}
+
+// schematic part, offsets are in nodes relative to the schematic origin (multiples of 16)
+export interface SchemaPart {
+	schema_uid: string;
+	offset_x: number;
+	offset_y: number;
+	offset_z: number;
+	mtime: number;
+	// base64 (unpadded) of the zlib compressed node ids, param1 and param2
+	data: string;
+	// base64 (unpadded) of the zlib compressed json metadata (node_mapping, size, ...)
+	metadata: string;
+}

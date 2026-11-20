@@ -41,6 +41,9 @@ const routes: RouteRecordRaw[] = [{
 },{
 	path: "/schema/:username/:name", component: SchemaDetail, props: true
 },{
+	// lazy loaded, keeps three.js out of the main bundle
+	path: "/schema/:username/:name/3d", component: () => import('./components/pages/SchemaView3d.vue'), props: true
+},{
 	path: "/schema/:username", component: UserSchemas, props: true
 },{
 	path: "/collections/:username", component: UserCollections, props: true
