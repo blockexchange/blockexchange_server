@@ -44,6 +44,14 @@ func (r *MediaRepository) GetNodedefinitionByName(name string) (*types.Nodedefin
 	return FindSingle[types.Nodedefinition](r.g.Where(types.Nodedefinition{Name: name}))
 }
 
+// returns the node definitions matching the given names, unknown names are skipped
+func (r *MediaRepository) GetNodedefinitionsByNames(names []string) ([]*types.Nodedefinition, error) {
+	if len(names) == 0 {
+		return []*types.Nodedefinition{}, nil
+	}
+	return FindMulti[types.Nodedefinition](r.g.Where("name in ?", names).Order("name"))
+}
+
 func (r *MediaRepository) GetNodedefinitions() ([]*types.Nodedefinition, error) {
 	return FindMulti[types.Nodedefinition](r.g.Model(types.Nodedefinition{}))
 }
@@ -74,6 +82,14 @@ func (r *MediaRepository) UpdateMediafile(mf *types.Mediafile) error {
 
 func (r *MediaRepository) GetMediafileByName(name string) (*types.Mediafile, error) {
 	return FindSingle[types.Mediafile](r.g.Where(types.Mediafile{Name: name}))
+}
+
+// returns the media files matching the given names, unknown names are skipped
+func (r *MediaRepository) GetMediafilesByNames(names []string) ([]*types.Mediafile, error) {
+	if len(names) == 0 {
+		return []*types.Mediafile{}, nil
+	}
+	return FindMulti[types.Mediafile](r.g.Where("name in ?", names).Order("name"))
 }
 
 func (r *MediaRepository) GetMediafiles() ([]*types.Mediafile, error) {

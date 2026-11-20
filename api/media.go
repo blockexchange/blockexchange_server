@@ -13,6 +13,24 @@ import (
 
 const maxMediaPageSize = 500
 
+// max number of names in a batch lookup
+const maxMediaBatchSize = 1000
+
+// parses a json array of names from the request body
+func parseNameBatch(w http.ResponseWriter, r *http.Request) ([]string, bool) {
+	names := []string{}
+	err := json.NewDecoder(r.Body).Decode(&names)
+	if err != nil {
+		SendError(w, 400, fmt.Sprintf("json error: %s", err.Error()))
+		return nil, false
+	}
+	if len(names) > maxMediaBatchSize {
+		SendError(w, 400, fmt.Sprintf("too many names: %d, max: %d", len(names), maxMediaBatchSize))
+		return nil, false
+	}
+	return names, true
+}
+
 // parses the optional "q", "limit" and "offset" query params, no limit means all entries
 func parseMediaQuery(r *http.Request) db.MediaQuery {
 	q := db.MediaQuery{
@@ -69,6 +87,16 @@ func (api Api) GetNodedefinition(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	m, err := api.MediaRepo.GetNodedefinitionByName(vars["nodename"])
 	Send(w, m, err)
+}
+
+// returns the node definitions for a json array of node names, unknown names are skipped
+func (api Api) GetNodedefinitionsBatch(w http.ResponseWriter, r *http.Request) {
+	names, ok := parseNameBatch(w, r)
+	if !ok {
+		return
+	}
+	list, err := api.MediaRepo.GetNodedefinitionsByNames(names)
+	Send(w, list, err)
 }
 
 func (api Api) GetNodedefinitions(w http.ResponseWriter, r *http.Request) {
@@ -136,6 +164,16 @@ func (api Api) GetMediafileInfos(w http.ResponseWriter, r *http.Request) {
 func (api Api) CountMediafiles(w http.ResponseWriter, r *http.Request) {
 	c, err := api.MediaRepo.CountMediafiles(r.URL.Query().Get("q"))
 	Send(w, c, err)
+}
+
+// returns the media files for a json array of file names, unknown names are skipped
+func (api Api) GetMediafilesBatch(w http.ResponseWriter, r *http.Request) {
+	names, ok := parseNameBatch(w, r)
+	if !ok {
+		return
+	}
+	list, err := api.MediaRepo.GetMediafilesByNames(names)
+	Send(w, list, err)
 }
 
 func (api Api) GetMediafile(w http.ResponseWriter, r *http.Request) {
