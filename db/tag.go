@@ -18,8 +18,17 @@ func (r *TagRepository) Create(tag *types.Tag) error {
 	return r.g.Create(tag).Error
 }
 
+// updates all fields, including zero values (restricted=false, empty description)
 func (r *TagRepository) Update(tag *types.Tag) error {
-	return r.g.Updates(tag).Error
+	return r.g.Save(tag).Error
+}
+
+func (r *TagRepository) GetByUID(uid string) (*types.Tag, error) {
+	return FindSingle[types.Tag](r.g.Where(types.Tag{UID: uid}))
+}
+
+func (r *TagRepository) GetByName(name string) (*types.Tag, error) {
+	return FindSingle[types.Tag](r.g.Where(types.Tag{Name: name}))
 }
 
 func (r *TagRepository) GetAll() ([]*types.Tag, error) {

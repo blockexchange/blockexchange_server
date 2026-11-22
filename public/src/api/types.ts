@@ -66,6 +66,9 @@ export interface Tag {
 	restricted: boolean;
 }
 
+// editable fields of a tag
+export type TagRequest = Omit<Tag, "uid">;
+
 export interface User {
 	uid: string;
 	created: number;

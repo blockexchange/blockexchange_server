@@ -66,6 +66,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/import/{filename}", api.Secure(api.ImportSchematic)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/tags", api.GetTags).Methods(http.MethodGet)
+	r.HandleFunc("/api/tags", api.Secure(api.CreateTag)).Methods(http.MethodPost)
+	r.HandleFunc("/api/tags/{tag_uid}", api.Secure(api.UpdateTag)).Methods(http.MethodPut)
 
 	r.HandleFunc("/api/schemamod/count", api.GetSchemaModCount).Methods(http.MethodGet)
 
