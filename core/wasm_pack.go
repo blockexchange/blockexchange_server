@@ -61,8 +61,6 @@ var WasmPackGitProtocols = "http:https"
 // validation and limit errors, caused by the dependency entries and not by the server
 var ErrWasmPackInvalid = errors.New("invalid pack")
 
-// branch, tag or full commit hash, must not look like a command line option
-var GitVersionRegex = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._/-]*$`)
 var gitCommitRegex = regexp.MustCompile(`^([0-9a-fA-F]{40}|[0-9a-fA-F]{64})$`)
 var modNameRegex = regexp.MustCompile(`^[a-z0-9_]+$`)
 var invalidModNameChars = regexp.MustCompile(`[^a-z0-9_]`)
@@ -267,7 +265,7 @@ func gitResolveCommit(ctx context.Context, url, version string) (string, error) 
 
 	pattern := "HEAD"
 	if version != types.SchemaModDependencyDefaultVersion {
-		if !GitVersionRegex.MatchString(version) {
+		if !types.GitVersionRegex.MatchString(version) {
 			return "", invalidPack("invalid version '%s'", version)
 		}
 		pattern = version

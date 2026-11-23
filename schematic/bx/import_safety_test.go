@@ -38,6 +38,25 @@ func TestBXImportRejectsInvalidContent(t *testing.T) {
 		"negative size":   createZip(t, map[string]string{"schema.json": `{"size_x":-1,"size_y":1,"size_z":1}`, "mods.json": "[]"}),
 		"zero size":       createZip(t, map[string]string{"schema.json": `{"size_x":0,"size_y":1,"size_z":1}`, "mods.json": "[]"}),
 		"invalid modname": createZip(t, map[string]string{"schema.json": validSchema, "mods.json": `["../etc"]`}),
+		"invalid dependency type": createZip(t, map[string]string{
+			"schema.json": validSchema, "mods.json": "[]",
+			"dependencies.json": `[{"mod_type":"texturepack","git_url":"https://example.com/x.git"}]`,
+		}),
+		"dependency file url": createZip(t, map[string]string{
+			"schema.json": validSchema, "mods.json": "[]",
+			"dependencies.json": `[{"mod_type":"mod","git_url":"file:///etc"}]`,
+		}),
+		"dependency version option": createZip(t, map[string]string{
+			"schema.json": validSchema, "mods.json": "[]",
+			"dependencies.json": `[{"mod_type":"mod","git_url":"https://example.com/x.git","version":"--upload-pack=x"}]`,
+		}),
+		"too many dependencies": createZip(t, map[string]string{
+			"schema.json": validSchema, "mods.json": "[]",
+			"dependencies.json": "[" + strings.TrimSuffix(strings.Repeat(`{"mod_type":"mod","git_url":"https://example.com/x.git"},`, bx.MaxDependencies+1), ",") + "]",
+		}),
+		"invalid dependencies json": createZip(t, map[string]string{
+			"schema.json": validSchema, "mods.json": "[]", "dependencies.json": `{"mod_type":"mod"}`,
+		}),
 		"offset mismatch": createZip(t, map[string]string{
 			"schema.json":           validSchema,
 			"mods.json":             "[]",

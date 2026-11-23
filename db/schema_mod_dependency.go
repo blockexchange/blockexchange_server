@@ -12,11 +12,12 @@ type SchemaModDependencyRepository struct {
 }
 
 func (r *SchemaModDependencyRepository) GetByUID(uid string) (*types.SchemaModDependency, error) {
-	return FindSingle[types.SchemaModDependency](r.g.Where(types.SchemaModDependency{UID: uid}))
+	// explicit conditions: an empty value in a struct condition is ignored by gorm
+	return FindSingle[types.SchemaModDependency](r.g.Where("uid = ?", uid))
 }
 
 func (r *SchemaModDependencyRepository) GetBySchemaUID(schema_uid string) ([]*types.SchemaModDependency, error) {
-	return FindMulti[types.SchemaModDependency](r.g.Where(types.SchemaModDependency{SchemaUID: schema_uid}).Order("git_url"))
+	return FindMulti[types.SchemaModDependency](r.g.Where("schema_uid = ?", schema_uid).Order("git_url"))
 }
 
 func (r *SchemaModDependencyRepository) Create(d *types.SchemaModDependency) error {
@@ -37,5 +38,5 @@ func (r *SchemaModDependencyRepository) Update(d *types.SchemaModDependency) err
 }
 
 func (r *SchemaModDependencyRepository) Delete(uid string) error {
-	return r.g.Delete(types.SchemaModDependency{UID: uid}).Error
+	return r.g.Where("uid = ?", uid).Delete(types.SchemaModDependency{}).Error
 }

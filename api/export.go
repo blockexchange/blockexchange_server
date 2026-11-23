@@ -96,8 +96,17 @@ func (api *Api) ExportBXSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	deps, err := api.SchemaModDependencyRepo.GetBySchemaUID(schema_uid)
+	if SendIfError(w, err) {
+		return
+	}
+
 	e := bx.NewExporter(w)
 	err = e.ExportMetadata(schema, schemamods)
+	if SendIfError(w, err) {
+		return
+	}
+	err = e.ExportDependencies(deps)
 	if SendIfError(w, err) {
 		return
 	}
