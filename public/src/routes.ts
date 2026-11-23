@@ -44,6 +44,10 @@ const routes: RouteRecordRaw[] = [{
 	// lazy loaded, keeps three.js out of the main bundle
 	path: "/schema/:username/:name/3d", component: () => import('./components/pages/SchemaView3d.vue'), props: true
 },{
+	// luanti wasm client, runs in the cross-origin isolated document under /wasm/ (see main.ts)
+	path: "/schema/:username/:name/online", component: () => import('./components/pages/SchemaEditOnline.vue'), props: true,
+	meta: { isolated: true }
+},{
 	path: "/schema/:username", component: UserSchemas, props: true
 },{
 	path: "/collections/:username", component: UserCollections, props: true

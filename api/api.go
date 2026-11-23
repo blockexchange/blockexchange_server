@@ -65,15 +65,18 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 	r.PathPrefix(middleware.WasmRuntimePrefix).Handler(http.StripPrefix(middleware.WasmRuntimePrefix, noDirListing(wasm_runtime)))
 
 	// static files
+	var webapp http.Handler
 	if cfg.WebDev {
 		logrus.WithFields(logrus.Fields{"dir": "public/dist"}).Info("Using live mode")
-		fs := http.FileServer(http.FS(os.DirFS("public/dist")))
-		r.PathPrefix("/").HandlerFunc(fs.ServeHTTP)
-
+		webapp = http.FileServer(http.FS(os.DirFS("public/dist")))
 	} else {
 		logrus.Info("Using embed mode")
-		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding, statigz.FSPrefix(public.Prefix)))
+		webapp = statigz.FileServer(public.Webapp, brotli.AddEncoding, statigz.FSPrefix(public.Prefix))
 	}
+
+	// the webapp again as cross-origin isolated document (headers by the wasm middleware) for the "Edit Online" page
+	r.Path(middleware.WasmPrefix).Handler(http.StripPrefix(strings.TrimSuffix(middleware.WasmPrefix, "/"), webapp))
+	r.PathPrefix("/").Handler(webapp)
 
 	return a, r, nil
 }

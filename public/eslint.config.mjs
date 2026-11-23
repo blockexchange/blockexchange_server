@@ -24,11 +24,6 @@ export default defineConfig(
 		}
 	},
 	{
-		// plain browser scripts of the luanti wasm launcher (served as-is)
-		files: ['static/wasm/**/*.js'],
-		languageOptions: { globals: { ...globals.browser } }
-	},
-	{
 		files: ['*.config.{ts,mjs}'],
 		languageOptions: { globals: { ...globals.node } }
 	}

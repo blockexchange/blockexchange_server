@@ -1,6 +1,6 @@
 # Luanti wasm runtime
 
-Embedded luanti wasm client for the "Edit Online" page (`public/static/wasm/edit.html`), served under `/wasm/runtime/`.
+Embedded luanti wasm client for the "Edit Online" page (`public/src/components/pages/SchemaEditOnline.vue`, glue code in `public/src/util/luanti_wasm.ts`), served under `/wasm/runtime/`.
 
 * Luanti 5.16.1, build `26247b229671` of [luanti-wasm](https://github.com/paradust7/luanti-wasm) (copied from the `luanti-wasm-playground` project, `html/5.16.1/26247b229671`)
 * `luanti.js`, `luanti.wasm`: stored gzip-compressed (`*.gz`), served with `Content-Encoding: gzip` or decompressed for clients without gzip support

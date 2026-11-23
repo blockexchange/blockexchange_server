@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	// launcher page and scripts (embedded webapp, public/static/wasm)
+	// webapp index (cross-origin isolated copy for the "Edit Online" page)
 	WasmPrefix = "/wasm/"
 	// luanti wasm build (embedded, see wasm/README.md)
 	WasmRuntimePrefix = "/wasm/runtime/"

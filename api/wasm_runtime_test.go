@@ -51,6 +51,17 @@ func TestWasmRuntimeEmbedded(t *testing.T) {
 	assert.Equal(t, 404, get("/wasm/runtime/packs/", "").Code)
 	assert.Equal(t, 404, get("/wasm/runtime/missing.js", "").Code)
 
+	// the webapp as cross-origin isolated document for the "Edit Online" page, the normal one is not isolated
+	w = get("/wasm/", "")
+	assert.Equal(t, 200, w.Code)
+	assert.Contains(t, w.Body.String(), `<div id="app">`)
+	assert.Equal(t, "require-corp", w.Header().Get("Cross-Origin-Embedder-Policy"))
+	assert.Equal(t, "same-origin", w.Header().Get("Cross-Origin-Opener-Policy"))
+	w = get("/", "")
+	assert.Equal(t, 200, w.Code)
+	assert.Contains(t, w.Body.String(), `<div id="app">`)
+	assert.Equal(t, "", w.Header().Get("Cross-Origin-Embedder-Policy"))
+
 	w = get("/api/info", "")
 	info := map[string]any{}
 	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), &info))
