@@ -76,3 +76,20 @@ func TestExportBXSchema(t *testing.T) {
 	assert.Equal(t, "", res.Dependencies[0].SchemaUID)
 	assert.Equal(t, "v1.0", res.Dependencies[1].Version)
 }
+
+func TestExportBXOmitsCollectionUID(t *testing.T) {
+	cuid := "some-collection"
+	schema := types.Schema{Name: "x", SizeX: 1, SizeY: 1, SizeZ: 1, CollectionUID: &cuid}
+
+	buf := bytes.NewBuffer([]byte{})
+	e := bx.NewExporter(buf)
+	assert.NoError(t, e.ExportMetadata(&schema, nil))
+	assert.NoError(t, e.Close())
+
+	res, err := bx.ParseBXContent(buf.Bytes())
+	assert.NoError(t, err)
+	assert.Nil(t, res.Schema.CollectionUID)
+	assert.Equal(t, "x", res.Schema.Name)
+	// the source schema is left untouched
+	assert.Equal(t, &cuid, schema.CollectionUID)
+}

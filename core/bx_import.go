@@ -34,6 +34,7 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 	res.Schema.Created = time.Now().UnixMilli()
 	res.Schema.Mtime = time.Now().UnixMilli()
 	res.Schema.UserUID = user.UID
+	res.Schema.CollectionUID = nil
 	res.Schema.Name = newSchemaName
 
 	err = c.repos.SchemaRepo.CreateSchema(res.Schema)

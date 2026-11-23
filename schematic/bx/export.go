@@ -21,8 +21,15 @@ func NewExporter(w io.Writer) *Exporter {
 	return &Exporter{w: archive, intialized: false}
 }
 
+// exportedSchema omits fields that only make sense on the originating server
+type exportedSchema struct {
+	*types.Schema
+	// shadows the embedded field, always nil and omitted
+	CollectionUID *string `json:"collection_uid,omitempty"`
+}
+
 func (e *Exporter) ExportMetadata(schema *types.Schema, mods []*types.SchemaMod) error {
-	schema_data, err := json.Marshal(schema)
+	schema_data, err := json.Marshal(exportedSchema{Schema: schema})
 	if err != nil {
 		return err
 	}
