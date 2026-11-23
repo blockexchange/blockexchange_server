@@ -14,6 +14,11 @@ const props = defineProps<{
 	schema_uid: string;
 }>();
 
+// emitted with the current list after every (re-)load
+const emit = defineEmits<{
+	change: [list: SchemaModDependency[]];
+}>();
+
 const list = ref<SchemaModDependency[]>([]);
 const loading = ref(true);
 const busy = ref(false);
@@ -34,6 +39,7 @@ const error_message = (e: unknown) => (e as { message?: string })?.message || JS
 
 async function update() {
 	list.value = await get_schema_mod_dependencies(props.schema_uid);
+	emit("change", list.value);
 }
 
 async function load() {
