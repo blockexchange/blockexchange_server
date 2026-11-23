@@ -19,39 +19,34 @@ import (
 	"github.com/klauspost/compress/zstd"
 )
 
+// packs for the luanti wasm client: zstd compressed tar archives, extracted into the filesystem root of the client.
+//
+// The client installs three packs, split by how often they change so the heavy ones can be cached and shared:
+//   - builtin: the blockexchange mod and its dependencies in luanti/mods (same for every schematic, see WasmPackBuiltinMods)
+//   - dependencies: the game and mods of a schematic in the world folder (shared by schematics with the same dependencies)
+//   - config: world.mt and minetest.conf, generated per request (see wasm_config_pack.go)
+
 const (
-	// archive paths, the luanti wasm client extracts the pack into its filesystem root
 	WasmPackWorldDir     = "luanti/worlds/world"
 	WasmPackGameDir      = WasmPackWorldDir + "/game"
 	WasmPackWorldModDir  = WasmPackWorldDir + "/worldmods"
+	WasmPackModDir       = "luanti/mods"
 	WasmPackMinetestConf = "luanti/minetest.conf"
 
 	// upper limit of the uncompressed pack content
 	WasmPackMaxSize = int64(1024 * 1024 * 1024)
 )
 
-// client settings: creative building with fly/fast/noclip
-const wasmPackMinetestConf = `creative_mode = true
-enable_damage = false
-default_privs = interact, shout, fly, fast, noclip, give
-fast_move = true
-free_move = true
-noclip = true
-server_announce = false
-mg_name = singlenode
-`
+type WasmPackKind string
 
-const wasmPackWorldMT = `creative_mode = true
-enable_damage = false
-server_announce = false
-backend = sqlite3
-auth_backend = sqlite3
-player_backend = sqlite3
-mod_storage_backend = sqlite3
-`
+const (
+	// game -> world/game, mods -> world/worldmods
+	WasmPackKindDependencies WasmPackKind = "dependencies"
+	// mods -> luanti/mods, enabled with load_mod_* in world.mt
+	WasmPackKindBuiltin WasmPackKind = "builtin"
+)
 
-// mods that are always added to the pack: the blockexchange mod and its hard dependencies,
-// skipped if a dependency of the schematic already provides a mod with the same name
+// the blockexchange mod and its hard dependencies, a dependency of the schematic with the same mod name takes precedence
 var WasmPackBuiltinMods = []string{
 	"https://github.com/blockexchange/blockexchange",
 	"https://github.com/buckaroobanzay/mtzip",
@@ -67,21 +62,34 @@ var ErrWasmPackInvalid = errors.New("invalid pack")
 
 // branch, tag or full commit hash, must not look like a command line option
 var GitVersionRegex = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._/-]*$`)
+var gitCommitRegex = regexp.MustCompile(`^([0-9a-fA-F]{40}|[0-9a-fA-F]{64})$`)
 var modNameRegex = regexp.MustCompile(`^[a-z0-9_]+$`)
 var invalidModNameChars = regexp.MustCompile(`[^a-z0-9_]`)
 
 // limits the number of concurrent pack builds (cloning is io and network heavy)
 var wasmPackSemaphore = make(chan struct{}, 2)
 
-type WasmPack struct {
-	dir        string
-	world_name string
-	// blockexchange.url setting, the url of this server
-	server_url string
-	// id of the embedded game, empty if there is no game dependency
-	gameid string
-	// archive dir -> local dir
-	entries []wasmPackEntry
+func invalidPack(format string, args ...any) error {
+	return fmt.Errorf("%w: %s", ErrWasmPackInvalid, fmt.Sprintf(format, args...))
+}
+
+// the builtin mods as dependency entries
+func WasmPackBuiltinDependencies() []*types.SchemaModDependency {
+	deps := make([]*types.SchemaModDependency, len(WasmPackBuiltinMods))
+	for i, url := range WasmPackBuiltinMods {
+		deps[i] = &types.SchemaModDependency{
+			ModType: types.SchemaModDependencyTypeMod,
+			GitURL:  url,
+			Version: types.SchemaModDependencyDefaultVersion,
+		}
+	}
+	return deps
+}
+
+// a dependency with its version resolved to a commit
+type resolvedDependency struct {
+	dep    *types.SchemaModDependency
+	commit string
 }
 
 type wasmPackEntry struct {
@@ -89,12 +97,8 @@ type wasmPackEntry struct {
 	local_dir   string
 }
 
-func invalidPack(format string, args ...any) error {
-	return fmt.Errorf("%w: %s", ErrWasmPackInvalid, fmt.Sprintf(format, args...))
-}
-
-// clones all dependencies into a temporary directory, Close() removes it
-func (c *Core) PrepareWasmPack(ctx context.Context, world_name string, deps []*types.SchemaModDependency) (*WasmPack, error) {
+// clones the resolved dependencies and writes the pack and its manifest
+func buildWasmPack(ctx context.Context, kind WasmPackKind, deps []resolvedDependency, w io.Writer) (*WasmPackManifest, error) {
 	select {
 	case wasmPackSemaphore <- struct{}{}:
 		defer func() { <-wasmPackSemaphore }()
@@ -102,147 +106,80 @@ func (c *Core) PrepareWasmPack(ctx context.Context, world_name string, deps []*t
 		return nil, ctx.Err()
 	}
 
-	game_count := 0
-	for _, dep := range deps {
-		if dep.ModType == types.SchemaModDependencyTypeGame {
-			game_count++
-		}
-	}
-	if game_count > 1 {
-		return nil, invalidPack("only one game dependency is allowed, found %d", game_count)
-	}
-
 	dir, err := os.MkdirTemp("", "wasm-pack-")
 	if err != nil {
 		return nil, fmt.Errorf("create temp dir: %w", err)
 	}
-	pack := &WasmPack{dir: dir, world_name: world_name, server_url: c.cfg.BaseURL}
+	defer os.RemoveAll(dir)
 
-	mod_names := map[string]string{}
+	manifest := &WasmPackManifest{Mods: []string{}}
+	mod_urls := map[string]string{}
+	entries := []wasmPackEntry{}
 	var total_size int64
-	add := func(i int, dep *types.SchemaModDependency, builtin bool) error {
-		local_dir := filepath.Join(dir, fmt.Sprintf("%d", i))
-		err := gitShallowClone(ctx, dep.GitURL, dep.Version, local_dir)
-		if err != nil {
-			return err
-		}
 
-		archive_dir := WasmPackGameDir
-		if dep.ModType == types.SchemaModDependencyTypeGame {
-			pack.gameid = repoName(dep.GitURL)
-		}
-		if dep.ModType == types.SchemaModDependencyTypeMod {
-			name := modFolderName(local_dir, dep.GitURL)
-			if other_url := mod_names[name]; other_url != "" {
-				if builtin {
-					// provided by the schematic, possibly with another version
-					return os.RemoveAll(local_dir)
-				}
-				return invalidPack("'%s' and '%s' both resolve to the mod folder '%s'", other_url, dep.GitURL, name)
-			}
-			mod_names[name] = dep.GitURL
-			archive_dir = WasmPackWorldModDir + "/" + name
+	for i, rd := range deps {
+		local_dir := filepath.Join(dir, fmt.Sprintf("%d", i))
+		err = gitShallowClone(ctx, rd.dep.GitURL, rd.commit, local_dir)
+		if err != nil {
+			return nil, err
 		}
 
 		size, err := dirSize(local_dir)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		total_size += size
 		if total_size > WasmPackMaxSize {
-			return invalidPack("pack exceeds the size limit of %d bytes", WasmPackMaxSize)
+			return nil, invalidPack("pack exceeds the size limit of %d bytes", WasmPackMaxSize)
 		}
 
-		pack.entries = append(pack.entries, wasmPackEntry{archive_dir: archive_dir, local_dir: local_dir})
-		return nil
+		if rd.dep.ModType == types.SchemaModDependencyTypeGame {
+			manifest.GameID = repoName(rd.dep.GitURL)
+			entries = append(entries, wasmPackEntry{archive_dir: WasmPackGameDir, local_dir: local_dir})
+			continue
+		}
+
+		name := modFolderName(local_dir, rd.dep.GitURL)
+		if other_url := mod_urls[name]; other_url != "" {
+			return nil, invalidPack("'%s' and '%s' both resolve to the mod folder '%s'", other_url, rd.dep.GitURL, name)
+		}
+		mod_urls[name] = rd.dep.GitURL
+		manifest.Mods = append(manifest.Mods, name)
+
+		mod_dir := WasmPackWorldModDir
+		if kind == WasmPackKindBuiltin {
+			mod_dir = WasmPackModDir
+		}
+		entries = append(entries, wasmPackEntry{archive_dir: mod_dir + "/" + name, local_dir: local_dir})
 	}
 
-	for i, dep := range deps {
-		err = add(i, dep, false)
-		if err != nil {
-			pack.Close()
-			return nil, err
-		}
-	}
-	for i, url := range WasmPackBuiltinMods {
-		dep := &types.SchemaModDependency{
-			ModType: types.SchemaModDependencyTypeMod,
-			GitURL:  url,
-			Version: types.SchemaModDependencyDefaultVersion,
-		}
-		err = add(len(deps)+i, dep, true)
-		if err != nil {
-			pack.Close()
-			return nil, err
-		}
+	skeleton := []string{"luanti", "luanti/worlds", WasmPackWorldDir, WasmPackWorldModDir}
+	if kind == WasmPackKindBuiltin {
+		skeleton = []string{"luanti", WasmPackModDir}
 	}
 
-	return pack, nil
-}
-
-func (p *WasmPack) Close() error {
-	return os.RemoveAll(p.dir)
-}
-
-// writes the zstd compressed tar archive
-func (p *WasmPack) Write(w io.Writer) error {
 	zw, err := zstd.NewWriter(w)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	tw := tar.NewWriter(zw)
-
-	for _, d := range []string{"luanti", "luanti/worlds", WasmPackWorldDir, WasmPackWorldModDir} {
+	for _, d := range skeleton {
 		err = tw.WriteHeader(&tar.Header{Typeflag: tar.TypeDir, Name: d + "/", Mode: 0755})
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-
-	err = writeTarFile(tw, WasmPackMinetestConf, []byte(p.minetestConf()))
-	if err != nil {
-		return err
-	}
-	err = writeTarFile(tw, WasmPackWorldDir+"/world.mt", []byte(p.worldMT()))
-	if err != nil {
-		return err
-	}
-
-	for _, e := range p.entries {
+	for _, e := range entries {
 		err = writeTarDir(tw, e.local_dir, e.archive_dir)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-
 	err = tw.Close()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return zw.Close()
-}
-
-// client settings, the blockexchange mod talks to this server
-func (p *WasmPack) minetestConf() string {
-	sb := strings.Builder{}
-	sb.WriteString(wasmPackMinetestConf)
-	sb.WriteString("secure.http_mods = blockexchange\n")
-	if p.server_url != "" {
-		fmt.Fprintf(&sb, "blockexchange.url = %s\n", p.server_url)
-	}
-	return sb.String()
-}
-
-// world settings, the mods in "worldmods" are always enabled and need no load_mod_* entry
-func (p *WasmPack) worldMT() string {
-	sb := strings.Builder{}
-	if p.gameid != "" {
-		// the game in the "game" folder of the world is used regardless of the id
-		fmt.Fprintf(&sb, "gameid = %s\n", p.gameid)
-	}
-	fmt.Fprintf(&sb, "world_name = %s\n", strings.NewReplacer("\n", " ", "\r", " ").Replace(p.world_name))
-	sb.WriteString(wasmPackWorldMT)
-	return sb.String()
+	return manifest, zw.Close()
 }
 
 func writeTarFile(tw *tar.Writer, name string, data []byte) error {
@@ -322,31 +259,67 @@ func dirSize(dir string) (int64, error) {
 	return size, err
 }
 
-// shallow clone of the default branch ("latest") or the given branch, tag or full commit hash
-func gitShallowClone(ctx context.Context, url, version, dir string) error {
-	if version == "" || version == types.SchemaModDependencyDefaultVersion {
-		return runGit(ctx, "", "clone", "--quiet", "--depth", "1", "--single-branch", "--no-tags", "--end-of-options", url, dir)
+// resolves "latest" (default branch), a branch or a tag to a commit with "git ls-remote", full commit hashes are returned as-is
+func gitResolveCommit(ctx context.Context, url, version string) (string, error) {
+	if version == "" {
+		version = types.SchemaModDependencyDefaultVersion
+	}
+	if gitCommitRegex.MatchString(version) {
+		return strings.ToLower(version), nil
 	}
 
-	if !GitVersionRegex.MatchString(version) {
-		return invalidPack("invalid version '%s'", version)
+	pattern := "HEAD"
+	if version != types.SchemaModDependencyDefaultVersion {
+		if !GitVersionRegex.MatchString(version) {
+			return "", invalidPack("invalid version '%s'", version)
+		}
+		pattern = version
 	}
+
+	out, err := runGit(ctx, "", "ls-remote", "--end-of-options", url, pattern)
+	if err != nil {
+		return "", err
+	}
+	refs := map[string]string{}
+	for _, line := range strings.Split(out, "\n") {
+		commit, ref, found := strings.Cut(strings.TrimSpace(line), "\t")
+		if found {
+			refs[ref] = commit
+		}
+	}
+
+	candidates := []string{"HEAD"}
+	if version != types.SchemaModDependencyDefaultVersion {
+		// annotated tags point to the tag object, "^{}" is the commit
+		candidates = []string{"refs/tags/" + version + "^{}", "refs/tags/" + version, "refs/heads/" + version, version}
+	}
+	for _, c := range candidates {
+		if commit := refs[c]; gitCommitRegex.MatchString(commit) {
+			return strings.ToLower(commit), nil
+		}
+	}
+	return "", invalidPack("version '%s' not found in '%s' (use 'latest', a branch, a tag or a full commit hash)", version, url)
+}
+
+// shallow clone of a single commit
+func gitShallowClone(ctx context.Context, url, commit, dir string) error {
 	err := os.MkdirAll(dir, 0755)
 	if err != nil {
 		return err
 	}
-	err = runGit(ctx, dir, "init", "--quiet")
+	_, err = runGit(ctx, dir, "init", "--quiet")
 	if err != nil {
 		return err
 	}
-	err = runGit(ctx, dir, "fetch", "--quiet", "--depth", "1", "--no-tags", "--end-of-options", url, version)
+	_, err = runGit(ctx, dir, "fetch", "--quiet", "--depth", "1", "--no-tags", "--end-of-options", url, commit)
 	if err != nil {
 		return err
 	}
-	return runGit(ctx, dir, "checkout", "--quiet", "--detach", "FETCH_HEAD")
+	_, err = runGit(ctx, dir, "checkout", "--quiet", "--detach", "FETCH_HEAD")
+	return err
 }
 
-func runGit(ctx context.Context, dir string, args ...string) error {
+func runGit(ctx context.Context, dir string, args ...string) (string, error) {
 	cmd := exec.CommandContext(ctx, "git", args...)
 	cmd.Dir = dir
 	cmd.Env = append(os.Environ(),
@@ -359,12 +332,12 @@ func runGit(ctx context.Context, dir string, args ...string) error {
 	)
 	out, err := cmd.CombinedOutput()
 	if ctx.Err() != nil {
-		return ctx.Err()
+		return "", ctx.Err()
 	}
 	if err != nil {
-		return fmt.Errorf("git %s failed: %s", args[0], strings.TrimSpace(string(out)))
+		return "", fmt.Errorf("git %s failed: %s", args[0], strings.TrimSpace(string(out)))
 	}
-	return nil
+	return string(out), nil
 }
 
 // folder name of a mod: "name" in mod.conf or modpack.conf, the repository name otherwise
@@ -375,7 +348,6 @@ func modFolderName(dir, url string) string {
 			return name
 		}
 	}
-
 	return repoName(url)
 }
 

@@ -2,59 +2,132 @@ package api
 
 import (
 	"blockexchange/core"
+	"blockexchange/types"
+	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
 )
 
-// max time for cloning all dependencies of a schematic
-const wasmPackPrepareTimeout = 5 * time.Minute
+// packs for the luanti wasm client, see core/wasm_pack.go
 
-// returns a zstd compressed tar archive with the game and mods of the schematic for the luanti wasm client
-func (api *Api) GetWasmPack(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
-	schema_uid := mux.Vars(r)["schema_uid"]
+// max time to wait for a pack (resolving and cloning)
+const wasmPackRequestTimeout = 5 * time.Minute
 
+func sendWasmPackError(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, core.ErrWasmPackInvalid):
+		SendError(w, http.StatusBadRequest, err.Error())
+	case errors.Is(err, context.DeadlineExceeded):
+		SendError(w, http.StatusGatewayTimeout, "preparing the pack took too long")
+	default:
+		// git failures (unreachable repository, unknown commit)
+		SendError(w, http.StatusBadGateway, err.Error())
+	}
+}
+
+// serves a cached pack, the browser revalidates with the etag (304 if unchanged)
+func serveWasmPack(w http.ResponseWriter, r *http.Request, pack *core.WasmPack, filename string) {
+	f, err := os.Open(pack.Path)
+	if err != nil {
+		// evicted in the meantime
+		SendError(w, http.StatusServiceUnavailable, "pack not available, please retry")
+		return
+	}
+	defer f.Close()
+
+	setWasmPackHeaders(w, pack.ETag, filename)
+	http.ServeContent(w, r, filename, pack.ModTime, f)
+}
+
+func setWasmPackHeaders(w http.ResponseWriter, etag, filename string) {
+	h := w.Header()
+	h.Set("Content-Type", "application/zstd")
+	h.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
+	h.Set("ETag", etag)
+	// per user (authenticated), always revalidate
+	h.Set("Cache-Control", "private, no-cache")
+}
+
+// loads the dependencies of an owned schematic, nil if a response was sent
+func (api *Api) loadWasmPackDependencies(w http.ResponseWriter, ctx *SecureContext, schema_uid string) (*types.Schema, []*types.SchemaModDependency) {
 	schema := api.loadOwnedSchema(w, ctx, schema_uid, true)
+	if schema == nil {
+		return nil, nil
+	}
+	deps, err := api.SchemaModDependencyRepo.GetBySchemaUID(schema_uid)
+	if SendIfError(w, err) {
+		return nil, nil
+	}
+	if len(deps) == 0 {
+		SendError(w, http.StatusNotFound, "the schematic has no mod dependencies")
+		return nil, nil
+	}
+	return schema, deps
+}
+
+// the game and mods of the schematic (owner or admin), cached and shared between schematics with the same dependencies
+func (api *Api) GetWasmPack(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	schema, deps := api.loadWasmPackDependencies(w, ctx, mux.Vars(r)["schema_uid"])
 	if schema == nil {
 		return
 	}
 
-	deps, err := api.SchemaModDependencyRepo.GetBySchemaUID(schema_uid)
+	req_ctx, cancel := context.WithTimeout(r.Context(), wasmPackRequestTimeout)
+	defer cancel()
+	pack, err := api.core.GetWasmPack(req_ctx, core.WasmPackKindDependencies, deps)
+	if err != nil {
+		sendWasmPackError(w, err)
+		return
+	}
+	serveWasmPack(w, r, pack, schema.Name+".pack")
+}
+
+// the blockexchange mod and its dependencies, the same for every schematic (logged in users)
+func (api *Api) GetWasmBuiltinPack(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	req_ctx, cancel := context.WithTimeout(r.Context(), wasmPackRequestTimeout)
+	defer cancel()
+	pack, err := api.core.GetWasmPack(req_ctx, core.WasmPackKindBuiltin, core.WasmPackBuiltinDependencies())
+	if err != nil {
+		sendWasmPackError(w, err)
+		return
+	}
+	serveWasmPack(w, r, pack, "builtin.pack")
+}
+
+// world.mt and minetest.conf of the schematic (owner or admin), matching the dependency and builtin packs
+func (api *Api) GetWasmConfigPack(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	schema, deps := api.loadWasmPackDependencies(w, ctx, mux.Vars(r)["schema_uid"])
+	if schema == nil {
+		return
+	}
+
+	// usually cache hits, the client installs the other packs first
+	req_ctx, cancel := context.WithTimeout(r.Context(), wasmPackRequestTimeout)
+	defer cancel()
+	deps_pack, err := api.core.GetWasmPack(req_ctx, core.WasmPackKindDependencies, deps)
+	if err != nil {
+		sendWasmPackError(w, err)
+		return
+	}
+	builtin_pack, err := api.core.GetWasmPack(req_ctx, core.WasmPackKindBuiltin, core.WasmPackBuiltinDependencies())
+	if err != nil {
+		sendWasmPackError(w, err)
+		return
+	}
+
+	data, err := api.core.WasmConfigPack(schema.Name, deps_pack.Manifest, builtin_pack.Manifest)
 	if SendIfError(w, err) {
 		return
 	}
-	if len(deps) == 0 {
-		SendError(w, http.StatusNotFound, "the schematic has no mod dependencies")
-		return
-	}
-
-	prepare_ctx, cancel := context.WithTimeout(r.Context(), wasmPackPrepareTimeout)
-	defer cancel()
-	pack, err := api.core.PrepareWasmPack(prepare_ctx, schema.Name, deps)
-	switch {
-	case errors.Is(err, core.ErrWasmPackInvalid):
-		SendError(w, http.StatusBadRequest, err.Error())
-		return
-	case errors.Is(err, context.DeadlineExceeded):
-		SendError(w, http.StatusGatewayTimeout, "cloning the dependencies took too long")
-		return
-	case err != nil:
-		// clone failures (unreachable repository, unknown version)
-		SendError(w, http.StatusBadGateway, err.Error())
-		return
-	}
-	defer pack.Close()
-
-	w.Header().Set("Content-Type", "application/zstd")
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.pack\"", schema.Name))
-	err = pack.Write(w)
-	if err != nil {
-		// headers are already sent, just log
-		logrus.WithError(err).WithField("schema_uid", schema_uid).Error("writing wasm pack failed")
-	}
+	sum := sha256.Sum256(data)
+	setWasmPackHeaders(w, `"config-`+hex.EncodeToString(sum[:])+`"`, schema.Name+".config.pack")
+	http.ServeContent(w, r, "config.pack", time.Time{}, bytes.NewReader(data))
 }

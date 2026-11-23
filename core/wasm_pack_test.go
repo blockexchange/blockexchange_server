@@ -11,7 +11,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/klauspost/compress/zstd"
 	"github.com/stretchr/testify/assert"
@@ -30,7 +32,7 @@ func git(t *testing.T, dir string, args ...string) string {
 	return strings.TrimSpace(string(out))
 }
 
-// creates a local repository with the given files committed, returns the commit hash
+// commits the files to the (new) local repository, returns the commit hash
 func commitFiles(t *testing.T, dir string, files map[string]string) string {
 	if _, err := os.Stat(filepath.Join(dir, ".git")); err != nil {
 		assert.NoError(t, os.MkdirAll(dir, 0755))
@@ -46,8 +48,8 @@ func commitFiles(t *testing.T, dir string, files map[string]string) string {
 	return git(t, dir, "rev-parse", "HEAD")
 }
 
-// returns the archive entries: name -> content ("" for directories)
-func readPack(t *testing.T, data []byte) map[string]string {
+// archive entries: name -> content ("" for directories)
+func readPackData(t *testing.T, data []byte) map[string]string {
 	zr, err := zstd.NewReader(bytes.NewReader(data))
 	assert.NoError(t, err)
 	defer zr.Close()
@@ -67,22 +69,34 @@ func readPack(t *testing.T, data []byte) map[string]string {
 	return entries
 }
 
-// allows local repositories and replaces the builtin mods (no network access in tests)
-func allowFileProtocol(t *testing.T, builtin_mods ...string) {
-	old := core.WasmPackGitProtocols
-	old_builtin := core.WasmPackBuiltinMods
+func readPack(t *testing.T, pack *core.WasmPack) map[string]string {
+	data, err := os.ReadFile(pack.Path)
+	assert.NoError(t, err)
+	return readPackData(t, data)
+}
+
+// core with its own pack cache, local repositories allowed and the given builtin mods (no network access in tests)
+func newPackCore(t *testing.T, builtin_mods ...string) *core.Core {
+	old_protocols, old_builtin, old_ttl := core.WasmPackGitProtocols, core.WasmPackBuiltinMods, core.WasmPackResolveTTL
 	core.WasmPackGitProtocols = "file"
 	core.WasmPackBuiltinMods = builtin_mods
 	t.Cleanup(func() {
-		core.WasmPackGitProtocols = old
-		core.WasmPackBuiltinMods = old_builtin
+		core.WasmPackGitProtocols, core.WasmPackBuiltinMods, core.WasmPackResolveTTL = old_protocols, old_builtin, old_ttl
 	})
+
+	cfg := types.CreateConfig()
+	cfg.BaseURL = "https://bx.example.com"
+	cfg.WasmPackCacheDir = t.TempDir()
+	return core.New(cfg, nil)
 }
 
-func TestWasmPack(t *testing.T) {
-	allowFileProtocol(t)
+func dep(mod_type types.SchemaModDependencyType, dir, version string) *types.SchemaModDependency {
+	return &types.SchemaModDependency{ModType: mod_type, GitURL: "file://" + dir, Version: version}
+}
+
+func TestWasmPackDependencies(t *testing.T) {
+	c := newPackCore(t)
 	base := t.TempDir()
-	c := core.New(types.CreateConfig(), nil)
 
 	game_dir := filepath.Join(base, "my_game.git")
 	commitFiles(t, game_dir, map[string]string{"game.conf": "title = My game\n", "mods/x/init.lua": "-- x\n"})
@@ -102,112 +116,209 @@ func TestWasmPack(t *testing.T) {
 	commitFiles(t, other_dir, map[string]string{"init.lua": "-- dev\n"})
 	git(t, other_dir, "checkout", "--quiet", "main")
 
-	deps := []*types.SchemaModDependency{
-		{ModType: types.SchemaModDependencyTypeGame, GitURL: "file://" + game_dir, Version: "latest"},
-		{ModType: types.SchemaModDependencyTypeMod, GitURL: "file://" + mod_dir, Version: first},
-		{ModType: types.SchemaModDependencyTypeMod, GitURL: "file://" + other_dir, Version: "dev"},
-	}
-
-	pack, err := c.PrepareWasmPack(context.Background(), "my_schema", deps)
+	pack, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, []*types.SchemaModDependency{
+		dep(types.SchemaModDependencyTypeGame, game_dir, "latest"),
+		dep(types.SchemaModDependencyTypeMod, mod_dir, first),
+		dep(types.SchemaModDependencyTypeMod, other_dir, "dev"),
+	})
 	assert.NoError(t, err)
-	buf := bytes.NewBuffer(nil)
-	assert.NoError(t, pack.Write(buf))
-	assert.NoError(t, pack.Close())
+	assert.Equal(t, "my_game", pack.Manifest.GameID)
+	assert.ElementsMatch(t, []string{"some_mod", "other_mod"}, pack.Manifest.Mods)
+	assert.True(t, strings.HasPrefix(pack.ETag, `"dependencies-`))
 
-	entries := readPack(t, buf.Bytes())
-	assert.Contains(t, entries, "luanti/worlds/world/")
+	entries := readPack(t, pack)
 	assert.Contains(t, entries, "luanti/worlds/world/worldmods/")
 	assert.Equal(t, "title = My game\n", entries["luanti/worlds/world/game/game.conf"])
 	assert.Equal(t, "-- x\n", entries["luanti/worlds/world/game/mods/x/init.lua"])
 	assert.Equal(t, "-- v1\n", entries["luanti/worlds/world/worldmods/some_mod/init.lua"])
 	assert.Equal(t, "-- dev\n", entries["luanti/worlds/world/worldmods/other_mod/init.lua"])
-
-	assert.Contains(t, entries["luanti/minetest.conf"], "creative_mode = true\n")
-	world_mt := entries["luanti/worlds/world/world.mt"]
-	assert.Contains(t, world_mt, "gameid = my_game\n")
-	assert.Contains(t, world_mt, "world_name = my_schema\n")
-	assert.Contains(t, world_mt, "backend = sqlite3\n")
-
+	assert.NotContains(t, entries, "luanti/minetest.conf")
 	for name := range entries {
 		assert.NotContains(t, name, ".git/", name)
 		assert.NotContains(t, name, "passwd", name)
 	}
 }
 
-func TestWasmPackInvalid(t *testing.T) {
-	allowFileProtocol(t)
+func TestWasmPackCache(t *testing.T) {
+	c := newPackCore(t)
 	base := t.TempDir()
-	c := core.New(types.CreateConfig(), nil)
+	game_dir := filepath.Join(base, "game")
+	commitFiles(t, game_dir, map[string]string{"game.conf": "v1\n"})
+	mod_dir := filepath.Join(base, "mod")
+	mod_commit := commitFiles(t, mod_dir, map[string]string{"init.lua": "-- mod\n"})
 
+	deps := []*types.SchemaModDependency{
+		dep(types.SchemaModDependencyTypeGame, game_dir, "latest"),
+		dep(types.SchemaModDependencyTypeMod, mod_dir, mod_commit),
+	}
+	p1, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, deps)
+	assert.NoError(t, err)
+
+	// cache hit: same pack, also in another order and without the mod repository
+	assert.NoError(t, os.RemoveAll(mod_dir))
+	p2, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, []*types.SchemaModDependency{deps[1], deps[0]})
+	assert.NoError(t, err)
+	assert.Equal(t, p1.Path, p2.Path)
+	assert.Equal(t, p1.ETag, p2.ETag)
+
+	// new commit on "latest": reused until the resolve ttl expires
+	game_v2 := commitFiles(t, game_dir, map[string]string{"game.conf": "v2\n"})
+	p3, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, deps[:1])
+	assert.NoError(t, err)
+	assert.Equal(t, "v1\n", readPack(t, p3)["luanti/worlds/world/game/game.conf"])
+
+	core.WasmPackResolveTTL = 0
+	p4, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, deps[:1])
+	assert.NoError(t, err)
+	assert.NotEqual(t, p3.ETag, p4.ETag)
+	assert.Equal(t, "v2\n", readPack(t, p4)["luanti/worlds/world/game/game.conf"])
+
+	// pinned to the new commit: same content, same pack
+	p5, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, []*types.SchemaModDependency{
+		dep(types.SchemaModDependencyTypeGame, game_dir, game_v2),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, p4.ETag, p5.ETag)
+}
+
+func TestWasmPackConcurrent(t *testing.T) {
+	c := newPackCore(t)
+	game_dir := filepath.Join(t.TempDir(), "game")
+	commitFiles(t, game_dir, map[string]string{"game.conf": "x\n"})
+	deps := []*types.SchemaModDependency{dep(types.SchemaModDependencyTypeGame, game_dir, "latest")}
+
+	wg := sync.WaitGroup{}
+	etags := make([]string, 8)
+	for i := range etags {
+		wg.Go(func() {
+			p, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, deps)
+			assert.NoError(t, err)
+			if p != nil {
+				etags[i] = p.ETag
+			}
+		})
+	}
+	wg.Wait()
+	for _, etag := range etags {
+		assert.Equal(t, etags[0], etag)
+	}
+
+	// an already cancelled request fails
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	core.WasmPackResolveTTL = 0
+	_, err := c.GetWasmPack(ctx, core.WasmPackKindDependencies, deps)
+	assert.Error(t, err)
+}
+
+func TestWasmPackEviction(t *testing.T) {
+	c := newPackCore(t)
+	old := core.WasmPackCacheMaxSize
+	core.WasmPackCacheMaxSize = 1
+	t.Cleanup(func() { core.WasmPackCacheMaxSize = old })
+
+	base := t.TempDir()
+	a := filepath.Join(base, "a")
+	commitFiles(t, a, map[string]string{"init.lua": "-- a\n"})
+	b := filepath.Join(base, "b")
+	commitFiles(t, b, map[string]string{"init.lua": "-- b\n"})
+
+	pa, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, []*types.SchemaModDependency{dep(types.SchemaModDependencyTypeMod, a, "latest")})
+	assert.NoError(t, err)
+	time.Sleep(10 * time.Millisecond)
+	pb, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, []*types.SchemaModDependency{dep(types.SchemaModDependencyTypeMod, b, "latest")})
+	assert.NoError(t, err)
+
+	// over the limit: the older pack is removed, the new one kept
+	_, err = os.Stat(pa.Path)
+	assert.True(t, os.IsNotExist(err))
+	_, err = os.Stat(pb.Path)
+	assert.NoError(t, err)
+}
+
+func TestWasmPackTagVersion(t *testing.T) {
+	c := newPackCore(t)
+	mod_dir := filepath.Join(t.TempDir(), "mod")
+	commitFiles(t, mod_dir, map[string]string{"init.lua": "-- tagged\n"})
+	git(t, mod_dir, "tag", "-a", "v1.0", "-m", "release")
+	commitFiles(t, mod_dir, map[string]string{"init.lua": "-- newer\n"})
+
+	p, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, []*types.SchemaModDependency{dep(types.SchemaModDependencyTypeMod, mod_dir, "v1.0")})
+	assert.NoError(t, err)
+	assert.Equal(t, "-- tagged\n", readPack(t, p)["luanti/worlds/world/worldmods/mod/init.lua"])
+}
+
+func TestWasmPackInvalid(t *testing.T) {
+	c := newPackCore(t)
+	base := t.TempDir()
 	a := filepath.Join(base, "a")
 	commitFiles(t, a, map[string]string{"mod.conf": "name = same\n"})
 	b := filepath.Join(base, "b")
 	commitFiles(t, b, map[string]string{"mod.conf": "name = same\n"})
 
+	get := func(deps ...*types.SchemaModDependency) error {
+		_, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, deps)
+		return err
+	}
+
 	// two games
-	_, err := c.PrepareWasmPack(context.Background(), "x", []*types.SchemaModDependency{
-		{ModType: types.SchemaModDependencyTypeGame, GitURL: "file://" + a},
-		{ModType: types.SchemaModDependencyTypeGame, GitURL: "file://" + b},
-	})
-	assert.ErrorIs(t, err, core.ErrWasmPackInvalid)
-
+	assert.ErrorIs(t, get(dep(types.SchemaModDependencyTypeGame, a, "latest"), dep(types.SchemaModDependencyTypeGame, b, "latest")), core.ErrWasmPackInvalid)
 	// same mod folder
-	_, err = c.PrepareWasmPack(context.Background(), "x", []*types.SchemaModDependency{
-		{ModType: types.SchemaModDependencyTypeMod, GitURL: "file://" + a, Version: "latest"},
-		{ModType: types.SchemaModDependencyTypeMod, GitURL: "file://" + b, Version: "latest"},
-	})
-	assert.ErrorIs(t, err, core.ErrWasmPackInvalid)
-
+	assert.ErrorIs(t, get(dep(types.SchemaModDependencyTypeMod, a, "latest"), dep(types.SchemaModDependencyTypeMod, b, "latest")), core.ErrWasmPackInvalid)
 	// option injection via version
-	_, err = c.PrepareWasmPack(context.Background(), "x", []*types.SchemaModDependency{
-		{ModType: types.SchemaModDependencyTypeMod, GitURL: "file://" + a, Version: "--upload-pack=touch /tmp/x"},
-	})
-	assert.ErrorIs(t, err, core.ErrWasmPackInvalid)
-
+	assert.ErrorIs(t, get(dep(types.SchemaModDependencyTypeMod, a, "--upload-pack=touch /tmp/x")), core.ErrWasmPackInvalid)
 	// unknown version
-	_, err = c.PrepareWasmPack(context.Background(), "x", []*types.SchemaModDependency{
-		{ModType: types.SchemaModDependencyTypeMod, GitURL: "file://" + a, Version: "does-not-exist"},
-	})
-	assert.Error(t, err)
-	assert.NotErrorIs(t, err, core.ErrWasmPackInvalid)
+	assert.ErrorIs(t, get(dep(types.SchemaModDependencyTypeMod, a, "does-not-exist")), core.ErrWasmPackInvalid)
 
 	// file:// is not allowed by default
 	core.WasmPackGitProtocols = "http:https"
-	_, err = c.PrepareWasmPack(context.Background(), "x", []*types.SchemaModDependency{
-		{ModType: types.SchemaModDependencyTypeMod, GitURL: "file://" + a, Version: "latest"},
-	})
+	core.WasmPackResolveTTL = 0
+	err := get(dep(types.SchemaModDependencyTypeMod, b, "latest"))
 	assert.Error(t, err)
+	assert.NotErrorIs(t, err, core.ErrWasmPackInvalid)
 }
 
-func TestWasmPackBuiltinMods(t *testing.T) {
+func TestWasmBuiltinAndConfigPack(t *testing.T) {
 	base := t.TempDir()
-	cfg := types.CreateConfig()
-	cfg.BaseURL = "https://bx.example.com"
-	c := core.New(cfg, nil)
-
 	builtin_bx := filepath.Join(base, "builtin", "blockexchange")
 	commitFiles(t, builtin_bx, map[string]string{"mod.conf": "name = blockexchange\n", "init.lua": "-- builtin\n"})
 	builtin_promise := filepath.Join(base, "builtin", "promise")
 	commitFiles(t, builtin_promise, map[string]string{"mod.conf": "name = promise\n", "init.lua": "-- promise\n"})
-	allowFileProtocol(t, "file://"+builtin_bx, "file://"+builtin_promise)
+	c := newPackCore(t, "file://"+builtin_bx, "file://"+builtin_promise)
 
-	// the schematic brings its own blockexchange mod, the builtin one is skipped
-	own_bx := filepath.Join(base, "own", "blockexchange_fork")
-	commitFiles(t, own_bx, map[string]string{"mod.conf": "name = blockexchange\n", "init.lua": "-- fork\n"})
+	builtin, err := c.GetWasmPack(context.Background(), core.WasmPackKindBuiltin, core.WasmPackBuiltinDependencies())
+	assert.NoError(t, err)
+	assert.True(t, strings.HasPrefix(builtin.ETag, `"builtin-`))
+	entries := readPack(t, builtin)
+	assert.Equal(t, "-- builtin\n", entries["luanti/mods/blockexchange/init.lua"])
+	assert.Equal(t, "-- promise\n", entries["luanti/mods/promise/init.lua"])
+	assert.NotContains(t, entries, "luanti/worlds/world/")
 
-	pack, err := c.PrepareWasmPack(context.Background(), "x", []*types.SchemaModDependency{
-		{ModType: types.SchemaModDependencyTypeMod, GitURL: "file://" + own_bx, Version: "latest"},
+	// the schematic brings its own blockexchange mod
+	game_dir := filepath.Join(base, "minetest_game")
+	commitFiles(t, game_dir, map[string]string{"game.conf": "x\n"})
+	fork := filepath.Join(base, "blockexchange_fork")
+	commitFiles(t, fork, map[string]string{"mod.conf": "name = blockexchange\n"})
+	deps, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, []*types.SchemaModDependency{
+		dep(types.SchemaModDependencyTypeGame, game_dir, "latest"),
+		dep(types.SchemaModDependencyTypeMod, fork, "latest"),
 	})
 	assert.NoError(t, err)
-	buf := bytes.NewBuffer(nil)
-	assert.NoError(t, pack.Write(buf))
-	assert.NoError(t, pack.Close())
 
-	entries := readPack(t, buf.Bytes())
-	assert.Equal(t, "-- fork\n", entries["luanti/worlds/world/worldmods/blockexchange/init.lua"])
-	assert.Equal(t, "-- promise\n", entries["luanti/worlds/world/worldmods/promise/init.lua"])
+	data, err := c.WasmConfigPack("my_schema", deps.Manifest, builtin.Manifest)
+	assert.NoError(t, err)
+	entries = readPackData(t, data)
+
+	world_mt := entries["luanti/worlds/world/world.mt"]
+	assert.Contains(t, world_mt, "gameid = minetest_game\n")
+	assert.Contains(t, world_mt, "world_name = my_schema\n")
+	assert.Contains(t, world_mt, "backend = sqlite3\n")
+	// only the builtin mods not provided by the schematic
+	assert.Contains(t, world_mt, "load_mod_promise = true\n")
+	assert.NotContains(t, world_mt, "load_mod_blockexchange")
 
 	conf := entries["luanti/minetest.conf"]
+	assert.Contains(t, conf, "creative_mode = true\n")
 	assert.Contains(t, conf, "secure.http_mods = blockexchange\n")
 	assert.Contains(t, conf, "blockexchange.url = https://bx.example.com\n")
 }
