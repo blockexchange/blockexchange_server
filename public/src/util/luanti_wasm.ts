@@ -1,5 +1,5 @@
 // glue code for the luanti wasm client (emscripten build, embedded under /wasm/runtime/),
-// based on the custom example of luanti-wasm-playground (5.16.1).
+// based on the custom example of luanti-wasm-playground (5.17.0).
 // The client needs SharedArrayBuffer (cross-origin isolated document) and can only be started once per document.
 
 // globals of the emscripten runtime (luanti.js is loaded as a classic script)
@@ -13,6 +13,7 @@ declare global {
 	interface Window {
 		Module?: object;
 		emloop_ready?: () => void;
+		emloop_fs_ready?: (persistent: number) => void;
 		emloop_pack_progress?: (name: string, fraction: number) => void;
 		emloop_pack_installed?: (name: string) => void;
 		emloop_exited?: (status: number) => void;
@@ -46,6 +47,7 @@ export interface LuantiClientOptions {
 export const is_supported = () => !!window.SharedArrayBuffer && window.crossOriginIsolated;
 
 interface RuntimeFunctions {
+	emloop_init_fs: (want_opfs: number) => void;
 	emloop_invoke_main: (argc: number, argv: number) => void;
 	irrlicht_resize: (width: number, height: number) => void;
 	emsocket_init: () => void;
@@ -82,7 +84,6 @@ export async function start_luanti_client(opts: LuantiClientOptions) {
 			p.resolve();
 		}
 	};
-	// newer builds only
 	window.emloop_exited = () => opts.on_exit("The game has exited.");
 
 	const add_pack = async (pack: LuantiPack) => {
@@ -112,8 +113,9 @@ export async function start_luanti_client(opts: LuantiClientOptions) {
 	// load the runtime
 	const ready = new Promise<RuntimeFunctions>((resolve, reject) => {
 		window.emloop_ready = () => {
-			emloop_install_pack = cwrap("emloop_install_pack", null, ["number", "number", "number"]);
+			emloop_install_pack = cwrap("emloop_install_pack", null, ["number", "number", "number", "number"]);
 			resolve({
+				emloop_init_fs: cwrap("emloop_init_fs", null, ["number"]),
 				emloop_invoke_main: cwrap("emloop_invoke_main", null, ["number", "number"]),
 				irrlicht_resize: cwrap("irrlicht_resize", null, ["number", "number"]),
 				emsocket_init: cwrap("emsocket_init", null, []),
@@ -142,7 +144,12 @@ export async function start_luanti_client(opts: LuantiClientOptions) {
 	});
 
 	opts.on_progress("client runtime");
-	const { emloop_invoke_main, irrlicht_resize, emsocket_init, emsocket_set_proxy } = await ready;
+	const { emloop_init_fs, emloop_invoke_main, irrlicht_resize, emsocket_init, emsocket_set_proxy } = await ready;
+	// mount /luanti before the packs are installed. In memory (no OPFS): every start is a fresh world from the packs
+	await new Promise<void>(resolve => {
+		window.emloop_fs_ready = () => resolve();
+		emloop_init_fs(0);
+	});
 	await add_pack({ name: "base", label: "base pack" });
 	for (const pack of opts.packs) {
 		await add_pack(pack);
