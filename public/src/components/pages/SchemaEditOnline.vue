@@ -56,7 +56,7 @@ async function start() {
 		// the world folder of the packs, world.mt has no world_name so the folder name is used
 		args: ["--worldname", "world", "--config", "/luanti/minetest.conf", "--go"],
 		on_progress: msg => progress.value = msg,
-		on_exit: reason => error.value = reason
+		on_exit: () => close()
 	});
 	running.value = true;
 	canvas.value!.focus();
