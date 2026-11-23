@@ -36,23 +36,23 @@ var SchemaPartsDownloaded = promauto.NewCounter(prometheus.CounterOpts{
 var JobRuns = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "bx_job_runs_total",
 	Help: "Number of background job runs",
-}, []string{"job", "result"})
+}, []string{"name", "result"})
 
 var JobDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 	Name:    "bx_job_duration_seconds",
 	Help:    "Duration of the background job runs",
 	Buckets: []float64{0.1, 0.5, 1, 5, 10, 30, 60, 300, 900},
-}, []string{"job"})
+}, []string{"name"})
 
 var JobLockErrors = promauto.NewCounterVec(prometheus.CounterOpts{
 	Name: "bx_job_lock_errors_total",
 	Help: "Number of failed attempts to acquire the cluster-wide job lock",
-}, []string{"job"})
+}, []string{"name"})
 
 var JobLastSuccess = promauto.NewGaugeVec(prometheus.GaugeOpts{
 	Name: "bx_job_last_success_timestamp_seconds",
 	Help: "Unix time of the last successful job run on this node",
-}, []string{"job"})
+}, []string{"name"})
 
 // content stats (updated by the stats job)
 
