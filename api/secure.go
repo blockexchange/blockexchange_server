@@ -8,6 +8,8 @@ import (
 
 type SecureContext struct {
 	Claims *types.Claims
+	// raw jwt of the request
+	Token string
 }
 
 func (ctx *SecureContext) HasPermission(permission types.JWTPermission) bool {
@@ -37,18 +39,24 @@ type SecureHandler func(w http.ResponseWriter, r *http.Request, ctx *SecureConte
 
 func (a *Api) Secure(h SecureHandler) Handler {
 	return func(w http.ResponseWriter, r *http.Request) {
-		claims, err := a.core.GetClaims(r)
+		token, err := a.core.GetToken(r)
 		if err != nil {
 			SendError(w, http.StatusForbidden, err.Error())
 			return
 		}
-		if claims == nil {
+		if token == "" {
 			SendError(w, http.StatusUnauthorized, "unauthorized")
+			return
+		}
+		claims, err := a.core.ParseJWT(token)
+		if err != nil {
+			SendError(w, http.StatusForbidden, err.Error())
 			return
 		}
 
 		ctx := SecureContext{
 			Claims: claims,
+			Token:  token,
 		}
 
 		h(w, r, &ctx)

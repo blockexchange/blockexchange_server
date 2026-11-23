@@ -39,10 +39,12 @@ type WasmProvisionPosition struct {
 type WasmProvision struct {
 	SchemaUID string                `json:"schema_uid"`
 	Position  WasmProvisionPosition `json:"position"`
+	// raw jwt of the user that loads the config pack
+	Token string `json:"token"`
 }
 
-// world.mt, map_meta.txt, bx_provision.json and minetest.conf for the given schematic and dependency pack, small and generated per request
-func (c *Core) WasmConfigPack(schema_uid string, deps *WasmPackManifest) ([]byte, error) {
+// world.mt, map_meta.txt, bx_provision.json and minetest.conf for the given schematic, user token and dependency pack, small and generated per request
+func (c *Core) WasmConfigPack(schema_uid, token string, deps *WasmPackManifest) ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
 	zw, err := zstd.NewWriter(buf)
 	if err != nil {
@@ -68,7 +70,7 @@ func (c *Core) WasmConfigPack(schema_uid string, deps *WasmPackManifest) ([]byte
 	if err != nil {
 		return nil, err
 	}
-	provision, err := json.MarshalIndent(&WasmProvision{SchemaUID: schema_uid}, "", "\t")
+	provision, err := json.MarshalIndent(&WasmProvision{SchemaUID: schema_uid, Token: token}, "", "\t")
 	if err != nil {
 		return nil, err
 	}

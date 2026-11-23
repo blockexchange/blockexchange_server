@@ -324,7 +324,7 @@ func TestWasmBuiltinAndConfigPack(t *testing.T) {
 		assert.NotContains(t, name, "worldmods/blockexchange", name)
 	}
 
-	data, err := c.WasmConfigPack("a681b2e3-f44a-47e5-b862-5c4714709040", deps.Manifest)
+	data, err := c.WasmConfigPack("a681b2e3-f44a-47e5-b862-5c4714709040", "my.jwt.token", deps.Manifest)
 	assert.NoError(t, err)
 	entries = readPackData(t, data)
 
@@ -351,6 +351,7 @@ func TestWasmBuiltinAndConfigPack(t *testing.T) {
 	assert.NoError(t, json.Unmarshal([]byte(entries["luanti/worlds/world/bx_provision.json"]), provision))
 	assert.Equal(t, "a681b2e3-f44a-47e5-b862-5c4714709040", provision.SchemaUID)
 	assert.Equal(t, core.WasmProvisionPosition{}, provision.Position)
+	assert.Equal(t, "my.jwt.token", provision.Token)
 
 	conf := entries["luanti/minetest.conf"]
 	assert.Contains(t, conf, embedded("minetest.conf"))

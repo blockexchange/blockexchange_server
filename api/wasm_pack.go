@@ -129,7 +129,7 @@ func (api *Api) GetWasmConfigPack(w http.ResponseWriter, r *http.Request, ctx *S
 		return
 	}
 
-	data, err := api.core.WasmConfigPack(schema.UID, deps_pack.Manifest)
+	data, err := api.core.WasmConfigPack(schema.UID, ctx.Token, deps_pack.Manifest)
 	if SendIfError(w, err) {
 		return
 	}
