@@ -1,6 +1,7 @@
 package api
 
 import (
+	"blockexchange/metrics"
 	"blockexchange/types"
 	"net/http"
 	"sync/atomic"
@@ -60,6 +61,11 @@ func (api *Api) UpdateStats() error {
 	}
 
 	stats.Store(new_stats)
+
+	metrics.Schemas.Set(float64(new_stats.SchemaCount))
+	metrics.SchemaParts.Set(float64(new_stats.SchemaPartCount))
+	metrics.Users.Set(float64(new_stats.UserCount))
+	metrics.StorageBytes.Set(float64(new_stats.TotalSize))
 	return nil
 }
 

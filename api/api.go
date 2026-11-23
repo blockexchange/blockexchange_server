@@ -14,7 +14,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/luanti-golang/colormapping"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/vearutop/statigz"
 	"github.com/vearutop/statigz/brotli"
@@ -79,11 +78,6 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 	r.PathPrefix("/").Handler(webapp)
 
 	return a, r, nil
-}
-
-func init() {
-	// metrics
-	http.Handle("/metrics", promhttp.Handler())
 }
 
 // refuses directory listings of a file server

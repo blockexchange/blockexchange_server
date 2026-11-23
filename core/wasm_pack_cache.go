@@ -1,6 +1,7 @@
 package core
 
 import (
+	"blockexchange/metrics"
 	"blockexchange/types"
 	"context"
 	"crypto/sha256"
@@ -96,6 +97,9 @@ func (c *Core) GetWasmBuiltinPack(ctx context.Context, exclude_mods []string) (*
 }
 
 func (c *Core) getWasmPack(ctx context.Context, kind WasmPackKind, deps []*types.SchemaModDependency, exclude_mods []string) (*WasmPack, error) {
+	result := "error"
+	defer func() { metrics.WasmPackRequests.WithLabelValues(string(kind), result).Inc() }()
+
 	if kind == WasmPackKindDependencies {
 		game_count := 0
 		for _, dep := range deps {
@@ -120,6 +124,7 @@ func (c *Core) getWasmPack(ctx context.Context, kind WasmPackKind, deps []*types
 
 	key := wasmPackKey(kind, resolved, exclude_mods)
 	if p := cache.lookup(key); p != nil {
+		result = "hit"
 		return p, nil
 	}
 
@@ -130,15 +135,27 @@ func (c *Core) getWasmPack(ctx context.Context, kind WasmPackKind, deps []*types
 		// detached from the request, the result is cached for the next one
 		build_ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), WasmPackBuildTimeout)
 		defer cancel()
-		return cache.build(build_ctx, key, resolved, exclude_mods)
+		start := time.Now()
+		p, err := cache.build(build_ctx, key, resolved, exclude_mods)
+		build_result := "ok"
+		if err != nil {
+			build_result = "error"
+		}
+		metrics.WasmPackBuildDuration.WithLabelValues(string(kind), build_result).Observe(time.Since(start).Seconds())
+		return p, err
 	})
 	select {
 	case res := <-ch:
 		if res.Err != nil {
 			return nil, res.Err
 		}
+		result = "miss"
+		if res.Shared {
+			result = "shared"
+		}
 		return res.Val.(*WasmPack), nil
 	case <-ctx.Done():
+		result = "canceled"
 		return nil, ctx.Err()
 	}
 }
@@ -159,6 +176,7 @@ func wasmPackKey(kind WasmPackKind, deps []resolvedDependency, exclude_mods []st
 
 func (cache *wasmPackCache) resolveCommit(ctx context.Context, url, version string) (string, error) {
 	if gitCommitRegex.MatchString(version) {
+		metrics.WasmPackResolves.WithLabelValues("pinned").Inc()
 		return strings.ToLower(version), nil
 	}
 
@@ -167,13 +185,16 @@ func (cache *wasmPackCache) resolveCommit(ctx context.Context, url, version stri
 	rc, found := cache.resolved[key]
 	cache.resolved_lock.Unlock()
 	if found && time.Since(rc.at) < WasmPackResolveTTL {
+		metrics.WasmPackResolves.WithLabelValues("cached").Inc()
 		return rc.commit, nil
 	}
 
 	commit, err := gitResolveCommit(ctx, url, version)
 	if err != nil {
+		metrics.WasmPackResolves.WithLabelValues("error").Inc()
 		return "", err
 	}
+	metrics.WasmPackResolves.WithLabelValues("remote").Inc()
 	cache.resolved_lock.Lock()
 	cache.resolved[key] = resolvedCommit{commit: commit, at: time.Now()}
 	cache.resolved_lock.Unlock()
@@ -312,5 +333,7 @@ func (cache *wasmPackCache) evict(keep string) {
 		os.Remove(cache.packPath(p.key))
 		os.Remove(cache.manifestPath(p.key))
 		total -= p.size
+		metrics.WasmPackEvictions.Inc()
 	}
+	metrics.WasmPackCacheBytes.Set(float64(total))
 }

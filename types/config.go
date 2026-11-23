@@ -34,6 +34,8 @@ type Config struct {
 	DefaultRole         UserRole
 	// cache directory for the luanti wasm packs, a temp directory if empty
 	WasmPackCacheDir string
+	// listen address for /metrics (for example ":9090"), served on the main listener if empty
+	MetricsAddr string
 }
 
 func CreateConfig() *Config {
@@ -50,6 +52,7 @@ func CreateConfig() *Config {
 		OauthLogin:       &OauthLogin{},
 		DefaultRole:      UserRoleDefault,
 		WasmPackCacheDir: os.Getenv("WASM_PACK_CACHE_DIR"),
+		MetricsAddr:      os.Getenv("METRICS_ADDR"),
 	}
 
 	if os.Getenv("DEFAULT_ROLE") != "" {

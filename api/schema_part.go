@@ -1,6 +1,7 @@
 package api
 
 import (
+	"blockexchange/metrics"
 	"blockexchange/types"
 	"encoding/json"
 	"fmt"
@@ -9,19 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 )
-
-var partsUploaded = promauto.NewCounter(prometheus.CounterOpts{
-	Name: "bx_schemaparts_uploaded",
-	Help: "The total number of uploaded schemaparts",
-})
-
-var partsDownloaded = promauto.NewCounter(prometheus.CounterOpts{
-	Name: "bx_schemaparts_downloaded",
-	Help: "The total number of downloaded schemaparts",
-})
 
 func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	schemapart := &types.SchemaPart{}
@@ -54,7 +43,7 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 	}
 
 	// increment stats
-	partsUploaded.Inc()
+	metrics.SchemaPartsUploaded.Inc()
 
 	SendJson(w, schemapart)
 }
@@ -113,7 +102,7 @@ func (api *Api) GetSchemaPart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	partsDownloaded.Inc()
+	metrics.SchemaPartsDownloaded.Inc()
 
 	schemapart, err := api.SchemaPartRepo.GetBySchemaUIDAndOffset(schema_uid, x, y, z)
 	if err == nil && schemapart == nil {
@@ -135,7 +124,7 @@ func (api *Api) GetSchemaPartChunk(w http.ResponseWriter, r *http.Request) {
 	if err == nil && schemaparts == nil {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
-		partsDownloaded.Add(float64(len(schemaparts)))
+		metrics.SchemaPartsDownloaded.Add(float64(len(schemaparts)))
 		Send(w, schemaparts, err)
 	}
 }
@@ -146,7 +135,7 @@ func (api *Api) GetNextSchemaPart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	partsDownloaded.Inc()
+	metrics.SchemaPartsDownloaded.Inc()
 
 	schemapart, err := api.SchemaPartRepo.GetNextBySchemaUIDAndOffset(schema_uid, x, y, z)
 	if err == nil && schemapart == nil {
@@ -165,7 +154,7 @@ func (api *Api) GetNextSchemaPartByMtime(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	partsDownloaded.Inc()
+	metrics.SchemaPartsDownloaded.Inc()
 
 	schemapart, err := api.SchemaPartRepo.GetNextBySchemaUIDAndMtime(schema_uid, int64(mtime))
 	if err == nil && schemapart == nil {
@@ -196,7 +185,7 @@ func (api *Api) GetFirstSchemaPart(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	schema_uid := vars["schema_uid"]
 
-	partsDownloaded.Inc()
+	metrics.SchemaPartsDownloaded.Inc()
 
 	schemapart, err := api.SchemaPartRepo.GetFirstBySchemaUID(schema_uid)
 	if err == nil && schemapart == nil {

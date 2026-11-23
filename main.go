@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gorilla/handlers"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 )
 
@@ -50,6 +51,21 @@ func main() {
 
 	// main entry
 	http.Handle("/", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(router))
+
+	// prometheus metrics, on a separate (internal) listener if configured
+	if cfg.MetricsAddr != "" {
+		metrics_mux := http.NewServeMux()
+		metrics_mux.Handle("/metrics", promhttp.Handler())
+		go func() {
+			logrus.WithField("addr", cfg.MetricsAddr).Info("Serving metrics")
+			err := http.ListenAndServe(cfg.MetricsAddr, metrics_mux)
+			if err != nil {
+				panic(err)
+			}
+		}()
+	} else {
+		http.Handle("/metrics", promhttp.Handler())
+	}
 	server := &http.Server{Addr: ":8080", Handler: nil}
 
 	// start background jobs

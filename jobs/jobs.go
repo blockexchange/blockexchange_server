@@ -4,7 +4,9 @@ import (
 	"blockexchange/api"
 	"blockexchange/core"
 	"blockexchange/db"
+	"blockexchange/metrics"
 	"blockexchange/types"
+	"fmt"
 	"time"
 
 	"cirello.io/pglock"
@@ -27,46 +29,54 @@ func Start(repos *db.Repositories, api *api.Api) {
 }
 
 // runLocked executes fn every interval while holding the named cluster-wide lock
-func runLocked(pgl *pglock.Client, name string, interval time.Duration, fn func()) {
+func runLocked(pgl *pglock.Client, name string, interval time.Duration, fn func() error) {
 	for {
 		lock, err := pgl.Acquire(name)
 		if err != nil {
 			logrus.WithError(err).WithField("job", name).Error("job lock")
+			metrics.JobLockErrors.WithLabelValues(name).Inc()
 			time.Sleep(time.Second * 10)
 			continue
 		}
 
-		fn()
+		runJob(name, fn)
 
 		lock.Close()
 		time.Sleep(interval)
 	}
 }
 
+// executes a single job run, logs the error and records the metrics
+func runJob(name string, fn func() error) {
+	start := time.Now()
+	err := fn()
+	metrics.JobDuration.WithLabelValues(name).Observe(time.Since(start).Seconds())
+
+	if err != nil {
+		logrus.WithError(err).WithField("job", name).Error("job failed")
+		metrics.JobRuns.WithLabelValues(name, "error").Inc()
+		return
+	}
+	metrics.JobRuns.WithLabelValues(name, "ok").Inc()
+	metrics.JobLastSuccess.WithLabelValues(name).SetToCurrentTime()
+}
+
 func updateStats(api *api.Api, pgl *pglock.Client) {
-	runLocked(pgl, "update-stats", 30*time.Minute, func() {
-		err := api.UpdateStats()
-		if err != nil {
-			logrus.WithError(err).Error("update stats")
-		}
-	})
+	runLocked(pgl, "update-stats", 30*time.Minute, api.UpdateStats)
 }
 
 func cleanupSchemas(schemarepo *db.SchemaRepository, pgl *pglock.Client) {
-	runLocked(pgl, "schema-cleanup", 5*time.Minute, func() {
+	runLocked(pgl, "schema-cleanup", 5*time.Minute, func() error {
 		logrus.Trace("Removing old and incomplete schemas")
 		now := time.Now().Unix() * 1000
-		err := schemarepo.DeleteOldIncompleteSchema(now - (3600 * 1000 * 24))
-		if err != nil {
-			logrus.WithError(err).Error("schema cleanup")
-		}
+		return schemarepo.DeleteOldIncompleteSchema(now - (3600 * 1000 * 24))
 	})
 }
 
 func updateScreenshots(c *core.Core, sr *db.SchemaSearchRepository, pgl *pglock.Client) {
 	from := time.Now().Add(-10*time.Minute).Unix() * 1000
 
-	runLocked(pgl, "update-screenshots", 5*time.Minute, func() {
+	runLocked(pgl, "update-screenshots", 5*time.Minute, func() error {
 		logrus.Trace("updating schema previews")
 		complete := true
 		list, err := sr.Search(&types.SchemaSearchRequest{
@@ -74,8 +84,7 @@ func updateScreenshots(c *core.Core, sr *db.SchemaSearchRepository, pgl *pglock.
 			Complete:  &complete,
 		})
 		if err != nil {
-			logrus.WithError(err).Error("schema search")
-			return
+			return fmt.Errorf("schema search: %w", err)
 		}
 
 		for _, r := range list {
@@ -94,13 +103,16 @@ func updateScreenshots(c *core.Core, sr *db.SchemaSearchRepository, pgl *pglock.
 				from = r.Schema.Mtime
 			}
 		}
+		return nil
 	})
 }
 
 // fetches node definitions and media files from the configured luanti servers once a day,
 // checked hourly so the schedule survives restarts
 func syncLuantiMedia(c *core.Core, pgl *pglock.Client) {
-	runLocked(pgl, "luanti-media-sync", time.Hour, func() {
+	runLocked(pgl, "luanti-media-sync", time.Hour, func() error {
+		// errors are handled per connection
 		c.SyncDueLuantiMediaConnections(24 * time.Hour)
+		return nil
 	})
 }

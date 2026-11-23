@@ -1,6 +1,7 @@
 package core
 
 import (
+	"blockexchange/metrics"
 	"bufio"
 	"context"
 	"errors"
@@ -72,6 +73,9 @@ func (p *WasmProxy) Handle(ws *websocket.Conn) error {
 	defer ws.Close()
 	ws.SetReadLimit(wasmProxyReadLimit)
 
+	metrics.WasmSessionsActive.Inc()
+	defer metrics.WasmSessionsActive.Dec()
+
 	_, data, err := ws.ReadMessage()
 	if err != nil {
 		return err
@@ -79,27 +83,33 @@ func (p *WasmProxy) Handle(ws *websocket.Conn) error {
 
 	parts := strings.Split(string(data), " ")
 	if parts[0] == "NEWADDR" {
+		metrics.WasmProxyConnections.WithLabelValues("newaddr").Inc()
 		return ws.WriteMessage(websocket.TextMessage, []byte("ADDR xy abc ?"))
 	}
 	if parts[0] != "PROXY" || len(parts) != 5 {
+		metrics.WasmProxyConnections.WithLabelValues("invalid").Inc()
 		return fmt.Errorf("invalid command: '%s'", data)
 	}
 	protocol, host, port := parts[2], parts[3], parts[4]
 
 	if protocol != "TCP" || !slices.Contains(wasmProxyHosts, host) {
+		metrics.WasmProxyRejected.WithLabelValues("target").Inc()
 		return fmt.Errorf("%w: %s %s:%s", ErrWasmProxyNotAllowed, protocol, host, port)
 	}
 
 	switch port {
 	case wasmProxyDNSPort:
+		metrics.WasmProxyConnections.WithLabelValues("dns").Inc()
 		return p.handleDNS(ws)
 	case wasmProxyHTTPPort:
+		metrics.WasmProxyConnections.WithLabelValues("http").Inc()
 		err = ws.WriteMessage(websocket.TextMessage, []byte("PROXY OK"))
 		if err != nil {
 			return err
 		}
 		return p.handleHTTP(newWSConn(ws))
 	default:
+		metrics.WasmProxyRejected.WithLabelValues("target").Inc()
 		return fmt.Errorf("%w: %s %s:%s", ErrWasmProxyNotAllowed, protocol, host, port)
 	}
 }
@@ -120,6 +130,7 @@ func (p *WasmProxy) handleDNS(ws *websocket.Conn) error {
 		return fmt.Errorf("invalid dns request: '%x'", data)
 	}
 	if p.host == "" || !strings.EqualFold(parts[0], p.host) {
+		metrics.WasmProxyRejected.WithLabelValues("dns").Inc()
 		return fmt.Errorf("%w: dns lookup of '%s'", ErrWasmProxyNotAllowed, parts[0])
 	}
 
@@ -148,6 +159,7 @@ func (p *WasmProxy) dial(ctx context.Context, target string) (net.Conn, error) {
 		return nil, err
 	}
 	if p.host == "" || port != p.port || !p.isAllowedHost(host) {
+		metrics.WasmProxyRejected.WithLabelValues("http").Inc()
 		return nil, fmt.Errorf("%w: %s", ErrWasmProxyNotAllowed, target)
 	}
 	d := net.Dialer{Timeout: wasmProxyDialTimeout}
@@ -286,6 +298,7 @@ func (c *wsConn) Read(p []byte) (int, error) {
 	}
 	n := copy(p, c.buf)
 	c.buf = c.buf[n:]
+	metrics.WasmProxyBytes.WithLabelValues("in").Add(float64(n))
 	return n, nil
 }
 
@@ -296,6 +309,7 @@ func (c *wsConn) Write(p []byte) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	metrics.WasmProxyBytes.WithLabelValues("out").Add(float64(len(p)))
 	return len(p), nil
 }
 

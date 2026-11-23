@@ -1,13 +1,14 @@
 package middleware
 
 import (
+	"blockexchange/metrics"
 	"bufio"
 	"net"
 	"net/http"
 	"strconv"
+	"time"
 
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/gorilla/mux"
 )
 
 type responseWriter struct {
@@ -34,35 +35,43 @@ func (rw *responseWriter) Unwrap() http.ResponseWriter {
 	return rw.ResponseWriter
 }
 
-var responseStatus = prometheus.NewCounterVec(
-	prometheus.CounterOpts{
-		Name: "http_response_status",
-		Help: "Status of HTTP response",
-	},
-	[]string{"status"},
-)
+// keeps the label values bounded
+func metricsMethod(m string) string {
+	switch m {
+	case http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut,
+		http.MethodDelete, http.MethodPatch, http.MethodOptions:
+		return m
+	default:
+		return "other"
+	}
+}
 
-var responseHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
-	Name:    "http_response_time",
-	Help:    "Histogram for the http response time",
-	Buckets: []float64{0.01, 0.05, 0.1, 0.5, 1, 2, 5},
-})
-
-func init() {
-	prometheus.Register(responseStatus)
-	prometheus.Register(responseHistogram)
+// path template of the matched route ("/api/schema/{schema_uid}"), never the raw path
+func metricsRoute(r *http.Request) string {
+	route := mux.CurrentRoute(r)
+	if route == nil {
+		return "unmatched"
+	}
+	tpl, err := route.GetPathTemplate()
+	if err != nil {
+		return "unknown"
+	}
+	return tpl
 }
 
 func PrometheusMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		timer := prometheus.NewTimer(responseHistogram)
+		start := time.Now()
 		rw := NewResponseWriter(w)
 		next.ServeHTTP(rw, r)
 
-		statusCode := rw.statusCode
+		method := metricsMethod(r.Method)
+		route := metricsRoute(r)
+		metrics.HttpRequests.WithLabelValues(method, route, strconv.Itoa(rw.statusCode)).Inc()
 
-		responseStatus.WithLabelValues(strconv.Itoa(statusCode)).Inc()
-
-		timer.ObserveDuration()
+		// websocket handlers return when the connection closes, that's not a response time
+		if rw.statusCode != http.StatusSwitchingProtocols {
+			metrics.HttpRequestDuration.WithLabelValues(method, route).Observe(time.Since(start).Seconds())
+		}
 	})
 }

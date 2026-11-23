@@ -36,6 +36,7 @@ Optional:
 * **BASE_URL** Application base url, used for redirects (without trailing slash)
 * **DEFAULT_ROLE** Role assigned to newly registered users, `DEFAULT` (default) or `ADMIN`
 * **WASM_PACK_CACHE_DIR** Cache directory for the game/mod packs of the "Edit Online" client (default: `blockexchange-wasm-packs` in the temp directory, max 2 GB, least recently used packs are removed first)
+* **METRICS_ADDR** Listen address for the prometheus `/metrics` endpoint, for example `:9090` (default: served on the main listener on port 8080)
 * **GITHUB_APP_SECRET** Github app secret key
 * **GITHUB_APP_ID** Github app ID
 * **DISCORD_APP_SECRET** Discord app secret key
