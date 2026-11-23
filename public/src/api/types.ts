@@ -168,6 +168,20 @@ export interface SchemaModCount {
 	count: number;
 }
 
+export type SchemaModDependencyType = "mod" | "game";
+
+export interface SchemaModDependency {
+	uid: string;
+	schema_uid: string;
+	mod_type: SchemaModDependencyType;
+	git_url: string;
+	// defaults to "latest" if empty
+	version: string;
+}
+
+// editable fields of a schema mod dependency
+export type SchemaModDependencyRequest = Omit<SchemaModDependency, "uid" | "schema_uid">;
+
 export interface Nodedefinition {
 	name: string;
 	mod_name: string;

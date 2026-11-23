@@ -11,6 +11,7 @@ import ModalPrompt from "../ModalPrompt.vue";
 import SchemaStar from "./SchemaStar.vue";
 import SchemaDownload from "./SchemaDownload.vue";
 import SchemaCollection from "./SchemaCollection.vue";
+import SchemaModDependencies from "./SchemaModDependencies.vue";
 import ModBadge from "../ModBadge.vue";
 import TagBadge from "../TagBadge.vue";
 
@@ -243,6 +244,13 @@ const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: 
 							<textarea v-model="schema.description" rows="10" class="form-control font-monospace"></textarea>
 							<div class="form-text">Markdown is supported.</div>
 						</template>
+					</div>
+				</section>
+
+				<section class="card" v-if="edit_mode && allow_edit">
+					<div class="card-header"><i class="fa fa-code-branch"></i> Mod dependencies</div>
+					<div class="card-body">
+						<schema-mod-dependencies :schema_uid="schema.uid"/>
 					</div>
 				</section>
 
