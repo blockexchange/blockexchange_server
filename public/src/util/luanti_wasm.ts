@@ -160,4 +160,29 @@ export async function start_luanti_client(opts: LuantiClientOptions) {
 	const resize = () => irrlicht_resize(opts.canvas.clientWidth, opts.canvas.clientHeight);
 	resize();
 	window.addEventListener("resize", resize);
+
+	block_browser_keys(opts.canvas);
+}
+
+// The key handlers of SDL run on the game thread: emscripten forwards the events asynchronously
+// and never calls preventDefault(), so the browser acts on every key ("/" opens the quick find in firefox,
+// F5 reloads the page, ...). Only the default action is prevented here, the events still reach SDL.
+function block_browser_keys(canvas: HTMLCanvasElement) {
+	// leave the overlay buttons usable with the keyboard
+	const is_game_target = (e: Event) => e.target == canvas || e.target == document.body;
+
+	// printable keys: the quick find ("/", "'") is triggered on keypress.
+	// Not on keydown, that would suppress the keypress event which SDL needs for the text input
+	window.addEventListener("keypress", e => {
+		if (is_game_target(e)) {
+			e.preventDefault();
+		}
+	}, true);
+
+	// non-printable keys (F1-F12, Tab, Backspace, arrows, ...), ctrl/meta combinations keep their browser function
+	window.addEventListener("keydown", e => {
+		if (is_game_target(e) && e.key.length > 1 && !e.ctrlKey && !e.metaKey) {
+			e.preventDefault();
+		}
+	}, true);
 }
