@@ -81,6 +81,8 @@ func TestSchemaModDependency(t *testing.T) {
 	// validation
 	assert.Equal(t, 400, call(api.CreateSchemaModDependency, "POST", schema_vars, map[string]any{"mod_type": "other", "git_url": "x"}, owner).Result().StatusCode)
 	assert.Equal(t, 400, call(api.CreateSchemaModDependency, "POST", schema_vars, map[string]any{"mod_type": "mod", "git_url": ""}, owner).Result().StatusCode)
+	assert.Equal(t, 400, call(api.CreateSchemaModDependency, "POST", schema_vars, map[string]any{"mod_type": "mod", "git_url": "file:///etc"}, owner).Result().StatusCode)
+	assert.Equal(t, 400, call(api.CreateSchemaModDependency, "POST", schema_vars, map[string]any{"mod_type": "mod", "git_url": "https://example.com/x.git", "version": "--upload-pack=x"}, owner).Result().StatusCode)
 
 	// other non-admin user can't read or write, admin can read
 	_, status = list(other)
@@ -114,4 +116,31 @@ func TestSchemaModDependency(t *testing.T) {
 
 	deps, _ = list(owner)
 	assert.Equal(t, 1, len(deps))
+}
+
+func TestWasmPackAccess(t *testing.T) {
+	api := NewTestApi(t)
+	owner := testutils.CreateUser(api.UserRepo, t, nil)
+	other := testutils.CreateUser(api.UserRepo, t, nil)
+	schema := testutils.CreateSchema(api.SchemaRepo, t, owner, nil)
+
+	get := func(user *types.User, perms ...types.JWTPermission) int {
+		r := mux.SetURLVars(httptest.NewRequest("GET", "http://", nil), map[string]string{"schema_uid": schema.UID})
+		w := httptest.NewRecorder()
+		loginWith(t, r, user, perms...)
+		api.Secure(api.GetWasmPack)(w, r)
+		return w.Result().StatusCode
+	}
+
+	// not the owner
+	assert.Equal(t, 403, get(other))
+	// owner and admin pass the check, but there are no dependencies yet
+	assert.Equal(t, 404, get(owner))
+	assert.Equal(t, 404, get(other, types.JWTPermissionAdmin))
+
+	// not logged in
+	r := mux.SetURLVars(httptest.NewRequest("GET", "http://", nil), map[string]string{"schema_uid": schema.UID})
+	w := httptest.NewRecorder()
+	api.Secure(api.GetWasmPack)(w, r)
+	assert.Equal(t, 401, w.Result().StatusCode)
 }

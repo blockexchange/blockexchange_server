@@ -1,6 +1,7 @@
 package api
 
 import (
+	"blockexchange/core"
 	"blockexchange/types"
 	"encoding/json"
 	"net/http"
@@ -43,11 +44,17 @@ func parseSchemaModDependency(w http.ResponseWriter, r *http.Request) *types.Sch
 	case dep.GitURL == "":
 		SendError(w, http.StatusBadRequest, "git_url is required")
 		return nil
+	case !strings.HasPrefix(dep.GitURL, "https://") && !strings.HasPrefix(dep.GitURL, "http://"):
+		SendError(w, http.StatusBadRequest, "git_url must be a http(s) url")
+		return nil
 	case len(dep.GitURL) > 256:
 		SendError(w, http.StatusBadRequest, "git_url is too long (max 256)")
 		return nil
 	case len(dep.Version) > 64:
 		SendError(w, http.StatusBadRequest, "version is too long (max 64)")
+		return nil
+	case !core.GitVersionRegex.MatchString(dep.Version):
+		SendError(w, http.StatusBadRequest, "version must be 'latest', a branch, a tag or a full commit hash")
 		return nil
 	}
 
