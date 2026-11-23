@@ -53,6 +53,8 @@ var WasmPackBuiltinMods = []string{
 	"https://github.com/buckaroobanzay/mtzip",
 	"https://github.com/buckaroobanzay/placeholder",
 	"https://github.com/mt-mods/promise",
+	"https://github.com/Uberi/Minetest-WorldEdit",
+	"https://github.com/minetest-mods/unified_inventory.git",
 }
 
 // transport protocols git may use for the dependency urls (no file://, ext:: etc)
