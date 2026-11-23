@@ -88,6 +88,11 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/schema/{schema_uid}/mods", api.Secure(api.CreateSchemaMods)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schema/{schema_uid}/mods/update", api.Secure(api.UpdateSchemaMods)).Methods(http.MethodPost)
 
+	r.HandleFunc("/api/schema/{schema_uid}/dependency", api.Secure(api.GetSchemaModDependencies)).Methods(http.MethodGet)
+	r.HandleFunc("/api/schema/{schema_uid}/dependency", api.Secure(api.CreateSchemaModDependency)).Methods(http.MethodPost)
+	r.HandleFunc("/api/schema/{schema_uid}/dependency/{uid}", api.Secure(api.UpdateSchemaModDependency)).Methods(http.MethodPut)
+	r.HandleFunc("/api/schema/{schema_uid}/dependency/{uid}", api.Secure(api.DeleteSchemaModDependency)).Methods(http.MethodDelete)
+
 	r.HandleFunc("/api/schema/{schema_uid}/star", api.Secure(api.GetSchemaStar)).Methods(http.MethodGet)
 	r.HandleFunc("/api/schema/{schema_uid}/star/count", api.CountSchemaStars).Methods(http.MethodGet)
 	r.HandleFunc("/api/schema/{schema_uid}/star", api.Secure(api.StarSchema)).Methods(http.MethodPut)
