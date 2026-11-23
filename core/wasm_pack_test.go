@@ -286,39 +286,67 @@ func TestWasmBuiltinAndConfigPack(t *testing.T) {
 	commitFiles(t, builtin_promise, map[string]string{"mod.conf": "name = promise\n", "init.lua": "-- promise\n"})
 	c := newPackCore(t, "file://"+builtin_bx, "file://"+builtin_promise)
 
-	builtin, err := c.GetWasmPack(context.Background(), core.WasmPackKindBuiltin, core.WasmPackBuiltinDependencies())
+	// all builtin mods in worldmods
+	full, err := c.GetWasmBuiltinPack(context.Background(), []string{"other_mod"})
 	assert.NoError(t, err)
-	assert.True(t, strings.HasPrefix(builtin.ETag, `"builtin-`))
-	entries := readPack(t, builtin)
-	assert.Equal(t, "-- builtin\n", entries["luanti/mods/blockexchange/init.lua"])
-	assert.Equal(t, "-- promise\n", entries["luanti/mods/promise/init.lua"])
-	assert.NotContains(t, entries, "luanti/worlds/world/")
+	assert.True(t, strings.HasPrefix(full.ETag, `"builtin-`))
+	assert.ElementsMatch(t, []string{"blockexchange", "promise"}, full.Manifest.Mods)
+	entries := readPack(t, full)
+	assert.Equal(t, "-- builtin\n", entries["luanti/worlds/world/worldmods/blockexchange/init.lua"])
+	assert.Equal(t, "-- promise\n", entries["luanti/worlds/world/worldmods/promise/init.lua"])
+	assert.NotContains(t, entries, "luanti/mods/")
 
-	// the schematic brings its own blockexchange mod
+	// no overlap: the full pack is shared
+	full2, err := c.GetWasmBuiltinPack(context.Background(), nil)
+	assert.NoError(t, err)
+	assert.Equal(t, full.ETag, full2.ETag)
+
+	// the schematic brings its own blockexchange mod: left out of the builtin pack
 	game_dir := filepath.Join(base, "minetest_game")
 	commitFiles(t, game_dir, map[string]string{"game.conf": "x\n"})
 	fork := filepath.Join(base, "blockexchange_fork")
-	commitFiles(t, fork, map[string]string{"mod.conf": "name = blockexchange\n"})
+	commitFiles(t, fork, map[string]string{"mod.conf": "name = blockexchange\n", "init.lua": "-- fork\n"})
 	deps, err := c.GetWasmPack(context.Background(), core.WasmPackKindDependencies, []*types.SchemaModDependency{
 		dep(types.SchemaModDependencyTypeGame, game_dir, "latest"),
 		dep(types.SchemaModDependencyTypeMod, fork, "latest"),
 	})
 	assert.NoError(t, err)
+	assert.Equal(t, "-- fork\n", readPack(t, deps)["luanti/worlds/world/worldmods/blockexchange/init.lua"])
 
-	data, err := c.WasmConfigPack("my_schema", deps.Manifest, builtin.Manifest)
+	reduced, err := c.GetWasmBuiltinPack(context.Background(), deps.Manifest.Mods)
+	assert.NoError(t, err)
+	assert.NotEqual(t, full.ETag, reduced.ETag)
+	assert.Equal(t, []string{"promise"}, reduced.Manifest.Mods)
+	entries = readPack(t, reduced)
+	assert.Contains(t, entries, "luanti/worlds/world/worldmods/promise/init.lua")
+	for name := range entries {
+		assert.NotContains(t, name, "worldmods/blockexchange", name)
+	}
+
+	data, err := c.WasmConfigPack(deps.Manifest)
 	assert.NoError(t, err)
 	entries = readPackData(t, data)
 
+	// the embedded files (core/wasm_config) with the generated values
+	embedded := func(name string) string {
+		data, err := os.ReadFile(filepath.Join("wasm_config", name))
+		assert.NoError(t, err)
+		return string(data)
+	}
+
 	world_mt := entries["luanti/worlds/world/world.mt"]
 	assert.Contains(t, world_mt, "gameid = minetest_game\n")
-	assert.Contains(t, world_mt, "world_name = my_schema\n")
-	assert.Contains(t, world_mt, "backend = sqlite3\n")
-	// only the builtin mods not provided by the schematic
-	assert.Contains(t, world_mt, "load_mod_promise = true\n")
-	assert.NotContains(t, world_mt, "load_mod_blockexchange")
+	// no world_name: the folder name "world" is the world name (--worldname world)
+	assert.NotContains(t, world_mt, "world_name")
+	assert.Contains(t, world_mt, embedded("world.mt"))
+	// worldmods are always loaded
+	assert.NotContains(t, world_mt, "load_mod_")
+
+	map_meta, found := entries["luanti/worlds/world/map_meta.txt"]
+	assert.True(t, found)
+	assert.Equal(t, embedded("map_meta.txt"), map_meta)
 
 	conf := entries["luanti/minetest.conf"]
-	assert.Contains(t, conf, "creative_mode = true\n")
-	assert.Contains(t, conf, "secure.http_mods = blockexchange\n")
+	assert.Contains(t, conf, embedded("minetest.conf"))
 	assert.Contains(t, conf, "blockexchange.url = https://bx.example.com\n")
 }

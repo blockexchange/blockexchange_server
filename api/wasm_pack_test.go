@@ -64,6 +64,7 @@ func TestWasmPackRoutes(t *testing.T) {
 	// no dependencies yet
 	assert.Equal(t, 404, call(a.GetWasmPack, owner, "").Code)
 	assert.Equal(t, 404, call(a.GetWasmConfigPack, owner, "").Code)
+	assert.Equal(t, 404, call(a.GetWasmBuiltinPack, owner, "").Code)
 	// the dependency url is validated by the api, local repositories are only possible directly in the database
 	assert.NoError(t, a.SchemaModDependencyRepo.Create(&types.SchemaModDependency{
 		SchemaUID: schema.UID, ModType: types.SchemaModDependencyTypeGame, GitURL: "file://" + filepath.Join(base, "minetest_game"),
@@ -72,6 +73,7 @@ func TestWasmPackRoutes(t *testing.T) {
 	// owner only
 	assert.Equal(t, 403, call(a.GetWasmPack, other, "").Code)
 	assert.Equal(t, 403, call(a.GetWasmConfigPack, other, "").Code)
+	assert.Equal(t, 403, call(a.GetWasmBuiltinPack, other, "").Code)
 
 	for _, handler := range []api.SecureHandler{a.GetWasmPack, a.GetWasmBuiltinPack, a.GetWasmConfigPack} {
 		w := call(handler, owner, "")
@@ -87,7 +89,4 @@ func TestWasmPackRoutes(t *testing.T) {
 		assert.Equal(t, 304, w.Code)
 		assert.Equal(t, 0, w.Body.Len())
 	}
-
-	// the builtin pack is not schematic specific
-	assert.Equal(t, 200, call(a.GetWasmBuiltinPack, other, "").Code)
 }

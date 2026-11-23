@@ -46,15 +46,15 @@ async function start() {
 		proxy_url: `${ws_protocol}//${location.host}/api/schema/${uid}/wasm/ws`,
 		packs: [
 			{ name: "certs", label: "certificates" },
-			// the blockexchange mod and its dependencies (luanti/mods)
-			{ name: "builtin", url: "/api/wasm/pack/builtin", label: "blockexchange mod" },
 			// the server clones the game and mods of the schematic on the first start, cached afterwards
 			{ name: "schematic", url: `/api/schema/${uid}/wasm/pack`, label: "game and mods" },
-			// world.mt and minetest.conf, matching the packs above (installed last)
+			// the blockexchange mod and its dependencies (worldmods), without the mods of the schematic
+			{ name: "builtin", url: `/api/schema/${uid}/wasm/builtin`, label: "blockexchange mod" },
+			// world.mt, map_meta.txt and minetest.conf, matching the packs above (installed last)
 			{ name: "config", url: `/api/schema/${uid}/wasm/config`, label: "world settings" }
 		],
-		// the world name is the schematic name (world.mt of the pack)
-		args: ["--worldname", schema.name, "--go"],
+		// the world folder of the packs, world.mt has no world_name so the folder name is used
+		args: ["--worldname", "world", "--config", "/luanti/minetest.conf", "--go"],
 		on_progress: msg => progress.value = msg,
 		on_exit: reason => error.value = reason
 	});

@@ -3,36 +3,32 @@ package core
 import (
 	"archive/tar"
 	"bytes"
+	_ "embed"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/klauspost/compress/zstd"
 )
 
+// static parts of the config pack, completed per request (see wasmMinetestConf and wasmWorldMT)
+
 // client settings: creative building with fly/fast/noclip
-const wasmPackMinetestConf = `creative_mode = true
-enable_damage = false
-default_privs = interact, shout, fly, fast, noclip, give
-fast_move = true
-free_move = true
-noclip = true
-server_announce = false
-mg_name = singlenode
-secure.http_mods = blockexchange
-`
+//
+//go:embed wasm_config/minetest.conf
+var wasmPackMinetestConf string
 
-const wasmPackWorldMT = `creative_mode = true
-enable_damage = false
-server_announce = false
-backend = sqlite3
-auth_backend = sqlite3
-player_backend = sqlite3
-mod_storage_backend = sqlite3
-`
+// world settings
+//
+//go:embed wasm_config/world.mt
+var wasmPackWorldMT string
 
-// world.mt and minetest.conf for the given dependency and builtin packs, small and generated per request
-func (c *Core) WasmConfigPack(world_name string, deps, builtin *WasmPackManifest) ([]byte, error) {
+// map settings of the world
+//
+//go:embed wasm_config/map_meta.txt
+var wasmPackMapMeta string
+
+// world.mt, map_meta.txt and minetest.conf for the given dependency pack, small and generated per request
+func (c *Core) WasmConfigPack(deps *WasmPackManifest) ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
 	zw, err := zstd.NewWriter(buf)
 	if err != nil {
@@ -50,7 +46,11 @@ func (c *Core) WasmConfigPack(world_name string, deps, builtin *WasmPackManifest
 	if err != nil {
 		return nil, err
 	}
-	err = writeTarFile(tw, WasmPackWorldDir+"/world.mt", []byte(wasmWorldMT(world_name, deps, builtin)))
+	err = writeTarFile(tw, WasmPackWorldDir+"/world.mt", []byte(wasmWorldMT(deps)))
+	if err != nil {
+		return nil, err
+	}
+	err = writeTarFile(tw, WasmPackWorldDir+"/map_meta.txt", []byte(wasmPackMapMeta))
 	if err != nil {
 		return nil, err
 	}
@@ -76,20 +76,13 @@ func (c *Core) wasmMinetestConf() string {
 	return sb.String()
 }
 
-// world settings: the game and worldmods are always loaded, the builtin mods in luanti/mods
-// are enabled unless a mod of the schematic has the same name
-func wasmWorldMT(world_name string, deps, builtin *WasmPackManifest) string {
+// world settings: the game and all mods (worldmods) are always loaded, no load_mod_* entries needed
+func wasmWorldMT(deps *WasmPackManifest) string {
 	sb := strings.Builder{}
 	if deps.GameID != "" {
 		// the game in the "game" folder of the world is used regardless of the id
 		fmt.Fprintf(&sb, "gameid = %s\n", deps.GameID)
 	}
-	fmt.Fprintf(&sb, "world_name = %s\n", strings.NewReplacer("\n", " ", "\r", " ").Replace(world_name))
 	sb.WriteString(wasmPackWorldMT)
-	for _, name := range builtin.Mods {
-		if !slices.Contains(deps.Mods, name) {
-			fmt.Fprintf(&sb, "load_mod_%s = true\n", name)
-		}
-	}
 	return sb.String()
 }

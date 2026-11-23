@@ -90,26 +90,14 @@ func (api *Api) GetWasmPack(w http.ResponseWriter, r *http.Request, ctx *SecureC
 	serveWasmPack(w, r, pack, schema.Name+".pack")
 }
 
-// the blockexchange mod and its dependencies, the same for every schematic (logged in users)
+// the blockexchange mod and its dependencies (owner or admin), without the mods the schematic brings itself
 func (api *Api) GetWasmBuiltinPack(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
-	req_ctx, cancel := context.WithTimeout(r.Context(), wasmPackRequestTimeout)
-	defer cancel()
-	pack, err := api.core.GetWasmPack(req_ctx, core.WasmPackKindBuiltin, core.WasmPackBuiltinDependencies())
-	if err != nil {
-		sendWasmPackError(w, err)
-		return
-	}
-	serveWasmPack(w, r, pack, "builtin.pack")
-}
-
-// world.mt and minetest.conf of the schematic (owner or admin), matching the dependency and builtin packs
-func (api *Api) GetWasmConfigPack(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	schema, deps := api.loadWasmPackDependencies(w, ctx, mux.Vars(r)["schema_uid"])
 	if schema == nil {
 		return
 	}
 
-	// usually cache hits, the client installs the other packs first
+	// usually a cache hit, the client installs the dependency pack first
 	req_ctx, cancel := context.WithTimeout(r.Context(), wasmPackRequestTimeout)
 	defer cancel()
 	deps_pack, err := api.core.GetWasmPack(req_ctx, core.WasmPackKindDependencies, deps)
@@ -117,13 +105,31 @@ func (api *Api) GetWasmConfigPack(w http.ResponseWriter, r *http.Request, ctx *S
 		sendWasmPackError(w, err)
 		return
 	}
-	builtin_pack, err := api.core.GetWasmPack(req_ctx, core.WasmPackKindBuiltin, core.WasmPackBuiltinDependencies())
+	pack, err := api.core.GetWasmBuiltinPack(req_ctx, deps_pack.Manifest.Mods)
+	if err != nil {
+		sendWasmPackError(w, err)
+		return
+	}
+	serveWasmPack(w, r, pack, schema.Name+".builtin.pack")
+}
+
+// world.mt, map_meta.txt and minetest.conf of the schematic (owner or admin), matching the dependency pack
+func (api *Api) GetWasmConfigPack(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
+	schema, deps := api.loadWasmPackDependencies(w, ctx, mux.Vars(r)["schema_uid"])
+	if schema == nil {
+		return
+	}
+
+	// usually a cache hit, the client installs the dependency pack first
+	req_ctx, cancel := context.WithTimeout(r.Context(), wasmPackRequestTimeout)
+	defer cancel()
+	deps_pack, err := api.core.GetWasmPack(req_ctx, core.WasmPackKindDependencies, deps)
 	if err != nil {
 		sendWasmPackError(w, err)
 		return
 	}
 
-	data, err := api.core.WasmConfigPack(schema.Name, deps_pack.Manifest, builtin_pack.Manifest)
+	data, err := api.core.WasmConfigPack(deps_pack.Manifest)
 	if SendIfError(w, err) {
 		return
 	}

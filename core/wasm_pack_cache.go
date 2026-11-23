@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -30,7 +31,7 @@ var (
 )
 
 // bump if the layout or content of the cached packs changes, invalidates all cached packs
-const wasmPackFormat = "2"
+const wasmPackFormat = "3"
 
 // contents of a cached pack, needed for the config pack
 type WasmPackManifest struct {
@@ -72,6 +73,29 @@ func newWasmPackCache(dir string) *wasmPackCache {
 
 // returns the cached pack or builds it, concurrent requests for the same pack share a build
 func (c *Core) GetWasmPack(ctx context.Context, kind WasmPackKind, deps []*types.SchemaModDependency) (*WasmPack, error) {
+	return c.getWasmPack(ctx, kind, deps, nil)
+}
+
+// the builtin mods without the given mods (provided by the schematic), the full pack is shared if nothing overlaps
+func (c *Core) GetWasmBuiltinPack(ctx context.Context, exclude_mods []string) (*WasmPack, error) {
+	deps := WasmPackBuiltinDependencies()
+	full, err := c.getWasmPack(ctx, WasmPackKindBuiltin, deps, nil)
+	if err != nil {
+		return nil, err
+	}
+	overlap := []string{}
+	for _, name := range full.Manifest.Mods {
+		if slices.Contains(exclude_mods, name) {
+			overlap = append(overlap, name)
+		}
+	}
+	if len(overlap) == 0 {
+		return full, nil
+	}
+	return c.getWasmPack(ctx, WasmPackKindBuiltin, deps, overlap)
+}
+
+func (c *Core) getWasmPack(ctx context.Context, kind WasmPackKind, deps []*types.SchemaModDependency, exclude_mods []string) (*WasmPack, error) {
 	if kind == WasmPackKindDependencies {
 		game_count := 0
 		for _, dep := range deps {
@@ -94,7 +118,7 @@ func (c *Core) GetWasmPack(ctx context.Context, kind WasmPackKind, deps []*types
 		resolved[i] = resolvedDependency{dep: dep, commit: commit}
 	}
 
-	key := wasmPackKey(kind, resolved)
+	key := wasmPackKey(kind, resolved, exclude_mods)
 	if p := cache.lookup(key); p != nil {
 		return p, nil
 	}
@@ -106,7 +130,7 @@ func (c *Core) GetWasmPack(ctx context.Context, kind WasmPackKind, deps []*types
 		// detached from the request, the result is cached for the next one
 		build_ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), WasmPackBuildTimeout)
 		defer cancel()
-		return cache.build(build_ctx, kind, key, resolved)
+		return cache.build(build_ctx, key, resolved, exclude_mods)
 	})
 	select {
 	case res := <-ch:
@@ -119,15 +143,17 @@ func (c *Core) GetWasmPack(ctx context.Context, kind WasmPackKind, deps []*types
 	}
 }
 
-func wasmPackKey(kind WasmPackKind, deps []resolvedDependency) string {
+func wasmPackKey(kind WasmPackKind, deps []resolvedDependency, exclude_mods []string) string {
 	lines := make([]string, len(deps))
 	for i, rd := range deps {
 		lines[i] = strings.Join([]string{string(rd.dep.ModType), rd.dep.GitURL, rd.commit}, "\x00")
 	}
 	// the order of the entries doesn't change the content
 	sort.Strings(lines)
+	exclude := slices.Clone(exclude_mods)
+	sort.Strings(exclude)
 	h := sha256.New()
-	fmt.Fprintf(h, "%s\n%s\n%s", wasmPackFormat, kind, strings.Join(lines, "\n"))
+	fmt.Fprintf(h, "%s\n%s\n%s\nexclude:%s", wasmPackFormat, kind, strings.Join(lines, "\n"), strings.Join(exclude, ","))
 	return string(kind) + "-" + hex.EncodeToString(h.Sum(nil))
 }
 
@@ -190,7 +216,7 @@ func (cache *wasmPackCache) lookup(key string) *WasmPack {
 	}
 }
 
-func (cache *wasmPackCache) build(ctx context.Context, kind WasmPackKind, key string, deps []resolvedDependency) (*WasmPack, error) {
+func (cache *wasmPackCache) build(ctx context.Context, key string, deps []resolvedDependency, exclude_mods []string) (*WasmPack, error) {
 	err := os.MkdirAll(cache.dir, 0755)
 	if err != nil {
 		return nil, err
@@ -203,7 +229,7 @@ func (cache *wasmPackCache) build(ctx context.Context, kind WasmPackKind, key st
 		return nil, err
 	}
 	defer os.Remove(f.Name())
-	manifest, err := buildWasmPack(ctx, kind, deps, f)
+	manifest, err := buildWasmPack(ctx, deps, exclude_mods, f)
 	if err != nil {
 		f.Close()
 		return nil, err

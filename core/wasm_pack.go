@@ -14,6 +14,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/klauspost/compress/zstd"
@@ -22,15 +23,15 @@ import (
 // packs for the luanti wasm client: zstd compressed tar archives, extracted into the filesystem root of the client.
 //
 // The client installs three packs, split by how often they change so the heavy ones can be cached and shared:
-//   - builtin: the blockexchange mod and its dependencies in luanti/mods (same for every schematic, see WasmPackBuiltinMods)
 //   - dependencies: the game and mods of a schematic in the world folder (shared by schematics with the same dependencies)
+//   - builtin: the blockexchange mod and its dependencies in worldmods (see WasmPackBuiltinMods), without the mods
+//     the schematic brings itself so the packs never write into the same folder (shared if there is no overlap)
 //   - config: world.mt and minetest.conf, generated per request (see wasm_config_pack.go)
 
 const (
 	WasmPackWorldDir     = "luanti/worlds/world"
 	WasmPackGameDir      = WasmPackWorldDir + "/game"
 	WasmPackWorldModDir  = WasmPackWorldDir + "/worldmods"
-	WasmPackModDir       = "luanti/mods"
 	WasmPackMinetestConf = "luanti/minetest.conf"
 
 	// upper limit of the uncompressed pack content
@@ -42,7 +43,7 @@ type WasmPackKind string
 const (
 	// game -> world/game, mods -> world/worldmods
 	WasmPackKindDependencies WasmPackKind = "dependencies"
-	// mods -> luanti/mods, enabled with load_mod_* in world.mt
+	// mods -> world/worldmods
 	WasmPackKindBuiltin WasmPackKind = "builtin"
 )
 
@@ -97,8 +98,8 @@ type wasmPackEntry struct {
 	local_dir   string
 }
 
-// clones the resolved dependencies and writes the pack and its manifest
-func buildWasmPack(ctx context.Context, kind WasmPackKind, deps []resolvedDependency, w io.Writer) (*WasmPackManifest, error) {
+// clones the resolved dependencies and writes the pack and its manifest, mods with a name in exclude_mods are left out
+func buildWasmPack(ctx context.Context, deps []resolvedDependency, exclude_mods []string, w io.Writer) (*WasmPackManifest, error) {
 	select {
 	case wasmPackSemaphore <- struct{}{}:
 		defer func() { <-wasmPackSemaphore }()
@@ -140,23 +141,19 @@ func buildWasmPack(ctx context.Context, kind WasmPackKind, deps []resolvedDepend
 		}
 
 		name := modFolderName(local_dir, rd.dep.GitURL)
+		if slices.Contains(exclude_mods, name) {
+			continue
+		}
 		if other_url := mod_urls[name]; other_url != "" {
 			return nil, invalidPack("'%s' and '%s' both resolve to the mod folder '%s'", other_url, rd.dep.GitURL, name)
 		}
 		mod_urls[name] = rd.dep.GitURL
 		manifest.Mods = append(manifest.Mods, name)
 
-		mod_dir := WasmPackWorldModDir
-		if kind == WasmPackKindBuiltin {
-			mod_dir = WasmPackModDir
-		}
-		entries = append(entries, wasmPackEntry{archive_dir: mod_dir + "/" + name, local_dir: local_dir})
+		entries = append(entries, wasmPackEntry{archive_dir: WasmPackWorldModDir + "/" + name, local_dir: local_dir})
 	}
 
 	skeleton := []string{"luanti", "luanti/worlds", WasmPackWorldDir, WasmPackWorldModDir}
-	if kind == WasmPackKindBuiltin {
-		skeleton = []string{"luanti", WasmPackModDir}
-	}
 
 	zw, err := zstd.NewWriter(w)
 	if err != nil {
