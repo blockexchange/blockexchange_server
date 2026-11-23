@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"bufio"
+	"net"
 	"net/http"
 	"strconv"
 
@@ -20,6 +22,16 @@ func NewResponseWriter(w http.ResponseWriter) *responseWriter {
 func (rw *responseWriter) WriteHeader(code int) {
 	rw.statusCode = code
 	rw.ResponseWriter.WriteHeader(code)
+}
+
+// allows websocket upgrades through the middleware
+func (rw *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	rw.statusCode = http.StatusSwitchingProtocols
+	return http.NewResponseController(rw.ResponseWriter).Hijack()
+}
+
+func (rw *responseWriter) Unwrap() http.ResponseWriter {
+	return rw.ResponseWriter
 }
 
 var responseStatus = prometheus.NewCounterVec(
