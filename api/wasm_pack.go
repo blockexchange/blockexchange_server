@@ -113,7 +113,7 @@ func (api *Api) GetWasmBuiltinPack(w http.ResponseWriter, r *http.Request, ctx *
 	serveWasmPack(w, r, pack, schema.Name+".builtin.pack")
 }
 
-// world.mt, map_meta.txt and minetest.conf of the schematic (owner or admin), matching the dependency pack
+// world.mt, map_meta.txt, bx_provision.json and minetest.conf of the schematic (owner or admin), matching the dependency pack
 func (api *Api) GetWasmConfigPack(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
 	schema, deps := api.loadWasmPackDependencies(w, ctx, mux.Vars(r)["schema_uid"])
 	if schema == nil {
@@ -129,7 +129,7 @@ func (api *Api) GetWasmConfigPack(w http.ResponseWriter, r *http.Request, ctx *S
 		return
 	}
 
-	data, err := api.core.WasmConfigPack(deps_pack.Manifest)
+	data, err := api.core.WasmConfigPack(schema.UID, deps_pack.Manifest)
 	if SendIfError(w, err) {
 		return
 	}

@@ -6,6 +6,7 @@ import (
 	"blockexchange/types"
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"os"
 	"os/exec"
@@ -323,7 +324,7 @@ func TestWasmBuiltinAndConfigPack(t *testing.T) {
 		assert.NotContains(t, name, "worldmods/blockexchange", name)
 	}
 
-	data, err := c.WasmConfigPack(deps.Manifest)
+	data, err := c.WasmConfigPack("a681b2e3-f44a-47e5-b862-5c4714709040", deps.Manifest)
 	assert.NoError(t, err)
 	entries = readPackData(t, data)
 
@@ -345,6 +346,11 @@ func TestWasmBuiltinAndConfigPack(t *testing.T) {
 	map_meta, found := entries["luanti/worlds/world/map_meta.txt"]
 	assert.True(t, found)
 	assert.Equal(t, embedded("map_meta.txt"), map_meta)
+
+	provision := &core.WasmProvision{}
+	assert.NoError(t, json.Unmarshal([]byte(entries["luanti/worlds/world/bx_provision.json"]), provision))
+	assert.Equal(t, "a681b2e3-f44a-47e5-b862-5c4714709040", provision.SchemaUID)
+	assert.Equal(t, core.WasmProvisionPosition{}, provision.Position)
 
 	conf := entries["luanti/minetest.conf"]
 	assert.Contains(t, conf, embedded("minetest.conf"))

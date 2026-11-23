@@ -26,7 +26,7 @@ import (
 //   - dependencies: the game and mods of a schematic in the world folder (shared by schematics with the same dependencies)
 //   - builtin: the blockexchange mod and its dependencies in worldmods (see WasmPackBuiltinMods), without the mods
 //     the schematic brings itself so the packs never write into the same folder (shared if there is no overlap)
-//   - config: world.mt and minetest.conf, generated per request (see wasm_config_pack.go)
+//   - config: world.mt, bx_provision.json and minetest.conf, generated per request (see wasm_config_pack.go)
 
 const (
 	WasmPackWorldDir     = "luanti/worlds/world"

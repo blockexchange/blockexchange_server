@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bytes"
 	_ "embed"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -27,8 +28,21 @@ var wasmPackWorldMT string
 //go:embed wasm_config/map_meta.txt
 var wasmPackMapMeta string
 
-// world.mt, map_meta.txt and minetest.conf for the given dependency pack, small and generated per request
-func (c *Core) WasmConfigPack(deps *WasmPackManifest) ([]byte, error) {
+// position of the provisioned schematic in the world
+type WasmProvisionPosition struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+	Z int `json:"z"`
+}
+
+// bx_provision.json in the world folder: the schematic to place on startup
+type WasmProvision struct {
+	SchemaUID string                `json:"schema_uid"`
+	Position  WasmProvisionPosition `json:"position"`
+}
+
+// world.mt, map_meta.txt, bx_provision.json and minetest.conf for the given schematic and dependency pack, small and generated per request
+func (c *Core) WasmConfigPack(schema_uid string, deps *WasmPackManifest) ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
 	zw, err := zstd.NewWriter(buf)
 	if err != nil {
@@ -51,6 +65,14 @@ func (c *Core) WasmConfigPack(deps *WasmPackManifest) ([]byte, error) {
 		return nil, err
 	}
 	err = writeTarFile(tw, WasmPackWorldDir+"/map_meta.txt", []byte(wasmPackMapMeta))
+	if err != nil {
+		return nil, err
+	}
+	provision, err := json.MarshalIndent(&WasmProvision{SchemaUID: schema_uid}, "", "\t")
+	if err != nil {
+		return nil, err
+	}
+	err = writeTarFile(tw, WasmPackWorldDir+"/bx_provision.json", provision)
 	if err != nil {
 		return nil, err
 	}
