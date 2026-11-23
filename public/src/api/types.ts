@@ -35,6 +35,8 @@ export interface Info {
 	base_url: string;
 	oauth_login: OauthLogin;
 	stats: Stats;
+	// luanti wasm client available ("Edit Online")
+	wasm_enabled: boolean;
 }
 
 export interface ErrorResponse {

@@ -6,8 +6,10 @@ import (
 	"blockexchange/db"
 	"blockexchange/public"
 	"blockexchange/types"
+	"blockexchange/wasm"
 	"net/http"
 	"os"
+	"strings"
 	"sync/atomic"
 
 	"github.com/gorilla/mux"
@@ -34,6 +36,7 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 	r := mux.NewRouter()
 	r.Use(middleware.PrometheusMiddleware)
 	r.Use(middleware.LoggingMiddleware)
+	r.Use(middleware.WasmHeadersMiddleware)
 
 	cm := colormapping.NewColorMapping()
 	err := cm.LoadDefaults()
@@ -57,6 +60,10 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 	// redirects from the old history-mode frontend urls
 	a.SetupLegacyRedirects(r)
 
+	// luanti wasm build for the "Edit Online" client, served from the same origin (required for the pthread workers)
+	wasm_runtime := statigz.FileServer(wasm.Runtime, statigz.FSPrefix(wasm.Prefix))
+	r.PathPrefix(middleware.WasmRuntimePrefix).Handler(http.StripPrefix(middleware.WasmRuntimePrefix, noDirListing(wasm_runtime)))
+
 	// static files
 	if cfg.WebDev {
 		logrus.WithFields(logrus.Fields{"dir": "public/dist"}).Info("Using live mode")
@@ -74,4 +81,15 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 func init() {
 	// metrics
 	http.Handle("/metrics", promhttp.Handler())
+}
+
+// refuses directory listings of a file server
+func noDirListing(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "" || strings.HasSuffix(r.URL.Path, "/") {
+			http.NotFound(w, r)
+			return
+		}
+		h.ServeHTTP(w, r)
+	})
 }

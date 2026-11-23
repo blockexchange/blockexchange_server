@@ -26,6 +26,7 @@ import {
 import type { SchemaSearchResponse, SchemaUpdateError } from "../../api/types";
 import { get_tags as get_all_tags } from "../../service/tags";
 import { has_permission } from "../../service/login";
+import { is_wasm_enabled } from "../../service/info";
 
 const props = withDefaults(defineProps<{
 	search_result: SchemaSearchResponse;
@@ -126,6 +127,12 @@ async function delete_schema() {
 	await router.push(`/schema/${username.value}`);
 }
 
+// luanti wasm client with the game and mods of the schematic, opened in a new (cross-origin isolated) page
+const edit_online_url = computed(() => "/wasm/edit.html?" + new URLSearchParams({
+	schema_uid: schema.value.uid,
+	back: `/schema/${username.value}/${schema.value.name}`
+}).toString());
+
 const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: false }) as string);
 </script>
 
@@ -181,6 +188,10 @@ const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: 
 					</router-link>
 					<schema-star :schema_uid="schema.uid" v-model:stars="schema.stars"/>
 					<template v-if="allow_edit">
+						<a v-if="is_wasm_enabled()" :href="edit_online_url" target="_blank" rel="noopener" class="btn btn-outline-success"
+							title="Open the schematic with its game and mods in the browser">
+							<i class="fa fa-gamepad"></i> Edit Online
+						</a>
 						<button type="button" class="btn btn-outline-secondary" @click="start_edit">
 							<i class="fa fa-pen"></i> Edit
 						</button>

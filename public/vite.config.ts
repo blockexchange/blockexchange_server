@@ -11,10 +11,26 @@ const keepDist = (): Plugin => ({
 	}
 });
 
+// the luanti wasm launcher needs a cross-origin isolated page (SharedArrayBuffer),
+// limited to /wasm/ like on the go server
+const wasmHeaders = (): Plugin => ({
+	name: 'wasm-headers',
+	configureServer(server) {
+		server.middlewares.use((req, res, next) => {
+			if (req.url?.startsWith('/wasm/')) {
+				res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+				res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+				res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+			}
+			next();
+		});
+	}
+});
+
 export default defineConfig({
 	base: '/',
 	publicDir: 'static',
-	plugins: [vue(), keepDist()],
+	plugins: [vue(), keepDist(), wasmHeaders()],
 	build: {
 		outDir: 'dist',
 		emptyOutDir: true,
@@ -22,7 +38,18 @@ export default defineConfig({
 	},
 	server: {
 		proxy: {
+			// websocket proxy of the wasm client, keeps the host header for the same-origin check
+			'^/api/schema/[^/]+/wasm/ws': {
+				target: process.env.API_TARGET || 'http://localhost:8080',
+				changeOrigin: false,
+				ws: true
+			},
 			'/api': {
+				target: process.env.API_TARGET || 'http://localhost:8080',
+				changeOrigin: true
+			},
+			// luanti wasm build, embedded in the go server
+			'/wasm/runtime': {
 				target: process.env.API_TARGET || 'http://localhost:8080',
 				changeOrigin: true
 			}
