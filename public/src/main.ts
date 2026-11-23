@@ -20,6 +20,17 @@ try {
 		scrollBehavior: () => ({ top: 0 })
 	});
 
+	// routes with "meta.isolated" (the luanti wasm client) need SharedArrayBuffer, only available in a
+	// cross-origin isolated document. The server sends the required headers for /wasm/ (same app),
+	// switching between the documents needs a full page load (this also stops the client)
+	const in_isolated_document = location.pathname.startsWith("/wasm/");
+	router.beforeEach(to => {
+		if (!!to.meta.isolated != in_isolated_document) {
+			location.assign((to.meta.isolated ? "/wasm/#" : "/#") + to.fullPath);
+			return false;
+		}
+	});
+
 	createApp(App)
 	.use(router)
 	.mount("#app");

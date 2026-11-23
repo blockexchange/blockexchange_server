@@ -51,6 +51,14 @@ func (c *Core) ImportBX(data []byte, username string) (*types.Schema, error) {
 		}
 	}
 
+	for _, dep := range res.Dependencies {
+		dep.SchemaUID = res.Schema.UID
+		err = c.repos.SchemaModDependencyRepo.Create(dep)
+		if err != nil {
+			return nil, fmt.Errorf("create schema mod dependency error: %v", err)
+		}
+	}
+
 	for _, part := range res.Parts {
 		part.SchemaUID = res.Schema.UID
 		part.Mtime = res.Schema.Mtime

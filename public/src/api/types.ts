@@ -35,6 +35,8 @@ export interface Info {
 	base_url: string;
 	oauth_login: OauthLogin;
 	stats: Stats;
+	// luanti wasm client available ("Edit Online")
+	wasm_enabled: boolean;
 }
 
 export interface ErrorResponse {
@@ -167,6 +169,20 @@ export interface SchemaModCount {
 	mod_name: string;
 	count: number;
 }
+
+export type SchemaModDependencyType = "mod" | "game";
+
+export interface SchemaModDependency {
+	uid: string;
+	schema_uid: string;
+	mod_type: SchemaModDependencyType;
+	git_url: string;
+	// defaults to "latest" if empty
+	version: string;
+}
+
+// editable fields of a schema mod dependency
+export type SchemaModDependencyRequest = Omit<SchemaModDependency, "uid" | "schema_uid">;
 
 export interface Nodedefinition {
 	name: string;

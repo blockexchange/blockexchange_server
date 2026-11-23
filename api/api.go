@@ -6,8 +6,10 @@ import (
 	"blockexchange/db"
 	"blockexchange/public"
 	"blockexchange/types"
+	"blockexchange/wasm"
 	"net/http"
 	"os"
+	"strings"
 	"sync/atomic"
 
 	"github.com/gorilla/mux"
@@ -34,6 +36,7 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 	r := mux.NewRouter()
 	r.Use(middleware.PrometheusMiddleware)
 	r.Use(middleware.LoggingMiddleware)
+	r.Use(middleware.WasmHeadersMiddleware)
 
 	cm := colormapping.NewColorMapping()
 	err := cm.LoadDefaults()
@@ -57,16 +60,23 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 	// redirects from the old history-mode frontend urls
 	a.SetupLegacyRedirects(r)
 
+	// luanti wasm build for the "Edit Online" client, served from the same origin (required for the pthread workers)
+	wasm_runtime := statigz.FileServer(wasm.Runtime, statigz.FSPrefix(wasm.Prefix))
+	r.PathPrefix(middleware.WasmRuntimePrefix).Handler(http.StripPrefix(middleware.WasmRuntimePrefix, noDirListing(wasm_runtime)))
+
 	// static files
+	var webapp http.Handler
 	if cfg.WebDev {
 		logrus.WithFields(logrus.Fields{"dir": "public/dist"}).Info("Using live mode")
-		fs := http.FileServer(http.FS(os.DirFS("public/dist")))
-		r.PathPrefix("/").HandlerFunc(fs.ServeHTTP)
-
+		webapp = http.FileServer(http.FS(os.DirFS("public/dist")))
 	} else {
 		logrus.Info("Using embed mode")
-		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding, statigz.FSPrefix(public.Prefix)))
+		webapp = statigz.FileServer(public.Webapp, brotli.AddEncoding, statigz.FSPrefix(public.Prefix))
 	}
+
+	// the webapp again as cross-origin isolated document (headers by the wasm middleware) for the "Edit Online" page
+	r.Path(middleware.WasmPrefix).Handler(http.StripPrefix(strings.TrimSuffix(middleware.WasmPrefix, "/"), webapp))
+	r.PathPrefix("/").Handler(webapp)
 
 	return a, r, nil
 }
@@ -74,4 +84,15 @@ func NewApi(repos *db.Repositories, cfg *types.Config) (*Api, *mux.Router, error
 func init() {
 	// metrics
 	http.Handle("/metrics", promhttp.Handler())
+}
+
+// refuses directory listings of a file server
+func noDirListing(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "" || strings.HasSuffix(r.URL.Path, "/") {
+			http.NotFound(w, r)
+			return
+		}
+		h.ServeHTTP(w, r)
+	})
 }

@@ -36,6 +36,10 @@ func TestExportBXSchema(t *testing.T) {
 	buf := bytes.NewBuffer([]byte{})
 	e := bx.NewExporter(buf)
 	assert.NoError(t, e.ExportMetadata(&schema, mods))
+	assert.NoError(t, e.ExportDependencies([]*types.SchemaModDependency{
+		{UID: "server-specific", SchemaUID: "server-specific", ModType: types.SchemaModDependencyTypeGame, GitURL: "https://github.com/luanti-org/minetest_game", Version: "latest"},
+		{ModType: types.SchemaModDependencyTypeMod, GitURL: "https://github.com/mt-mods/promise", Version: "v1.0"},
+	}))
 
 	for i := 1; i <= 4; i++ {
 		err := e.Export(get_schemapart(t, fmt.Sprintf("testdata/schemapart_%d.json", i)))
@@ -62,4 +66,13 @@ func TestExportBXSchema(t *testing.T) {
 	assert.Equal(t, 32, res.Schema.SizeZ)
 
 	assert.Equal(t, 4, len(res.Parts))
+
+	// dependencies without the uids of the exporting server
+	assert.Equal(t, 2, len(res.Dependencies))
+	assert.Equal(t, types.SchemaModDependencyTypeGame, res.Dependencies[0].ModType)
+	assert.Equal(t, "https://github.com/luanti-org/minetest_game", res.Dependencies[0].GitURL)
+	assert.Equal(t, "latest", res.Dependencies[0].Version)
+	assert.Equal(t, "", res.Dependencies[0].UID)
+	assert.Equal(t, "", res.Dependencies[0].SchemaUID)
+	assert.Equal(t, "v1.0", res.Dependencies[1].Version)
 }

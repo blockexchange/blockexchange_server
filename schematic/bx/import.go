@@ -21,6 +21,8 @@ const (
 	MaxTotalSize = 512 * 1024 * 1024
 	// MaxMods is the max number of entries in mods.json
 	MaxMods = 1024
+	// MaxDependencies is the max number of entries in dependencies.json
+	MaxDependencies = 256
 )
 
 // ErrInvalidBX is wrapped by all errors caused by invalid archive content
@@ -32,6 +34,8 @@ type BXImport struct {
 	Parts  []*types.SchemaPart
 	Schema *types.Schema
 	Mods   []string
+	// validated, without uids (empty for archives without dependencies.json)
+	Dependencies []*types.SchemaModDependency
 }
 
 func ParseBXContent(data []byte) (*BXImport, error) {
@@ -47,6 +51,8 @@ func parseBXContent(data []byte) (*BXImport, error) {
 		Parts:  make([]*types.SchemaPart, 0),
 		Schema: &types.Schema{},
 		Mods:   make([]string, 0),
+
+		Dependencies: make([]*types.SchemaModDependency, 0),
 	}
 
 	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
@@ -75,6 +81,24 @@ func parseBXContent(data []byte) (*BXImport, error) {
 		if len(modname) > 256 || !modnameRegex.MatchString(modname) {
 			return nil, fmt.Errorf("invalid mod name %q", modname)
 		}
+	}
+
+	// optional, older archives don't have it
+	deps := []Dependency{}
+	err = u.unmarshal("dependencies.json", &deps)
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return nil, err
+	}
+	if len(deps) > MaxDependencies {
+		return nil, fmt.Errorf("more than %d dependencies", MaxDependencies)
+	}
+	for i, d := range deps {
+		dep := &types.SchemaModDependency{ModType: d.ModType, GitURL: d.GitURL, Version: d.Version}
+		err = dep.NormalizeAndValidate()
+		if err != nil {
+			return nil, fmt.Errorf("dependencies.json, entry %d: %v", i, err)
+		}
+		res.Dependencies = append(res.Dependencies, dep)
 	}
 
 	mb_max_x := (s.SizeX - 1) / 16

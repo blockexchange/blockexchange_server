@@ -27,4 +27,8 @@ func TestBXImport(t *testing.T) {
 
 	assert.Equal(t, 1, len(res.Mods))
 	assert.Equal(t, 18, len(res.Parts))
+
+	// archive from before dependencies.json
+	assert.NotNil(t, res.Dependencies)
+	assert.Equal(t, 0, len(res.Dependencies))
 }

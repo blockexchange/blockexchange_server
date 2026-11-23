@@ -11,6 +11,7 @@ import ModalPrompt from "../ModalPrompt.vue";
 import SchemaStar from "./SchemaStar.vue";
 import SchemaDownload from "./SchemaDownload.vue";
 import SchemaCollection from "./SchemaCollection.vue";
+import SchemaModDependencies from "./SchemaModDependencies.vue";
 import ModBadge from "../ModBadge.vue";
 import TagBadge from "../TagBadge.vue";
 
@@ -22,9 +23,11 @@ import {
 	schema_update_mods,
 	schema_update_info
 } from "../../api/schema";
-import type { SchemaSearchResponse, SchemaUpdateError } from "../../api/types";
+import { get_schema_mod_dependencies } from "../../api/schema_mod_dependency";
+import type { SchemaModDependency, SchemaSearchResponse, SchemaUpdateError } from "../../api/types";
 import { get_tags as get_all_tags } from "../../service/tags";
 import { has_permission } from "../../service/login";
+import { is_wasm_enabled } from "../../service/info";
 
 const props = withDefaults(defineProps<{
 	search_result: SchemaSearchResponse;
@@ -58,6 +61,24 @@ watch(() => props.search_result, sr => {
 	mods.value = sr.mods;
 	tags.value = sr.tags;
 });
+
+// "Edit Online" needs a game, the dependencies are only loaded for editors
+const dependencies = ref<SchemaModDependency[]>([]);
+const has_game_dependency = computed(() => dependencies.value.some(d => d.mod_type == "game"));
+
+async function load_dependencies() {
+	dependencies.value = [];
+	if (!props.allow_edit || !is_wasm_enabled()) {
+		return;
+	}
+	try {
+		dependencies.value = await get_schema_mod_dependencies(schema.value.uid);
+	} catch (e) {
+		console.warn("loading the mod dependencies failed", e);
+	}
+}
+
+watch(() => [schema.value.uid, props.allow_edit], load_dependencies, { immediate: true });
 
 const available_tags = computed(() => get_all_tags().filter(t => !t.restricted || has_permission("ADMIN")));
 
@@ -180,6 +201,10 @@ const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: 
 					</router-link>
 					<schema-star :schema_uid="schema.uid" v-model:stars="schema.stars"/>
 					<template v-if="allow_edit">
+						<router-link v-if="is_wasm_enabled() && has_game_dependency" :to="'/schema/' + username + '/' + schema.name + '/online'" class="btn btn-outline-success"
+							title="Open the schematic with its game and mods in the browser">
+							<i class="fa fa-gamepad"></i> Edit Online
+						</router-link>
 						<button type="button" class="btn btn-outline-secondary" @click="start_edit">
 							<i class="fa fa-pen"></i> Edit
 						</button>
@@ -243,6 +268,13 @@ const markdown = (txt: string) => DOMPurify.sanitize(marked.parse(txt, { async: 
 							<textarea v-model="schema.description" rows="10" class="form-control font-monospace"></textarea>
 							<div class="form-text">Markdown is supported.</div>
 						</template>
+					</div>
+				</section>
+
+				<section class="card" v-if="edit_mode && allow_edit">
+					<div class="card-header"><i class="fa fa-code-branch"></i> Mod dependencies</div>
+					<div class="card-body">
+						<schema-mod-dependencies :schema_uid="schema.uid" @change="list => dependencies = list"/>
 					</div>
 				</section>
 

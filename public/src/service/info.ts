@@ -16,3 +16,4 @@ export const get_discord_login = () => store.oauth_login?.discord;
 export const get_mesehub_login = () => store.oauth_login?.mesehub;
 export const get_codeberg_login = () => store.oauth_login?.codeberg;
 export const get_stats = () => store.stats;
+export const is_wasm_enabled = () => store.wasm_enabled == true;

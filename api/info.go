@@ -14,6 +14,8 @@ type Info struct {
 	BaseURL      string            `json:"base_url"`
 	OauthLogin   *types.OauthLogin `json:"oauth_login"`
 	Stats        *Stats            `json:"stats"`
+	// luanti wasm client available ("Edit Online")
+	WasmEnabled bool `json:"wasm_enabled"`
 }
 
 type Stats struct {
@@ -72,6 +74,7 @@ func (api *Api) GetInfo(w http.ResponseWriter, req *http.Request) {
 		BaseURL:      cfg.BaseURL,
 		OauthLogin:   cfg.OauthLogin,
 		Stats:        stats.Load(),
+		WasmEnabled:  true,
 	}
 
 	SendJson(w, info)

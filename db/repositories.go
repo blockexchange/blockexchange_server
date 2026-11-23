@@ -13,6 +13,7 @@ type Repositories struct {
 	SchemaRepo                *SchemaRepository
 	SchemaPartRepo            *SchemaPartRepository
 	SchemaModRepo             *SchemaModRepository
+	SchemaModDependencyRepo   *SchemaModDependencyRepository
 	SchemaSearchRepo          *SchemaSearchRepository
 	SchemaScreenshotRepo      *SchemaScreenshotRepository
 	TagRepo                   *TagRepository
@@ -32,6 +33,7 @@ func NewRepositories(g *gorm.DB, DB *sql.DB, pgl *pglock.Client) *Repositories {
 		SchemaRepo:                &SchemaRepository{g: g},
 		SchemaPartRepo:            &SchemaPartRepository{g: g},
 		SchemaModRepo:             &SchemaModRepository{g: g},
+		SchemaModDependencyRepo:   &SchemaModDependencyRepository{g: g},
 		SchemaSearchRepo:          &SchemaSearchRepository{DB: DB},
 		SchemaScreenshotRepo:      &SchemaScreenshotRepository{g: g},
 		TagRepo:                   &TagRepository{g: g},

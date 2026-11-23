@@ -70,22 +70,28 @@ func (c *Core) RemoveClaims(w http.ResponseWriter) {
 	http.SetCookie(w, co)
 }
 
-func (c *Core) GetClaims(r *http.Request) (*types.Claims, error) {
-	var token string
+// raw jwt of the request (Authorization header or cookie), empty if none is set
+func (c *Core) GetToken(r *http.Request) (string, error) {
 	authorization := r.Header.Get("Authorization")
 	if authorization != "" {
 		// token in header
-		token = authorization
-	} else {
-		// token in cookie
-		co, err := r.Cookie(c.cfg.CookieName)
-		if err == http.ErrNoCookie {
-			return nil, nil
-		}
-		if err != nil {
-			return nil, err
-		}
-		token = co.Value
+		return authorization, nil
+	}
+	// token in cookie
+	co, err := r.Cookie(c.cfg.CookieName)
+	if err == http.ErrNoCookie {
+		return "", nil
+	}
+	if err != nil {
+		return "", err
+	}
+	return co.Value, nil
+}
+
+func (c *Core) GetClaims(r *http.Request) (*types.Claims, error) {
+	token, err := c.GetToken(r)
+	if err != nil {
+		return nil, err
 	}
 	if token == "" {
 		// no token found

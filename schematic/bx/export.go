@@ -50,6 +50,27 @@ func (e *Exporter) ExportMetadata(schema *types.Schema, mods []*types.SchemaMod)
 	return nil
 }
 
+// portable part of a mod dependency (without the server specific uids)
+type Dependency struct {
+	ModType types.SchemaModDependencyType `json:"mod_type"`
+	GitURL  string                        `json:"git_url"`
+	Version string                        `json:"version"`
+}
+
+// writes dependencies.json (game and mod git repositories of the schematic)
+func (e *Exporter) ExportDependencies(deps []*types.SchemaModDependency) error {
+	list := make([]Dependency, len(deps))
+	for i, d := range deps {
+		list[i] = Dependency{ModType: d.ModType, GitURL: d.GitURL, Version: d.Version}
+	}
+
+	data, err := json.Marshal(list)
+	if err != nil {
+		return err
+	}
+	return addDataToZip(e.w, "dependencies.json", data)
+}
+
 func (e *Exporter) Export(schemapart *types.SchemaPart) error {
 	schemapart_data, err := json.Marshal(schemapart)
 	if err != nil {

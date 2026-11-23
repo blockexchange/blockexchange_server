@@ -32,21 +32,24 @@ type Config struct {
 	CookieSecure        bool
 	CookieName          string
 	DefaultRole         UserRole
+	// cache directory for the luanti wasm packs, a temp directory if empty
+	WasmPackCacheDir string
 }
 
 func CreateConfig() *Config {
 	cfg := &Config{
-		Name:         os.Getenv("BLOCKEXCHANGE_NAME"),
-		Owner:        os.Getenv("BLOCKEXCHANGE_OWNER"),
-		Key:          os.Getenv("BLOCKEXCHANGE_KEY"),
-		WebDev:       os.Getenv("WEBDEV") == "true",
-		ExecuteJobs:  os.Getenv("EXECUTE_JOBS") == "true",
-		BaseURL:      os.Getenv("BASE_URL"),
-		CookiePath:   os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
-		CookieSecure: os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
-		CookieName:   "blockexchange-v2",
-		OauthLogin:   &OauthLogin{},
-		DefaultRole:  UserRoleDefault,
+		Name:             os.Getenv("BLOCKEXCHANGE_NAME"),
+		Owner:            os.Getenv("BLOCKEXCHANGE_OWNER"),
+		Key:              os.Getenv("BLOCKEXCHANGE_KEY"),
+		WebDev:           os.Getenv("WEBDEV") == "true",
+		ExecuteJobs:      os.Getenv("EXECUTE_JOBS") == "true",
+		BaseURL:          os.Getenv("BASE_URL"),
+		CookiePath:       os.Getenv("BLOCKEXCHANGE_COOKIE_PATH"),
+		CookieSecure:     os.Getenv("BLOCKEXCHANGE_COOKIE_SECURE") == "true",
+		CookieName:       "blockexchange-v2",
+		OauthLogin:       &OauthLogin{},
+		DefaultRole:      UserRoleDefault,
+		WasmPackCacheDir: os.Getenv("WASM_PACK_CACHE_DIR"),
 	}
 
 	if os.Getenv("DEFAULT_ROLE") != "" {
