@@ -12,7 +12,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/golang-lru/v2 v2.0.7
-	github.com/klauspost/compress v1.20.1
+	github.com/klauspost/compress v1.20.5
 	github.com/lib/pq v1.12.3
 	github.com/luanti-golang/colormapping v1.1.0
 	github.com/luanti-golang/luanti-client v0.1.2
