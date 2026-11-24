@@ -19,7 +19,6 @@ func (api *Api) RequestToken(w http.ResponseWriter, r *http.Request) {
 
 	logrus.WithFields(logrus.Fields{
 		"Username": login.Username,
-		"Token":    login.Token,
 	}).Debug("POST /api/token")
 
 	user, err := api.UserRepo.GetUserByName(login.Username)
@@ -43,13 +42,13 @@ func (api *Api) RequestToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if access_token.Expires < (time.Now().Unix() * 1000) {
+		if access_token.Expires < time.Now().UnixMilli() {
 			SendError(w, 401, "token expired")
 			return
 		}
 
 		permissions := core.GetPermissions(user, false)
-		token, err := api.core.CreateJWT(user, permissions, time.Until(time.Unix(access_token.Expires, 0)))
+		token, err := api.core.CreateJWT(user, permissions, time.Until(time.UnixMilli(access_token.Expires)))
 		if SendIfError(w, err) {
 			return
 		}

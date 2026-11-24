@@ -47,6 +47,9 @@ func TestAccessTokenLogin(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, info)
 	assert.Equal(t, user.Name, info.Username)
+
+	// the jwt must not outlive the access token (expires is in milliseconds)
+	assert.WithinDuration(t, time.UnixMilli(token.Expires), info.ExpiresAt.Time, 5*time.Second)
 }
 
 func TestInvalidAccessTokenLogin(t *testing.T) {
