@@ -8,6 +8,7 @@ import {
 	delete_schema_mod_dependency
 } from "../../api/schema_mod_dependency";
 import type { SchemaModDependency, SchemaModDependencyRequest } from "../../api/types";
+import { get_cdb_vcs_packages, type CdbVcsPackage } from "../../api/cdb";
 
 // editor for the mod/game dependencies of a schematic, changes are saved right away
 const props = defineProps<{
@@ -34,6 +35,38 @@ const form_valid = computed(() =>
 	form.value.git_url.length <= 256 &&
 	form.value.version.length <= 64
 );
+
+// url autocompletion from the content db, loaded on first focus
+const cdb_packages = ref<CdbVcsPackage[]>([]);
+const max_suggestions = 50;
+
+async function load_suggestions() {
+	if (cdb_packages.value.length > 0) {
+		return;
+	}
+	try {
+		cdb_packages.value = await get_cdb_vcs_packages();
+	} catch {
+		// autocompletion is optional, the field stays a plain input
+	}
+}
+
+const suggestions = computed(() => {
+	const q = form.value.git_url.toLowerCase();
+	const result: CdbVcsPackage[] = [];
+	for (const p of cdb_packages.value) {
+		if (!p.repo || p.type != form.value.mod_type) {
+			continue;
+		}
+		if (q == "" || p.repo.toLowerCase().includes(q) || p.title.toLowerCase().includes(q) || p.name.toLowerCase().includes(q) || p.author.toLowerCase().includes(q)) {
+			result.push(p);
+			if (result.length >= max_suggestions) {
+				break;
+			}
+		}
+	}
+	return result;
+});
 
 const error_message = (e: unknown) => (e as { message?: string })?.message || JSON.stringify(e);
 
@@ -176,7 +209,13 @@ watch(() => props.schema_uid, () => {
 			<div class="col-sm-6">
 				<label class="form-label small" for="dep-url">Git URL</label>
 				<input id="dep-url" type="text" class="form-control form-control-sm" maxlength="256"
-					placeholder="https://github.com/user/repo.git" v-model.trim="form.git_url">
+					placeholder="https://github.com/user/repo.git" v-model.trim="form.git_url"
+					list="dep-url-list" autocomplete="off" @focus="load_suggestions">
+				<datalist id="dep-url-list">
+					<option v-for="p in suggestions" :key="p.author + '/' + p.name" :value="p.repo!">
+						{{ p.title }} ({{ p.author }}/{{ p.name }})
+					</option>
+				</datalist>
 			</div>
 			<div class="col-sm-3">
 				<label class="form-label small" for="dep-version">Version</label>

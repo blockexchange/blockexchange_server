@@ -16,6 +16,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/info", api.GetInfo).Methods(http.MethodGet)
 	r.HandleFunc("/api/healthcheck", api.Healthcheck).Methods(http.MethodGet)
 
+	r.HandleFunc("/api/cdb/vcs-packages", api.GetCDBVcsPackages).Methods(http.MethodGet)
+
 	// ui api
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
