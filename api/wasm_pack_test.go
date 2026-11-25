@@ -50,13 +50,20 @@ func TestWasmPackRoutes(t *testing.T) {
 	other := testutils.CreateUser(a.UserRepo, t, nil)
 	schema := testutils.CreateSchema(a.SchemaRepo, t, owner, nil)
 
+	// one token per user: the config pack (and its etag) contains the token, a new jwt per request
+	// would change the etag whenever the expiry (second resolution) differs
+	tokens := map[string]string{}
 	call := func(handler api.SecureHandler, user *types.User, if_none_match string) *httptest.ResponseRecorder {
 		r := mux.SetURLVars(httptest.NewRequest("GET", "http://", nil), map[string]string{"schema_uid": schema.UID})
 		if if_none_match != "" {
 			r.Header.Set("If-None-Match", if_none_match)
 		}
 		w := httptest.NewRecorder()
-		loginWith(t, r, user)
+		if tokens[user.UID] == "" {
+			loginWith(t, r, user)
+			tokens[user.UID] = r.Header.Get("Authorization")
+		}
+		r.Header.Set("Authorization", tokens[user.UID])
 		a.Secure(handler)(w, r)
 		return w
 	}
