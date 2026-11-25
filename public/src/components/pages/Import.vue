@@ -56,7 +56,7 @@ function on_drop(e: DragEvent) {
 <template>
 	<page-header
 		title="Import schematic files"
-		subtitle="Upload WorldEdit (.we) or Block exchange (.zip) files from your computer. To upload directly from a world, use /bx_save in-game."
+		subtitle="Upload WorldEdit (.we), Luanti schematic (.mts) or Block exchange (.zip) files from your computer. To upload directly from a world, use /bx_save in-game."
 		:breadcrumb="breadcrumb"/>
 
 	<empty-state icon="lock" title="Log in to import schematics" v-if="!username">
@@ -73,8 +73,8 @@ function on_drop(e: DragEvent) {
 				@drop.prevent="on_drop">
 				<i class="fa fa-file-arrow-up fa-2x mb-2 text-muted-bx"></i>
 				<div class="fw-semibold">Drop files here or click to choose</div>
-				<div class="small text-muted-bx">.we and .zip, several files at once are fine</div>
-				<input ref="upload" type="file" class="visually-hidden" @change="on_upload" multiple accept=".we,.zip"/>
+				<div class="small text-muted-bx">.we, .mts and .zip, several files at once are fine</div>
+				<input ref="upload" type="file" class="visually-hidden" @change="on_upload" multiple accept=".we,.mts,.zip"/>
 			</label>
 
 			<div class="list-group" v-if="store.results.length">

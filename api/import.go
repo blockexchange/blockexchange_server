@@ -2,6 +2,7 @@ package api
 
 import (
 	"blockexchange/schematic/bx"
+	"blockexchange/schematic/mtschem"
 	"blockexchange/schematic/worldedit"
 	"blockexchange/types"
 	"errors"
@@ -35,6 +36,9 @@ func (api *Api) ImportSchematic(w http.ResponseWriter, r *http.Request, ctx *Sec
 	if strings.HasSuffix(filename, ".we") {
 		schemaname := strings.TrimSuffix(filename, ".we")
 		schema, err = api.core.ImportWE(data, ctx.Claims.Username, schemaname)
+	} else if strings.HasSuffix(filename, ".mts") {
+		schemaname := strings.TrimSuffix(filename, ".mts")
+		schema, err = api.core.ImportMTS(data, ctx.Claims.Username, schemaname)
 	} else if strings.HasSuffix(filename, ".zip") {
 		schema, err = api.core.ImportBX(data, ctx.Claims.Username)
 	} else {
@@ -42,7 +46,7 @@ func (api *Api) ImportSchematic(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 
-	if errors.Is(err, worldedit.ErrInvalidSchematic) || errors.Is(err, bx.ErrInvalidBX) {
+	if errors.Is(err, worldedit.ErrInvalidSchematic) || errors.Is(err, bx.ErrInvalidBX) || errors.Is(err, mtschem.ErrInvalidSchematic) {
 		SendError(w, http.StatusBadRequest, err.Error())
 		return
 	}

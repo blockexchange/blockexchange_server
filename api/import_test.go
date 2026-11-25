@@ -119,3 +119,15 @@ func TestBXExportImportDependencies(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(deps))
 }
+
+func TestImportMTS(t *testing.T) {
+	a := NewTestApi(t)
+	user := testutils.CreateUser(a.UserRepo, t, nil)
+
+	data, err := os.ReadFile("../schematic/mtschem/testdata/Notre_Dame(Paris,France).mts")
+	assert.NoError(t, err)
+
+	assert.Equal(t, 200, importRequest(t, a, user, "notre_dame.mts", data))
+	assert.Equal(t, 400, importRequest(t, a, user, "x.mts", []byte("MTSM")))
+	assert.Equal(t, 400, importRequest(t, a, user, "x.mts", data[:len(data)/2]))
+}

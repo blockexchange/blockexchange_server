@@ -2,6 +2,7 @@ package api
 
 import (
 	"blockexchange/schematic/bx"
+	"blockexchange/schematic/mtschem"
 	"blockexchange/schematic/worldedit"
 	"fmt"
 	"net"
@@ -67,6 +68,44 @@ func (api *Api) ExportWorldeditSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = e.Close()
+	if SendIfError(w, err) {
+		return
+	}
+
+	err = api.incrementDownloadStats(schema_uid, r)
+	if SendIfError(w, err) {
+		return
+	}
+}
+
+func (api *Api) ExportMTSSchema(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	schema_uid := vars["schema_uid"]
+
+	schema, err := api.SchemaRepo.GetSchemaByUID(schema_uid)
+	if SendIfError(w, err) {
+		return
+	}
+	if schema == nil {
+		SendError(w, 404, "not found")
+		return
+	}
+
+	e, err := mtschem.NewExporter(w, schema.SizeX, schema.SizeY, schema.SizeZ)
+	if err != nil {
+		SendError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// the schematic is buffered until Close(), errors before that can still be reported
+	err = api.core.SchemapartCallback(schema_uid, e.Export)
+	if SendIfError(w, err) {
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", vars["filename"]))
 	err = e.Close()
 	if SendIfError(w, err) {
 		return

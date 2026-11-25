@@ -3,10 +3,6 @@ package core
 import (
 	"blockexchange/schematic/worldedit"
 	"blockexchange/types"
-	"fmt"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema, error) {
@@ -21,61 +17,14 @@ func (c *Core) ImportWE(data []byte, username, schemaname string) (*types.Schema
 		return nil, err
 	}
 
-	newSchemaName, err := c.FindUnusedSchemaname(schemaname, username)
-	if err != nil {
-		return nil, err
-	}
-
-	user, err := c.repos.UserRepo.GetUserByName(username)
-	if err != nil {
-		return nil, err
-	}
-	if user == nil {
-		return nil, fmt.Errorf("user not found: '%s'", username)
-	}
-
-	schema := &types.Schema{
-		UID:         uuid.NewString(),
-		Created:     time.Now().Unix() * 1000,
-		UserUID:     user.UID,
-		Name:        newSchemaName,
-		Mtime:       time.Now().Unix() * 1000,
+	return c.createImportedSchema(&importedSchema{
+		Username:    username,
+		Schemaname:  schemaname,
 		Description: "WE Import",
-		Complete:    false,
 		SizeX:       max_x + 1,
 		SizeY:       max_y + 1,
 		SizeZ:       max_z + 1,
-		TotalParts:  len(parts),
-		License:     "CC0",
-	}
-
-	err = c.repos.SchemaRepo.CreateSchema(schema)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, part := range parts {
-		sp, err := part.Convert()
-		if err != nil {
-			return nil, err
-		}
-		sp.SchemaUID = schema.UID
-
-		err = c.repos.SchemaPartRepo.CreateOrUpdateSchemaPart(sp)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	for _, modname := range modnames {
-		err = c.repos.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
-			SchemaUID: schema.UID,
-			ModName:   modname,
-		})
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return c.repos.SchemaRepo.GetSchemaByUID(schema.UID)
+		Parts:       parts,
+		Modnames:    modnames,
+	})
 }

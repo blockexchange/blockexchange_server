@@ -69,6 +69,11 @@ const can_use_placement_tool = computed(() => (
 				<i class="fa fa-download"></i>
 				WorldEdit file (.we)
 			</a>
+			<a class="btn btn-outline-success"
+				:href="'/api/export_mts/' + schema.uid + '/' + schema.name + '.mts'">
+				<i class="fa fa-download"></i>
+				Luanti schematic (.mts)
+			</a>
 		</div>
 		<div class="bx-note info mb-3" v-if="schema.total_parts >= 500">
 			<i class="fa fa-circle-info"></i>
