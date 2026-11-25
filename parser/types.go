@@ -7,8 +7,32 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"sync"
 	"time"
 )
+
+// zlibWriterPool reuses zlib writers, a new writer allocates around 1 MB of compressor state
+var zlibWriterPool = sync.Pool{
+	New: func() any { return zlib.NewWriter(nil) },
+}
+
+// compress returns the zlib-compressed data
+func compress(data []byte) ([]byte, error) {
+	buf := bytes.NewBuffer(make([]byte, 0, len(data)/2+64))
+	w := zlibWriterPool.Get().(*zlib.Writer)
+	defer zlibWriterPool.Put(w)
+	w.Reset(buf)
+
+	_, err := w.Write(data)
+	if err != nil {
+		return nil, err
+	}
+	err = w.Close()
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
 
 type SchemaPartSize struct {
 	X int `json:"x"`
@@ -74,18 +98,10 @@ func (psp *ParsedSchemaPart) Convert() (*types.SchemaPart, error) {
 		return nil, err
 	}
 
-	metaBuf := bytes.NewBuffer([]byte{})
-	w := zlib.NewWriter(metaBuf)
-	_, err = w.Write(rawMeta)
+	sp.MetaData, err = compress(rawMeta)
 	if err != nil {
 		return nil, err
 	}
-	err = w.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	sp.MetaData = metaBuf.Bytes()
 
 	size := psp.Meta.Size.X * psp.Meta.Size.Y * psp.Meta.Size.Z
 	mapdata := make([]byte, size*4)
@@ -98,18 +114,10 @@ func (psp *ParsedSchemaPart) Convert() (*types.SchemaPart, error) {
 		mapdata[(size*3)+i] = psp.Param2[i]
 	}
 
-	mapdataBuf := bytes.NewBuffer([]byte{})
-	w = zlib.NewWriter(mapdataBuf)
-	_, err = w.Write(mapdata)
+	sp.Data, err = compress(mapdata)
 	if err != nil {
 		return nil, err
 	}
-	err = w.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	sp.Data = mapdataBuf.Bytes()
 
 	return sp, nil
 }

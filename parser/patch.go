@@ -3,6 +3,8 @@ package parser
 import (
 	"blockexchange/types"
 	"fmt"
+	"strconv"
+	"strings"
 )
 
 // GetPos returns the relative position of the node at the given index (inverse of GetIndex)
@@ -50,6 +52,7 @@ func (psp *ParsedSchemaPart) Patch(patch *ParsedSchemaPart, filter []types.Patch
 		return fmt.Errorf("patchfilter length mismatch: got %d, expected %d", len(filter), len(psp.NodeIDS))
 	}
 
+	patch_metadata := false
 	for i, f := range filter {
 		if f&types.PatchReplaceNodename != 0 {
 			name, found := patch.NodeNameLookup[patch.NodeIDS[i]]
@@ -65,8 +68,12 @@ func (psp *ParsedSchemaPart) Patch(patch *ParsedSchemaPart, filter []types.Patch
 			psp.Param2[i] = patch.Param2[i]
 		}
 		if f&types.PatchReplaceMetadata != 0 {
-			psp.patchMetadata(patch, i)
+			patch_metadata = true
 		}
+	}
+
+	if patch_metadata {
+		psp.patchMetadata(patch, filter)
 	}
 
 	psp.removeUnusedNodeIDs()
@@ -88,26 +95,68 @@ func (psp *ParsedSchemaPart) GetMetadata() *Metadata {
 	return md
 }
 
-// patchMetadata replaces the metadata and timer of the node at the given index with the one of the patch-part
-func (psp *ParsedSchemaPart) patchMetadata(patch *ParsedSchemaPart, index int) {
+// parseKey is the inverse of Metadata.GetKey, it returns the node-index of a "(x,y,z)" key
+func (psp *ParsedSchemaPart) parseKey(key string) (int, bool) {
+	inner, found := strings.CutPrefix(key, "(")
+	if !found {
+		return 0, false
+	}
+	inner, found = strings.CutSuffix(inner, ")")
+	if !found {
+		return 0, false
+	}
+	parts := strings.Split(inner, ",")
+	if len(parts) != 3 {
+		return 0, false
+	}
+	var pos [3]int
+	for i, p := range parts {
+		v, err := strconv.Atoi(p)
+		if err != nil {
+			return 0, false
+		}
+		pos[i] = v
+	}
+	size := psp.Meta.Size
+	if pos[0] < 0 || pos[1] < 0 || pos[2] < 0 || pos[0] >= size.X || pos[1] >= size.Y || pos[2] >= size.Z {
+		return 0, false
+	}
+	return psp.GetIndex(pos[0], pos[1], pos[2]), true
+}
+
+// patchMetadata replaces the metadata and timers of all nodes selected for metadata replacement
+// with the ones of the patch-part. Only the existing entries are visited, instead of building
+// a key for every selected node.
+func (psp *ParsedSchemaPart) patchMetadata(patch *ParsedSchemaPart, filter []types.PatchFilterType) {
 	md := psp.GetMetadata()
-	key := md.GetKey(psp.GetPos(index))
-
-	var entry *MetadataEntry
-	var timer *MetadataTimer
-	if patch.Meta.Metadata != nil {
-		entry = patch.Meta.Metadata.Meta[key]
-		timer = patch.Meta.Metadata.Timers[key]
+	selected := func(key string) bool {
+		index, ok := psp.parseKey(key)
+		return ok && filter[index]&types.PatchReplaceMetadata != 0
 	}
 
-	if entry != nil {
-		md.Meta[key] = entry
-	} else {
-		delete(md.Meta, key)
+	// selected nodes get the patch values, so drop their current entries
+	for key := range md.Meta {
+		if selected(key) {
+			delete(md.Meta, key)
+		}
 	}
-	if timer != nil {
-		md.Timers[key] = timer
-	} else {
-		delete(md.Timers, key)
+	for key := range md.Timers {
+		if selected(key) {
+			delete(md.Timers, key)
+		}
+	}
+
+	if patch.Meta.Metadata == nil {
+		return
+	}
+	for key, entry := range patch.Meta.Metadata.Meta {
+		if entry != nil && selected(key) {
+			md.Meta[key] = entry
+		}
+	}
+	for key, timer := range patch.Meta.Metadata.Timers {
+		if timer != nil && selected(key) {
+			md.Timers[key] = timer
+		}
 	}
 }
