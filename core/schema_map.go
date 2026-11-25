@@ -60,7 +60,7 @@ func (m *SchemaMap) getPart(mbpos *mt.Pos) (*parser.ParsedSchemaPart, error) {
 				return nil, fmt.Errorf("parse error @ %s: %v", mbpos, err)
 			}
 
-			if len(mapblock.Meta.NodeMapping) == 1 && mapblock.Meta.NodeMapping["air"] > 0 {
+			if mapblock.IsAirOnly() {
 				// mark as air-only
 				m.cache.Add(key, airOnlyMapblock)
 				return nil, nil
@@ -89,15 +89,16 @@ func (m *SchemaMap) createBlock(mbpos *mt.Pos) *parser.ParsedSchemaPart {
 	size := area.Size()
 
 	psp := &parser.ParsedSchemaPart{
-		PosX:           mbpos.X(),
-		PosY:           mbpos.Y(),
-		PosZ:           mbpos.Z(),
-		NodeIDS:        make([]int16, area.Volume()),
-		Param1:         make([]byte, area.Volume()),
-		Param2:         make([]byte, area.Volume()),
-		NodeNameLookup: make(map[int16]string),
+		PosX:    mbpos.X(),
+		PosY:    mbpos.Y(),
+		PosZ:    mbpos.Z(),
+		NodeIDS: make([]int16, area.Volume()),
+		Param1:  make([]byte, area.Volume()),
+		Param2:  make([]byte, area.Volume()),
+		// all nodes are initialized with id 0: air
+		NodeNameLookup: map[int16]string{0: "air"},
 		Meta: &parser.SchemaPartMetadata{
-			NodeMapping: map[string]int16{},
+			NodeMapping: map[string]int16{"air": 0},
 			Size: parser.SchemaPartSize{
 				X: size.X(),
 				Y: size.Y(),
@@ -133,36 +134,24 @@ func (m *SchemaMap) SetNode(pos *mt.Pos, node *mt.Node, md *parser.MetadataEntry
 	if index >= len(mapblock.NodeIDS) {
 		return fmt.Errorf("index mismatch: got %d, length: %d, rel_pos: %s, abs_pos: %s", index, len(mapblock.NodeIDS), rel_pos, pos)
 	}
-	nodeid := mapblock.NodeIDS[index]
-
-	if mapblock.Meta.NodeMapping[node.Name] == 0 {
-		// add to mapping
-		maxnodeid := int16(0)
-		for nodeid := range mapblock.NodeNameLookup {
-			maxnodeid = max(nodeid, maxnodeid)
-		}
-		nodeid = maxnodeid + 1
-		mapblock.NodeNameLookup[nodeid] = node.Name
-		mapblock.Meta.NodeMapping[node.Name] = nodeid
-	}
-
 	// node data
 	mapblock.Param1[index] = byte(node.Param1)
 	mapblock.Param2[index] = byte(node.Param2)
-	mapblock.NodeIDS[index] = nodeid
+	mapblock.NodeIDS[index] = mapblock.GetOrCreateNodeID(node.Name)
 
 	// metadata
-	meta := mapblock.Meta.Metadata
+	meta := mapblock.GetMetadata()
 	meta_key := meta.GetKey(rel_pos.X(), rel_pos.Y(), rel_pos.Z())
 
 	if md != nil {
 		// overwrite
-		entry := meta.Meta[meta_key]
-		entry.Fields = md.Fields
-		entry.Inventories = md.Inventories
+		meta.Meta[meta_key] = &parser.MetadataEntry{
+			Fields:      md.Fields,
+			Inventories: md.Inventories,
+		}
 	} else {
 		// clear
-		meta.Meta[meta_key] = nil
+		delete(meta.Meta, meta_key)
 	}
 
 	// mark changed

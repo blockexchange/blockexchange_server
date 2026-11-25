@@ -53,7 +53,7 @@ func (c *Core) getNodeAccessor(schema *types.Schema) mtypes.NodeAccessor {
 					return nil, fmt.Errorf("parse error @ %s: %v", p, err)
 				}
 
-				if len(mapblock.Meta.NodeMapping) == 1 && mapblock.Meta.NodeMapping["air"] > 0 {
+				if mapblock.IsAirOnly() {
 					// mark as air-only
 					cache.Add(key, airOnlyMapblock)
 					return nil, nil

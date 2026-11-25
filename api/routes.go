@@ -116,6 +116,7 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 	r.HandleFunc("/api/count/schema/starred", api.Secure(api.CountStarredSchema)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/schemapart", api.Secure(api.CreateSchemaPart)).Methods(http.MethodPost)
+	r.HandleFunc("/api/schemapart", api.Secure(api.PatchSchemaPart)).Methods(http.MethodPatch)
 	r.HandleFunc("/api/schemapart/{schema_uid}/{x}/{y}/{z}", api.GetSchemaPart).Methods(http.MethodGet)
 	r.HandleFunc("/api/schemapart/{schema_uid}/{x}/{y}/{z}", api.Secure(api.DeleteSchemaPart)).Methods(http.MethodDelete)
 	r.HandleFunc("/api/schemapart/{schema_uid}/{x}/{y}/{z}/delete", api.Secure(api.DeleteSchemaPart)).Methods(http.MethodPost)

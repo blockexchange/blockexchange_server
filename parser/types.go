@@ -56,6 +56,12 @@ func (psp *ParsedSchemaPart) GetIndex(x, y, z int) int {
 	return z + (y * psp.Meta.Size.Z) + (x * psp.Meta.Size.Y * psp.Meta.Size.Z)
 }
 
+// IsAirOnly returns true if the part consists only of air nodes
+func (psp *ParsedSchemaPart) IsAirOnly() bool {
+	_, found := psp.Meta.NodeMapping["air"]
+	return found && len(psp.Meta.NodeMapping) == 1
+}
+
 func (psp *ParsedSchemaPart) Convert() (*types.SchemaPart, error) {
 	sp := &types.SchemaPart{
 		OffsetX: psp.PosX * 16,
