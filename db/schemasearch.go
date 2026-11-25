@@ -98,6 +98,12 @@ func (r *SchemaSearchRepository) buildWhereQuery(query *strings.Builder, search 
 		i++
 	}
 
+	if search.StarredByUserUID != nil {
+		query.WriteString(fmt.Sprintf(" and uid in (select schema_uid from user_schema_star where user_uid = $%d)", i))
+		params = append(params, *search.StarredByUserUID)
+		i++
+	}
+
 	if search.FromMtime != nil {
 		query.WriteString(fmt.Sprintf(" and mtime > $%d", i))
 		params = append(params, *search.FromMtime)

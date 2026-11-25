@@ -18,6 +18,7 @@ import Mods from './components/pages/Mods.vue';
 import Nodedefinitions from './components/pages/Nodedefinitions.vue';
 import Mediafiles from './components/pages/Mediafiles.vue';
 import LuantiConnections from './components/pages/LuantiConnections.vue';
+import StarredSchemas from './components/pages/StarredSchemas.vue';
 import NotFound from './components/pages/NotFound.vue';
 
 const routes: RouteRecordRaw[] = [{
@@ -55,6 +56,8 @@ const routes: RouteRecordRaw[] = [{
 	path: "/collections/:username/:collection_name", component: UserCollection, props: true
 },{
 	path: "/import", component: Import
+},{
+	path: "/starred", component: StarredSchemas
 },{
 	path: "/tags", component: Tags
 },{

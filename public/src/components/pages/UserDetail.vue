@@ -38,6 +38,7 @@ const count_entries = () => schema_count(search_body());
 			<router-link :to="'/collections/' + username" class="btn btn-sm btn-outline-secondary" v-if="show_collections">
 				<i class="fa fa-object-group"></i> Collections
 			</router-link>
+			<router-link to="/starred" class="btn btn-sm btn-outline-secondary"><i class="fa fa-star"></i> Starred</router-link>
 			<router-link to="/profile" class="btn btn-sm btn-outline-secondary"><i class="fa fa-gear"></i> Account settings</router-link>
 		</template>
 	</user-profile>

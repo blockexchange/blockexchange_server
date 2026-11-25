@@ -99,6 +99,11 @@ async function do_logout() {
 									<i class="fa fa-cubes fa-fw"></i> My schematics
 								</router-link>
 							</li>
+							<li>
+								<router-link to="/starred" class="dropdown-item">
+									<i class="fa fa-star fa-fw"></i> Starred schematics
+								</router-link>
+							</li>
 							<li v-if="is_admin">
 								<router-link :to="'/collections/' + claims.username" class="dropdown-item">
 									<i class="fa fa-object-group fa-fw"></i> My collections

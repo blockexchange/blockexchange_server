@@ -112,6 +112,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	r.HandleFunc("/api/search/schema", api.SearchSchema).Methods(http.MethodPost)
 	r.HandleFunc("/api/count/schema", api.CountSchema).Methods(http.MethodPost)
+	r.HandleFunc("/api/search/schema/starred", api.Secure(api.SearchStarredSchema)).Methods(http.MethodPost)
+	r.HandleFunc("/api/count/schema/starred", api.Secure(api.CountStarredSchema)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/schemapart", api.Secure(api.CreateSchemaPart)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schemapart/{schema_uid}/{x}/{y}/{z}", api.GetSchemaPart).Methods(http.MethodGet)

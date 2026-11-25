@@ -39,4 +39,6 @@ type SchemaSearchRequest struct {
 	UntilMtime     *int64      `json:"until_mtime"`
 	Limit          *int        `json:"limit"`
 	Offset         *int        `json:"offset"`
+	// only schematics starred by this user, set server-side from the token (stars are private)
+	StarredByUserUID *string `json:"-"`
 }
