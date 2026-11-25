@@ -48,13 +48,9 @@ func (sp *SchemaPart) TableName() string {
 	return "schemapart"
 }
 
-func (s *SchemaPart) UnmarshalJSON(data []byte) error {
-	m := make(map[string]any)
-	err := json.Unmarshal(data, &m)
-	if err != nil {
-		return err
-	}
-
+// fromMap fills the SchemaPart from a decoded JSON object (see UnmarshalJSON).
+func (s *SchemaPart) fromMap(m map[string]any) error {
+	var err error
 	s.SchemaUID = getString(m["schema_uid"])
 	s.OffsetX = getInt(m["offset_x"])
 	s.OffsetY = getInt(m["offset_y"])
@@ -65,22 +61,31 @@ func (s *SchemaPart) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.MetaData, err = base64.RawStdEncoding.DecodeString(getString(m["metadata"]))
+	return err
+}
+
+// toMap returns the JSON object representation of the SchemaPart (see MarshalJSON).
+func (s SchemaPart) toMap() map[string]any {
+	return map[string]any{
+		"schema_uid": s.SchemaUID,
+		"offset_x":   s.OffsetX,
+		"offset_y":   s.OffsetY,
+		"offset_z":   s.OffsetZ,
+		"mtime":      s.Mtime,
+		"data":       base64.RawStdEncoding.EncodeToString(s.Data),
+		"metadata":   base64.RawStdEncoding.EncodeToString(s.MetaData),
+	}
+}
+
+func (s *SchemaPart) UnmarshalJSON(data []byte) error {
+	m := make(map[string]any)
+	err := json.Unmarshal(data, &m)
 	if err != nil {
 		return err
 	}
-
-	return nil
+	return s.fromMap(m)
 }
 
 func (s SchemaPart) MarshalJSON() ([]byte, error) {
-	m := make(map[string]any)
-	m["schema_uid"] = s.SchemaUID
-	m["offset_x"] = s.OffsetX
-	m["offset_y"] = s.OffsetY
-	m["offset_z"] = s.OffsetZ
-	m["mtime"] = s.Mtime
-	m["data"] = base64.RawStdEncoding.EncodeToString(s.Data)
-	m["metadata"] = base64.RawStdEncoding.EncodeToString(s.MetaData)
-
-	return json.Marshal(m)
+	return json.Marshal(s.toMap())
 }
