@@ -38,7 +38,7 @@ func (c *Core) RegisterOauth(user_info *oauth.OauthUserInfo) (*types.User, error
 	}
 
 	user = &types.User{
-		Created:    time.Now().Unix() * 1000,
+		Created:    time.Now().UnixMilli(),
 		Name:       new_name,
 		Type:       types.UserType(user_info.Provider),
 		Role:       c.cfg.DefaultRole,
@@ -53,8 +53,8 @@ func (c *Core) RegisterOauth(user_info *oauth.OauthUserInfo) (*types.User, error
 	// TODO: deduplicate into util
 	err = c.repos.AccessTokenRepo.CreateAccessToken(&types.AccessToken{
 		Name:    "default",
-		Created: time.Now().Unix() * 1000,
-		Expires: (time.Now().Unix() + (3600 * 24 * 7 * 4)) * 1000,
+		Created: time.Now().UnixMilli(),
+		Expires: time.Now().Add(4 * 7 * 24 * time.Hour).UnixMilli(),
 		Token:   CreateToken(6),
 		UserUID: user.UID,
 	})
@@ -80,7 +80,7 @@ func (c *Core) RegisterLocal(rr *types.RegisterRequest) (*types.User, *types.Che
 	}
 
 	user := &types.User{
-		Created: time.Now().Unix() * 1000,
+		Created: time.Now().UnixMilli(),
 		Name:    rr.Name,
 		Type:    types.UserTypeLocal,
 		Role:    c.cfg.DefaultRole,
@@ -93,8 +93,8 @@ func (c *Core) RegisterLocal(rr *types.RegisterRequest) (*types.User, *types.Che
 
 	err = c.repos.AccessTokenRepo.CreateAccessToken(&types.AccessToken{
 		Name:    "default",
-		Created: time.Now().Unix() * 1000,
-		Expires: (time.Now().Unix() + (3600 * 24 * 7 * 4)) * 1000,
+		Created: time.Now().UnixMilli(),
+		Expires: time.Now().Add(4 * 7 * 24 * time.Hour).UnixMilli(),
 		Token:   CreateToken(6),
 		UserUID: user.UID,
 	})

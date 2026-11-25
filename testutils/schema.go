@@ -35,7 +35,7 @@ func CreateSchemaPart(repo *db.SchemaPartRepository, t *testing.T, schema *types
 			OffsetZ:   0,
 			Data:      []byte(partData),
 			MetaData:  []byte(partMetadata),
-			Mtime:     time.Now().Unix() * 1000,
+			Mtime:     time.Now().UnixMilli(),
 		}
 	}
 	if schemapart.OrderID == 0 {

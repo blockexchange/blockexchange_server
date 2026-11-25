@@ -36,8 +36,8 @@ func PopulateTestData(repos *Repositories) error {
 		Name:     "Default",
 		Token:    "default",
 		UserUID:  user.UID,
-		Created:  time.Now().Unix() * 1000,
-		Expires:  (time.Now().Unix() * 1000) + (1000 * 3600 * 24 * 30 * 365),
+		Created:  time.Now().UnixMilli(),
+		Expires:  time.Now().UnixMilli() + (1000 * 3600 * 24 * 30 * 365),
 		UseCount: 0,
 	}
 

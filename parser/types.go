@@ -61,7 +61,7 @@ func (psp *ParsedSchemaPart) Convert() (*types.SchemaPart, error) {
 		OffsetX: psp.PosX * 16,
 		OffsetY: psp.PosY * 16,
 		OffsetZ: psp.PosZ * 16,
-		Mtime:   time.Now().Unix() * 1000,
+		Mtime:   time.Now().UnixMilli(),
 	}
 	rawMeta, err := json.Marshal(psp.Meta)
 	if err != nil {

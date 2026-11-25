@@ -161,7 +161,7 @@ func (api Api) UpdateSchemaInfo(w http.ResponseWriter, r *http.Request, ctx *Sec
 	if !schema.Complete {
 		// initial upload, complete schema
 		schema.Complete = true
-		schema.Created = time.Now().Unix() * 1000
+		schema.Created = time.Now().UnixMilli()
 		// set notify
 		notify_feed = true
 

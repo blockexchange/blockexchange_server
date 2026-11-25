@@ -60,10 +60,10 @@ func (c *Core) createImportedSchema(is *importedSchema) (*types.Schema, error) {
 
 	schema := &types.Schema{
 		UID:         uuid.NewString(),
-		Created:     time.Now().Unix() * 1000,
+		Created:     time.Now().UnixMilli(),
 		UserUID:     user.UID,
 		Name:        newSchemaName,
-		Mtime:       time.Now().Unix() * 1000,
+		Mtime:       time.Now().UnixMilli(),
 		Description: is.Description,
 		Complete:    false,
 		SizeX:       is.SizeX,

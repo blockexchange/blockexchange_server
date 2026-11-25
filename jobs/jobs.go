@@ -68,13 +68,13 @@ func updateStats(api *api.Api, pgl *pglock.Client) {
 func cleanupSchemas(schemarepo *db.SchemaRepository, pgl *pglock.Client) {
 	runLocked(pgl, "schema-cleanup", 5*time.Minute, func() error {
 		logrus.Trace("Removing old and incomplete schemas")
-		now := time.Now().Unix() * 1000
+		now := time.Now().UnixMilli()
 		return schemarepo.DeleteOldIncompleteSchema(now - (3600 * 1000 * 24))
 	})
 }
 
 func updateScreenshots(c *core.Core, sr *db.SchemaSearchRepository, pgl *pglock.Client) {
-	from := time.Now().Add(-10*time.Minute).Unix() * 1000
+	from := time.Now().Add(-10 * time.Minute).UnixMilli()
 
 	runLocked(pgl, "update-screenshots", 5*time.Minute, func() error {
 		logrus.Trace("updating schema previews")

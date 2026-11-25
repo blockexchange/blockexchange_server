@@ -21,8 +21,8 @@ func TestSearchSchema(t *testing.T) {
 	user := testutils.CreateUser(api.UserRepo, t, &types.User{})
 	schema := types.Schema{
 		UserUID: user.UID,
-		Mtime:   time.Now().Unix(),
-		Created: time.Now().Unix(),
+		Mtime:   time.Now().UnixMilli(),
+		Created: time.Now().UnixMilli(),
 	}
 	err := api.SchemaRepo.CreateSchema(&schema)
 	api.SchemaModRepo.CreateSchemaMod(&types.SchemaMod{
@@ -63,9 +63,9 @@ func TestSearchStarredSchema(t *testing.T) {
 	starrer := testutils.CreateUser(a.UserRepo, t, &types.User{})
 	other := testutils.CreateUser(a.UserRepo, t, &types.User{})
 
-	starred := types.Schema{UserUID: owner.UID, Mtime: time.Now().Unix(), Created: time.Now().Unix(), Complete: true}
+	starred := types.Schema{UserUID: owner.UID, Mtime: time.Now().UnixMilli(), Created: time.Now().UnixMilli(), Complete: true}
 	assert.NoError(t, a.SchemaRepo.CreateSchema(&starred))
-	unstarred := types.Schema{UserUID: owner.UID, Mtime: time.Now().Unix(), Created: time.Now().Unix(), Complete: true}
+	unstarred := types.Schema{UserUID: owner.UID, Mtime: time.Now().UnixMilli(), Created: time.Now().UnixMilli(), Complete: true}
 	assert.NoError(t, a.SchemaRepo.CreateSchema(&unstarred))
 
 	assert.NoError(t, a.SchemaStarRepo.Create(&types.SchemaStar{SchemaUID: starred.UID, UserUID: starrer.UID}))

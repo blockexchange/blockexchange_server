@@ -25,8 +25,8 @@ func TestAccessToken(t *testing.T) {
 		Name:     "default",
 		Token:    "abcd",
 		UserUID:  u.UID,
-		Created:  time.Now().Unix(),
-		Expires:  time.Now().Add(24 * time.Hour).Unix(),
+		Created:  time.Now().UnixMilli(),
+		Expires:  time.Now().Add(24 * time.Hour).UnixMilli(),
 		UseCount: 0,
 	}
 	assert.NoError(t, repos.AccessTokenRepo.CreateAccessToken(at))
