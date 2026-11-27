@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, useTemplateRef } from 'vue';
-import { createView } from "@buckaroobanzay/luanti-viewer";
+import { createView, type Viewer } from "@buckaroobanzay/luanti-viewer";
 
-import { create_schema_viewer_options } from "../../service/schema_viewer";
+import { create_schema_viewer_options, get_schema_bounds } from "../../service/schema_viewer";
 import type { Schema } from "../../api/types";
 
 const props = defineProps<{
@@ -10,9 +10,23 @@ const props = defineProps<{
 }>();
 
 const container = useTemplateRef<HTMLDivElement>("container");
+let viewer: Viewer | null = null;
 
 // the viewer releases its resources once the element is removed from the document
-onMounted(() => createView(container.value!, create_schema_viewer_options(props.schema)));
+onMounted(() => {
+	viewer = createView(container.value!, create_schema_viewer_options(props.schema));
+});
+
+// exports the whole schematic (not only the loaded mapblocks) as binary glTF
+const export_gltf = async (): Promise<Blob> => {
+	if (!viewer) {
+		throw new Error("viewer not ready");
+	}
+	const bounds = get_schema_bounds(props.schema);
+	return viewer.exportGLTF({ minPos: bounds.min, maxPos: bounds.max });
+};
+
+defineExpose({ export_gltf });
 </script>
 
 <template>

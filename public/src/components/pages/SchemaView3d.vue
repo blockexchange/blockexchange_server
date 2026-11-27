@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 
 import BreadCrumb from "../Breadcrumb.vue";
 import LoadingBlock from "../LoadingBlock.vue";
@@ -21,6 +21,32 @@ const breadcrumb = computed(() => [
 ]);
 
 const detail_link = computed(() => `/schema/${props.username}/${props.name}`);
+
+const viewer = useTemplateRef<InstanceType<typeof SchemaViewer>>("viewer");
+const exporting = ref(false);
+const export_error = ref<string | null>(null);
+
+const export_gltf = async () => {
+	if (!viewer.value || exporting.value) {
+		return;
+	}
+	exporting.value = true;
+	export_error.value = null;
+	try {
+		const blob = await viewer.value.export_gltf();
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = `${props.name}.glb`;
+		link.click();
+		setTimeout(() => URL.revokeObjectURL(url), 0);
+	} catch (e) {
+		console.error("glTF export failed", e);
+		export_error.value = e instanceof Error ? e.message : String(e);
+	} finally {
+		exporting.value = false;
+	}
+};
 
 const fetch_search_result = async () => {
 	const r = await schema_search({
@@ -50,12 +76,22 @@ const fetch_data = () => ({
 						by <router-link :to="'/user/' + username">{{ username }}</router-link> · 3D view
 					</div>
 				</div>
-				<router-link :to="detail_link" class="btn btn-outline-secondary">
-					<i class="fa fa-arrow-left"></i> Back
-				</router-link>
+				<div class="d-flex gap-2">
+					<button type="button" class="btn btn-outline-primary" :disabled="exporting" @click="export_gltf"
+						title="Download the schematic as binary glTF (.glb), e.g. for blender">
+						<i class="fa" :class="exporting ? 'fa-spinner fa-spin' : 'fa-download'"></i>
+						{{ exporting ? "Exporting..." : "Export glTF" }}
+					</button>
+					<router-link :to="detail_link" class="btn btn-outline-secondary">
+						<i class="fa fa-arrow-left"></i> Back
+					</router-link>
+				</div>
+			</div>
+			<div class="alert alert-danger" v-if="export_error">
+				glTF export failed: {{ export_error }}
 			</div>
 			<div class="card overflow-hidden">
-				<schema-viewer :schema="data.search_result.schema"/>
+				<schema-viewer ref="viewer" :schema="data.search_result.schema"/>
 			</div>
 			<p class="small text-muted-bx mt-2 mb-0">
 				Click into the view to look around: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> move,
