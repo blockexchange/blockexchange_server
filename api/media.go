@@ -31,11 +31,14 @@ func parseNameBatch(w http.ResponseWriter, r *http.Request) ([]string, bool) {
 	return names, true
 }
 
-// parses the optional "q", "limit" and "offset" query params, no limit means all entries
+// parses the optional "q", "license", "limit" and "offset" query params, no limit means all entries
 func parseMediaQuery(r *http.Request) db.MediaQuery {
 	q := db.MediaQuery{
 		Query: r.URL.Query().Get("q"),
 		Limit: -1,
+	}
+	if license, err := strconv.ParseBool(r.URL.Query().Get("license")); err == nil {
+		q.License = &license
 	}
 	if limit, err := strconv.Atoi(r.URL.Query().Get("limit")); err == nil && limit > 0 {
 		q.Limit = min(limit, maxMediaPageSize)
@@ -162,7 +165,7 @@ func (api Api) GetMediafileInfos(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api Api) CountMediafiles(w http.ResponseWriter, r *http.Request) {
-	c, err := api.MediaRepo.CountMediafiles(r.URL.Query().Get("q"))
+	c, err := api.MediaRepo.CountMediafiles(parseMediaQuery(r))
 	Send(w, c, err)
 }
 

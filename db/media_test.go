@@ -73,7 +73,7 @@ func TestMedia(t *testing.T) {
 	assert.Nil(t, infos[0].GitMediaSourceID)
 	assert.Nil(t, infos[0].GitURL)
 	assert.Equal(t, int64(1), infos[0].Size)
-	c, err = mr.CountMediafiles("default_stone.png")
+	c, err = mr.CountMediafiles(db.MediaQuery{Query: "default_stone.png"})
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), c)
 
@@ -101,6 +101,36 @@ func TestMediafileGitSource(t *testing.T) {
 	assert.Equal(t, src.GitURL, *infos[0].GitURL)
 	assert.Equal(t, "CC-BY-SA-4.0", *infos[0].MediaLicense)
 	assert.Equal(t, int64(2), infos[1].Size)
+
+	// license filter
+	unlicensed := &types.GitMediaSource{GitURL: "https://github.com/test/mediasource-nolicense"}
+	assert.NoError(t, repos.GitMediaSourceRepo.Create(unlicensed))
+	defer repos.GitMediaSourceRepo.Delete(unlicensed.ID)
+	assert.NoError(t, mr.UpsertMediafiles([]*types.Mediafile{
+		{Name: "mediasource_c.png", GitMediaSourceID: &unlicensed.ID, Data: []byte{4}},
+		{Name: "mediasource_d.png", Data: []byte{5}},
+	}))
+	defer mr.RemoveMediafile("mediasource_d.png")
+
+	with, without := true, false
+	infos, err = mr.SearchMediafileInfos(db.MediaQuery{Query: "mediasource_", License: &with, Limit: -1})
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"mediasource_a.png", "mediasource_b.png"}, []string{infos[0].Name, infos[1].Name})
+	assert.Equal(t, 2, len(infos))
+	infos, err = mr.SearchMediafileInfos(db.MediaQuery{Query: "mediasource_", License: &without, Limit: -1})
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(infos))
+	assert.Equal(t, "mediasource_c.png", infos[0].Name)
+	assert.Equal(t, "mediasource_d.png", infos[1].Name)
+	c, err := mr.CountMediafiles(db.MediaQuery{Query: "mediasource_", License: &with})
+	assert.NoError(t, err)
+	assert.Equal(t, int64(2), c)
+	c, err = mr.CountMediafiles(db.MediaQuery{Query: "mediasource_", License: &without})
+	assert.NoError(t, err)
+	assert.Equal(t, int64(2), c)
+	c, err = mr.CountMediafiles(db.MediaQuery{Query: "mediasource_"})
+	assert.NoError(t, err)
+	assert.Equal(t, int64(4), c)
 
 	names, err := mr.GetMediafileNamesBySource(src.ID)
 	assert.NoError(t, err)

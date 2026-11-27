@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import PageHeader from "../PageHeader.vue";
 import PagedTable from "../PagedTable.vue";
 import { START, MEDIAFILES } from "../../util/breadcrumbs";
@@ -17,8 +18,26 @@ const table = ref<{ update: () => Promise<void> } | null>(null);
 const total = ref<number | null>(null);
 const error = ref("");
 
-const fetch_entries = (limit: number, offset: number) => get_mediafiles({ q: get_query(), limit, offset });
-const count_entries = async () => (total.value = await count_mediafiles(get_query()));
+// license filter in the "license" query param: "true", "false" or absent for all
+const route = useRoute();
+const router = useRouter();
+const license = computed({
+	get: () => route.query.license == "true" || route.query.license == "false" ? route.query.license : "",
+	set: (value: string) => {
+		const query = { ...route.query };
+		delete query.page;
+		if (value) {
+			query.license = value;
+		} else {
+			delete query.license;
+		}
+		router.replace({ path: route.path, query });
+	}
+});
+const get_license = () => license.value ? license.value == "true" : undefined;
+
+const fetch_entries = (limit: number, offset: number) => get_mediafiles({ q: get_query(), license: get_license(), limit, offset });
+const count_entries = async () => (total.value = await count_mediafiles({ q: get_query(), license: get_license() }));
 
 const is_image = (name: string) => /\.(png|jpe?g|gif|bmp|tga)$/i.test(name);
 
@@ -45,6 +64,11 @@ async function remove(mf: MediafileInfo) {
 		<div class="alert alert-danger" v-if="error">{{ error }}</div>
 		<div class="d-flex flex-wrap gap-2 align-items-center mb-3">
 			<input class="form-control" style="max-width: 24rem;" placeholder="Filter by file or mod name" v-model="filter">
+			<select class="form-select" style="max-width: 14rem;" v-model="license" aria-label="Filter by license">
+				<option value="">All licenses</option>
+				<option value="true">With license</option>
+				<option value="false">Without license</option>
+			</select>
 			<span class="text-muted-bx small" v-if="total != null">{{ total }} entries</span>
 		</div>
 		<div class="card">

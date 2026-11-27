@@ -12,9 +12,11 @@ import (
 // MediaQuery filters and pages node definitions and media files
 type MediaQuery struct {
 	// case-insensitive substring match on the name or mod name, empty matches all
-	Query  string
-	Limit  int
-	Offset int
+	Query string
+	// media files only: true matches files with a media license, false files without one, nil all
+	License *bool
+	Limit   int
+	Offset  int
 }
 
 var likeEscaper = strings.NewReplacer(`\`, `\\`, "%", `\%`, "_", `\_`)
@@ -74,11 +76,20 @@ func (r *MediaRepository) RemoveNodedefinition(name string) error {
 // mediafile
 
 // media files have no mod name, the filter matches the file name only
-func applyMediafileFilter(g *gorm.DB, q string) *gorm.DB {
-	if q == "" {
-		return g
+// joins the git source as "s" for the license filter
+func applyMediafileFilter(g *gorm.DB, q MediaQuery) *gorm.DB {
+	g = g.Joins("left join git_media_source s on s.id = mediafile.git_media_source_id")
+	if q.Query != "" {
+		g = g.Where("mediafile.name ilike ?", "%"+likeEscaper.Replace(q.Query)+"%")
 	}
-	return g.Where("mediafile.name ilike ?", "%"+likeEscaper.Replace(q)+"%")
+	if q.License != nil {
+		if *q.License {
+			g = g.Where("coalesce(s.media_license, '') <> ''")
+		} else {
+			g = g.Where("coalesce(s.media_license, '') = ''")
+		}
+	}
+	return g
 }
 
 func (r *MediaRepository) CreateMediafile(mf *types.Mediafile) error {
@@ -111,14 +122,13 @@ func (r *MediaRepository) RemoveMediafile(name string) error {
 
 func (r *MediaRepository) SearchMediafileInfos(q MediaQuery) ([]*types.MediafileInfo, error) {
 	list := make([]*types.MediafileInfo, 0)
-	g := applyMediafileFilter(r.g.Model(types.Mediafile{}), q.Query).
-		Joins("left join git_media_source s on s.id = mediafile.git_media_source_id").
+	g := applyMediafileFilter(r.g.Model(types.Mediafile{}), q).
 		Select("mediafile.name, mediafile.git_media_source_id, s.git_url, s.media_license, length(mediafile.data) as size")
 	err := g.Order("mediafile.name").Limit(q.Limit).Offset(q.Offset).Scan(&list).Error
 	return list, err
 }
 
-func (r *MediaRepository) CountMediafiles(q string) (int64, error) {
+func (r *MediaRepository) CountMediafiles(q MediaQuery) (int64, error) {
 	var c int64
 	return c, applyMediafileFilter(r.g.Model(types.Mediafile{}), q).Count(&c).Error
 }

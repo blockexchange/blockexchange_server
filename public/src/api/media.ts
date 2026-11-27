@@ -3,6 +3,8 @@ import type { Mediafile, MediafileInfo, Nodedefinition } from "./types";
 
 export interface MediaQuery {
 	q?: string;
+	// media files only: true for files with a media license, false for files without one
+	license?: boolean;
 	limit?: number;
 	offset?: number;
 }
@@ -35,7 +37,7 @@ export const get_mediafiles_batch = (names: string[]) => fetch_json_checked<Medi
 	body: JSON.stringify(names)
 });
 
-export const count_mediafiles = (q?: string) => fetch_json<number>(`/api/media/mediafile-count?${to_params({ q })}`);
+export const count_mediafiles = (query: MediaQuery = {}) => fetch_json<number>(`/api/media/mediafile-count?${to_params(query)}`);
 
 export const get_mediafile_raw_url = (name: string) => `/api/media/mediafile/${encodeURIComponent(name)}?raw=true`;
 
