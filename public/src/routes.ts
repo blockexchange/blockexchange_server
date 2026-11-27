@@ -18,6 +18,7 @@ import Mods from './components/pages/Mods.vue';
 import Nodedefinitions from './components/pages/Nodedefinitions.vue';
 import Mediafiles from './components/pages/Mediafiles.vue';
 import LuantiConnections from './components/pages/LuantiConnections.vue';
+import GitMediaSources from './components/pages/GitMediaSources.vue';
 import StarredSchemas from './components/pages/StarredSchemas.vue';
 import NotFound from './components/pages/NotFound.vue';
 
@@ -66,6 +67,8 @@ const routes: RouteRecordRaw[] = [{
 	path: "/mediafiles", component: Mediafiles
 },{
 	path: "/luanti-connections", component: LuantiConnections
+},{
+	path: "/git-media-sources", component: GitMediaSources
 },{
 	path: "/:pathMatch(.*)*", component: NotFound
 }];

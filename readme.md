@@ -37,6 +37,7 @@ Optional:
 * **DEFAULT_ROLE** Role assigned to newly registered users, `DEFAULT` (default) or `ADMIN`
 * **WASM_PACK_CACHE_DIR** Cache directory for the game/mod packs of the "Edit Online" client (default: `blockexchange-wasm-packs` in the temp directory, max 2 GB, least recently used packs are removed first)
 * **WASM_GIT_CACHE_DIR** Cache directory for the git repositories of the game/mod packs, only the needed commits are fetched (default: `git` in the pack cache directory, max 50 GB, least recently used repositories are removed first)
+* **GIT_MEDIA_CACHE_DIR** Cache directory for the git repositories of the git media sources, only the latest commit of the default branch is kept (default: `blockexchange-git-media` in the temp directory)
 * **METRICS_ADDR** Listen address for the prometheus `/metrics` endpoint, for example `:9090` (default: served on the main listener on port 8080) — a Grafana dashboard for these metrics is in `monitoring/grafana/blockexchange.json`
 * **GITHUB_APP_SECRET** Github app secret key
 * **GITHUB_APP_ID** Github app ID

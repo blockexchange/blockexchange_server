@@ -16,9 +16,10 @@ func (n *Nodedefinition) TableName() string {
 }
 
 type Mediafile struct {
-	Name    string `json:"name" gorm:"primarykey;column:name"`
-	ModName string `json:"mod_name" gorm:"column:mod_name"`
-	Data    []byte `json:"data" gorm:"column:data"`
+	Name string `json:"name" gorm:"primarykey;column:name"`
+	// source repository, nil for files from the luanti connections and uploads
+	GitMediaSourceID *string `json:"git_media_source_id" gorm:"column:git_media_source_id"`
+	Data             []byte  `json:"data" gorm:"column:data"`
 }
 
 func (m *Mediafile) TableName() string {
@@ -32,7 +33,6 @@ func (mf *Mediafile) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	mf.ModName = getString(m["mod_name"])
 	mf.Name = getString(m["name"])
 	mf.Data, err = base64.RawStdEncoding.DecodeString(getString(m["data"]))
 	if err != nil {
@@ -44,7 +44,10 @@ func (mf *Mediafile) UnmarshalJSON(data []byte) error {
 
 // mediafile metadata without the binary data
 type MediafileInfo struct {
-	Name    string `json:"name" gorm:"column:name"`
-	ModName string `json:"mod_name" gorm:"column:mod_name"`
-	Size    int64  `json:"size" gorm:"column:size"`
+	Name             string  `json:"name" gorm:"column:name"`
+	GitMediaSourceID *string `json:"git_media_source_id" gorm:"column:git_media_source_id"`
+	// git url and media license of the source, nil without a source
+	GitURL       *string `json:"git_url" gorm:"column:git_url"`
+	MediaLicense *string `json:"media_license" gorm:"column:media_license"`
+	Size         int64   `json:"size" gorm:"column:size"`
 }

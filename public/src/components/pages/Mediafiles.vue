@@ -58,7 +58,7 @@ async function remove(mf: MediafileInfo) {
 					<tr>
 						<th style="width: 48px;"></th>
 						<th>Name</th>
-						<th class="d-none d-sm-table-cell">Mod</th>
+						<th class="d-none d-sm-table-cell">Source</th>
 						<th class="d-none d-md-table-cell text-end">Size</th>
 						<th></th>
 					</tr>
@@ -75,7 +75,13 @@ async function remove(mf: MediafileInfo) {
 						<td>
 							<a class="font-monospace text-decoration-none" :href="get_mediafile_raw_url(mf.name)" target="_blank">{{ mf.name }}</a>
 						</td>
-						<td class="d-none d-sm-table-cell small text-muted-bx">{{ mf.mod_name }}</td>
+						<td class="d-none d-sm-table-cell small text-muted-bx text-break">
+							<template v-if="mf.git_url">
+								<a :href="mf.git_url" target="_blank" rel="noopener noreferrer" v-if="/^https?:\/\//.test(mf.git_url)">{{ mf.git_url }}</a>
+								<template v-else>{{ mf.git_url }}</template>
+								<span class="badge text-bg-secondary ms-1" v-if="mf.media_license">{{ mf.media_license }}</span>
+							</template>
+						</td>
 						<td class="d-none d-md-table-cell small text-muted-bx text-end">{{ format_size(mf.size) }}</td>
 						<td class="text-end">
 							<button type="button" class="btn btn-sm btn-outline-danger" @click="remove(mf)" :title="'Delete ' + mf.name">

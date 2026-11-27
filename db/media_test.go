@@ -55,9 +55,8 @@ func TestMedia(t *testing.T) {
 
 	// create media
 	mf := &types.Mediafile{
-		Name:    "default_stone.png",
-		ModName: "mymod",
-		Data:    []byte{0x00},
+		Name: "default_stone.png",
+		Data: []byte{0x00},
 	}
 	assert.NoError(t, mr.CreateMediafile(mf))
 
@@ -71,7 +70,8 @@ func TestMedia(t *testing.T) {
 	infos, err := mr.SearchMediafileInfos(db.MediaQuery{Query: "default_stone.png", Limit: -1})
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(infos))
-	assert.Equal(t, "mymod", infos[0].ModName)
+	assert.Nil(t, infos[0].GitMediaSourceID)
+	assert.Nil(t, infos[0].GitURL)
 	assert.Equal(t, int64(1), infos[0].Size)
 	c, err = mr.CountMediafiles("default_stone.png")
 	assert.NoError(t, err)
@@ -79,4 +79,43 @@ func TestMedia(t *testing.T) {
 
 	// remove media
 	assert.NoError(t, mr.RemoveMediafile("default_stone.png"))
+}
+
+func TestMediafileGitSource(t *testing.T) {
+	repos := CreateTestDatabase(t)
+	mr := repos.MediaRepo
+
+	src := &types.GitMediaSource{GitURL: "https://github.com/test/mediasource-test", MediaLicense: "CC-BY-SA-4.0"}
+	assert.NoError(t, repos.GitMediaSourceRepo.Create(src))
+	defer repos.GitMediaSourceRepo.Delete(src.ID)
+
+	assert.NoError(t, mr.UpsertMediafiles([]*types.Mediafile{
+		{Name: "mediasource_a.png", GitMediaSourceID: &src.ID, Data: []byte{1}},
+		{Name: "mediasource_b.png", GitMediaSourceID: &src.ID, Data: []byte{2, 3}},
+	}))
+
+	infos, err := mr.SearchMediafileInfos(db.MediaQuery{Query: "mediasource_", Limit: -1})
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(infos))
+	assert.Equal(t, src.ID, *infos[0].GitMediaSourceID)
+	assert.Equal(t, src.GitURL, *infos[0].GitURL)
+	assert.Equal(t, "CC-BY-SA-4.0", *infos[0].MediaLicense)
+	assert.Equal(t, int64(2), infos[1].Size)
+
+	names, err := mr.GetMediafileNamesBySource(src.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"mediasource_a.png", "mediasource_b.png"}, names)
+
+	// only the files of the source are removed
+	assert.NoError(t, mr.RemoveMediafilesOfSource("00000000-0000-0000-0000-000000000000", []string{"mediasource_a.png"}))
+	assert.NoError(t, mr.RemoveMediafilesOfSource(src.ID, []string{"mediasource_a.png"}))
+	names, err = mr.GetMediafileNamesBySource(src.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"mediasource_b.png"}, names)
+
+	// removing the source removes its files
+	assert.NoError(t, repos.GitMediaSourceRepo.Delete(src.ID))
+	mf, err := mr.GetMediafileByName("mediasource_b.png")
+	assert.NoError(t, err)
+	assert.Nil(t, mf)
 }

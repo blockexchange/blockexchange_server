@@ -36,6 +36,8 @@ type Config struct {
 	WasmPackCacheDir string
 	// cache directory for the git repositories of the wasm packs, "git" in WasmPackCacheDir if empty
 	WasmGitCacheDir string
+	// cache directory for the git repositories of the media sources, a temp directory if empty
+	GitMediaCacheDir string
 	// listen address for /metrics (for example ":9090"), served on the main listener if empty
 	MetricsAddr string
 }
@@ -55,6 +57,7 @@ func CreateConfig() *Config {
 		DefaultRole:      UserRoleDefault,
 		WasmPackCacheDir: os.Getenv("WASM_PACK_CACHE_DIR"),
 		WasmGitCacheDir:  os.Getenv("WASM_GIT_CACHE_DIR"),
+		GitMediaCacheDir: os.Getenv("GIT_MEDIA_CACHE_DIR"),
 		MetricsAddr:      os.Getenv("METRICS_ADDR"),
 	}
 

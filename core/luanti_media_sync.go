@@ -101,7 +101,6 @@ func fetchLuantiMedia(ctx context.Context, conn *types.LuantiMediaConnection) (*
 	}
 
 	res := &luantiMediaResult{}
-	modnames := map[string]bool{}
 	for name, def := range viewerdef.Convert(defs) {
 		modname, _, found := strings.Cut(name, ":")
 		if !found {
@@ -112,7 +111,6 @@ func fetchLuantiMedia(ctx context.Context, conn *types.LuantiMediaConnection) (*
 		if err != nil {
 			return nil, fmt.Errorf("nodedef '%s': %w", name, err)
 		}
-		modnames[modname] = true
 		res.Nodedefs = append(res.Nodedefs, &types.Nodedefinition{
 			Name:       name,
 			ModName:    modname,
@@ -124,28 +122,14 @@ func fetchLuantiMedia(ctx context.Context, conn *types.LuantiMediaConnection) (*
 	defer mu.Unlock()
 	for name, data := range media {
 		res.Mediafiles = append(res.Mediafiles, &types.Mediafile{
-			Name:    name,
-			ModName: guessMediaModName(name, modnames),
-			Data:    data,
+			Name: name,
+			Data: data,
 		})
 		res.Size += int64(len(data))
 	}
 	res.Skipped = skipped
 
 	return res, nil
-}
-
-// the server does not tell which mod a media file belongs to, by convention
-// the file name is prefixed with the mod name ("default_stone.png")
-func guessMediaModName(filename string, modnames map[string]bool) string {
-	base := strings.TrimSuffix(filename, path.Ext(filename))
-	// longest matching prefix wins ("mesecons_wires_x.png" -> "mesecons_wires")
-	for i := len(base); i > 0; i-- {
-		if (i == len(base) || base[i] == '_') && modnames[base[:i]] {
-			return base[:i]
-		}
-	}
-	return ""
 }
 
 func (c *Core) syncLuantiMedia(conn *types.LuantiMediaConnection) (string, error) {

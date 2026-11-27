@@ -144,6 +144,11 @@ async function do_logout() {
 										<i class="fa fa-server fa-fw"></i> Luanti connections
 									</router-link>
 								</li>
+								<li>
+									<router-link to="/git-media-sources" class="dropdown-item">
+										<i class="fa fa-code-branch fa-fw"></i> Git media sources
+									</router-link>
+								</li>
 							</template>
 							<li><hr class="dropdown-divider"></li>
 							<li>

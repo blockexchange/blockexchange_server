@@ -18,6 +18,7 @@ export const NODEDEFINITIONS: BreadcrumbItem = { name: "Node definitions", icon:
 export const MEDIAFILES: BreadcrumbItem = { name: "Media files", icon: "image", link: "/mediafiles" };
 export const STARRED: BreadcrumbItem = { name: "Starred", icon: "star", link: "/starred" };
 export const LUANTI_CONNECTIONS: BreadcrumbItem = { name: "Luanti connections", icon: "server", link: "/luanti-connections" };
+export const GIT_MEDIA_SOURCES: BreadcrumbItem = { name: "Git media sources", icon: "code-branch", link: "/git-media-sources" };
 
 export const USER_DETAIL = (username: string): BreadcrumbItem => {
 	return { name: username, icon: "user", link: `/user/${username}` };

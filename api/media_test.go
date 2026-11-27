@@ -57,8 +57,8 @@ func TestNodedefinitionsBatch(t *testing.T) {
 func TestMediafilesBatch(t *testing.T) {
 	api := NewTestApi(t)
 	assert.NoError(t, api.MediaRepo.UpsertMediafiles([]*types.Mediafile{
-		{Name: "batchtest_stone.png", ModName: "batchtest", Data: []byte{1, 2, 3}},
-		{Name: "batchtest_dirt.png", ModName: "batchtest", Data: []byte{4, 5, 6}},
+		{Name: "batchtest_stone.png", Data: []byte{1, 2, 3}},
+		{Name: "batchtest_dirt.png", Data: []byte{4, 5, 6}},
 	}))
 
 	buf, err := json.Marshal([]string{"batchtest_stone.png", "unknown.png"})
@@ -73,6 +73,5 @@ func TestMediafilesBatch(t *testing.T) {
 	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), &list))
 	assert.Equal(t, 1, len(list))
 	assert.Equal(t, "batchtest_stone.png", list[0].Name)
-	assert.Equal(t, "batchtest", list[0].ModName)
 	assert.Equal(t, []byte{1, 2, 3}, list[0].Data)
 }

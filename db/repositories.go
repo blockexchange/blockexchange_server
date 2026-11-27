@@ -23,6 +23,7 @@ type Repositories struct {
 	MetaRepository            *MetaRepository
 	MediaRepo                 *MediaRepository
 	LuantiMediaConnectionRepo *LuantiMediaConnectionRepository
+	GitMediaSourceRepo        *GitMediaSourceRepository
 	PGLock                    *pglock.Client
 }
 
@@ -43,6 +44,7 @@ func NewRepositories(g *gorm.DB, DB *sql.DB, pgl *pglock.Client) *Repositories {
 		MetaRepository:            &MetaRepository{g: g},
 		MediaRepo:                 &MediaRepository{g: g},
 		LuantiMediaConnectionRepo: &LuantiMediaConnectionRepository{g: g},
+		GitMediaSourceRepo:        &GitMediaSourceRepository{g: g},
 		PGLock:                    pgl,
 	}
 }

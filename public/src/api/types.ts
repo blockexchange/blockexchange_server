@@ -192,7 +192,10 @@ export interface Nodedefinition {
 
 export interface MediafileInfo {
 	name: string;
-	mod_name: string;
+	// source repository, null for files from the luanti connections and uploads
+	git_media_source_id: string | null;
+	git_url: string | null;
+	media_license: string | null;
 	size: number;
 }
 
@@ -217,8 +220,28 @@ export interface LuantiMediaConnectionRequest {
 // media file including the base64 encoded data
 export interface Mediafile {
 	name: string;
-	mod_name: string;
+	git_media_source_id: string | null;
 	data: string;
+}
+
+export interface GitMediaSource {
+	id: string;
+	git_url: string;
+	// contentdb package ("author/name"), looked up by the git url if empty
+	cdb_package: string;
+	media_license: string;
+	license: string;
+	last_updated_timestamp: number;
+	last_updated_success: boolean;
+	last_updated_message: string;
+}
+
+// empty license fields are fetched from the contentdb on the next sync
+export interface GitMediaSourceRequest {
+	git_url: string;
+	cdb_package: string;
+	media_license: string;
+	license: string;
 }
 
 // schematic part, offsets are in nodes relative to the schematic origin (multiples of 16)

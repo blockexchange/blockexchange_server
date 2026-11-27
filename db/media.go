@@ -2,6 +2,7 @@ package db
 
 import (
 	"blockexchange/types"
+	"slices"
 	"strings"
 
 	"gorm.io/gorm"
@@ -72,6 +73,14 @@ func (r *MediaRepository) RemoveNodedefinition(name string) error {
 
 // mediafile
 
+// media files have no mod name, the filter matches the file name only
+func applyMediafileFilter(g *gorm.DB, q string) *gorm.DB {
+	if q == "" {
+		return g
+	}
+	return g.Where("mediafile.name ilike ?", "%"+likeEscaper.Replace(q)+"%")
+}
+
 func (r *MediaRepository) CreateMediafile(mf *types.Mediafile) error {
 	return r.g.Create(mf).Error
 }
@@ -102,14 +111,34 @@ func (r *MediaRepository) RemoveMediafile(name string) error {
 
 func (r *MediaRepository) SearchMediafileInfos(q MediaQuery) ([]*types.MediafileInfo, error) {
 	list := make([]*types.MediafileInfo, 0)
-	g := applyMediaFilter(r.g.Model(types.Mediafile{}), q.Query)
-	err := g.Select("name, mod_name, length(data) as size").Order("name").Limit(q.Limit).Offset(q.Offset).Scan(&list).Error
+	g := applyMediafileFilter(r.g.Model(types.Mediafile{}), q.Query).
+		Joins("left join git_media_source s on s.id = mediafile.git_media_source_id").
+		Select("mediafile.name, mediafile.git_media_source_id, s.git_url, s.media_license, length(mediafile.data) as size")
+	err := g.Order("mediafile.name").Limit(q.Limit).Offset(q.Offset).Scan(&list).Error
 	return list, err
 }
 
 func (r *MediaRepository) CountMediafiles(q string) (int64, error) {
 	var c int64
-	return c, applyMediaFilter(r.g.Model(types.Mediafile{}), q).Count(&c).Error
+	return c, applyMediafileFilter(r.g.Model(types.Mediafile{}), q).Count(&c).Error
+}
+
+// names of the media files imported from the git source
+func (r *MediaRepository) GetMediafileNamesBySource(source_id string) ([]string, error) {
+	names := []string{}
+	err := r.g.Model(types.Mediafile{}).Where("git_media_source_id = ?", source_id).Order("name").Pluck("name", &names).Error
+	return names, err
+}
+
+// removes the media files of the git source with the given names
+func (r *MediaRepository) RemoveMediafilesOfSource(source_id string, names []string) error {
+	for chunk := range slices.Chunk(names, 1000) {
+		err := r.g.Where("git_media_source_id = ? and name in ?", source_id, chunk).Delete(&types.Mediafile{}).Error
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // inserts or replaces the given node definitions (by name)

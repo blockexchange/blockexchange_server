@@ -22,6 +22,7 @@ func Start(repos *db.Repositories, api *api.Api) {
 		go cleanupSchemas(repos.SchemaRepo, repos.PGLock)
 		go updateScreenshots(c, api.SchemaSearchRepo, repos.PGLock)
 		go syncLuantiMedia(c, repos.PGLock)
+		go syncGitMedia(c, repos.PGLock)
 	}
 	// per-node stats job
 	go updateStats(api, repos.PGLock)
@@ -113,6 +114,15 @@ func syncLuantiMedia(c *core.Core, pgl *pglock.Client) {
 	runLocked(pgl, "luanti-media-sync", time.Hour, func() error {
 		// errors are handled per connection
 		c.SyncDueLuantiMediaConnections(24 * time.Hour)
+		return nil
+	})
+}
+
+// imports the media files of the git sources once a day, checked hourly so the schedule survives restarts
+func syncGitMedia(c *core.Core, pgl *pglock.Client) {
+	runLocked(pgl, "git-media-sync", time.Hour, func() error {
+		// errors are handled per source
+		c.SyncDueGitMediaSources(24 * time.Hour)
 		return nil
 	})
 }
