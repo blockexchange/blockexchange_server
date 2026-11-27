@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"fmt"
@@ -21,6 +22,12 @@ import (
 //go:embed migrations/*.sql
 var migrations embed.FS
 
+// connection pool limits
+var (
+	MaxOpenConns = 20
+	MaxIdleConns = 5
+)
+
 func Init() (*Repositories, error) {
 	// main pg url
 	url := fmt.Sprintf(
@@ -33,43 +40,28 @@ func Init() (*Repositories, error) {
 
 	fmt.Printf("Connecting to %s\n", url)
 
-	// gorm instance
-
-	g, err := gorm.Open(postgres.Open(url), &gorm.Config{})
-	if err != nil {
-		return nil, fmt.Errorf("gorm open: %v", err)
-	}
-
-	// db migrations
-
+	// one pool for gorm, the migrations, the plain sql queries and pglock (lib/pq: pglock and pq.Array depend on it)
 	db, err := sql.Open("postgres", url)
 	if err != nil {
 		return nil, err
 	}
+	db.SetMaxOpenConns(MaxOpenConns)
+	db.SetMaxIdleConns(MaxIdleConns)
+	db.SetConnMaxIdleTime(5 * time.Minute)
 
-	driver, err := mpg.WithInstance(db, &mpg.Config{})
+	err = migrateUp(db)
 	if err != nil {
-		return nil, err
-	}
-
-	d, err := iofs.New(migrations, "migrations")
-	if err != nil {
-		return nil, err
-	}
-
-	m, err := migrate.NewWithInstance("iofs", d, "postgres", driver)
-	if err != nil {
-		return nil, err
-	}
-
-	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
 		return nil, err
 	}
 
 	err = db.Ping()
 	if err != nil {
 		return nil, err
+	}
+
+	g, err := gorm.Open(postgres.New(postgres.Config{Conn: db}), &gorm.Config{})
+	if err != nil {
+		return nil, fmt.Errorf("gorm open: %v", err)
 	}
 
 	// pglock
@@ -85,4 +77,36 @@ func Init() (*Repositories, error) {
 	}
 
 	return NewRepositories(g, db, pgl), nil
+}
+
+// runs the migrations on a dedicated connection, released to the pool afterwards
+func migrateUp(db *sql.DB) error {
+	ctx := context.Background()
+	conn, err := db.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	// not driver.Close(): it would close the shared pool
+	defer conn.Close()
+
+	driver, err := mpg.WithConnection(ctx, conn, &mpg.Config{})
+	if err != nil {
+		return err
+	}
+
+	d, err := iofs.New(migrations, "migrations")
+	if err != nil {
+		return err
+	}
+
+	m, err := migrate.NewWithInstance("iofs", d, "postgres", driver)
+	if err != nil {
+		return err
+	}
+
+	err = m.Up()
+	if err != nil && err != migrate.ErrNoChange {
+		return err
+	}
+	return nil
 }
