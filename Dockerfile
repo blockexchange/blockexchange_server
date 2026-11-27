@@ -16,7 +16,7 @@ RUN go vet && \
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
 
 FROM alpine:3.24.4
-# git is needed to clone the mod dependencies for the wasm packs
+# git is needed to fetch the mod dependencies for the wasm packs
 RUN apk add --no-cache git ca-certificates
 COPY --from=go-app /data/blockexchange /
 EXPOSE 8080

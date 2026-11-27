@@ -32,7 +32,7 @@ var (
 )
 
 // bump if the layout or content of the cached packs changes, invalidates all cached packs
-const wasmPackFormat = "3"
+const wasmPackFormat = "4"
 
 // contents of a cached pack, needed for the config pack
 type WasmPackManifest struct {
@@ -53,6 +53,7 @@ type WasmPack struct {
 
 type wasmPackCache struct {
 	dir string
+	git *gitRepoCache
 	sf  singleflight.Group
 
 	resolved_lock sync.Mutex
@@ -65,11 +66,15 @@ type resolvedCommit struct {
 	at     time.Time
 }
 
-func newWasmPackCache(dir string) *wasmPackCache {
+// git_dir defaults to the "git" folder in the pack cache dir
+func newWasmPackCache(dir, git_dir string) *wasmPackCache {
 	if dir == "" {
 		dir = filepath.Join(os.TempDir(), "blockexchange-wasm-packs")
 	}
-	return &wasmPackCache{dir: dir, resolved: map[string]resolvedCommit{}}
+	if git_dir == "" {
+		git_dir = filepath.Join(dir, "git")
+	}
+	return &wasmPackCache{dir: dir, git: newGitRepoCache(git_dir), resolved: map[string]resolvedCommit{}}
 }
 
 // returns the cached pack or builds it, concurrent requests for the same pack share a build
@@ -250,7 +255,7 @@ func (cache *wasmPackCache) build(ctx context.Context, key string, deps []resolv
 		return nil, err
 	}
 	defer os.Remove(f.Name())
-	manifest, err := buildWasmPack(ctx, deps, exclude_mods, f)
+	manifest, err := buildWasmPack(ctx, cache.git, deps, exclude_mods, f)
 	if err != nil {
 		f.Close()
 		return nil, err
@@ -274,6 +279,7 @@ func (cache *wasmPackCache) build(ctx context.Context, key string, deps []resolv
 	}
 
 	cache.evict(key)
+	cache.git.maintain(ctx)
 
 	p := cache.lookup(key)
 	if p == nil {

@@ -15,6 +15,6 @@ func New(cfg *types.Config, repos *db.Repositories) *Core {
 	return &Core{
 		cfg:       cfg,
 		repos:     repos,
-		wasmPacks: newWasmPackCache(cfg.WasmPackCacheDir),
+		wasmPacks: newWasmPackCache(cfg.WasmPackCacheDir, cfg.WasmGitCacheDir),
 	}
 }

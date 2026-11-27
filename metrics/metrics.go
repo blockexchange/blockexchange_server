@@ -94,6 +94,21 @@ var WasmPackResolves = promauto.NewCounterVec(prometheus.CounterOpts{
 	Help: "Git version resolves by result (pinned: commit given, cached, remote, error)",
 }, []string{"result"})
 
+var WasmGitFetches = promauto.NewCounterVec(prometheus.CounterOpts{
+	Name: "bx_wasm_git_fetch_total",
+	Help: "Commits needed for wasm pack builds by result (cached: already in the local repository, remote: fetched, error)",
+}, []string{"result"})
+
+var WasmGitCacheBytes = promauto.NewGauge(prometheus.GaugeOpts{
+	Name: "bx_wasm_git_cache_bytes",
+	Help: "Size of the local git repository cache (updated after each pack build)",
+})
+
+var WasmGitEvictions = promauto.NewCounter(prometheus.CounterOpts{
+	Name: "bx_wasm_git_cache_evictions_total",
+	Help: "Number of repositories removed from the local git cache",
+})
+
 var WasmPackCacheBytes = promauto.NewGauge(prometheus.GaugeOpts{
 	Name: "bx_wasm_pack_cache_bytes",
 	Help: "Size of the wasm pack disk cache (updated after each build)",

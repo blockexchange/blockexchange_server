@@ -67,7 +67,7 @@ var gitCommitRegex = regexp.MustCompile(`^([0-9a-fA-F]{40}|[0-9a-fA-F]{64})$`)
 var modNameRegex = regexp.MustCompile(`^[a-z0-9_]+$`)
 var invalidModNameChars = regexp.MustCompile(`[^a-z0-9_]`)
 
-// limits the number of concurrent pack builds (cloning is io and network heavy)
+// limits the number of concurrent pack builds (fetching is io and network heavy)
 var wasmPackSemaphore = make(chan struct{}, 2)
 
 func invalidPack(format string, args ...any) error {
@@ -95,11 +95,12 @@ type resolvedDependency struct {
 
 type wasmPackEntry struct {
 	archive_dir string
-	local_dir   string
+	repo        *gitRepo
+	commit      string
 }
 
-// clones the resolved dependencies and writes the pack and its manifest, mods with a name in exclude_mods are left out
-func buildWasmPack(ctx context.Context, deps []resolvedDependency, exclude_mods []string, w io.Writer) (*WasmPackManifest, error) {
+// fetches the resolved dependencies into the git cache and writes the pack and its manifest, mods with a name in exclude_mods are left out
+func buildWasmPack(ctx context.Context, git *gitRepoCache, deps []resolvedDependency, exclude_mods []string, w io.Writer) (*WasmPackManifest, error) {
 	select {
 	case wasmPackSemaphore <- struct{}{}:
 		defer func() { <-wasmPackSemaphore }()
@@ -107,40 +108,26 @@ func buildWasmPack(ctx context.Context, deps []resolvedDependency, exclude_mods 
 		return nil, ctx.Err()
 	}
 
-	dir, err := os.MkdirTemp("", "wasm-pack-")
-	if err != nil {
-		return nil, fmt.Errorf("create temp dir: %w", err)
-	}
-	defer os.RemoveAll(dir)
-
 	manifest := &WasmPackManifest{Mods: []string{}}
 	mod_urls := map[string]string{}
 	entries := []wasmPackEntry{}
-	var total_size int64
 
-	for i, rd := range deps {
-		local_dir := filepath.Join(dir, fmt.Sprintf("%d", i))
-		err = gitShallowClone(ctx, rd.dep.GitURL, rd.commit, local_dir)
+	// everything is fetched before the first byte is written
+	for _, rd := range deps {
+		repo := git.acquire(rd.dep.GitURL)
+		defer git.release(repo)
+		err := git.ensureCommit(ctx, repo, rd.dep.GitURL, rd.commit)
 		if err != nil {
 			return nil, err
-		}
-
-		size, err := dirSize(local_dir)
-		if err != nil {
-			return nil, err
-		}
-		total_size += size
-		if total_size > WasmPackMaxSize {
-			return nil, invalidPack("pack exceeds the size limit of %d bytes", WasmPackMaxSize)
 		}
 
 		if rd.dep.ModType == types.SchemaModDependencyTypeGame {
 			manifest.GameID = repoName(rd.dep.GitURL)
-			entries = append(entries, wasmPackEntry{archive_dir: WasmPackGameDir, local_dir: local_dir})
+			entries = append(entries, wasmPackEntry{archive_dir: WasmPackGameDir, repo: repo, commit: rd.commit})
 			continue
 		}
 
-		name := modFolderName(local_dir, rd.dep.GitURL)
+		name := modFolderName(ctx, repo, rd.commit, rd.dep.GitURL)
 		if slices.Contains(exclude_mods, name) {
 			continue
 		}
@@ -150,7 +137,7 @@ func buildWasmPack(ctx context.Context, deps []resolvedDependency, exclude_mods 
 		mod_urls[name] = rd.dep.GitURL
 		manifest.Mods = append(manifest.Mods, name)
 
-		entries = append(entries, wasmPackEntry{archive_dir: WasmPackWorldModDir + "/" + name, local_dir: local_dir})
+		entries = append(entries, wasmPackEntry{archive_dir: WasmPackWorldModDir + "/" + name, repo: repo, commit: rd.commit})
 	}
 
 	skeleton := []string{"luanti", "luanti/worlds", WasmPackWorldDir, WasmPackWorldModDir}
@@ -166,11 +153,13 @@ func buildWasmPack(ctx context.Context, deps []resolvedDependency, exclude_mods 
 			return nil, err
 		}
 	}
+	budget := WasmPackMaxSize
 	for _, e := range entries {
-		err = writeTarDir(tw, e.local_dir, e.archive_dir)
+		size, err := gitWriteTar(ctx, tw, e.repo, e.commit, e.archive_dir, budget)
 		if err != nil {
 			return nil, err
 		}
+		budget -= size
 	}
 	err = tw.Close()
 	if err != nil {
@@ -186,53 +175,6 @@ func writeTarFile(tw *tar.Writer, name string, data []byte) error {
 	}
 	_, err = tw.Write(data)
 	return err
-}
-
-// adds the directory recursively, skips the .git folder, symlinks and special files
-func writeTarDir(tw *tar.Writer, local_dir, archive_dir string) error {
-	return filepath.WalkDir(local_dir, func(p string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		rel, err := filepath.Rel(local_dir, p)
-		if err != nil {
-			return err
-		}
-		if d.IsDir() && d.Name() == ".git" {
-			return filepath.SkipDir
-		}
-		if !d.IsDir() && !d.Type().IsRegular() {
-			// symlinks could point outside of the repository
-			return nil
-		}
-
-		info, err := d.Info()
-		if err != nil {
-			return err
-		}
-		hdr, err := tar.FileInfoHeader(info, "")
-		if err != nil {
-			return err
-		}
-		hdr.Name = path.Join(archive_dir, filepath.ToSlash(rel))
-		hdr.Uid, hdr.Gid, hdr.Uname, hdr.Gname = 0, 0, "", ""
-		if d.IsDir() {
-			hdr.Name += "/"
-			return tw.WriteHeader(hdr)
-		}
-
-		err = tw.WriteHeader(hdr)
-		if err != nil {
-			return err
-		}
-		f, err := os.Open(p)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		_, err = io.Copy(tw, f)
-		return err
-	})
 }
 
 func dirSize(dir string) (int64, error) {
@@ -298,28 +240,8 @@ func gitResolveCommit(ctx context.Context, url, version string) (string, error) 
 	return "", invalidPack("version '%s' not found in '%s' (use 'latest', a branch, a tag or a full commit hash)", version, url)
 }
 
-// shallow clone of a single commit
-func gitShallowClone(ctx context.Context, url, commit, dir string) error {
-	err := os.MkdirAll(dir, 0755)
-	if err != nil {
-		return err
-	}
-	_, err = runGit(ctx, dir, "init", "--quiet")
-	if err != nil {
-		return err
-	}
-	_, err = runGit(ctx, dir, "fetch", "--quiet", "--depth", "1", "--no-tags", "--end-of-options", url, commit)
-	if err != nil {
-		return err
-	}
-	_, err = runGit(ctx, dir, "checkout", "--quiet", "--detach", "FETCH_HEAD")
-	return err
-}
-
-func runGit(ctx context.Context, dir string, args ...string) (string, error) {
-	cmd := exec.CommandContext(ctx, "git", args...)
-	cmd.Dir = dir
-	cmd.Env = append(os.Environ(),
+func gitEnv() []string {
+	return append(os.Environ(),
 		"GIT_TERMINAL_PROMPT=0",
 		"GIT_ASKPASS=/bin/true",
 		"GIT_ALLOW_PROTOCOL="+WasmPackGitProtocols,
@@ -327,6 +249,19 @@ func runGit(ctx context.Context, dir string, args ...string) (string, error) {
 		"GIT_CONFIG_GLOBAL=/dev/null",
 		"GIT_LFS_SKIP_SMUDGE=1",
 	)
+}
+
+func runGit(ctx context.Context, dir string, args ...string) (string, error) {
+	return runGitStdin(ctx, dir, "", args...)
+}
+
+func runGitStdin(ctx context.Context, dir, stdin string, args ...string) (string, error) {
+	cmd := exec.CommandContext(ctx, "git", args...)
+	cmd.Dir = dir
+	cmd.Env = gitEnv()
+	if stdin != "" {
+		cmd.Stdin = strings.NewReader(stdin)
+	}
 	out, err := cmd.CombinedOutput()
 	if ctx.Err() != nil {
 		return "", ctx.Err()
@@ -338,9 +273,9 @@ func runGit(ctx context.Context, dir string, args ...string) (string, error) {
 }
 
 // folder name of a mod: "name" in mod.conf or modpack.conf, the repository name otherwise
-func modFolderName(dir, url string) string {
+func modFolderName(ctx context.Context, repo *gitRepo, commit, url string) string {
 	for _, conf := range []string{"mod.conf", "modpack.conf"} {
-		name := readConfValue(filepath.Join(dir, conf), "name")
+		name := gitReadConfValue(ctx, repo, commit, conf, "name")
 		if modNameRegex.MatchString(name) {
 			return name
 		}
@@ -358,18 +293,8 @@ func repoName(url string) string {
 	return name
 }
 
-func readConfValue(file, key string) string {
-	info, err := os.Lstat(file)
-	if err != nil || !info.Mode().IsRegular() {
-		return ""
-	}
-	f, err := os.Open(file)
-	if err != nil {
-		return ""
-	}
-	defer f.Close()
-
-	sc := bufio.NewScanner(f)
+func readConfValueFrom(r io.Reader, key string) string {
+	sc := bufio.NewScanner(r)
 	for sc.Scan() {
 		k, v, found := strings.Cut(sc.Text(), "=")
 		if found && strings.TrimSpace(k) == key {

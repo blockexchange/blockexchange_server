@@ -78,6 +78,11 @@ func readPack(t *testing.T, pack *core.WasmPack) map[string]string {
 
 // core with its own pack cache, local repositories allowed and the given builtin mods (no network access in tests)
 func newPackCore(t *testing.T, builtin_mods ...string) *core.Core {
+	return newPackCoreDir(t, t.TempDir(), builtin_mods...)
+}
+
+// core with the pack cache in cache_dir (git repositories in cache_dir/git)
+func newPackCoreDir(t *testing.T, cache_dir string, builtin_mods ...string) *core.Core {
 	old_protocols, old_builtin, old_ttl := core.WasmPackGitProtocols, core.WasmPackBuiltinMods, core.WasmPackResolveTTL
 	core.WasmPackGitProtocols = "file"
 	core.WasmPackBuiltinMods = builtin_mods
@@ -87,7 +92,7 @@ func newPackCore(t *testing.T, builtin_mods ...string) *core.Core {
 
 	cfg := types.CreateConfig()
 	cfg.BaseURL = "https://bx.example.com"
-	cfg.WasmPackCacheDir = t.TempDir()
+	cfg.WasmPackCacheDir = cache_dir
 	return core.New(cfg, nil)
 }
 
@@ -356,4 +361,26 @@ func TestWasmBuiltinAndConfigPack(t *testing.T) {
 	conf := entries["luanti/minetest.conf"]
 	assert.Contains(t, conf, embedded("minetest.conf"))
 	assert.Contains(t, conf, "blockexchange.url = https://bx.example.com\n")
+}
+
+// archive entries: name -> file mode
+func readPackModes(t *testing.T, pack *core.WasmPack) map[string]int64 {
+	f, err := os.Open(pack.Path)
+	assert.NoError(t, err)
+	defer f.Close()
+	zr, err := zstd.NewReader(f)
+	assert.NoError(t, err)
+	defer zr.Close()
+
+	modes := map[string]int64{}
+	tr := tar.NewReader(zr)
+	for {
+		hdr, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+		assert.NoError(t, err)
+		modes[hdr.Name] = hdr.Mode
+	}
+	return modes
 }
