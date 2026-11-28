@@ -116,28 +116,6 @@ func (api *Api) PatchSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Sec
 	SendJson(w, patched)
 }
 
-func (api *Api) DeleteSchemaPart(w http.ResponseWriter, r *http.Request, ctx *SecureContext) {
-	schema_uid, x, y, z, err := extractSchemaPartVars(r)
-	if SendIfError(w, err) {
-		return
-	}
-
-	schema := api.loadOwnedSchema(w, ctx, schema_uid, false)
-	if schema == nil {
-		return
-	}
-
-	// remove the part and update the schema mtime
-	err = api.SchemaPartRepo.UpdateWithNextMtime(schema_uid, func(repo *db.SchemaPartRepository, _ int64) error {
-		return repo.RemoveBySchemaUIDAndOffset(schema_uid, x, y, z)
-	})
-	if SendIfError(w, err) {
-		return
-	}
-
-	w.Write([]byte("true"))
-}
-
 func extractSchemaPartVars(r *http.Request) (string, int, int, int, error) {
 	vars := mux.Vars(r)
 	schema_uid := vars["schema_uid"]

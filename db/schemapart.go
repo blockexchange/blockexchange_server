@@ -64,14 +64,6 @@ func (r *SchemaPartRepository) GetBySchemaUIDAndRange(schema_uid string, x1, y1,
 	return FindMulti[types.SchemaPart](g)
 }
 
-func (r *SchemaPartRepository) RemoveBySchemaUIDAndOffset(schema_uid string, offset_x, offset_y, offset_z int) error {
-	g := r.g.Where("offset_x = ?", offset_x)
-	g = g.Where("offset_y = ?", offset_y)
-	g = g.Where("offset_z = ?", offset_z)
-	g = g.Where("schema_uid = ?", schema_uid)
-	return g.Delete(types.SchemaPart{}).Error
-}
-
 func (r *SchemaPartRepository) GetNextBySchemaUIDAndOffset(schema_uid string, offset_x, offset_y, offset_z int) (*types.SchemaPart, error) {
 	order_id := types.GetSchemaPartOrderID(offset_x, offset_y, offset_z)
 	g := r.g.Model(types.SchemaPart{})
