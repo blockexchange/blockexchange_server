@@ -1,9 +1,9 @@
 import type { SchemaPart } from "./types";
 
 // size of the cube covered by a chunk request in nodes
-export const SCHEMAPART_CHUNK_SIZE = 64;
+export const SCHEMAPART_CHUNK_SIZE = 16 * 5;
 
-// returns all parts with an offset between (x,y,z) (inclusive) and (x,y,z) + 64 (exclusive)
+// returns all parts with an offset between (x,y,z) (inclusive) and (x,y,z) + SCHEMAPART_CHUNK_SIZE (exclusive), (x,y,z) has to be aligned to SCHEMAPART_CHUNK_SIZE
 export const get_schemapart_chunk = async (schema_uid: string, x: number, y: number, z: number): Promise<SchemaPart[]> => {
 	const r = await fetch(`/api/schemapart_chunk/${schema_uid}/${x}/${y}/${z}`);
 	if (r.status == 204) {

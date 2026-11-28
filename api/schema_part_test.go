@@ -179,8 +179,8 @@ func TestGetSchemaPartChunk(t *testing.T) {
 	user := testutils.CreateUser(api.UserRepo, t, nil)
 	schema := testutils.CreateSchema(api.SchemaRepo, t, user, nil)
 
-	// parts inside the first chunk (0..63) and at the start of the next one
-	for _, x := range []int{0, 48, 64} {
+	// parts inside the first chunk (0..79) and at the start of the next one, created out of order
+	for _, x := range []int{64, 0, 80, 48} {
 		testutils.CreateSchemaPart(api.SchemaPartRepo, t, schema, &types.SchemaPart{
 			OffsetX:   x,
 			SchemaUID: schema.UID,
@@ -189,7 +189,7 @@ func TestGetSchemaPartChunk(t *testing.T) {
 		})
 	}
 
-	get_chunk := func(x int) []*types.SchemaPart {
+	request_chunk := func(x int) *httptest.ResponseRecorder {
 		r := httptest.NewRequest("GET", "http://", nil)
 		w := httptest.NewRecorder()
 		r = mux.SetURLVars(r, map[string]string{
@@ -199,6 +199,11 @@ func TestGetSchemaPartChunk(t *testing.T) {
 			"z":          "0",
 		})
 		api.GetSchemaPartChunk(w, r)
+		return w
+	}
+
+	get_chunk := func(x int) []*types.SchemaPart {
+		w := request_chunk(x)
 		assert.Equal(t, 200, w.Result().StatusCode)
 		parts := []*types.SchemaPart{}
 		assert.NoError(t, json.Unmarshal(w.Body.Bytes(), &parts))
@@ -213,9 +218,13 @@ func TestGetSchemaPartChunk(t *testing.T) {
 		return list
 	}
 
-	// the chunks don't overlap
-	assert.ElementsMatch(t, []int{0, 48}, offsets(get_chunk(0)))
-	assert.ElementsMatch(t, []int{64}, offsets(get_chunk(64)))
+	// the chunks cover 80 nodes, don't overlap and are ordered by position
+	assert.Equal(t, []int{0, 48, 64}, offsets(get_chunk(0)))
+	assert.Equal(t, []int{80}, offsets(get_chunk(80)))
+
+	// unaligned chunk positions are rejected
+	assert.Equal(t, 400, request_chunk(64).Result().StatusCode)
+	assert.Equal(t, 400, request_chunk(16).Result().StatusCode)
 }
 
 func TestPatchSchemaPart(t *testing.T) {

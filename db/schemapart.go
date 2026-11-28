@@ -61,6 +61,7 @@ func (r *SchemaPartRepository) GetBySchemaUIDAndRange(schema_uid string, x1, y1,
 	g = g.Where("schema_uid = ?", schema_uid)
 	g = g.Where("offset_x >= ?", x1).Where("offset_y >= ?", y1).Where("offset_z >= ?", z1)
 	g = g.Where("offset_x <= ?", x2).Where("offset_y <= ?", y2).Where("offset_z <= ?", z2)
+	g = g.Order("order_id asc")
 	return FindMulti[types.SchemaPart](g)
 }
 

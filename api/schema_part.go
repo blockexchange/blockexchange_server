@@ -154,14 +154,22 @@ func (api *Api) GetSchemaPart(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// a chunk covers 5x5x5 parts (80 nodes, same size as a default mapgen chunk)
+const SchemaPartChunkSize = 16 * 5
+
 func (api *Api) GetSchemaPartChunk(w http.ResponseWriter, r *http.Request) {
 	schema_uid, x, y, z, err := extractSchemaPartVars(r)
 	if SendIfError(w, err) {
 		return
 	}
 
-	// a chunk covers 4x4x4 parts, the range is inclusive so stop before the next chunk
-	to_pos_offset := (16 * 4) - 1
+	if x%SchemaPartChunkSize != 0 || y%SchemaPartChunkSize != 0 || z%SchemaPartChunkSize != 0 {
+		SendError(w, http.StatusBadRequest, fmt.Sprintf("chunk position has to be aligned to %d nodes", SchemaPartChunkSize))
+		return
+	}
+
+	// the range is inclusive, stop before the next chunk
+	to_pos_offset := SchemaPartChunkSize - 1
 	schemaparts, err := api.SchemaPartRepo.GetBySchemaUIDAndRange(schema_uid, x, y, z, x+to_pos_offset, y+to_pos_offset, z+to_pos_offset)
 	if err == nil && schemaparts == nil {
 		w.WriteHeader(http.StatusNoContent)
