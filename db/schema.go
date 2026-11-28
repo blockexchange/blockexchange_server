@@ -30,8 +30,10 @@ func (r *SchemaRepository) CreateSchema(schema *types.Schema) error {
 	return r.g.Create(schema).Error
 }
 
+// UpdateSchema updates the fields of the schema, except the mtime:
+// it is only changed with SchemaPartRepository.UpdateWithNextMtime, a stale value would break its uniqueness
 func (r *SchemaRepository) UpdateSchema(schema *types.Schema) error {
-	return r.g.Updates(schema).Error
+	return r.g.Omit("mtime").Updates(schema).Error
 }
 
 func (r *SchemaRepository) IncrementViews(uid string) error {

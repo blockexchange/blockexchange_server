@@ -1,14 +1,15 @@
 package api
 
 import (
+	"blockexchange/db"
 	"blockexchange/metrics"
 	"blockexchange/parser"
 	"blockexchange/types"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -25,21 +26,13 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	mtime := time.Now().UnixMilli()
-
-	// update schema part
-	schemapart.Mtime = mtime
-	err = api.SchemaPartRepo.CreateOrUpdateSchemaPart(schemapart)
+	// create or update the schema part with a unique mtime (updates the schema mtime too)
+	err = api.SchemaPartRepo.UpdateWithNextMtime(schema.UID, func(repo *db.SchemaPartRepository, mtime int64) error {
+		schemapart.Mtime = mtime
+		return repo.CreateOrUpdateSchemaPart(schemapart)
+	})
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("CreateOrUpdateSchemaPart error: %s", err))
-		return
-	}
-
-	// update schema mtime
-	schema.Mtime = mtime
-	err = api.SchemaRepo.UpdateSchema(schema)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("UpdateSchema error: %s", err))
 		return
 	}
 
@@ -47,6 +40,16 @@ func (api *Api) CreateSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 	metrics.SchemaPartsUploaded.Inc()
 
 	SendJson(w, schemapart)
+}
+
+// statusError is an error with an http status code
+type statusError struct {
+	code int
+	msg  string
+}
+
+func (e *statusError) Error() string {
+	return e.msg
 }
 
 // PatchSchemaPart applies the nodes selected by the patchfilter to the stored schemapart
@@ -62,55 +65,49 @@ func (api *Api) PatchSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Sec
 		return
 	}
 
-	schemapart, err := api.SchemaPartRepo.GetBySchemaUIDAndOffset(patch.SchemaUID, patch.OffsetX, patch.OffsetY, patch.OffsetZ)
-	if SendIfError(w, err) {
-		return
-	}
-	if schemapart == nil {
-		SendError(w, http.StatusNotFound, "schemapart not found")
-		return
-	}
-
-	parsed, err := parser.ParseSchemaPart(schemapart)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("parse stored schemapart error: %s", err))
-		return
-	}
-
 	parsed_patch, err := parser.ParseSchemaPart(patch.SchemaPart)
 	if err != nil {
 		SendError(w, http.StatusBadRequest, fmt.Sprintf("parse patch error: %s", err))
 		return
 	}
 
-	err = parsed.Patch(parsed_patch, patch.PatchFilter)
-	if err != nil {
-		SendError(w, http.StatusBadRequest, fmt.Sprintf("patch error: %s", err))
+	// read, patch and write the stored part in one transaction: concurrent patches of the same schema are serialized
+	var patched *types.SchemaPart
+	err = api.SchemaPartRepo.UpdateWithNextMtime(schema.UID, func(repo *db.SchemaPartRepository, mtime int64) error {
+		schemapart, err := repo.GetBySchemaUIDAndOffset(patch.SchemaUID, patch.OffsetX, patch.OffsetY, patch.OffsetZ)
+		if err != nil {
+			return err
+		}
+		if schemapart == nil {
+			return &statusError{code: http.StatusNotFound, msg: "schemapart not found"}
+		}
+
+		parsed, err := parser.ParseSchemaPart(schemapart)
+		if err != nil {
+			return fmt.Errorf("parse stored schemapart error: %s", err)
+		}
+
+		err = parsed.Patch(parsed_patch, patch.PatchFilter)
+		if err != nil {
+			return &statusError{code: http.StatusBadRequest, msg: fmt.Sprintf("patch error: %s", err)}
+		}
+
+		patched, err = parsed.Convert()
+		if err != nil {
+			return fmt.Errorf("convert error: %s", err)
+		}
+
+		patched.SchemaUID = schemapart.SchemaUID
+		patched.Mtime = mtime
+		return repo.CreateOrUpdateSchemaPart(patched)
+	})
+
+	var status_err *statusError
+	if errors.As(err, &status_err) {
+		SendError(w, status_err.code, status_err.msg)
 		return
-	}
-
-	patched, err := parsed.Convert()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("convert error: %s", err))
-		return
-	}
-
-	mtime := time.Now().UnixMilli()
-
-	// update schema part
-	patched.SchemaUID = schemapart.SchemaUID
-	patched.Mtime = mtime
-	err = api.SchemaPartRepo.CreateOrUpdateSchemaPart(patched)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("CreateOrUpdateSchemaPart error: %s", err))
-		return
-	}
-
-	// update schema mtime
-	schema.Mtime = mtime
-	err = api.SchemaRepo.UpdateSchema(schema)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("UpdateSchema error: %s", err))
+	} else if err != nil {
+		SendError(w, 500, err.Error())
 		return
 	}
 
@@ -130,14 +127,10 @@ func (api *Api) DeleteSchemaPart(w http.ResponseWriter, r *http.Request, ctx *Se
 		return
 	}
 
-	err = api.SchemaPartRepo.RemoveBySchemaUIDAndOffset(schema_uid, x, y, z)
-	if SendIfError(w, err) {
-		return
-	}
-
-	// update schema mtime
-	schema.Mtime = time.Now().UnixMilli()
-	err = api.SchemaRepo.UpdateSchema(schema)
+	// remove the part and update the schema mtime
+	err = api.SchemaPartRepo.UpdateWithNextMtime(schema_uid, func(repo *db.SchemaPartRepository, _ int64) error {
+		return repo.RemoveBySchemaUIDAndOffset(schema_uid, x, y, z)
+	})
 	if SendIfError(w, err) {
 		return
 	}

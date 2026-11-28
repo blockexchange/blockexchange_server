@@ -2,6 +2,8 @@ package db
 
 import (
 	"blockexchange/types"
+	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -9,6 +11,27 @@ import (
 
 type SchemaPartRepository struct {
 	g *gorm.DB
+}
+
+// UpdateWithNextMtime runs fn in a transaction with the next mtime of the schema.
+//
+// The schema mtime is set to max(now, mtime + 1), so every change gets an mtime that is unique per schema
+// and the by-mtime paging (mtime > ?) can't skip parts with the same mtime. The update locks the schema row
+// until the transaction is committed: concurrent changes to the same schema are serialized and become visible
+// in mtime order (a reader never sees a newer mtime before an older one is committed).
+func (r *SchemaPartRepository) UpdateWithNextMtime(schema_uid string, fn func(repo *SchemaPartRepository, mtime int64) error) error {
+	return r.g.Transaction(func(tx *gorm.DB) error {
+		var mtime int64
+		err := tx.Raw("update schema set mtime = greatest(mtime + 1, ?) where uid = ? returning mtime",
+			time.Now().UnixMilli(), schema_uid).Scan(&mtime).Error
+		if err != nil {
+			return err
+		}
+		if mtime == 0 {
+			return fmt.Errorf("schema not found: %s", schema_uid)
+		}
+		return fn(&SchemaPartRepository{g: tx}, mtime)
+	})
 }
 
 func (r *SchemaPartRepository) CreateOrUpdateSchemaPart(part *types.SchemaPart) error {
@@ -62,7 +85,8 @@ func (r *SchemaPartRepository) GetNextBySchemaUIDAndMtime(schema_uid string, mti
 	g := r.g.Model(types.SchemaPart{})
 	g = g.Where("schema_uid = ?", schema_uid)
 	g = g.Where("mtime > ?", mtime)
-	g = g.Order("mtime asc")
+	// mtimes are unique per schema since UpdateWithNextMtime, order_id keeps older duplicates deterministic
+	g = g.Order("mtime asc").Order("order_id asc")
 	return FindSingle[types.SchemaPart](g)
 }
 
