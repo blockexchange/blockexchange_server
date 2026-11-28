@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
@@ -287,4 +288,32 @@ func TestPatchSchemaPart(t *testing.T) {
 	Login(t, r, user)
 	api.Secure(api.PatchSchemaPart)(w, r)
 	assert.Equal(t, 404, w.Result().StatusCode)
+
+	// POST alias through the router
+	router := mux.NewRouter()
+	api.SetupRoutes(router, types.CreateConfig())
+
+	patch.OffsetX = 0
+	patch.SchemaPart = newPart("default:mese", 3)
+	data, err = json.Marshal(patch)
+	assert.NoError(t, err)
+	r = httptest.NewRequest(http.MethodPost, "/api/schemapart/patch", bytes.NewBuffer(data))
+	w = httptest.NewRecorder()
+	Login(t, r, user)
+	router.ServeHTTP(w, r)
+	assert.Equal(t, 200, w.Result().StatusCode)
+
+	stored, err = api.SchemaPartRepo.GetBySchemaUIDAndOffset(schema.UID, 0, 0, 0)
+	assert.NoError(t, err)
+	parsed, err = parser.ParseSchemaPart(stored)
+	assert.NoError(t, err)
+	assert.Equal(t, "default:mese", parsed.NodeNameLookup[parsed.NodeIDS[0]])
+	assert.Equal(t, "default:stone", parsed.NodeNameLookup[parsed.NodeIDS[1]])
+	assert.Equal(t, []byte{3, 3}, parsed.Param2)
+
+	// POST alias requires authentication
+	r = httptest.NewRequest(http.MethodPost, "/api/schemapart/patch", bytes.NewBuffer(data))
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, r)
+	assert.Equal(t, 401, w.Result().StatusCode)
 }

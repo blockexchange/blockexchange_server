@@ -123,6 +123,8 @@ func (api *Api) SetupRoutes(r *mux.Router, cfg *types.Config) {
 
 	r.HandleFunc("/api/schemapart", api.Secure(api.CreateSchemaPart)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schemapart", api.Secure(api.PatchSchemaPart)).Methods(http.MethodPatch)
+	// POST alias for clients without PATCH support (the luanti http api only knows GET, POST, PUT and DELETE)
+	r.HandleFunc("/api/schemapart/patch", api.Secure(api.PatchSchemaPart)).Methods(http.MethodPost)
 	r.HandleFunc("/api/schemapart/{schema_uid}/{x}/{y}/{z}", api.GetSchemaPart).Methods(http.MethodGet)
 	r.HandleFunc("/api/schemapart/{schema_uid}/{x}/{y}/{z}", api.Secure(api.DeleteSchemaPart)).Methods(http.MethodDelete)
 	r.HandleFunc("/api/schemapart/{schema_uid}/{x}/{y}/{z}/delete", api.Secure(api.DeleteSchemaPart)).Methods(http.MethodPost)
