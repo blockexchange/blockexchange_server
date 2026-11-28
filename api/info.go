@@ -74,7 +74,7 @@ func (api *Api) GetInfo(w http.ResponseWriter, req *http.Request) {
 	cfg := api.cfg
 	info := Info{
 		VersionMajor: 1,
-		VersionMinor: 1,
+		VersionMinor: 2,
 		Name:         cfg.Name,
 		Owner:        cfg.Owner,
 		BaseURL:      cfg.BaseURL,
